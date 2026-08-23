@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Booking | Bliss &amp; Beyond</title>
+<meta name="description" content="Booking â€” Bliss & Beyond customer portal prototype.">
+<link rel="icon" href="/prototype/../favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Karla:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="/prototype/assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+
+<nav class="navbar bb-nav sticky-top">
+  <div class="container-fluid px-3 px-lg-4">
+    <a class="navbar-brand" href="/prototype/index.html">Bliss &amp; Beyond<small>Customer Portal</small></a>
+    <div class="d-flex align-items-center gap-3">
+      <a class="d-none d-md-inline small" href="/prototype/index.html"><i class="bi bi-house-door me-1"></i>Public site</a>
+      <button class="btn btn-outline-forest btn-sm" data-bs-toggle="modal" data-bs-target="#notifyModal"><i class="bi bi-bell"></i></button>
+      <div class="dropdown">
+        <button class="btn btn-forest btn-sm dropdown-toggle" data-bs-toggle="dropdown" data-auth-display>Account</button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><a class="dropdown-item" href="/prototype/customer/profile.html">Profile</a></li>
+          <li><a class="dropdown-item" href="/prototype/login.html">Sign out</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</nav>
+<div class="modal fade" id="notifyModal" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content">
+  <div class="modal-header"><h5 class="modal-title">Notifications</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body">
+    <ul class="list-unstyled d-grid gap-3 mb-0 small" data-notification-list></ul>
+  </div>
+</div></div></div>
+<div class="bb-shell"><aside class="bb-side"><h6>Overview</h6><a class="" href="/prototype/customer/dashboard.html">Dashboard</a><a class="" href="/prototype/customer/profile.html">My Profile</a><h6>Plan your event</h6><a class="" href="/prototype/customer/browse-packages.html">Browse Packages</a><a class="" href="/prototype/customer/venue-selection.html">Venue Selection</a><a class="" href="/prototype/customer/ai-recommendation.html">AI Recommendation</a><a class="active" href="/prototype/customer/booking.html">New Booking</a><h6>My bookings</h6><a class="" href="/prototype/customer/consultation.html">Consultation</a><a class="" href="/prototype/customer/booking-history.html">Booking History</a><a class="" href="/prototype/customer/quotation.html">Quotations</a><h6>Account</h6><a href="/prototype/login.html">Sign out</a></aside><main class="bb-main booking-confirmation-page" data-booking-confirmation-page>
+<div class="booking-hero panel mb-4" data-booking-custom-hero>
+  <div class="panel__body booking-hero__body">
+    <div>
+      <span class="eyebrow">Customer portal</span>
+      <h1 class="h2 mt-1 mb-1">Final Confirmation</h1>
+      <p class="small text-ink-soft mb-0">Step 4 of 4 &middot; Review before booking</p>
+      <div class="booking-progress mt-3">
+        <div class="booking-progress__bar" aria-hidden="true"><span></span></div>
+        <div class="small text-ink-soft mt-2">100% complete</div>
+      </div>
+    </div>
+    <div class="booking-hero-total text-lg-end">
+      <div class="stat-label mb-1" data-booking-total-label>Estimated Event Total</div>
+      <div class="bb-price" data-booking-total-display>MMK 0</div>
+    </div>
+  </div>
+</div>
+<section class="booking-package-event-card panel mb-4 d-none" data-booking-package-event-card aria-labelledby="bookingPackageEventTitle">
+  <div class="booking-package-event-card__header">
+    <div>
+      <div class="booking-event-eyebrow">YOUR EVENT</div>
+      <h2 class="h4 mb-0" id="bookingPackageEventTitle">Event details</h2>
+    </div>
+    <a class="btn btn-outline-forest btn-sm d-none" href="/prototype/packages.html" data-package-edit-event>Edit date &amp; time</a>
+  </div>
+  <div class="booking-package-event-card__grid">
+    <div class="booking-package-event-card__item">
+      <div class="booking-label">Event Date</div>
+      <div class="booking-package-event-card__value" data-package-event-date>Not specified</div>
+    </div>
+    <div class="booking-package-event-card__item">
+      <div class="booking-label">Time</div>
+      <div class="booking-package-event-card__value"><span data-package-event-start>Not specified</span> <span class="text-ink-soft">–</span> <span data-package-event-end>Not specified</span></div>
+    </div>
+    <div class="booking-package-event-card__item">
+      <div class="booking-label">Guests</div>
+      <div class="booking-package-event-card__value" data-package-event-guests>Not specified</div>
+    </div>
+    <div class="booking-package-event-card__item booking-package-event-card__item--wide">
+      <div class="booking-label">Package</div>
+      <div class="booking-package-event-card__value" data-package-event-package>Not specified</div>
+    </div>
+    <div class="booking-package-event-card__item booking-package-event-card__item--wide">
+      <div class="booking-label">Venue</div>
+      <div class="booking-package-event-card__value" data-package-event-venue>Not specified</div>
+    </div>
+  </div>
+  <div class="booking-package-event-card__status d-none" data-package-event-status><span class="booking-package-event-card__status-dot" aria-hidden="true"></span><span data-package-event-status-text>Availability will be checked using your current event details.</span></div>
+</section>
+<div class="row g-4">
+  <div class="col-lg-8">
+    <div class="panel booking-section-card mb-4">
+      <div class="panel__head">
+        <div>
+          <div class="stat-label mb-1" data-booking-selection-label><i class="bi bi-grid-1x2-fill me-1"></i>Selected Services</div>
+          <h5 class="mb-0" data-booking-selection-subtitle>What you’ve chosen</h5>
+        </div>
+        <a class="btn btn-outline-forest btn-sm" href="/prototype/customer/services.html" data-booking-edit-services>Edit Services</a>
+      </div>
+      <div class="panel__body">
+        <ul class="summary-list booking-service-grid mb-0" data-booking-services-display>
+          <li class="text-ink-soft">No services selected yet.</li>
+        </ul>
+        <div class="booking-package-fixed-note d-none" data-booking-package-fixed-note><span class="booking-package-fixed-note__dot" aria-hidden="true"></span>Package inclusions are fixed and non-editable.</div>
+      </div>
+    </div>
+
+    <div class="panel booking-section-card mb-4" data-booking-event-details-section>
+      <div class="panel__head" data-booking-custom-event-header>
+        <div>
+          <div class="stat-label mb-1 booking-event-eyebrow">Your Event</div>
+          <h5 class="mb-0">Event details</h5>
+        </div>
+        <a class="btn btn-outline-forest btn-sm" href="/prototype/customer/venue-selection.html" data-booking-edit-venue>Edit Venue</a>
+      </div>
+      <div class="panel__body">
+        <form class="row g-4" id="bookingConfirmForm" data-booking-form data-booking-success="/prototype/customer/booking-status.html">
+          <input type="hidden" name="eventType">
+          <input type="hidden" name="eventDate">
+          <input type="hidden" name="startTime">
+          <input type="hidden" name="endTime">
+          <input type="hidden" name="guests">
+          <input type="hidden" name="venue">
+
+          <div class="col-12" data-booking-custom-event-info>
+            <div class="booking-info-grid">
+              <div class="booking-info-item booking-info-item--event">
+                <div class="booking-label">Event Type</div>
+                <div class="booking-value" data-booking-event-type-display>Not specified</div>
+              </div>
+              <div class="booking-info-item booking-info-item--date">
+                <div class="booking-label">Event Date</div>
+                <div class="booking-value" data-booking-event-date-display>Not specified</div>
+              </div>
+              <div class="booking-info-item booking-info-item--time">
+                <div class="booking-label">Time</div>
+                <div class="booking-value"><span data-booking-start-time-display>Not specified</span> <span class="text-ink-soft">–</span> <span data-booking-end-time-display>Not specified</span></div>
+              </div>
+              <div class="booking-info-item booking-info-item--guests">
+                <div class="booking-label">Guests</div>
+                <div class="booking-value" data-booking-guests-display>Not specified</div>
+              </div>
+              <div class="booking-info-item booking-info-item--venue booking-info-item--wide">
+                <div class="booking-label">Venue</div>
+                <div class="booking-value" data-booking-venue-display>Not specified</div>
+                <div class="booking-subvalue" data-booking-venue-location-display>Not specified</div>
+              </div>
+              <div class="booking-info-item booking-info-item--requests booking-info-item--wide">
+                <div class="booking-label">Special Requests</div>
+                <div class="booking-value" data-booking-special-requests-display>None</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12" data-booking-custom-catering>
+            <div class="confirmation-box">
+              <div class="stat-label mb-1"><i class="bi bi-basket3 me-1"></i>Catering</div>
+              <h5 class="mb-3">Catering summary</h5>
+              <ul class="summary-list booking-service-grid mb-0" data-booking-catering-display>
+                <li class="text-ink-soft">No catering saved yet.</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="col-12" data-booking-special-requests-section>
+            <label class="form-label" for="bookingRequests">Special requests</label>
+            <textarea class="form-control" id="bookingRequests" name="specialRequests" rows="3" placeholder="Add any final notes for the team."></textarea>
+          </div>
+
+          <div class="col-12 alert alert-success d-none" data-booking-status role="alert" aria-live="polite"></div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="panel booking-summary-panel" style="position:sticky;top:90px">
+      <div class="panel__head"><h5 class="mb-0">Booking Summary</h5></div>
+      <div class="panel__body d-grid gap-3">
+        <div class="d-flex justify-content-between" data-booking-total-venue-row>
+          <span class="text-ink-soft">Venue</span>
+          <strong data-booking-total-venue>MMK 0</strong>
+        </div>
+        <div class="d-flex justify-content-between" data-booking-total-services-row>
+          <span class="text-ink-soft">Services</span>
+          <strong data-booking-total-services>MMK 0</strong>
+        </div>
+        <div class="d-flex justify-content-between" data-booking-total-catering-row>
+          <span class="text-ink-soft">Catering</span>
+          <strong data-booking-total-catering>MMK 0</strong>
+        </div>
+        <hr class="my-0">
+        <div class="d-flex justify-content-between align-items-center">
+          <span class="booking-summary-total-label" data-booking-side-total-label>Estimated Event Total</span>
+          <span class="bb-price booking-summary-total" data-booking-total-display-side>MMK 0</span>
+        </div>
+        <p class="booking-summary-note text-ink-soft mb-0">Payment is not collected at this stage.</p>
+        <button class="btn btn-gold w-100 booking-summary-confirm" type="submit" data-booking-submit form="bookingConfirmForm">Confirm Booking</button>
+        <a class="btn btn-outline-forest w-100" href="/prototype/customer/review.html">Back to Review</a>
+      </div>
+    </div>
+  </div>
+</div></main></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/prototype/assets/js/main.js"></script>
+
+</body>
+</html>

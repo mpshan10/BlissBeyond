@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Venue Management | Bliss &amp; Beyond</title>
+<meta name="description" content="Manage real Bliss & Beyond venue details, pricing and availability.">
+<link rel="icon" href="/prototype/../favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Karla:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="/prototype/assets/css/style.css" rel="stylesheet">
+<style>
+html:not(.bb-admin-authorized) body { visibility: hidden; }
+[data-admin-venues-page] .bb-side { width: 216px; flex-basis: 216px; padding-inline: .8rem; }
+[data-admin-venues-page] .bb-side a { white-space: nowrap; }
+[data-admin-venues-page] .bb-main { padding: 1.65rem clamp(.9rem, 1.8vw, 1.8rem) 2.5rem; }
+.venue-admin-panel { overflow: hidden; border-radius: 18px; box-shadow: 0 16px 44px rgba(24, 57, 47, .08); }
+.venue-admin-toolbar { background: linear-gradient(135deg, #fff 0%, #fbf8f0 100%); }
+.venue-admin-search { width: min(100%, 430px); }
+.venue-admin-table-wrap { overflow-x: auto; padding: 0; }
+.venue-admin-table { min-width: 1080px; margin: 0; table-layout: fixed; }
+.venue-admin-table > thead th { padding: .9rem .8rem; background: #f7f3e9; white-space: nowrap; }
+.venue-admin-table > tbody td { padding: 1rem .8rem; vertical-align: middle; }
+.venue-admin-table th:nth-child(1) { width: 250px; }
+.venue-admin-table th:nth-child(2) { width: 140px; }
+.venue-admin-table th:nth-child(3) { width: 270px; }
+.venue-admin-table th:nth-child(4) { width: 110px; }
+.venue-admin-table th:nth-child(5) { width: 155px; }
+.venue-admin-table th:nth-child(6) { width: 115px; }
+.venue-admin-table th:nth-child(7) { width: 90px; }
+.venue-admin-thumb, .venue-preview { overflow: hidden; background: #edf0eb; color: var(--bb-green); }
+.venue-admin-thumb { width: 58px; height: 50px; flex: 0 0 58px; border: 1px solid var(--bb-line); border-radius: 10px; }
+.venue-admin-thumb img, .venue-preview img { width: 100%; height: 100%; object-fit: cover; }
+.venue-admin-thumb-placeholder, .venue-preview-placeholder { display: grid; width: 100%; height: 100%; place-items: center; }
+.venue-admin-location { display: -webkit-box; overflow: hidden; line-height: 1.4; -webkit-box-orient: vertical; -webkit-line-clamp: 3; }
+.venue-admin-price { color: var(--bb-gold); font-weight: 700; white-space: nowrap; }
+.venue-preview { height: 180px; border: 1px solid var(--bb-line); border-radius: 14px; }
+.venue-modal-note { color: var(--bb-ink-soft); font-size: .75rem; }
+@media (max-width: 991px) { [data-admin-venues-page] .bb-side { width: 100%; flex-basis: auto; } [data-admin-venues-page] .bb-main { width: 100%; } }
+@media (max-width: 575px) { .venue-admin-toolbar, .venue-admin-toolbar > div { align-items: stretch !important; width: 100%; } .venue-admin-search, .venue-admin-toolbar .form-select { width: 100% !important; } }
+</style>
+</head>
+<body data-admin-page data-admin-venues-page>
+
+<nav class="navbar bb-nav sticky-top"><div class="container-fluid px-3 px-lg-4">
+  <a class="navbar-brand" href="/prototype/index.html">Bliss &amp; Beyond<small>Admin Console</small></a>
+  <div class="d-flex align-items-center gap-3"><a class="d-none d-md-inline small" href="/prototype/index.html"><i class="bi bi-house-door me-1"></i>Public site</a><div class="dropdown"><button class="btn btn-forest btn-sm dropdown-toggle" data-bs-toggle="dropdown" data-admin-display>Administrator</button><ul class="dropdown-menu dropdown-menu-end"><li><a class="dropdown-item" href="/prototype/customer/profile.html">Profile</a></li><li><a class="dropdown-item" href="/prototype/login.html" data-admin-sign-out>Sign out</a></li></ul></div></div>
+</div></nav>
+
+<div class="bb-shell">
+  <aside class="bb-side">
+    <h6>Overview</h6><a href="/prototype/admin/dashboard.html">Dashboard</a>
+    <h6>Catalogue</h6><a href="/prototype/admin/customers.html">Customers</a><a href="/prototype/admin/packages.html">Packages</a><a class="active" href="/prototype/admin/venues.html">Venues</a><a href="/prototype/admin/services.html">Services</a>
+    <h6>Operations</h6><a href="/prototype/admin/bookings.html">Bookings</a><a href="/prototype/admin/consultations.html">Consultations</a><a href="/prototype/admin/quotations.html">Quotations</a><a href="/prototype/admin/payments.html">Payments</a><a href="/prototype/admin/reports.html">Reports</a>
+    <h6>Account</h6><a href="/prototype/login.html" data-admin-sign-out>Sign out</a>
+  </aside>
+
+  <main class="bb-main">
+    <div class="mb-4"><span class="eyebrow">Admin console</span><h1 class="h2 mt-1 mb-1">Venue Management</h1><p class="small text-ink-soft mb-0">Manage venue details, capacity, pricing and catalog availability.</p></div>
+
+    <div class="row g-3 mb-4">
+      <div class="col-6 col-lg-4"><div class="stat-card"><div class="d-flex justify-content-between"><div><div class="stat-label">Total Venues</div><div class="stat-value mt-1" data-admin-venue-count="total">-</div></div><span class="feature-icon"><i class="bi bi-buildings"></i></span></div></div></div>
+      <div class="col-6 col-lg-4"><div class="stat-card"><div class="d-flex justify-content-between"><div><div class="stat-label">Available</div><div class="stat-value mt-1" data-admin-venue-count="available">-</div></div><span class="feature-icon"><i class="bi bi-check2-circle"></i></span></div></div></div>
+      <div class="col-12 col-lg-4"><div class="stat-card"><div class="d-flex justify-content-between"><div><div class="stat-label">Disabled</div><div class="stat-value mt-1" data-admin-venue-count="disabled">-</div></div><span class="feature-icon"><i class="bi bi-slash-circle"></i></span></div></div></div>
+    </div>
+
+    <div class="alert alert-danger d-none" data-admin-venue-message role="alert" aria-live="polite"></div>
+
+    <div class="panel venue-admin-panel">
+      <div class="panel__head venue-admin-toolbar">
+        <div class="input-group venue-admin-search"><span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span><input class="form-control border-start-0" type="search" placeholder="Search venue, type, or location" data-admin-venue-search></div>
+        <div class="d-flex gap-2 flex-wrap"><button class="btn btn-gold btn-sm" type="button" data-admin-venue-add><i class="bi bi-plus-lg me-1"></i>Add Venue</button><select class="form-select form-select-sm" style="width:auto" data-admin-venue-type aria-label="Filter by venue type"><option value="ALL">All venue types</option></select><select class="form-select form-select-sm" style="width:auto" data-admin-venue-availability aria-label="Filter by availability"><option value="ALL">All availability</option><option value="AVAILABLE">Available</option><option value="DISABLED">Disabled</option></select></div>
+      </div>
+      <div class="panel__body venue-admin-table-wrap"><div class="table-responsive"><table class="table venue-admin-table align-middle"><thead><tr><th>Venue</th><th>Type</th><th>Location</th><th>Capacity</th><th>Estimated Hire</th><th>Status</th><th>Actions</th></tr></thead><tbody data-admin-venue-rows><tr><td colspan="7" class="text-center py-5 text-ink-soft">Loading venues...</td></tr></tbody></table></div></div>
+    </div>
+  </main>
+</div>
+
+<div class="modal fade" id="venueEditModal" tabindex="-1" aria-hidden="true"><div class="modal-dialog modal-lg modal-dialog-centered"><div class="modal-content"><form data-admin-venue-edit-form>
+  <div class="modal-header"><div><span class="eyebrow">Catalog venue</span><h5 class="modal-title mt-1">Edit Venue</h5></div><button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button></div>
+  <div class="modal-body"><input type="hidden" data-admin-venue-edit-id><div class="venue-preview mb-4"><img class="d-none" alt="Venue preview" data-admin-venue-preview><span class="venue-preview-placeholder"><i class="bi bi-image fs-2"></i></span></div><div class="row g-3">
+    <div class="col-md-7"><label class="form-label" for="venueEditName">Venue Name</label><input class="form-control" id="venueEditName" required maxlength="120" data-admin-venue-edit-name></div>
+    <div class="col-md-5"><label class="form-label" for="venueEditType">Venue Type</label><input class="form-control" id="venueEditType" required maxlength="60" data-admin-venue-edit-type></div>
+    <div class="col-12"><label class="form-label" for="venueEditLocation">Location</label><input class="form-control" id="venueEditLocation" required maxlength="120" data-admin-venue-edit-location></div>
+    <div class="col-12"><label class="form-label" for="venueEditDescription">Description</label><textarea class="form-control" id="venueEditDescription" rows="3" maxlength="800" data-admin-venue-edit-description></textarea></div>
+    <div class="col-md-4"><label class="form-label" for="venueEditCapacity">Capacity</label><input class="form-control" id="venueEditCapacity" type="number" min="0" step="1" data-admin-venue-edit-capacity><div class="venue-modal-note mt-1">Leave empty when capacity is not specified.</div></div>
+    <div class="col-md-5"><label class="form-label" for="venueEditPrice">Estimated Venue Hire (MMK)</label><input class="form-control" id="venueEditPrice" type="number" min="0" step="0.01" data-admin-venue-edit-price><div class="venue-modal-note mt-1">Used as the current estimated hire price for future quotations.</div></div>
+    <div class="col-md-3"><label class="form-label" for="venueEditAvailable">Catalog Availability</label><select class="form-select" id="venueEditAvailable" data-admin-venue-edit-available><option value="true">Available</option><option value="false">Disabled</option></select></div>
+    <div class="col-12"><label class="form-label" for="venueEditImage">Image Path</label><input class="form-control" id="venueEditImage" maxlength="255" placeholder="/prototype/assets/img/venue.jpg" data-admin-venue-edit-image></div>
+  </div></div>
+  <div class="modal-footer"><button class="btn btn-outline-secondary" type="button" data-bs-dismiss="modal">Cancel</button><button class="btn btn-gold" type="submit" data-admin-venue-edit-save>Save Changes</button></div>
+</form></div></div></div>
+
+<div class="modal fade" id="venueAddModal" tabindex="-1" aria-hidden="true"><div class="modal-dialog modal-lg modal-dialog-centered"><div class="modal-content"><form data-admin-venue-add-form>
+  <div class="modal-header"><div><span class="eyebrow">Catalog venue</span><h5 class="modal-title mt-1">Add Venue</h5></div><button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button></div>
+  <div class="modal-body"><div class="row g-3">
+    <div class="col-md-7"><label class="form-label" for="venueAddName">Venue Name</label><input class="form-control" id="venueAddName" required maxlength="120" data-admin-venue-add-name></div>
+    <div class="col-md-5"><label class="form-label" for="venueAddType">Venue Type</label><input class="form-control" id="venueAddType" required maxlength="60" placeholder="Indoor Space" data-admin-venue-add-type></div>
+    <div class="col-12"><label class="form-label" for="venueAddLocation">Region / Location</label><input class="form-control" id="venueAddLocation" required maxlength="120" placeholder="Address, Yangon" data-admin-venue-add-location></div>
+    <div class="col-12"><label class="form-label" for="venueAddDescription">Description</label><textarea class="form-control" id="venueAddDescription" rows="3" maxlength="800" data-admin-venue-add-description></textarea></div>
+    <div class="col-md-4"><label class="form-label" for="venueAddCapacity">Capacity</label><input class="form-control" id="venueAddCapacity" type="number" min="0" step="1" data-admin-venue-add-capacity><div class="venue-modal-note mt-1">Leave empty when capacity is not specified.</div></div>
+    <div class="col-md-5"><label class="form-label" for="venueAddPrice">Estimated Venue Hire (MMK)</label><input class="form-control" id="venueAddPrice" type="number" min="0" step="0.01" data-admin-venue-add-price></div>
+    <div class="col-md-3"><label class="form-label" for="venueAddAvailable">Catalog Availability</label><select class="form-select" id="venueAddAvailable" data-admin-venue-add-available><option value="true">Available</option><option value="false">Disabled</option></select></div>
+    <div class="col-12"><label class="form-label" for="venueAddImage">Image Path</label><input class="form-control" id="venueAddImage" maxlength="255" placeholder="/prototype/assets/img/venue-1.jpg" data-admin-venue-add-image></div>
+  </div></div>
+  <div class="modal-footer"><button class="btn btn-outline-secondary" type="button" data-bs-dismiss="modal">Cancel</button><button class="btn btn-gold" type="submit" data-admin-venue-add-save>Add Venue</button></div>
+</form></div></div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/prototype/assets/js/main.js"></script>
+<script src="/prototype/assets/js/admin.js"></script>
+</body>
+</html>

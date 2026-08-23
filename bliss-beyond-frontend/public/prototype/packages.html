@@ -1,0 +1,1452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Event Packages | Bliss &amp; Beyond</title>
+<meta name="description" content="Browse wedding, birthday, corporate, engagement, graduation and anniversary packages with transparent pricing.">
+<link rel="icon" href="/prototype/../favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Karla:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="/prototype/assets/css/style.css" rel="stylesheet">
+<style>
+  .package-availability-section{padding-top:2rem!important;padding-bottom:0!important}
+  .package-catalog-section{padding-top:2rem!important}
+  .package-availability-panel{background:#fffdf9;border:1px solid #e8dfd0;border-radius:18px;box-shadow:0 12px 30px rgba(45,54,46,.08);padding:1.35rem 1.5rem}
+  .package-availability-panel h2{color:#214c3b;font-family:"Cormorant Garamond",serif;font-size:clamp(1.8rem,3vw,2.45rem);margin:0}
+  .package-availability-panel p{color:#68746c}
+  .package-availability-label{color:#8e6726;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+  .package-availability-field{border:1px solid #e1d6c5;border-radius:10px;min-height:2.75rem;background:#fdfbf7;color:#214c3b}
+  .package-availability-field:focus{border-color:#b58a3a;box-shadow:0 0 0 .2rem rgba(181,138,58,.15)}
+  .package-time-field{position:relative}
+  .package-time-placeholder{color:#68746c;left:.8rem;pointer-events:none;position:absolute;top:50%;transform:translateY(-50%);z-index:1}
+  .package-time-field.is-empty input{color:transparent}
+  .package-time-field.is-empty input::-webkit-datetime-edit{color:transparent}
+  .package-time-field:not(.is-empty) .package-time-placeholder{display:none}
+  .package-availability-note{background:#f3eee4;border-radius:10px;color:#52645b;min-height:1.45rem;padding:.7rem .8rem}
+  .package-availability-note.is-error{background:#fff0ee;color:#8b3d35}
+  .package-availability-summary{color:#214c3b;min-height:1.5rem}
+  .package-availability-summary strong{font-family:"Cormorant Garamond",serif;font-size:1.55rem}
+  .package-availability-summary small{color:#68746c}
+  .package-availability-badge{align-items:center;display:inline-flex;gap:.3rem;margin-top:.35rem}
+  .package-availability-badge--available{background:#e5f1e8;color:#216345}
+  .package-availability-reason{color:#68746c;font-size:.78rem;margin:.35rem 0 0}
+  .package-card-availability{min-height:1.55rem}
+  .package-availability-hidden{display:none!important}
+  @media (max-width:575.98px){.package-availability-panel{padding:1.1rem}.package-availability-panel .btn{width:100%}}
+</style>
+</head>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var grid = document.querySelector('#pkgGrid');
+  if (!grid) return;
+
+  // find the sort dropdown even without an id
+  var sel = document.getElementById('pkgSort');
+  if (!sel) {
+    sel = Array.prototype.find.call(document.querySelectorAll('select'), function (s) {
+      return /sort|price/i.test(s.textContent);
+    });
+  }
+  if (!sel) return;
+
+  var items = Array.prototype.slice.call(grid.children);
+  items.forEach(function (el, i) { el.dataset.order = i; });
+
+  function digits(text) {
+    var m = (text || '').replace(/,/g, '').match(/\d+/);
+    return m ? parseInt(m[0], 10) : NaN;
+  }
+  function price(el) {
+    var n = el.querySelector('.bb-price');
+    return n ? digits(n.textContent) : NaN;
+  }
+  function capacity(el) {
+    var b = el.querySelectorAll('.bb-badge');
+    for (var i = 0; i < b.length; i++) if (/guest/i.test(b[i].textContent)) return digits(b[i].textContent);
+    return NaN;
+  }
+  function by(fn, dir) {
+    return function (a, b) {
+      var x = fn(a), y = fn(b);
+      if (isNaN(x) && isNaN(y)) return 0;
+      if (isNaN(x)) return 1;
+      if (isNaN(y)) return -1;
+      return (x - y) * dir;
+    };
+  }
+
+  sel.addEventListener('change', function () {
+    var label = (sel.selectedOptions[0].value || sel.selectedOptions[0].textContent).toLowerCase();
+    var sorted = items.slice();
+
+    if (/low to high|price-asc/.test(label))       sorted.sort(by(price, 1));
+    else if (/high to low|price-desc/.test(label)) sorted.sort(by(price, -1));
+    else if (/capacity/.test(label))               sorted.sort(by(capacity, -1));
+    else sorted.sort(function (a, b) { return a.dataset.order - b.dataset.order; });
+
+    var frag = document.createDocumentFragment();
+    sorted.forEach(function (el) { frag.appendChild(el); });
+    grid.appendChild(frag);
+  });
+});
+</script>
+
+
+<body>
+
+<nav class="navbar navbar-expand-lg bb-nav sticky-top">
+  <div class="container">
+    <a class="navbar-brand me-4" href="/prototype/index.html">Bliss &amp; Beyond<small>Events &amp; Catering</small></a>
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#bbNav" aria-label="Menu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="bbNav">
+      <ul class="navbar-nav ms-auto align-items-lg-center">
+        <li class="nav-item"><a class="nav-link" href="/prototype/index.html">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="/prototype/about.html">About</a></li>
+        <li class="nav-item"><a class="nav-link" href="/prototype/services.html">Services</a></li>
+        <li class="nav-item"><a class="nav-link active" href="/prototype/packages.html">Packages</a></li>
+        <li class="nav-item"><a class="nav-link" href="/prototype/venues.html">Venues</a></li>
+        
+        
+        <li class="nav-item"><a class="nav-link" href="/prototype/faq.html">FAQ</a></li>
+        <li class="nav-item"><a class="nav-link" href="/prototype/contact.html">Contact</a></li>
+      </ul>
+      <div class="d-flex gap-2 mt-3 mt-lg-0 ms-lg-3">
+        <a class="btn btn-outline-forest btn-sm" href="/prototype/login.html">Login</a>
+        <a class="btn btn-gold btn-sm" href="/prototype/register.html">Get Started</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<header class="page-head">
+  <div class="container">
+    <h1 class="mb-2">Event Packages</h1>
+    <p class="mb-0 col-lg-7">Curated packages across weddings, birthdays, corporate events, engagements, graduations, and anniversaries.</p>
+  </div>
+</header>
+
+<section class="section package-availability-section" aria-labelledby="packageAvailabilityHeading">
+  <div class="container">
+    <div class="package-availability-panel">
+      <div class="row g-3 align-items-end">
+        <div class="col-lg-4">
+          <span class="package-availability-label">Plan your event</span>
+          <h2 id="packageAvailabilityHeading" class="mt-1">Find Packages for Your Event</h2>
+          <p class="small mb-0 mt-2">Tell us your event details to see which packages are available.</p>
+        </div>
+        <div class="col-lg-8">
+          <form data-package-availability-form novalidate>
+            <div class="row g-2">
+              <div class="col-sm-6 col-lg-3"><label class="package-availability-label mb-1" for="packageCatalogDate">Event date</label><input class="form-control package-availability-field" id="packageCatalogDate" type="date" data-package-catalog-date required></div>
+              <div class="col-sm-6 col-lg-3"><label class="package-availability-label mb-1" for="packageCatalogGuests">Guests</label><input class="form-control package-availability-field" id="packageCatalogGuests" type="number" min="1" step="1" placeholder="80" data-package-catalog-guests required></div>
+              <div class="col-sm-6 col-lg-3"><label class="package-availability-label mb-1" for="packageCatalogStart">Start time</label><div class="package-time-field is-empty"><span class="package-time-placeholder" aria-hidden="true">Select start time</span><input class="form-control package-availability-field" id="packageCatalogStart" type="time" data-package-catalog-start required></div></div>
+              <div class="col-sm-6 col-lg-3"><label class="package-availability-label mb-1" for="packageCatalogEnd">End time</label><div class="package-time-field is-empty"><span class="package-time-placeholder" aria-hidden="true">Select end time</span><input class="form-control package-availability-field" id="packageCatalogEnd" type="time" data-package-catalog-end required></div></div>
+            </div>
+            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2 mt-3">
+              <div class="package-availability-note small" data-package-availability-status role="status" aria-live="polite">Loading package catalog...</div>
+              <button class="btn btn-gold flex-shrink-0" type="submit" data-package-catalog-check>Check Availability</button>
+            </div>
+          </form>
+          <div class="package-availability-summary mt-3" data-package-availability-summary role="status" aria-live="polite"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section package-catalog-section">
+  <div class="container">
+    <div class="row g-2 align-items-center mb-4">
+      <div class="col-md-6">
+        <div class="input-group">
+          <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
+          <input class="form-control border-start-0" type="search" placeholder="Search packages" data-search-target="#pkgGrid">
+        </div>
+      </div>
+      <div class="col-md-3">
+        <select class="form-select" data-filter-target="#pkgGrid">
+          <option value="all">All event types</option>
+          <option value="wedding">Weddings</option>
+          <option value="engagement">Engagements</option>
+          <option value="birthday">Birthdays</option>
+          <option value="corporate">Corporate</option>
+          <option value="graduation">Graduations</option>
+          <option value="anniversary">Anniversaries</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+  <select class="form-select" id="pkgSort" data-sort-target="#pkgGrid">
+    <option value="recommended">Sort: Recommended</option>
+    <option value="price-asc">Price: low to high</option>
+    <option value="price-desc">Price: high to low</option>
+    <option value="capacity">Capacity</option>
+  </select>
+</div>
+
+    </div>
+
+    <div class="row g-4" id="pkgGrid">
+      
+      <!-- ================= ENGAGEMENTS & WEDDINGS & ANNIVERSARIES (From Previous File) ================= -->
+      
+      <!-- Engagement 1 -->
+      <div class="col-md-6 col-xl-3" data-tags="engagement" data-searchable>
+        <article class="bb-card reveal">
+          <div class="bb-card__media" style="background-image: url('/prototype/assets/img/engagement1.jpg');"></div>
+          <div class="bb-card__body d-flex flex-column">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <span class="bb-badge">Engagement</span>
+              <span class="bb-badge gold">Up to 100 guests</span>
+            </div>
+            <h4 class="mb-2">Lotte Sapphire Engagement</h4>
+            <p class="small text-ink-soft mb-3">A polished hotel engagement with plated dining, refined styling and coordinated celebration details.</p>
+            <ul class="list-check mb-3">
+              <li>Plated Dinner</li>
+              <li>Luxury Styling</li>
+              <li>Premium AV</li>
+              <li>Floral Design</li>
+            </ul>
+            <div class="package-footer">
+              <div class="package-price"><div class="bb-price">MMK 12,000,000</div></div>
+              <a href="customer/lotte-sapphire-engagement.html" class="explore-btn">Explore Package <i class="bi bi-arrow-right"></i></a>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <!-- Engagement 2 -->
+      <div class="col-md-6 col-xl-3" data-tags="engagement" data-searchable>
+        <article class="bb-card reveal">
+          <div class="bb-card__media" style="background-image: url('/prototype/assets/img/engagement2.jpg');"></div>
+          <div class="bb-card__body d-flex flex-column">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <span class="bb-badge">Engagement</span>
+              <span class="bb-badge gold">Up to 100 guests</span>
+            </div>
+            <h4 class="mb-2">Inya Sunset Engagement</h4>
+            <p class="small text-ink-soft mb-3">A romantic lakeside engagement with cocktail dining, garden styling and warm evening atmosphere.</p>
+            <ul class="list-check mb-3">
+              <li>Cocktail Dining</li>
+              <li>Garden Styling</li>
+              <li>Couple Session</li>
+              <li>Floral Design</li>
+            </ul>
+            <div class="package-footer">
+              <div class="package-price"><div class="bb-price">MMK 8,500,000</div></div>
+              <a href="customer/inya-sunset-engagement.html" class="explore-btn">Explore Package <i class="bi bi-arrow-right"></i></a>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <!-- Engagement 3 -->
+      <div class="col-md-6 col-xl-3" data-tags="engagement" data-searchable>
+        <article class="bb-card reveal">
+          <div class="bb-card__media" style="background-image: url('/prototype/assets/img/engagement3.jpg');"></div>
+          <div class="bb-card__body d-flex flex-column">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <span class="bb-badge">Engagement</span>
+              <span class="bb-badge gold">Up to 120 guests</span>
+            </div>
+            <h4 class="mb-2">Novotel Family Engagement</h4>
+            <p class="small text-ink-soft mb-3">A welcoming family engagement with shared dining, romantic styling and polished celebration essentials.</p>
+            <ul class="list-check mb-3">
+              <li>Family Style Dining</li>
+              <li>Romantic Styling</li>
+              <li>Standard AV</li>
+              <li>Floral Design</li>
+            </ul>
+            <div class="package-footer">
+              <div class="package-price"><div class="bb-price">MMK 11,000,000</div></div>
+              <a href="customer/novotel-family-engagement.html" class="explore-btn">Explore Package <i class="bi bi-arrow-right"></i></a>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <!-- Engagement 6 -->
+      <div class="col-md-6 col-xl-3" data-tags="engagement" data-searchable>
+        <article class="bb-card reveal">
+          <div class="bb-card__media" style="background-image: url('/prototype/assets/img/engagement6.jpg');"></div>
+          <div class="bb-card__body d-flex flex-column">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <span class="bb-badge">Engagement</span>
+              <span class="bb-badge gold">Up to 150 Guests</span>
+            </div>
+            <h4 class="mb-2">Mandalay Hotel Classic Engagement</h4>
+            <p class="small text-ink-soft mb-3">An affordable classic Mandalay engagement with traditional dining, styling and essential celebration services.</p>
+            <ul class="list-check mb-3">
+              <li>High Tea Reception</li>
+              <li>Myanmar Traditional Styling</li>
+              <li>Traditional Performance</li>
+              <li>Floral Design</li>
+            </ul>
+            <div class="package-footer">
+              <div class="package-price"><div class="bb-price">MMK 8,000,000</div></div>
+              <a href="customer/mandalay-hotel-classic-engagement.html" class="explore-btn">Explore Package <i class="bi bi-arrow-right"></i></a>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <!-- Engagement 7 -->
+      <div class="col-md-6 col-xl-3" data-tags="engagement" data-searchable>
+        <article class="bb-card reveal">
+          <div class="bb-card__media" style="background-image: url('/prototype/assets/img/engagement7.jpg');"></div>
+          <div class="bb-card__body d-flex flex-column">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <span class="bb-badge">Engagement</span>
+              <span class="bb-badge gold">Up to 100 Guests</span>
+            </div>
+            <h4 class="mb-2">Perfect Hotel Mandalay Engagement</h4>
+            <p class="small text-ink-soft mb-3">A premium Mandalay engagement with traditional dining, polished styling and complete media, entertainment and floral details.</p>
+            <ul class="list-check mb-3">
+              <li>Traditional Food</li>
+              <li>Myanmar Traditional Styling</li>
+              <li>Standard AV</li>
+              <li>Premium Floral Design</li>
+            </ul>
+            <div class="package-footer">
+              <div class="package-price"><div class="bb-price">MMK 10,500,000</div></div>
+              <a href="customer/perfect-hotel-mandalay-engagement.html" class="explore-btn">Explore Package <i class="bi bi-arrow-right"></i></a>
+            </div>
+          </div>
+        </article>
+      </div>
+
+            <!-- Wedding 1 -->
+      <div class="col-md-6 col-xl-3" data-tags="wedding" data-searchable>
+        <article class="bb-card reveal">
+          <div class="bb-card__media" style="background-image: url('/prototype/assets/img/wedding1.jpg');"></div>
+          <div class="bb-card__body d-flex flex-column">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <span class="bb-badge">Wedding</span>
+              <span class="bb-badge gold">UP TO 100 GUESTS</span>
+            </div>
+            <h4 class="mb-2">Yangon Timeless Love</h4>
+            <p class="small text-ink-soft mb-3">A classic traditional Yangon wedding with Myanmar dining, graceful styling and warm family celebration details.</p>
+            <ul class="list-check mb-3">
+              <li>Royal Ballroom</li>
+              <li>Traditional Food</li>
+              <li>Stage Flowers</li>
+              <li>Wedding Cake</li>
+              <li>Standard AV</li>
+            </ul>
+            <div class="package-footer">
+              <div class="package-price"><div class="bb-price">MMK 12,000,000</div></div>
+              <a href="customer/yangontimelesslove.html" class="explore-btn">Explore Package <i class="bi bi-arrow-right"></i></a>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <!-- Wedding 2 -->
+      <div class="col-md-6 col-xl-3" data-tags="wedding" data-searchable>
+        <article class="bb-card reveal">
+          <div class="bb-card__media" style="background-image: url('/prototype/assets/img/wedding2.jpg');"></div>
+          <div class="bb-card__body d-flex flex-column">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <span class="bb-badge">Wedding</span>
+              <span class="bb-badge gold">UP TO 150 GUESTS</span>
+            </div>
+            <h4 class="mb-2">Inya Garden Romance</h4>
+            <p class="small text-ink-soft mb-3">A romantic lakeside wedding with garden styling, fresh floral details and an elegant reception experience.</p>
+            <ul class="list-check mb-3">
+              <li>Mingalar Hall</li>
+              <li>Buffet</li>
+              <li>Flower Arch</li>
+              <li>Couple Session</li>
+              <li>Ambient Lighting</li>
+            </ul>
+            <div class="package-footer">
+              <div class="package-price"><div class="bb-price">MMK 14,500,000</div></div>
+              <a href="customer/inyagardenromance.html" class="explore-btn">Explore Package <i class="bi bi-arrow-right"></i></a>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <!-- Wedding 3 -->
+      <div class="col-md-6 col-xl-3" data-tags="wedding" data-searchable>
+        <article class="bb-card reveal">
+          <div class="bb-card__media" style="background-image: url('/prototype/assets/img/wedding3.jpg');"></div>
+          <div class="bb-card__body d-flex flex-column">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <span class="bb-badge">Wedding</span>
+              <span class="bb-badge gold">UP TO 180 GUESTS</span>
+            </div>
+            <h4 class="mb-2">The Yangon Ever After</h4>
+            <p class="small text-ink-soft mb-3">A sophisticated premium hotel wedding with polished styling, elevated dining and complete celebration services.</p>
+            <ul class="list-check mb-3">
+              <li>Pathein Ballroom</li>
+              <li>Plated Dinner</li>
+              <li>Luxury Styling</li>
+              <li>Full Event Video</li>
+              <li>Premium AV</li>
+            </ul>
+            <div class="package-footer">
+              <div class="package-price"><div class="bb-price">MMK 27,000,000</div></div>
+              <a href="customer/theyangoneverfter.html" class="explore-btn">Explore Package <i class="bi bi-arrow-right"></i></a>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <!-- Wedding 4 -->
+      <div class="col-md-6 col-xl-3" data-tags="wedding" data-searchable>
+        <article class="bb-card reveal">
+          <div class="bb-card__media" style="background-image: url('/prototype/assets/img/wedding8.jpg');"></div>
+          <div class="bb-card__body d-flex flex-column">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <span class="bb-badge">Wedding</span>
+              <span class="bb-badge gold">UP TO 200 GUESTS</span>
+            </div>
+            <h4 class="mb-2">Mandalay Forever</h4>
+            <p class="small text-ink-soft mb-3">A classic Mandalay wedding with generous family dining, traditional performance and elegant floral styling.</p>
+            <ul class="list-check mb-3">
+              <li>Wilson Hotel Wedding Hall</li>
+              <li>Traditional Food</li>
+              <li>Stage Decoration</li>
+              <li>Highlight Video</li>
+              <li>Standard AV</li>
+            </ul>
+            <div class="package-footer">
+              <div class="package-price"><div class="bb-price">MMK 16,500,000</div></div>
+              <a href="customer/mandalayf4.html" class="explore-btn">Explore Package <i class="bi bi-arrow-right"></i></a>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <!-- Wedding 5 -->
+      <div class="col-md-6 col-xl-3" data-tags="wedding" data-searchable>
+        <article class="bb-card reveal">
+          <div class="bb-card__media" style="background-image: url('/prototype/assets/img/wedding9.jpg');"></div>
+          <div class="bb-card__body d-flex flex-column">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <span class="bb-badge">Wedding</span>
+              <span class="bb-badge gold">UP TO 150 GUESTS</span>
+            </div>
+            <h4 class="mb-2">Mandalay Golden Promise</h4>
+            <p class="small text-ink-soft mb-3">A premium Mandalay wedding combining upgraded dining, grand styling and complete media, entertainment and floral details.</p>
+            <ul class="list-check mb-3">
+              <li>Mandalay Hotel Wedding Hall</li>
+              <li>Family Style</li>
+              <li>Luxury Styling</li>
+              <li>Cinematic Film</li>
+              <li>Premium AV</li>
+            </ul>
+            <div class="package-footer">
+              <div class="package-price"><div class="bb-price">MMK 23,000,000</div></div>
+              <a href="customer/mandalaygolden.html" class="explore-btn">Explore Package <i class="bi bi-arrow-right"></i></a>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <!-- Wedding 6 -->
+      <div class="col-md-6 col-xl-3" data-tags="wedding" data-searchable>
+        <article class="bb-card reveal">
+          <div class="bb-card__media" style="background-image: url('/prototype/assets/img/wedding4.jpg');"></div>
+          <div class="bb-card__body d-flex flex-column">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <span class="bb-badge">Wedding</span>
+              <span class="bb-badge gold">UP TO 200 GUESTS</span>
+            </div>
+            <h4 class="mb-2">Rose Garden Elegance</h4>
+            <p class="small text-ink-soft mb-3">An elegant floral hotel wedding with romantic styling, polished dining and sophisticated celebration details.</p>
+            <ul class="list-check mb-3">
+              <li>Swe Daw Hall</li>
+              <li>Plated Dinner</li>
+              <li>Flower Arch</li>
+              <li>Couple Session</li>
+              <li>Ambient Lighting</li>
+            </ul>
+            <div class="package-footer">
+              <div class="package-price"><div class="bb-price">MMK 19,500,000</div></div>
+              <a href="customer/rosegarden.html" class="explore-btn">Explore Package <i class="bi bi-arrow-right"></i></a>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <!-- Wedding 7 -->
+      <div class="col-md-6 col-xl-3" data-tags="wedding" data-searchable>
+        <article class="bb-card reveal">
+          <div class="bb-card__media" style="background-image: url('/prototype/assets/img/wedding5.jpg');"></div>
+          <div class="bb-card__body d-flex flex-column">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <span class="bb-badge">Wedding</span>
+              <span class="bb-badge gold">UP TO 100 GUESTS</span>
+            </div>
+            <h4 class="mb-2">The Eternal Vows</h4>
+            <p class="small text-ink-soft mb-3">A classic formal Yangon wedding with traditional dining, timeless flowers and complete photography coverage.</p>
+            <ul class="list-check mb-3">
+              <li>Wedding Hall</li>
+              <li>Traditional Food</li>
+              <li>Full Event Video</li>
+              <li>Traditional Performance</li>
+              <li>Standard AV</li>
+            </ul>
+            <div class="package-footer">
+              <div class="package-price"><div class="bb-price">MMK 12,000,000</div></div>
+              <a href="customer/eternalvows.html" class="explore-btn">Explore Package <i class="bi bi-arrow-right"></i></a>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <!-- Wedding 8 -->
+      <div class="col-md-6 col-xl-3" data-tags="wedding" data-searchable>
+        <article class="bb-card reveal">
+          <div class="bb-card__media" style="background-image: url('/prototype/assets/img/wedding6.jpg');"></div>
+          <div class="bb-card__body d-flex flex-column">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <span class="bb-badge">Wedding</span>
+              <span class="bb-badge gold">UP TO 150 GUESTS</span>
+            </div>
+            <h4 class="mb-2">Thanlyin Garden Romance</h4>
+            <p class="small text-ink-soft mb-3">A relaxed garden-inspired wedding with light catering, soft florals and warm acoustic entertainment.</p>
+            <ul class="list-check mb-3">
+              <li>Wedding Function Hall</li>
+              <li>Cocktail Reception</li>
+              <li>Fairy Lights</li>
+              <li>Acoustic Singer</li>
+              <li>Garden Florals</li>
+            </ul>
+            <div class="package-footer">
+              <div class="package-price"><div class="bb-price">MMK 12,500,000</div></div>
+              <a href="customer/thanlyin.html" class="explore-btn">Explore Package <i class="bi bi-arrow-right"></i></a>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <!-- Wedding 9 -->
+      <div class="col-md-6 col-xl-3" data-tags="wedding" data-searchable>
+        <article class="bb-card reveal">
+          <div class="bb-card__media" style="background-image: url('/prototype/assets/img/wedding7.jpg');"></div>
+          <div class="bb-card__body d-flex flex-column">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <span class="bb-badge">Wedding</span>
+              <span class="bb-badge gold">UP TO 100 GUESTS</span>
+            </div>
+            <h4 class="mb-2">Mandalay Grace</h4>
+            <p class="small text-ink-soft mb-3">A graceful, romantic Mandalay wedding with family-friendly dining, elegant styling and warm celebration details.</p>
+            <ul class="list-check mb-3">
+              <li>Perfect Hotel Function Hall</li>
+              <li>Family Style Dining</li>
+              <li>Romantic Styling</li>
+              <li>Acoustic Entertainment</li>
+              <li>Garden Florals</li>
+            </ul>
+            <div class="package-footer">
+              <div class="package-price"><div class="bb-price">MMK 12,500,000</div></div>
+              <a href="customer/mandalay.html" class="explore-btn">Explore Package <i class="bi bi-arrow-right"></i></a>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <!-- Anniversary 1 -->
+      <div class="col-md-6 col-xl-3" data-tags="anniversary" data-searchable>
+        <article class="bb-card reveal">
+          <div class="bb-card__media" style="background-image: url('/prototype/assets/img/anni4.jpg');"></div>
+          <div class="bb-card__body d-flex flex-column">
+            <div class="d-flex flex-wrap gap-2 align-items-start mb-2">
+              <span class="bb-badge">Anniversary</span>
+              <span class="bb-badge gold">Yangon</span>
+              <span class="bb-badge gold">UP TO 70 GUESTS</span>
+            </div>
+            <h4 class="mb-2">Riverside Forever</h4>
+            <p class="small text-ink-soft mb-3">A premium romantic anniversary by the royal lake with refined dining, soft florals and intimate entertainment.</p>
+            <ul class="list-check mb-3">
+              <li>Chatrium Royal Lake</li>
+              <li>Plated Dinner</li>
+              <li>Romantic Styling</li>
+              <li>Couple Session</li>
+              <li>Garden Florals</li>
+            </ul>
+            <div class="package-footer">
+              <div class="package-price"><div class="bb-price">MMK 11,000,000</div></div>
+              <a href="customer/riverside.html" class="explore-btn">Explore Package <i class="bi bi-arrow-right"></i></a>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <!-- Anniversary 2 -->
+      <div class="col-md-6 col-xl-3" data-tags="anniversary" data-searchable>
+        <article class="bb-card reveal">
+          <div class="bb-card__media" style="background-image: url('/prototype/assets/img/anni7.jpg');"></div>
+          <div class="bb-card__body d-flex flex-column">
+            <div class="d-flex flex-wrap gap-2 align-items-start mb-2">
+              <span class="bb-badge">Anniversary</span>
+              <span class="bb-badge gold">Yangon</span>
+              <span class="bb-badge gold">UP TO 120 GUESTS</span>
+            </div>
+            <h4 class="mb-2">Lakeview Love Celebration</h4>
+            <p class="small text-ink-soft mb-3">An elegant relaxed anniversary with lakeside-inspired styling, fresh flowers and a welcoming family atmosphere.</p>
+            <ul class="list-check mb-3">
+              <li>Sedona Function Room</li>
+              <li>Buffet Dining</li>
+              <li>Garden Styling</li>
+              <li>Couple Session</li>
+              <li>Fresh Florals</li>
+            </ul>
+            <div class="package-footer">
+              <div class="package-price"><div class="bb-price">MMK 10,500,000</div></div>
+              <a href="customer/lakeview.html" class="explore-btn">Explore Package <i class="bi bi-arrow-right"></i></a>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <!-- Anniversary 3 -->
+      <div class="col-md-6 col-xl-3" data-tags="anniversary" data-searchable>
+        <article class="bb-card reveal">
+          <div class="bb-card__media" style="background-image: url('/prototype/assets/img/anni6.jpg');"></div>
+          <div class="bb-card__body d-flex flex-column">
+            <div class="d-flex flex-wrap gap-2 align-items-start mb-2">
+              <span class="bb-badge">Anniversary</span>
+              <span class="bb-badge gold">Yangon</span>
+              <span class="bb-badge gold">UP TO 100 GUESTS</span>
+            </div>
+            <h4 class="mb-2">Golden Jubilee Dinner</h4>
+            <p class="small text-ink-soft mb-3">A formal milestone anniversary dinner with premium dining, elegant production and polished floral details.</p>
+            <ul class="list-check mb-3">
+              <li>Parami Banquet Hall</li>
+              <li>Set Menu</li>
+              <li>Luxury Styling</li>
+              <li>Full Event Video</li>
+              <li>Premium AV</li>
+            </ul>
+            <div class="package-footer">
+              <div class="package-price"><div class="bb-price">MMK 15,500,000</div></div>
+              <a href="customer/goldenjubilee.html" class="explore-btn">Explore Package <i class="bi bi-arrow-right"></i></a>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <!-- Anniversary 4 -->
+      <div class="col-md-6 col-xl-3" data-tags="anniversary" data-searchable>
+        <article class="bb-card reveal">
+          <div class="bb-card__media" style="background-image: url('/prototype/assets/img/anni1.jpg');"></div>
+          <div class="bb-card__body d-flex flex-column">
+            <div class="d-flex flex-wrap gap-2 align-items-start mb-2">
+              <span class="bb-badge">Anniversary</span>
+              <span class="bb-badge gold">Mandalay</span>
+              <span class="bb-badge gold">UP TO 60 GUESTS</span>
+            </div>
+            <h4 class="mb-2">Mingalar Family Anniversary</h4>
+            <p class="small text-ink-soft mb-3">A warm Mandalay family celebration with traditional dining, graceful styling and familiar entertainment.</p>
+            <ul class="list-check mb-3">
+              <li>Mingalar Function Room</li>
+              <li>Family Style</li>
+              <li>Traditional Styling</li>
+              <li>Myanmar Performance</li>
+              <li>Classic Florals</li>
+            </ul>
+            <div class="package-footer">
+              <div class="package-price"><div class="bb-price">MMK 8,500,000</div></div>
+              <a href="customer/mingalar.html" class="explore-btn">Explore Package <i class="bi bi-arrow-right"></i></a>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <!-- Anniversary 5 -->
+      <div class="col-md-6 col-xl-3" data-tags="anniversary" data-searchable>
+        <article class="bb-card reveal">
+          <div class="bb-card__media" style="background-image: url('/prototype/assets/img/anni2.jpg');"></div>
+          <div class="bb-card__body d-flex flex-column">
+            <div class="d-flex flex-wrap gap-2 align-items-start mb-2">
+              <span class="bb-badge">Anniversary</span>
+              <span class="bb-badge gold">Mandalay</span>
+              <span class="bb-badge gold">UP TO 100 GUESTS</span>
+            </div>
+            <h4 class="mb-2">Royal Mandalay Memorial</h4>
+            <p class="small text-ink-soft mb-3">A premium Mandalay anniversary with elevated dining, grand styling and complete media, entertainment and floral details.</p>
+            <ul class="list-check mb-3">
+              <li>Mandalay Hill Event Space</li>
+              <li>Plated Dinner</li>
+              <li>Luxury Styling</li>
+              <li>Cinematic Film</li>
+              <li>Premium AV</li>
+            </ul>
+            <div class="package-footer">
+              <div class="package-price"><div class="bb-price">MMK 19,000,000</div></div>
+              <a href="customer/royalmandalay.html" class="explore-btn">Explore Package <i class="bi bi-arrow-right"></i></a>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <!-- Corporate 1 -->
+      <div class="col-md-6 col-xl-3" data-tags="corporate" data-searchable>
+        <article class="bb-card reveal">
+          <div class="bb-card__media" style="background-image: url('/prototype/assets/img/corp2.jpg');"></div>
+          <div class="bb-card__body d-flex flex-column">
+            <div class="d-flex flex-wrap gap-2 align-items-start mb-2">
+              <span class="bb-badge">Corporate</span>
+              <span class="bb-badge gold">Yangon</span>
+              <span class="bb-badge gold">UP TO 120 GUESTS</span>
+            </div>
+            <h4 class="mb-2">Business Excellence</h4>
+            <p class="small text-ink-soft mb-3">A professional Novotel conference package for presentations, networking and polished guest hospitality.</p>
+            <ul class="list-check mb-3">
+              <li>Novotel Yangon Max</li>
+              <li>Buffet & Refreshments</li>
+              <li>Professional Stage</li>
+              <li>Event Photography</li>
+              <li>Presentation AV</li>
+            </ul>
+            <div class="package-footer">
+              <div class="package-price"><div class="bb-price">MMK 10,500,000</div></div>
+              <a href="customer/BusinessExcellent.html" class="explore-btn">Explore Package <i class="bi bi-arrow-right"></i></a>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <!-- Corporate 2 -->
+      <div class="col-md-6 col-xl-3" data-tags="corporate" data-searchable>
+        <article class="bb-card reveal">
+          <div class="bb-card__media" style="background-image: url('/prototype/assets/img/corp7.jpg');"></div>
+          <div class="bb-card__body d-flex flex-column">
+            <div class="d-flex flex-wrap gap-2 align-items-start mb-2">
+              <span class="bb-badge">Corporate</span>
+              <span class="bb-badge gold">Yangon</span>
+              <span class="bb-badge gold">UP TO 350 GUESTS</span>
+            </div>
+            <h4 class="mb-2">Leadership Excellence</h4>
+            <p class="small text-ink-soft mb-3">A premium executive conference experience with formal dining, strong AV production and refined corporate presentation.</p>
+            <ul class="list-check mb-3">
+              <li>Melia Yangon</li>
+              <li>Premium Dining</li>
+              <li>Executive Stage</li>
+              <li>Full Event Video</li>
+              <li>LED Presentation</li>
+            </ul>
+            <div class="package-footer">
+              <div class="package-price"><div class="bb-price">MMK 33,500,000</div></div>
+              <a href="customer/LeadershipExcellence.html" class="explore-btn">Explore Package <i class="bi bi-arrow-right"></i></a>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <!-- Corporate 3 -->
+      <div class="col-md-6 col-xl-3" data-tags="corporate" data-searchable>
+        <article class="bb-card reveal">
+          <div class="bb-card__media" style="background-image: url('/prototype/assets/img/corp8.jpg');"></div>
+          <div class="bb-card__body d-flex flex-column">
+            <div class="d-flex flex-wrap gap-2 align-items-start mb-2">
+              <span class="bb-badge">Corporate</span>
+              <span class="bb-badge gold">Mandalay</span>
+              <span class="bb-badge gold">UP TO 200 GUESTS</span>
+            </div>
+            <h4 class="mb-2">Mandalay Business Forum</h4>
+            <p class="small text-ink-soft mb-3">An accessible Mandalay business forum package with practical presentation support, networking hospitality and professional event services.</p>
+            <ul class="list-check mb-3">
+              <li>Y Mandalay Hotel</li>
+              <li>Buffet & Refreshments</li>
+              <li>Forum Stage</li>
+              <li>Portrait Photography</li>
+              <li>Standard AV</li>
+            </ul>
+            <div class="package-footer">
+              <div class="package-price"><div class="bb-price">MMK 13,000,000</div></div>
+              <a href="customer/MandalayBusinessForum.html" class="explore-btn">Explore Package <i class="bi bi-arrow-right"></i></a>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <!-- Corporate 4 -->
+      <div class="col-md-6 col-xl-3" data-tags="corporate" data-searchable>
+        <article class="bb-card reveal">
+          <div class="bb-card__media" style="background-image: url('/prototype/assets/img/corp9.jpg');"></div>
+          <div class="bb-card__body d-flex flex-column">
+            <div class="d-flex flex-wrap gap-2 align-items-start mb-2">
+              <span class="bb-badge">Corporate</span>
+              <span class="bb-badge gold">Mandalay</span>
+              <span class="bb-badge gold">UP TO 300 GUESTS</span>
+            </div>
+            <h4 class="mb-2">Vision Corporate Summit</h4>
+            <p class="small text-ink-soft mb-3">A premium summit package built for large presentations, executive hospitality and polished Mandalay event production.</p>
+            <ul class="list-check mb-3">
+              <li>Mingalar Mandalay Hotel</li>
+              <li>Premium Dining</li>
+              <li>Summit Stage</li>
+              <li>Full Event Video</li>
+              <li>Premium AV</li>
+            </ul>
+            <div class="package-footer">
+              <div class="package-price"><div class="bb-price">MMK 30,000,000</div></div>
+              <a href="customer/VisionCorporateSummit.html" class="explore-btn">Explore Package <i class="bi bi-arrow-right"></i></a>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <!-- Birthday 1 -->
+      <div class="col-md-6 col-xl-3" data-tags="birthday" data-searchable>
+        <article class="bb-card reveal">
+          <div class="bb-card__media" style="background-image: url('/prototype/assets/img/birthday1.jpg');"></div>
+          <div class="bb-card__body d-flex flex-column">
+            <div class="d-flex flex-wrap gap-2 align-items-start mb-2">
+              <span class="bb-badge">Birthday</span>
+              <span class="bb-badge gold">Yangon</span>
+              <span class="bb-badge gold">UP TO 30 GUESTS</span>
+            </div>
+            <h4 class="mb-2">Sweet Beginnings</h4>
+            <p class="small text-ink-soft mb-3">An intimate, charming birthday with light refreshments, a beautiful cake and relaxed celebration details.</p>
+            <ul class="list-check mb-3">
+              <li>The Brunch Society</li>
+              <li>Cocktail Reception</li>
+              <li>Charming Styling</li>
+              <li>Acoustic Singer</li>
+              <li>Birthday Cake</li>
+            </ul>
+            <div class="package-footer">
+              <div class="package-price"><div class="bb-price">MMK 5,000,000</div></div>
+              <a href="customer/SweetBeginning.html" class="explore-btn">Explore Package <i class="bi bi-arrow-right"></i></a>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <!-- Birthday 2 -->
+      <div class="col-md-6 col-xl-3" data-tags="birthday" data-searchable>
+        <article class="bb-card reveal">
+          <div class="bb-card__media" style="background-image: url('/prototype/assets/img/birthday3.jpg');"></div>
+          <div class="bb-card__body d-flex flex-column">
+            <div class="d-flex flex-wrap gap-2 align-items-start mb-2">
+              <span class="bb-badge">Birthday</span>
+              <span class="bb-badge gold">Yangon</span>
+              <span class="bb-badge gold">UP TO 60 GUESTS</span>
+            </div>
+            <h4 class="mb-2">Yangon Garden Birthday</h4>
+            <p class="small text-ink-soft mb-3">A fresh outdoor birthday with garden styling, colorful florals and lively entertainment for family and friends.</p>
+            <ul class="list-check mb-3">
+              <li>Zephyr - Sein Lann So Pyay Garden</li>
+              <li>Buffet & Juice</li>
+              <li>Garden Styling</li>
+              <li>DJ Entertainment</li>
+              <li>Fresh Florals</li>
+            </ul>
+            <div class="package-footer">
+              <div class="package-price"><div class="bb-price">MMK 8,500,000</div></div>
+              <a href="customer/YangonGarden.html" class="explore-btn">Explore Package <i class="bi bi-arrow-right"></i></a>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <!-- Birthday 3 -->
+      <div class="col-md-6 col-xl-3" data-tags="birthday" data-searchable>
+        <article class="bb-card reveal">
+          <div class="bb-card__media" style="background-image: url('/prototype/assets/img/birthday7.jpg');"></div>
+          <div class="bb-card__body d-flex flex-column">
+            <div class="d-flex flex-wrap gap-2 align-items-start mb-2">
+              <span class="bb-badge">Birthday</span>
+              <span class="bb-badge gold">Yangon</span>
+              <span class="bb-badge gold">UP TO 300 GUESTS</span>
+            </div>
+            <h4 class="mb-2">Royal Milestone</h4>
+            <p class="small text-ink-soft mb-3">A premium milestone birthday with formal dining, luxury production and complete media, entertainment and floral details.</p>
+            <ul class="list-check mb-3">
+              <li>Meli&aacute; Yangon - Grand Ballroom</li>
+              <li>Premium Dining</li>
+              <li>Luxury Styling</li>
+              <li>Full Event Video</li>
+              <li>Premium AV</li>
+            </ul>
+            <div class="package-footer">
+              <div class="package-price"><div class="bb-price">MMK 31,500,000</div></div>
+              <a href="customer/RoyalMilestone.html" class="explore-btn">Explore Package <i class="bi bi-arrow-right"></i></a>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <!-- Birthday 4 -->
+      <div class="col-md-6 col-xl-3" data-tags="birthday" data-searchable>
+        <article class="bb-card reveal">
+          <div class="bb-card__media" style="background-image: url('/prototype/assets/img/birthday8.jpg');"></div>
+          <div class="bb-card__body d-flex flex-column">
+            <div class="d-flex flex-wrap gap-2 align-items-start mb-2">
+              <span class="bb-badge">Birthday</span>
+              <span class="bb-badge gold">Mandalay</span>
+              <span class="bb-badge gold">UP TO 50 GUESTS</span>
+            </div>
+            <h4 class="mb-2">Elegant Birthday</h4>
+            <p class="small text-ink-soft mb-3">A stylish Mandalay dining celebration with refined decoration, elegant cake details and intimate entertainment.</p>
+            <ul class="list-check mb-3">
+              <li>Unique Mandalay Brasserie</li>
+              <li>Family Style Dining</li>
+              <li>Elegant Styling</li>
+              <li>Acoustic Singer</li>
+              <li>Floral Cake</li>
+            </ul>
+            <div class="package-footer">
+              <div class="package-price"><div class="bb-price">MMK 6,000,000</div></div>
+              <a href="customer/ElegantBirthday.html" class="explore-btn">Explore Package <i class="bi bi-arrow-right"></i></a>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <!-- Birthday 5 -->
+      <div class="col-md-6 col-xl-3" data-tags="birthday" data-searchable>
+        <article class="bb-card reveal">
+          <div class="bb-card__media" style="background-image: url('/prototype/assets/img/birthday9.jpg');"></div>
+          <div class="bb-card__body d-flex flex-column">
+            <div class="d-flex flex-wrap gap-2 align-items-start mb-2">
+              <span class="bb-badge">Birthday</span>
+              <span class="bb-badge gold">Mandalay</span>
+              <span class="bb-badge gold">UP TO 100 GUESTS</span>
+            </div>
+            <h4 class="mb-2">Birthday Celebration Plus</h4>
+            <p class="small text-ink-soft mb-3">A lively family birthday with generous dining, colorful styling, entertainment and memorable photography.</p>
+            <ul class="list-check mb-3">
+              <li>The Palace by Golden Duck</li>
+              <li>Buffet Dining</li>
+              <li>Birthday Stage</li>
+              <li>DJ Entertainment</li>
+              <li>Celebration Cake</li>
+            </ul>
+            <div class="package-footer">
+              <div class="package-price"><div class="bb-price">MMK 10,500,000</div></div>
+              <a href="customer/BirthdayCelebration.html" class="explore-btn">Explore Package <i class="bi bi-arrow-right"></i></a>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <!-- Birthday 6 -->
+      <div class="col-md-6 col-xl-3" data-tags="birthday" data-searchable>
+        <article class="bb-card reveal">
+          <div class="bb-card__media" style="background-image: url('/prototype/assets/img/birthday10.jpg');"></div>
+          <div class="bb-card__body d-flex flex-column">
+            <div class="d-flex flex-wrap gap-2 align-items-start mb-2">
+              <span class="bb-badge">Birthday</span>
+              <span class="bb-badge gold">Mandalay</span>
+              <span class="bb-badge gold">UP TO 200 GUESTS</span>
+            </div>
+            <h4 class="mb-2">Grand Birthday Experience</h4>
+            <p class="small text-ink-soft mb-3">A large premium Mandalay birthday with elevated dining, grand production and complete celebration services.</p>
+            <ul class="list-check mb-3">
+              <li>Orchid Grand Ballroom</li>
+              <li>Premium Dining</li>
+              <li>Grand Stage</li>
+              <li>Live Entertainment</li>
+              <li>Premium AV</li>
+            </ul>
+            <div class="package-footer">
+              <div class="package-price"><div class="bb-price">MMK 28,000,000</div></div>
+              <a href="customer/GrandBirthdayExperience.html" class="explore-btn">Explore Package <i class="bi bi-arrow-right"></i></a>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <!-- Graduation 1 -->
+      <div class="col-md-6 col-xl-3" data-tags="graduation" data-searchable>
+        <article class="bb-card reveal">
+          <div class="bb-card__media" style="background-image: url('/prototype/assets/img/grad1.jpg');"></div>
+          <div class="bb-card__body d-flex flex-column">
+            <div class="d-flex flex-wrap gap-2 align-items-start mb-2">
+              <span class="bb-badge">Graduation</span>
+              <span class="bb-badge gold">Yangon</span>
+              <span class="bb-badge gold">UP TO 50 GUESTS</span>
+            </div>
+            <h4 class="mb-2">Academic Dreams</h4>
+            <p class="small text-ink-soft mb-3">An intimate, cheerful graduation celebration with light refreshments, thoughtful photos and a beautiful cake.</p>
+            <ul class="list-check mb-3">
+              <li>White Swan Myanmar Tea House</li>
+              <li>High Tea Reception</li>
+              <li>Charming Styling</li>
+              <li>Graduate Portraits</li>
+              <li>Light AV</li>
+            </ul>
+            <div class="package-footer">
+              <div class="package-price"><div class="bb-price">MMK 5,500,000</div></div>
+              <a href="customer/AcademicDream.html" class="explore-btn">Explore Package <i class="bi bi-arrow-right"></i></a>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <!-- Graduation 2 -->
+      <div class="col-md-6 col-xl-3" data-tags="graduation" data-searchable>
+        <article class="bb-card reveal">
+          <div class="bb-card__media" style="background-image: url('/prototype/assets/img/grad3.jpg');"></div>
+          <div class="bb-card__body d-flex flex-column">
+            <div class="d-flex flex-wrap gap-2 align-items-start mb-2">
+              <span class="bb-badge">Graduation</span>
+              <span class="bb-badge gold">Yangon</span>
+              <span class="bb-badge gold">UP TO 100 GUESTS</span>
+            </div>
+            <h4 class="mb-2">Future Leaders</h4>
+            <p class="small text-ink-soft mb-3">A modern medium-sized graduation party with buffet dining, fresh styling, lively entertainment and complete photo coverage.</p>
+            <ul class="list-check mb-3">
+              <li>Jasmine Palace Hotel</li>
+              <li>Buffet & Juice</li>
+              <li>Modern Styling</li>
+              <li>Highlight Video</li>
+              <li>Standard AV</li>
+            </ul>
+            <div class="package-footer">
+              <div class="package-price"><div class="bb-price">MMK 10,000,000</div></div>
+              <a href="customer/FutureLeader.html" class="explore-btn">Explore Package <i class="bi bi-arrow-right"></i></a>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <!-- Graduation 3 -->
+      <div class="col-md-6 col-xl-3" data-tags="graduation" data-searchable>
+        <article class="bb-card reveal">
+          <div class="bb-card__media" style="background-image: url('/prototype/assets/img/grad7.jpg');"></div>
+          <div class="bb-card__body d-flex flex-column">
+            <div class="d-flex flex-wrap gap-2 align-items-start mb-2">
+              <span class="bb-badge">Graduation</span>
+              <span class="bb-badge gold">Yangon</span>
+              <span class="bb-badge gold">UP TO 350 GUESTS</span>
+            </div>
+            <h4 class="mb-2">Yangon Graduate Gala</h4>
+            <p class="small text-ink-soft mb-3">A premium large Yangon graduation gala with formal dining, grand production and complete media, entertainment and floral details.</p>
+            <ul class="list-check mb-3">
+              <li>Lotte Hotel Yangon - Crystal Ballroom</li>
+              <li>Premium Dining</li>
+              <li>Luxury Stage</li>
+              <li>Full Event Video</li>
+              <li>Premium AV</li>
+            </ul>
+            <div class="package-footer">
+              <div class="package-price"><div class="bb-price">MMK 41,500,000</div></div>
+              <a href="customer/YangonGraduationGala.html" class="explore-btn">Explore Package <i class="bi bi-arrow-right"></i></a>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <!-- Graduation 4 -->
+      <div class="col-md-6 col-xl-3" data-tags="graduation" data-searchable>
+        <article class="bb-card reveal">
+          <div class="bb-card__media" style="background-image: url('/prototype/assets/img/grad8.jpg');"></div>
+          <div class="bb-card__body d-flex flex-column">
+            <div class="d-flex flex-wrap gap-2 align-items-start mb-2">
+              <span class="bb-badge">Graduation</span>
+              <span class="bb-badge gold">Mandalay</span>
+              <span class="bb-badge gold">UP TO 200 GUESTS</span>
+            </div>
+            <h4 class="mb-2">Graduation Celebration</h4>
+            <p class="small text-ink-soft mb-3">A warm family-focused Mandalay graduation with generous dining, joyful styling and memorable photography.</p>
+            <ul class="list-check mb-3">
+              <li>Y Mandalay Hotel - Grand Ballroom</li>
+              <li>Family Style Dining</li>
+              <li>Celebration Stage</li>
+              <li>Highlight Video</li>
+              <li>Standard AV</li>
+            </ul>
+            <div class="package-footer">
+              <div class="package-price"><div class="bb-price">MMK 16,000,000</div></div>
+              <a href="customer/GraduationCelebration.html" class="explore-btn">Explore Package <i class="bi bi-arrow-right"></i></a>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <!-- Graduation 5 -->
+      <div class="col-md-6 col-xl-3" data-tags="graduation" data-searchable>
+        <article class="bb-card reveal">
+          <div class="bb-card__media" style="background-image: url('/prototype/assets/img/grad9.jpg');"></div>
+          <div class="bb-card__body d-flex flex-column">
+            <div class="d-flex flex-wrap gap-2 align-items-start mb-2">
+              <span class="bb-badge">Graduation</span>
+              <span class="bb-badge gold">Mandalay</span>
+              <span class="bb-badge gold">UP TO 300 GUESTS</span>
+            </div>
+            <h4 class="mb-2">Graduation Grand Ceremony</h4>
+            <p class="small text-ink-soft mb-3">A formal large-scale ceremony with strong stage presentation, professional photography and presentation-focused AV.</p>
+            <ul class="list-check mb-3">
+              <li>Ceremon Grand - Indoor Grand Ballroom</li>
+              <li>Buffet & Premium Drinks</li>
+              <li>Formal Stage</li>
+              <li>Full Event Video</li>
+              <li>Presentation AV</li>
+            </ul>
+            <div class="package-footer">
+              <div class="package-price"><div class="bb-price">MMK 25,000,000</div></div>
+              <a href="customer/GraduationGrandCeremonies.html" class="explore-btn">Explore Package <i class="bi bi-arrow-right"></i></a>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <!-- Graduation 6 -->
+      <div class="col-md-6 col-xl-3" data-tags="graduation" data-searchable>
+        <article class="bb-card reveal">
+          <div class="bb-card__media" style="background-image: url('/prototype/assets/img/grad10.jpg');"></div>
+          <div class="bb-card__body d-flex flex-column">
+            <div class="d-flex flex-wrap gap-2 align-items-start mb-2">
+              <span class="bb-badge">Graduation</span>
+              <span class="bb-badge gold">Mandalay</span>
+              <span class="bb-badge gold">UP TO 500 GUESTS</span>
+            </div>
+            <h4 class="mb-2">Graduation Excellence</h4>
+            <p class="small text-ink-soft mb-3">A premium Mandalay graduation gala with elevated dining, grand production and complete celebration services.</p>
+            <ul class="list-check mb-3">
+              <li>Mingalar Mandalay Hotel - Grand Ballroom</li>
+              <li>Premium Dining</li>
+              <li>Grand Stage</li>
+              <li>Full Event Video</li>
+              <li>Premium AV</li>
+            </ul>
+            <div class="package-footer">
+              <div class="package-price"><div class="bb-price">MMK 55,500,000</div></div>
+              <a href="customer/GraduationExcellence.html" class="explore-btn">Explore Package <i class="bi bi-arrow-right"></i></a>
+            </div>
+          </div>
+        </article>
+      </div>
+
+</div>
+
+    <p class="small text-ink-soft mt-4 mb-0">Prices are per event. Package guest limits are maximum capacities.</p>
+  </div>
+</section>
+
+<div class="modal fade" id="pkgModal" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Eternal Vows Wedding</h5>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row g-4">
+          <div class="col-md-6"><img class="img-fluid rounded-3" src="/prototype/assets/img/venue-2.jpg" alt="Ballroom" loading="lazy"></div>
+          <div class="col-md-6">
+            <span class="bb-badge gold">Up to 250 guests</span>
+            <p class="small text-ink-soft mt-3">A full-day classic ballroom wedding including planning, plated dinner, floral design, entertainment and coordination.</p>
+            <ul class="list-check d-grid gap-1">
+              <li>Full-day planning &amp; coordination</li>
+              <li>Bridal floral suite</li>
+              <li>Plated 4-course dinner</li>
+              <li>Live band &amp; MC</li>
+              <li>Champagne toast</li>
+            </ul>
+            <div class="bb-price mt-3">$12,000</div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-outline-forest" href="/prototype/customer/custom-package.html">Customise</a>
+        <a class="btn btn-gold" href="/prototype/customer/booking.html">Book this package</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="bb-footer">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-4">
+        <a class="navbar-brand d-block h4 mb-2" href="/prototype/index.html">Bliss &amp; Beyond</a>
+        <p class="small mb-3">AI-powered event planning and catering management for weddings, celebrations and corporate gatherings since 2014.</p>
+        <div class="d-flex gap-3 fs-5">
+          <a href="#"><i class="bi bi-instagram"></i></a>
+          <a href="#"><i class="bi bi-facebook"></i></a>
+          <a href="#"><i class="bi bi-pinterest"></i></a>
+          <a href="#"><i class="bi bi-linkedin"></i></a>
+        </div>
+      </div>
+      <div class="col-6 col-lg-2">
+        <h5 class="h6 mb-3">Explore</h5>
+        <ul class="list-unstyled d-grid gap-2">
+          <li><a href="/prototype/about.html">About Us</a></li>
+          <li><a href="/prototype/services.html">Services</a></li>
+          <li><a href="/prototype/packages.html">Packages</a></li>
+          <li><a href="/prototype/venues.html">Venues</a></li>
+          
+        </ul>
+      </div>
+      <div class="col-6 col-lg-2">
+        <h5 class="h6 mb-3">Account</h5>
+        <ul class="list-unstyled d-grid gap-2">
+          <li><a href="/prototype/login.html">Login</a></li>
+          <li><a href="/prototype/register.html">Register</a></li>
+          <li><a href="/prototype/customer/dashboard.html">Customer Portal</a></li>
+          <li><a href="/prototype/admin/dashboard.html">Admin Panel</a></li>
+          <li><a href="/prototype/faq.html">FAQ</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-4">
+        <h5 class="h6 mb-3">Stay in touch</h5>
+        <p class="small mb-2">18 Rosewood Avenue, Colombo 05</p>
+        <form class="d-flex flex-column flex-sm-row gap-2 align-items-stretch" data-demo="note">
+          <input class="form-control form-control-sm" type="email" placeholder="Email address" required>
+          <button class="btn btn-gold btn-sm" type="submit">Subscribe</button>
+          <span class="d-none" data-demo-note></span>
+        </form>
+        <p class="small mt-2 mb-0 text-white-50">Prototype only.</p>
+      </div>
+    </div>
+    <div class="foot-bottom mt-4 d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2">
+      <span>&copy; 2026 Bliss &amp; Beyond. Frontend prototype.</span>
+      <span>Privacy Policy</span>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/prototype/assets/js/main.js"></script>
+<script>
+(() => {
+  const PACKAGE_API = 'http://localhost:8081/api/packages';
+  const VENUE_API = 'http://localhost:8081/api/venues/available';
+  const form = document.querySelector('[data-package-availability-form]');
+  const dateInput = document.querySelector('[data-package-catalog-date]');
+  const guestsInput = document.querySelector('[data-package-catalog-guests]');
+  const startInput = document.querySelector('[data-package-catalog-start]');
+  const endInput = document.querySelector('[data-package-catalog-end]');
+  const checkButton = document.querySelector('[data-package-catalog-check]');
+  const statusEl = document.querySelector('[data-package-availability-status]');
+  const summaryEl = document.querySelector('[data-package-availability-summary]');
+  const cards = [...document.querySelectorAll('#pkgGrid [data-searchable]')];
+  const timeInputs = [startInput, endInput];
+  const savedPlan = typeof window.bbGetPackagePlan === 'function' ? window.bbGetPackagePlan() : {};
+  let catalog = [];
+  let catalogBySlug = new Map();
+  let packageDetailsLoaded = false;
+  let availabilityChecked = false;
+  let checking = false;
+  let availableVenueIds = new Set();
+
+  const legacySlugs = {
+    yangontimelesslove:'yangon-timeless-love', inyagardenromance:'inya-garden-romance', theyangoneverfter:'the-yangon-ever-after',
+    mandalayf4:'mandalay-forever', mandalaygolden:'mandalay-golden-promise', rosegarden:'rose-garden-elegance',
+    eternalvows:'the-eternal-vows', thanlyin:'thanlyin-garden-romance', mandalay:'mandalay-grace', riverside:'riverside-forever',
+    lakeview:'lakeview-love-celebration', goldenjubilee:'golden-jubilee-dinner', mingalar:'mingalar-family-anniversary',
+    royalmandalay:'royal-mandalay-memorial', businessexcellent:'business-excellence', leadershipexcellence:'leadership-excellence',
+    mandalaybusinessforum:'mandalay-business-forum', visioncorporatesummit:'vision-corporate-summit', sweetbeginning:'sweet-beginnings',
+    yangongarden:'yangon-garden-birthday', royalmilestone:'royal-milestone', elegantbirthday:'elegant-birthday',
+    birthdaycelebration:'birthday-celebration-plus', grandbirthdayexperience:'grand-birthday-experience', academicdream:'academic-dreams',
+    futureleader:'future-leaders', yangongraduationgala:'yangon-graduate-gala', graduationcelebration:'graduation-celebration',
+    graduationgrandceremonies:'graduation-grand-ceremony', graduationexcellence:'graduation-excellence'
+  };
+
+  const localDate = () => {
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+  };
+  const formatDate = value => new Intl.DateTimeFormat('en-US', { dateStyle:'long' }).format(new Date(`${value}T00:00:00`));
+  const formatTime = value => { const [hour, minute] = value.split(':').map(Number); return `${hour % 12 || 12}:${String(minute).padStart(2, '0')} ${hour >= 12 ? 'PM' : 'AM'}`; };
+  const normalize = value => String(value || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+  const setStatus = (message, error = false) => { statusEl.textContent = message; statusEl.classList.toggle('is-error', error); };
+  const syncTimePlaceholder = input => { const wrapper = input.closest('.package-time-field'); wrapper.classList.toggle('is-empty', !input.value); };
+  const setSummary = (count, details) => {
+    if (count === null) { summaryEl.innerHTML = ''; return; }
+    if (count === 0) { summaryEl.innerHTML = '<strong>No packages are available for your selected event.</strong><br><small>Try changing your date, time, or guest count.</small>'; return; }
+    summaryEl.innerHTML = `<strong>${count.toLocaleString()} Package${count === 1 ? '' : 's'} Available</strong><br><small>Based on ${details}</small>`;
+  };
+  const cardSlugFromLink = card => {
+    const link = card.querySelector('.explore-btn');
+    const stem = link ? link.getAttribute('href').split('/').pop().replace(/\.html$/i, '').toLowerCase() : '';
+    return legacySlugs[stem] || stem;
+  };
+  const statusNode = card => card.querySelector('.package-card-availability');
+  const clearCardStatuses = () => cards.forEach(card => statusNode(card)?.remove());
+  const clearAvailabilityVisibility = () => cards.forEach(card => card.classList.remove('package-availability-hidden'));
+  const setCardStatus = card => {
+    statusNode(card)?.remove();
+    const node = document.createElement('div');
+    node.className = 'package-card-availability';
+    const badge = document.createElement('span');
+    badge.className = 'bb-badge package-availability-badge package-availability-badge--available';
+    const icon = document.createElement('i');
+    icon.className = 'bi bi-check-circle';
+    icon.setAttribute('aria-hidden', 'true');
+    badge.append(icon, document.createTextNode(' Available'));
+    node.appendChild(badge);
+    const header = card.querySelector('.bb-card__body > .d-flex.justify-content-between.align-items-start.mb-2');
+    (header || card.querySelector('.bb-card__body'))?.after(node);
+  };
+  const updateCardCatalogFields = (card, item) => {
+    const title = card.querySelector('h4');
+    const description = card.querySelector('.bb-card__body > p');
+    const capacity = [...card.querySelectorAll('.bb-badge')].find(el => /guest/i.test(el.textContent));
+    const price = card.querySelector('.bb-price');
+    if (title) title.textContent = item.name;
+    if (description) description.textContent = item.description;
+    if (capacity) capacity.textContent = `Up to ${Number(item.maxGuests).toLocaleString()} guests`;
+    if (price) price.textContent = `MMK ${Number(item.finalPrice).toLocaleString()}`;
+  };
+  const mapCards = () => {
+    const byName = new Map(catalog.map(item => [normalize(item.name), item]));
+    cards.forEach(card => {
+      const slug = cardSlugFromLink(card);
+      const item = catalogBySlug.get(slug) || byName.get(normalize(card.querySelector('h4')?.textContent));
+      if (!item) throw new Error(`Package card could not be mapped: ${slug}`);
+      card.dataset.packageSlug = item.slug;
+      updateCardCatalogFields(card, item);
+    });
+  };
+  const invalidate = () => {
+    if (checking) return;
+    availabilityChecked = false;
+    availableVenueIds.clear();
+    if (typeof window.bbSetPackagePlan === 'function') {
+      window.bbSetPackagePlan({ available:false, packageAvailable:false });
+    }
+    clearAvailabilityVisibility();
+    clearCardStatuses();
+    setSummary(null);
+    setStatus('Details changed. Check availability again.');
+  };
+  const validate = () => {
+    const date = dateInput.value;
+    const guests = Number(guestsInput.value);
+    const start = startInput.value;
+    const end = endInput.value;
+    if (!date) return 'Please choose an event date.';
+    if (date < localDate()) return 'Please choose today or a future event date.';
+    if (!Number.isInteger(guests) || guests < 1) return 'Please enter a valid guest count.';
+    if (!start || !end) return 'Please choose a start time and end time.';
+    const startMinutes = Number(start.slice(0, 2)) * 60 + Number(start.slice(3));
+    const endMinutes = Number(end.slice(0, 2)) * 60 + Number(end.slice(3));
+    if (startMinutes >= endMinutes) return 'Start time must be earlier than end time.';
+    if (startMinutes < 480) return 'Start time must be 8:00 AM or later.';
+    if (endMinutes > 1410) return 'End time must be 11:30 PM or earlier.';
+    const duration = endMinutes - startMinutes;
+    if (duration < 120) return 'Your event must be at least 2 hours long.';
+    if (duration > 720) return 'Your event cannot be longer than 12 hours.';
+    return null;
+  };
+  const saveEventPlan = () => {
+    if (typeof window.bbSetPackagePlan !== 'function') return;
+    window.bbSetPackagePlan({ eventDate:dateInput.value, startTime:startInput.value, endTime:endInput.value, guestCount:Number(guestsInput.value), checkedAt:new Date().toISOString(), availableVenueIds:[...availableVenueIds] });
+  };
+  const saveExploredPackage = card => {
+    if (typeof window.bbSetPackagePlan !== 'function') return;
+    const item = catalogBySlug.get(card.dataset.packageSlug);
+    if (!item) return;
+    const packageAvailable = availabilityChecked
+      ? availableVenueIds.has(String(item.venue?.id)) && Number(guestsInput.value) <= Number(item.maxGuests)
+      : false;
+    window.bbSetPackagePlan({ packageId:item.id, packageSlug:item.slug, packageName:item.name, venueId:item.venue?.id, venueName:item.venue?.name, maxGuests:item.maxGuests, packageAvailable, available:packageAvailable });
+  };
+  const renderStatuses = () => {
+    clearCardStatuses();
+    clearAvailabilityVisibility();
+    cards.forEach(card => {
+      const item = catalogBySlug.get(card.dataset.packageSlug);
+      const guestLimit = Number(guestsInput.value) > Number(item.maxGuests);
+      const venueAvailable = availableVenueIds.has(String(item.venue?.id));
+      const available = !guestLimit && venueAvailable;
+      card.classList.toggle('package-availability-hidden', !available);
+      if (available) setCardStatus(card);
+    });
+  };
+  const checkAvailability = async () => {
+    if (checking) return;
+    const validationError = validate();
+    if (validationError) { setStatus(validationError, true); return; }
+    if (!packageDetailsLoaded) { setStatus("We couldn't check package availability right now. Please try again.", true); return; }
+    checking = true;
+    checkButton.disabled = true;
+    checkButton.textContent = 'Checking Availability...';
+    setStatus('Checking package availability...');
+    try {
+      const params = new URLSearchParams({ date:dateInput.value, startTime:startInput.value, endTime:endInput.value, guests:String(Number(guestsInput.value)) });
+      const response = await fetch(`${VENUE_API}?${params.toString()}`);
+      if (!response.ok) throw new Error(`Venue availability request failed: ${response.status}`);
+      const venues = await response.json();
+      if (!Array.isArray(venues)) throw new Error('Invalid venue availability response');
+      availableVenueIds = new Set(venues.map(venue => String(venue?.id)).filter(id => id !== 'undefined' && id !== 'null'));
+      availabilityChecked = true;
+      saveEventPlan();
+      renderStatuses();
+      const availableCount = cards.filter(card => { const item = catalogBySlug.get(card.dataset.packageSlug); return Number(guestsInput.value) <= Number(item.maxGuests) && availableVenueIds.has(String(item.venue?.id)); }).length;
+      const details = `${formatDate(dateInput.value)} · ${formatTime(startInput.value)}–${formatTime(endInput.value)} · ${Number(guestsInput.value).toLocaleString()} guests`;
+      setSummary(availableCount, details);
+      setStatus(availableCount ? 'Availability checked successfully.' : 'No packages are available for these event details. Try changing the date, time, or guest count.');
+    } catch (error) {
+      console.error('Package availability error:', error);
+      availabilityChecked = false;
+      availableVenueIds.clear();
+      clearAvailabilityVisibility();
+      clearCardStatuses();
+      setSummary(null);
+      setStatus("We couldn't check package availability right now. Please try again.", true);
+    } finally {
+      checking = false;
+      checkButton.disabled = !packageDetailsLoaded;
+      checkButton.textContent = 'Check Availability';
+    }
+  };
+  const loadCatalog = async () => {
+    try {
+      const response = await fetch(PACKAGE_API);
+      if (!response.ok) throw new Error(`Package catalog request failed: ${response.status}`);
+      const data = await response.json();
+      if (!Array.isArray(data) || data.length !== 35) throw new Error('Expected 35 active packages');
+      catalog = data.filter(item => item.active);
+      if (catalog.length !== 35) throw new Error('Package catalog contains inactive records');
+      catalogBySlug = new Map(catalog.map(item => [item.slug, item]));
+      mapCards();
+      packageDetailsLoaded = true;
+      checkButton.disabled = false;
+      setStatus('Enter your event details, then check availability.');
+    } catch (error) {
+      packageDetailsLoaded = false;
+      setStatus('Enter your event details, then try checking availability again.');
+      console.error('Package catalog unavailable:', error);
+    }
+  };
+  dateInput.min = localDate();
+  if (savedPlan.eventDate) dateInput.value = savedPlan.eventDate;
+  if (savedPlan.startTime) startInput.value = savedPlan.startTime;
+  if (savedPlan.endTime) endInput.value = savedPlan.endTime;
+  if (savedPlan.guestCount) guestsInput.value = savedPlan.guestCount;
+  timeInputs.forEach(input => {
+    syncTimePlaceholder(input);
+    input.addEventListener('focus', () => { input.closest('.package-time-field').classList.add('is-focused'); syncTimePlaceholder(input); });
+    input.addEventListener('blur', () => { input.closest('.package-time-field').classList.remove('is-focused'); syncTimePlaceholder(input); });
+    input.addEventListener('input', () => { syncTimePlaceholder(input); invalidate(); });
+    input.addEventListener('change', () => { syncTimePlaceholder(input); invalidate(); });
+  });
+  [dateInput, guestsInput].forEach(input => input.addEventListener('input', invalidate));
+  form.addEventListener('submit', event => { event.preventDefault(); checkAvailability(); });
+  cards.forEach(card => card.querySelector('.explore-btn')?.addEventListener('click', () => saveExploredPackage(card)));
+  loadCatalog();
+})();
+</script>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

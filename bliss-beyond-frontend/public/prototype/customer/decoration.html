@@ -1,0 +1,4974 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Customize Decoration | Bliss &amp; Beyond</title>
+
+<meta
+  name="description"
+  content="Customize decoration for your Bliss &amp; Beyond event."
+>
+
+<link rel="icon" href="/prototype/../favicon.ico">
+
+<link
+  href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Karla:wght@300;400;500;600;700&display=swap"
+  rel="stylesheet"
+>
+
+<link
+  href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+  rel="stylesheet"
+>
+
+<link
+  href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+  rel="stylesheet"
+>
+
+<link
+  href="/prototype/assets/css/style.css"
+  rel="stylesheet"
+>
+
+<style>
+:root{
+  --decor-page:#f5efe4;
+  --decor-panel:#eee8dc;
+  --decor-card:#ffffff;
+  --decor-border:#ded3c1;
+  --decor-green:#173f34;
+  --decor-gold:#c89235;
+  --decor-gold-light:#eab84f;
+  --decor-text:#18251f;
+  --decor-soft:#647069;
+}
+
+/* =========================================================
+   PAGE
+   ========================================================= */
+
+body{
+  background:var(--decor-page);
+}
+
+.bb-shell{
+  display:block !important;
+}
+
+.bb-main{
+  width:100% !important;
+  max-width:none !important;
+  margin-left:0 !important;
+  padding:28px 30px 50px;
+}
+
+/* =========================================================
+   PANELS
+   ========================================================= */
+
+[data-decoration-page] .panel{
+  background:var(--decor-panel) !important;
+  border:1px solid var(--decor-border) !important;
+  border-radius:18px !important;
+  overflow:hidden;
+  box-shadow:0 7px 22px rgba(42,34,23,.045);
+}
+
+[data-decoration-page] .panel > .panel__head{
+  padding:18px 22px !important;
+  background:#fff !important;
+  border-bottom:1px solid var(--decor-border) !important;
+}
+
+[data-decoration-page] .panel > .panel__head h5{
+  margin:0;
+  font-family:"Cormorant Garamond",serif;
+  font-size:1.45rem !important;
+  font-weight:700 !important;
+  color:var(--decor-text);
+}
+
+[data-decoration-page] .panel > .panel__body{
+  padding:20px !important;
+  background:var(--decor-panel) !important;
+}
+
+/* =========================================================
+   EVENT CONTEXT
+   ========================================================= */
+
+.workflow-context{
+  padding:.8rem 1rem !important;
+  margin-bottom:1rem !important;
+  background:#fff;
+  border:1px solid var(--decor-border);
+  border-radius:14px;
+}
+
+/* =========================================================
+   THEME GRID
+   ========================================================= */
+
+.choice-grid{
+  display:grid !important;
+  grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  gap:14px !important;
+}
+
+/* =========================================================
+   THEME CARDS
+   ========================================================= */
+
+.decoration-theme-card{
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  height:100%;
+  min-height:220px;
+  padding:18px;
+  background:#fff !important;
+  border:1px solid #ddd3c4;
+  border-radius:14px;
+  cursor:pointer;
+
+  transition:
+    transform .2s ease,
+    border-color .2s ease,
+    box-shadow .2s ease;
+}
+
+.decoration-theme-card:hover{
+  transform:translateY(-2px);
+  border-color:#c9bba7;
+  box-shadow:0 9px 20px rgba(52,43,30,.07);
+}
+
+.decoration-theme-card.selected{
+  border-color:var(--decor-gold);
+
+  box-shadow:
+    0 0 0 1px rgba(200,146,53,.13),
+    0 8px 20px rgba(52,43,30,.07);
+}
+
+.decoration-theme-card__top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:.75rem;
+  width:100%;
+  min-height:30px;
+}
+
+.decoration-theme-card__top strong{
+  color:#26342e;
+  font-size:1rem;
+  font-weight:700;
+  line-height:1.35;
+}
+
+.decoration-theme-card__desc{
+  flex:1;
+  margin:.65rem 0 .35rem;
+  color:#667069;
+  font-size:.84rem;
+  line-height:1.5;
+}
+
+.decoration-theme-card__price{
+  margin-top:.2rem;
+  margin-bottom:.6rem;
+  color:var(--decor-gold);
+  font-size:.84rem;
+  font-weight:600;
+}
+
+.decoration-theme-card .decoration-theme-explore{
+  min-height:36px;
+  margin-top:auto;
+  border-radius:999px;
+  font-size:.8rem;
+}
+
+/* =========================================================
+   RADIO / CHECKBOX
+   ========================================================= */
+
+.decoration-select{
+  appearance:none;
+  -webkit-appearance:none;
+  display:inline-grid;
+  place-content:center;
+  width:19px;
+  height:19px;
+  min-width:19px;
+  margin:0;
+  background:transparent;
+  border:2.5px solid #222;
+  border-radius:50%;
+  cursor:pointer;
+}
+
+.decoration-select::before{
+  content:"";
+  width:8px;
+  height:8px;
+  background:#222;
+  border-radius:50%;
+  transform:scale(0);
+  transition:transform .14s ease;
+}
+
+.decoration-select:checked::before{
+  transform:scale(1);
+}
+
+/* =========================================================
+   ELEMENT + ADD-ON GRID
+   ========================================================= */
+
+.decoration-section-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:14px;
+}
+
+.decoration-option-card{
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  min-height:112px;
+  padding:17px 18px;
+  background:#fff !important;
+  border:1px solid #ddd3c4;
+  border-radius:14px;
+  cursor:pointer;
+
+  transition:
+    transform .2s ease,
+    border-color .2s ease,
+    box-shadow .2s ease;
+}
+
+.decoration-option-card:hover{
+  transform:translateY(-2px);
+  border-color:#c9bba7;
+  box-shadow:0 8px 18px rgba(52,43,30,.06);
+}
+
+.decoration-option-card.selected{
+  border-color:var(--decor-gold);
+  box-shadow:0 0 0 1px rgba(200,146,53,.12);
+}
+
+.decoration-option-card__head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:.75rem;
+  width:100%;
+  min-height:30px;
+}
+
+.decoration-option-card__head strong{
+  color:#27362f;
+  font-size:.94rem;
+  font-weight:600;
+  line-height:1.35;
+}
+
+.decoration-option-card__price{
+  margin-top:auto;
+  padding-top:.75rem;
+  color:var(--decor-gold);
+  font-size:.81rem;
+  font-weight:600;
+}
+
+/* =========================================================
+   NOTES
+   ========================================================= */
+
+.decoration-note-box{
+  min-height:105px;
+  background:#fff !important;
+  border:1px solid #d7cec0 !important;
+  border-radius:10px !important;
+  box-shadow:none !important;
+}
+
+.decoration-note-box:focus{
+  border-color:#b99b69 !important;
+
+  box-shadow:
+    0 0 0 .16rem rgba(200,146,53,.1)
+    !important;
+}
+
+/* =========================================================
+   SUMMARY
+   ========================================================= */
+
+.workflow-summary{
+  background:var(--decor-panel) !important;
+  border-color:var(--decor-border) !important;
+}
+
+.workflow-summary > .panel__head{
+  background:#fff !important;
+}
+
+.workflow-summary > .panel__body{
+  max-height:calc(100vh - 180px);
+  overflow-y:auto;
+  overflow-x:hidden;
+  background:var(--decor-panel) !important;
+  scrollbar-width:thin;
+}
+
+.workflow-summary [data-decoration-total]{
+  font-family:"Cormorant Garamond",serif;
+  font-size:1.3rem !important;
+  line-height:1.2 !important;
+  color:#24573f;
+  font-weight:600;
+}
+
+.decor-summary-list{
+  list-style:none;
+  margin:0 0 14px;
+  padding:4px 16px;
+  background:#fff;
+  border:1px solid var(--decor-border);
+  border-radius:10px;
+}
+
+.decor-summary-item{
+  display:grid;
+  grid-template-columns:24px minmax(0,1fr);
+  gap:10px;
+  padding:12px 0;
+  border-bottom:1px solid #eee6da;
+}
+
+.decor-summary-item:last-child{
+  border-bottom:0;
+}
+
+.decor-summary-item.is-empty{
+  display:none !important;
+}
+
+.decor-summary-icon{
+  padding-top:1px;
+  color:var(--decor-gold);
+  font-size:.92rem;
+}
+
+.decor-summary-label{
+  display:block;
+  margin-bottom:4px;
+  color:#786958;
+  font-size:.66rem;
+  font-weight:700;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+}
+
+.decor-summary-content strong{
+  display:block;
+  color:#34413b;
+  font-size:.82rem;
+  font-weight:400;
+  line-height:1.4;
+}
+
+.decor-summary-price{
+  margin-top:3px;
+  color:#b67b20;
+  font-size:.78rem;
+}
+
+.summary-priced-list{
+  list-style:none;
+  margin:0;
+  padding:0;
+}
+
+.summary-priced-list li{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:10px;
+  padding:3px 0;
+  font-size:.81rem;
+}
+
+.summary-priced-list .price{
+  color:#b67b20;
+  font-size:.78rem;
+  white-space:nowrap;
+}
+
+/* =========================================================
+   BUTTONS
+   ========================================================= */
+
+#saveDecorationPrice{
+  min-height:48px;
+  border-radius:999px;
+  font-size:.86rem;
+}
+
+#saveDecorationPrice.is-saved,
+#saveDecorationPrice.is-saved:hover{
+  background:var(--decor-gold) !important;
+  border-color:var(--decor-gold) !important;
+  color:#fff !important;
+  opacity:1 !important;
+}
+
+[data-decoration-page] .btn-outline-forest{
+  border-radius:999px;
+}
+
+/* =========================================================
+   MODAL
+   ========================================================= */
+
+#decorationThemeModal .modal-dialog{
+  max-width:1080px;
+}
+
+#decorationThemeModal .modal-content{
+  overflow:hidden;
+  background:#f6f0e5;
+  border:0;
+  border-radius:22px;
+  box-shadow:0 30px 80px rgba(12,17,14,.34);
+}
+
+#decorationThemeModal .modal-header{
+  padding:20px 24px 15px;
+  background:#f6f0e5;
+  border:0;
+}
+
+#decorationThemeModal .modal-header h3{
+  margin-top:3px;
+  font-family:"Cormorant Garamond",serif;
+  font-size:2rem;
+  color:var(--decor-green);
+  font-weight:700;
+}
+
+#decorationThemeModal .modal-body{
+  padding:0 22px 22px;
+}
+
+#decorationThemeModal .modal-footer{
+  padding:15px 22px 18px;
+  background:#f6f0e5;
+  border-top:1px solid #e5dacb;
+}
+
+/* =========================================================
+   MODAL — CLEAN LUXURY REDESIGN
+   ========================================================= */
+
+#decorationThemeModal .modal-dialog{
+  max-width:1080px;
+}
+
+#decorationThemeModal .modal-content{
+  overflow:hidden;
+  background:#f7f1e7;
+  border:0;
+  border-radius:22px;
+  box-shadow:0 30px 80px rgba(12,17,14,.28);
+}
+
+#decorationThemeModal .modal-header{
+  padding:20px 24px 14px;
+  background:#f7f1e7;
+  border:0;
+}
+
+#decorationThemeModal .modal-header h3{
+  margin-top:3px;
+  font-family:"Cormorant Garamond",serif;
+  font-size:2rem;
+  color:var(--decor-green);
+  font-weight:700;
+}
+
+#decorationThemeModal .modal-body{
+  padding:0 22px 22px;
+  background:#f7f1e7;
+}
+
+#decorationThemeModal .modal-footer{
+  padding:15px 22px 18px;
+  background:#f7f1e7;
+  border-top:1px solid #e5dacb;
+}
+
+/* Hero */
+#decorationThemeModal .decor-theme-hero{
+  position:relative;
+  width:100%;
+  height:430px;
+  overflow:hidden;
+  border-radius:18px;
+  background:#222;
+  isolation:isolate;
+}
+
+#decorationThemeModal .decor-theme-hero > img{
+  position:absolute;
+  inset:0;
+  z-index:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+  transition:transform .8s ease;
+}
+
+#decorationThemeModal .decor-theme-hero:hover > img{
+  transform:scale(1.012);
+}
+
+#decorationThemeModal .decor-theme-hero::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:1;
+  pointer-events:none;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(12,26,21,.62) 0%,
+      rgba(12,26,21,.25) 38%,
+      rgba(12,26,21,.04) 72%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(0,0,0,.02) 45%,
+      rgba(0,0,0,.25) 100%
+    );
+}
+
+/* Single glass info panel */
+#decorationThemeModal .decor-theme-info{
+  position:absolute;
+  left:28px;
+  bottom:28px;
+  z-index:4;
+  width:min(390px, calc(100% - 56px));
+  padding:20px 22px;
+
+  color:#fff;
+  background:linear-gradient(
+    135deg,
+    rgba(19,45,36,.78),
+    rgba(18,30,25,.56)
+  );
+
+  border:1px solid rgba(255,255,255,.22);
+  border-radius:18px;
+
+  -webkit-backdrop-filter:blur(14px) saturate(135%);
+  backdrop-filter:blur(14px) saturate(135%);
+
+  box-shadow:
+    0 16px 38px rgba(0,0,0,.24),
+    inset 0 1px 0 rgba(255,255,255,.10);
+
+  opacity:0;
+  transform:translateY(18px);
+  animation:decorInfoReveal .55s cubic-bezier(.2,.8,.2,1) .08s forwards;
+}
+
+#decorationThemeModal .decor-theme-info__label{
+  display:block;
+  margin-bottom:6px;
+  color:#f1c25b;
+  font-size:.72rem;
+  font-weight:700;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+}
+
+#decorationThemeModal .decor-theme-info__name{
+  margin:0;
+  color:#fffaf0;
+  font-family:"Cormorant Garamond",serif;
+  font-size:2.2rem;
+  font-weight:700;
+  line-height:1.05;
+  text-shadow:0 2px 8px rgba(0,0,0,.28);
+}
+
+#decorationThemeModal .decor-theme-info__divider{
+  width:54px;
+  height:3px;
+  margin:12px 0;
+  border-radius:999px;
+  background:#d8a63e;
+}
+
+#decorationThemeModal .decor-theme-info__price{
+  color:#f1c25b;
+  font-family:"Cormorant Garamond",serif;
+  font-size:1.65rem;
+  font-weight:600;
+  line-height:1.1;
+}
+
+@keyframes decorInfoReveal{
+  from{ opacity:0; transform:translateY(18px); }
+  to{ opacity:1; transform:translateY(0); }
+}
+
+/* What's included */
+#decorationThemeModal .decor-theme-included{
+  margin-top:20px;
+}
+
+#decorationThemeModal .decor-theme-included__eyebrow{
+  display:block;
+  margin-bottom:4px;
+  color:var(--decor-gold);
+  font-size:.72rem;
+  font-weight:700;
+  letter-spacing:.15em;
+  text-transform:uppercase;
+}
+
+#decorationThemeModal .decor-theme-included__title{
+  margin:0 0 14px;
+  font-family:"Cormorant Garamond",serif;
+  font-size:1.55rem;
+  font-weight:700;
+  color:var(--decor-green);
+}
+
+/* Light cards below image */
+#decorationThemeModal .decor-theme-properties{
+  position:static !important;
+  display:grid !important;
+  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+  grid-auto-rows:auto !important;
+  gap:12px !important;
+  margin:0 !important;
+  padding:0 !important;
+}
+
+#decorationThemeModal .decor-theme-property{
+  position:relative;
+  width:100% !important;
+  height:auto !important;
+  min-height:116px !important;
+  max-height:none !important;
+
+  display:flex !important;
+  align-items:flex-start !important;
+  gap:12px !important;
+  padding:18px !important;
+
+  color:var(--decor-green) !important;
+  background:linear-gradient(
+    145deg,
+    rgba(255,255,255,.96),
+    rgba(249,244,235,.92)
+  ) !important;
+
+  border:1px solid #dfd4c5 !important;
+  border-radius:16px !important;
+  box-shadow:
+    0 10px 24px rgba(55,43,27,.07),
+    inset 0 1px 0 rgba(255,255,255,.88);
+
+  opacity:0;
+  transform:translateY(14px);
+  animation:decorPropertyReveal .5s cubic-bezier(.2,.8,.2,1) forwards;
+
+  transition:
+    transform .22s ease,
+    box-shadow .22s ease,
+    border-color .22s ease;
+}
+
+#decorationThemeModal .decor-theme-property:nth-child(1){ animation-delay:.08s; }
+#decorationThemeModal .decor-theme-property:nth-child(2){ animation-delay:.16s; }
+#decorationThemeModal .decor-theme-property:nth-child(3){ animation-delay:.24s; }
+#decorationThemeModal .decor-theme-property:nth-child(4){ animation-delay:.32s; }
+#decorationThemeModal .decor-theme-property:nth-child(5){
+  animation-delay:.40s;
+  grid-column:auto !important;
+  width:100% !important;
+  height:auto !important;
+  min-height:116px !important;
+  max-height:none !important;
+}
+
+#decorationThemeModal .decor-theme-property i{
+  flex:0 0 32px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+
+  width:32px !important;
+  height:32px !important;
+  margin:0 !important;
+
+  color:#b77a18 !important;
+  background:#f8e8c4;
+  border:1px solid #e6c67c;
+  border-radius:50%;
+  font-size:.88rem !important;
+}
+
+#decorationThemeModal .decor-theme-property span{
+  flex:1;
+  margin:0 !important;
+  color:#294039 !important;
+  font-size:.88rem !important;
+  font-weight:600 !important;
+  line-height:1.45 !important;
+  text-align:left !important;
+  text-shadow:none !important;
+}
+
+#decorationThemeModal .decor-theme-property:hover{
+  transform:translateY(-3px) !important;
+  border-color:#d0b27b !important;
+  box-shadow:
+    0 14px 30px rgba(55,43,27,.10),
+    inset 0 1px 0 rgba(255,255,255,.92) !important;
+}
+
+@keyframes decorPropertyReveal{
+  from{ opacity:0; transform:translateY(14px); }
+  to{ opacity:1; transform:translateY(0); }
+}
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media(max-width:991.98px){
+
+  .choice-grid,
+  .decoration-section-grid{
+    grid-template-columns:
+      repeat(2,minmax(0,1fr))
+      !important;
+  }
+
+  .workflow-summary{
+    position:static !important;
+  }
+
+  .workflow-summary > .panel__body{
+    max-height:none;
+  }
+
+  #decorationThemeModal .decor-theme-hero{
+    height:540px !important;
+  }
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media(max-width:650px){
+
+  .bb-main{
+    padding:20px 14px 40px;
+  }
+
+  .choice-grid,
+  .decoration-section-grid{
+    grid-template-columns:1fr !important;
+  }
+
+  #decorationThemeModal .modal-header{
+    padding:18px 18px 14px;
+  }
+
+  #decorationThemeModal .modal-body{
+    padding:0 14px 16px;
+  }
+
+  #decorationThemeModal .modal-footer{
+    padding:12px 18px 16px;
+  }
+
+  #decorationThemeModal .decor-theme-hero{
+    height:640px !important;
+  }
+
+  #decorationThemeModal .decor-theme-properties{
+    left:12px !important;
+    right:12px !important;
+    bottom:12px !important;
+
+    grid-template-columns:1fr !important;
+
+    grid-auto-rows:64px !important;
+
+    gap:8px !important;
+  }
+
+  #decorationThemeModal .decor-theme-property,
+  #decorationThemeModal .decor-theme-property:nth-child(5){
+    grid-column:auto !important;
+    grid-row:auto !important;
+
+    width:100% !important;
+
+    height:64px !important;
+    min-height:64px !important;
+    max-height:64px !important;
+
+    padding:11px 13px !important;
+  }
+
+  #decorationThemeModal .decor-theme-property i{
+    flex:0 0 27px !important;
+
+    width:27px !important;
+    height:27px !important;
+
+    font-size:.8rem !important;
+  }
+
+  #decorationThemeModal .decor-theme-property span{
+    font-size:.79rem !important;
+  }
+
+  #decorationThemeModal .decor-gold-corner{
+    width:86px;
+    height:86px;
+  }
+
+  #decorationThemeModal .decor-gold-corner::before{
+    width:69px;
+    height:69px;
+  }
+
+  #decorationThemeModal .decor-gold-corner::after{
+    width:120px;
+    left:-17px;
+    top:41px;
+  }
+
+  #decorationThemeModal .decor-gold-corner__line{
+    width:84px;
+    top:32px;
+  }
+
+  #decorationThemeModal .decor-gold-corner__sparkle{
+    top:14px;
+    left:15px;
+  }
+}
+
+/* =========================================================
+   CLEAN MODAL RESPONSIVE OVERRIDES
+   ========================================================= */
+@media(max-width:991.98px){
+  #decorationThemeModal .decor-theme-hero{
+    height:410px !important;
+  }
+
+  #decorationThemeModal .decor-theme-properties{
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  }
+}
+
+@media(max-width:650px){
+  #decorationThemeModal .decor-theme-hero{
+    height:360px !important;
+  }
+
+  #decorationThemeModal .decor-theme-info{
+    left:16px !important;
+    right:16px !important;
+    bottom:16px !important;
+    width:auto !important;
+    padding:16px 17px !important;
+  }
+
+  #decorationThemeModal .decor-theme-info__name{
+    font-size:1.8rem !important;
+  }
+
+  #decorationThemeModal .decor-theme-info__price{
+    font-size:1.35rem !important;
+  }
+
+  #decorationThemeModal .decor-theme-properties{
+    grid-template-columns:1fr !important;
+    gap:9px !important;
+  }
+
+  #decorationThemeModal .decor-theme-property,
+  #decorationThemeModal .decor-theme-property:nth-child(5){
+    width:100% !important;
+    height:auto !important;
+    min-height:86px !important;
+    max-height:none !important;
+    padding:14px !important;
+  }
+
+  #decorationThemeModal .decor-theme-property i{
+    flex:0 0 29px !important;
+    width:29px !important;
+    height:29px !important;
+    font-size:.8rem !important;
+  }
+
+  #decorationThemeModal .decor-theme-property span{
+    font-size:.82rem !important;
+  }
+}
+
+</style>
+
+<style>
+/* =========================================================
+   THEME HERO INFO — CATERING DINING STYLE LOOK
+   No glass/clear background card.
+   Text sits directly on the image with a soft dark gradient.
+   ========================================================= */
+
+#decorationThemeModal .decor-theme-hero::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:1;
+  pointer-events:none;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(10,18,14,.72) 0%,
+      rgba(10,18,14,.48) 24%,
+      rgba(10,18,14,.18) 48%,
+      rgba(10,18,14,0) 72%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(0,0,0,0) 45%,
+      rgba(0,0,0,.28) 100%
+    ) !important;
+}
+
+/* Remove the glass-card appearance completely */
+#decorationThemeModal .decor-theme-info{
+  position:absolute !important;
+  left:34px !important;
+  bottom:30px !important;
+  z-index:4 !important;
+
+  width:auto !important;
+  max-width:430px !important;
+
+  padding:0 !important;
+
+  background:transparent !important;
+  border:0 !important;
+  border-radius:0 !important;
+
+  -webkit-backdrop-filter:none !important;
+  backdrop-filter:none !important;
+
+  box-shadow:none !important;
+
+  opacity:0;
+  transform:translateY(18px);
+
+  animation:
+    decorDiningInfoReveal
+    .55s
+    cubic-bezier(.2,.8,.2,1)
+    .08s
+    forwards;
+}
+
+/* Small label */
+#decorationThemeModal .decor-theme-info__label{
+  display:block !important;
+
+  margin:0 0 6px !important;
+
+  color:#f0c15a !important;
+
+  font-size:.75rem !important;
+  font-weight:700 !important;
+  letter-spacing:.17em !important;
+  text-transform:uppercase !important;
+
+  text-shadow:
+    0 2px 8px rgba(0,0,0,.42) !important;
+}
+
+/* Main theme name */
+#decorationThemeModal .decor-theme-info__name{
+  margin:0 !important;
+
+  color:#fffaf0 !important;
+
+  font-family:"Cormorant Garamond",serif !important;
+  font-size:2.35rem !important;
+  font-weight:700 !important;
+  line-height:1.04 !important;
+
+  text-shadow:
+    0 2px 5px rgba(0,0,0,.75),
+    0 8px 20px rgba(0,0,0,.25) !important;
+}
+
+/* Gold line like catering overlay */
+#decorationThemeModal .decor-theme-info__divider{
+  width:54px !important;
+  height:3px !important;
+
+  margin:12px 0 13px !important;
+
+  border-radius:999px !important;
+
+  background:#d9a83e !important;
+
+  box-shadow:
+    0 2px 7px rgba(0,0,0,.22) !important;
+}
+
+/* Price */
+#decorationThemeModal .decor-theme-info__price{
+  color:#f2c35c !important;
+
+  font-family:"Cormorant Garamond",serif !important;
+  font-size:1.75rem !important;
+  font-weight:600 !important;
+  line-height:1.1 !important;
+
+  text-shadow:
+    0 2px 5px rgba(0,0,0,.72),
+    0 7px 18px rgba(0,0,0,.28) !important;
+}
+
+@keyframes decorDiningInfoReveal{
+  from{
+    opacity:0;
+    transform:translateY(18px);
+  }
+
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+}
+
+@media(max-width:650px){
+  #decorationThemeModal .decor-theme-info{
+    left:20px !important;
+    right:20px !important;
+    bottom:20px !important;
+    max-width:none !important;
+  }
+
+  #decorationThemeModal .decor-theme-info__name{
+    font-size:1.9rem !important;
+  }
+
+  #decorationThemeModal .decor-theme-info__price{
+    font-size:1.45rem !important;
+  }
+}
+</style>
+
+
+<style>
+/* =========================================================
+   THEME DETAILS — CATERING DINING TEXT-BOX STYLE
+   Dark glass cards, gold accents, white text, equal sizing.
+   ========================================================= */
+
+#decorationThemeModal .decor-theme-included {
+  margin-top: 22px !important;
+}
+
+#decorationThemeModal .decor-theme-included__eyebrow {
+  color: #c89235 !important;
+  font-size: .72rem !important;
+  font-weight: 700 !important;
+  letter-spacing: .16em !important;
+  text-transform: uppercase !important;
+}
+
+#decorationThemeModal .decor-theme-included__title {
+  margin: 3px 0 14px !important;
+  font-family: "Cormorant Garamond", serif !important;
+  font-size: 1.55rem !important;
+  font-weight: 700 !important;
+  color: #173f34 !important;
+}
+
+/* Same neat 3-column layout as Catering content cards */
+#decorationThemeModal .decor-theme-properties {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 14px !important;
+  align-items: stretch !important;
+}
+
+/* Catering-style dark glass card */
+#decorationThemeModal .decor-theme-property,
+#decorationThemeModal .decor-theme-property:nth-child(5) {
+  position: relative !important;
+
+  width: 100% !important;
+  min-height: 128px !important;
+  height: 128px !important;
+  max-height: 128px !important;
+
+  padding: 18px 20px !important;
+
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 12px !important;
+
+  overflow: hidden !important;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(53, 50, 43, .90),
+      rgba(30, 34, 30, .88)
+    ) !important;
+
+  border: 1px solid rgba(255,255,255,.20) !important;
+  border-radius: 17px !important;
+
+  -webkit-backdrop-filter: blur(14px) saturate(125%) !important;
+  backdrop-filter: blur(14px) saturate(125%) !important;
+
+  box-shadow:
+    0 12px 28px rgba(28, 25, 20, .16),
+    inset 0 1px 0 rgba(255,255,255,.10) !important;
+
+  opacity: 0;
+  transform: translateY(14px);
+
+  animation:
+    decorDiningCardReveal
+    .48s
+    cubic-bezier(.2,.8,.2,1)
+    forwards;
+
+  transition:
+    transform .22s ease,
+    box-shadow .22s ease,
+    border-color .22s ease,
+    background .22s ease;
+}
+
+/* Appear in order */
+#decorationThemeModal .decor-theme-property:nth-child(1) { animation-delay: .08s; }
+#decorationThemeModal .decor-theme-property:nth-child(2) { animation-delay: .16s; }
+#decorationThemeModal .decor-theme-property:nth-child(3) { animation-delay: .24s; }
+#decorationThemeModal .decor-theme-property:nth-child(4) { animation-delay: .32s; }
+#decorationThemeModal .decor-theme-property:nth-child(5) { animation-delay: .40s; }
+
+/* Gold circular check */
+#decorationThemeModal .decor-theme-property i {
+  flex: 0 0 30px !important;
+
+  width: 30px !important;
+  height: 30px !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  margin: 0 !important;
+
+  color: #f1b83d !important;
+
+  background: rgba(219,164,49,.10) !important;
+  border: 1.7px solid #d6a131 !important;
+  border-radius: 50% !important;
+
+  font-size: .84rem !important;
+
+  box-shadow:
+    0 4px 10px rgba(0,0,0,.16) !important;
+}
+
+/* White Catering-style text */
+#decorationThemeModal .decor-theme-property span {
+  flex: 1 !important;
+  margin: 0 !important;
+
+  color: #ffffff !important;
+
+  font-size: .90rem !important;
+  font-weight: 600 !important;
+  line-height: 1.45 !important;
+
+  text-align: left !important;
+
+  text-shadow:
+    0 1px 5px rgba(0,0,0,.30) !important;
+}
+
+/* Subtle gold top highlight like Catering */
+#decorationThemeModal .decor-theme-property::before {
+  content: "";
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  top: 0;
+
+  height: 1px;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(231,178,70,.65),
+      transparent
+    );
+}
+
+/* Hover polish */
+#decorationThemeModal .decor-theme-property:hover {
+  transform: translateY(-3px) !important;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(66, 58, 46, .94),
+      rgba(28, 36, 30, .92)
+    ) !important;
+
+  border-color: rgba(226,173,65,.70) !important;
+
+  box-shadow:
+    0 16px 34px rgba(28,25,20,.22),
+    inset 0 1px 0 rgba(255,255,255,.13) !important;
+}
+
+@keyframes decorDiningCardReveal {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Tablet */
+@media (max-width: 991.98px) {
+  #decorationThemeModal .decor-theme-properties {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+/* Mobile */
+@media (max-width: 650px) {
+  #decorationThemeModal .decor-theme-properties {
+    grid-template-columns: 1fr !important;
+  }
+
+  #decorationThemeModal .decor-theme-property,
+  #decorationThemeModal .decor-theme-property:nth-child(5) {
+    min-height: 92px !important;
+    height: 92px !important;
+    max-height: 92px !important;
+
+    padding: 14px 16px !important;
+  }
+}
+</style>
+
+
+
+<style>
+/* =========================================================
+   THEME DETAIL CARDS — CATERING HOVER STYLE
+   Normal = soft gray glass
+   Hover = dark charcoal glass
+   No click/tap selection state
+   ========================================================= */
+
+#decorationThemeModal .decor-theme-property,
+#decorationThemeModal .decor-theme-property:nth-child(5) {
+  cursor: default !important;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(151,148,140,.92),
+      rgba(116,114,108,.90)
+    ) !important;
+
+  border:
+    1px solid rgba(255,255,255,.46)
+    !important;
+
+  box-shadow:
+    0 12px 30px rgba(32,29,24,.12),
+    inset 0 1px 0 rgba(255,255,255,.18)
+    !important;
+
+  transform: none !important;
+
+  transition:
+    background .28s ease,
+    border-color .28s ease,
+    box-shadow .28s ease,
+    transform .28s ease
+    !important;
+}
+
+/* Normal text */
+#decorationThemeModal .decor-theme-property span {
+  color:#ffffff !important;
+
+  text-shadow:
+    0 1px 4px rgba(0,0,0,.20)
+    !important;
+}
+
+/* Normal icon */
+#decorationThemeModal .decor-theme-property i {
+  color:#f0b93f !important;
+
+  background:
+    rgba(73,68,56,.20)
+    !important;
+
+  border-color:
+    rgba(232,177,57,.82)
+    !important;
+
+  transition:
+    background .28s ease,
+    border-color .28s ease,
+    box-shadow .28s ease,
+    color .28s ease
+    !important;
+}
+
+/* Hover = dark Catering card */
+#decorationThemeModal .decor-theme-property:hover,
+#decorationThemeModal .decor-theme-property:nth-child(5):hover {
+  background:
+    linear-gradient(
+      145deg,
+      rgba(31,34,30,.98),
+      rgba(20,23,20,.98)
+    ) !important;
+
+  border-color:
+    rgba(230,177,67,.72)
+    !important;
+
+  box-shadow:
+    0 16px 34px rgba(0,0,0,.25),
+    inset 0 1px 0 rgba(255,255,255,.08)
+    !important;
+
+  transform:
+    translateY(-3px)
+    scale(1.005)
+    !important;
+}
+
+/* Hover icon */
+#decorationThemeModal .decor-theme-property:hover i {
+  color:#f0b93f !important;
+
+  background:
+    rgba(240,185,63,.12)
+    !important;
+
+  border-color:#efb93f !important;
+
+  box-shadow:
+    0 0 0 3px rgba(224,168,45,.10),
+    0 5px 12px rgba(0,0,0,.20)
+    !important;
+}
+
+/* Stronger gold top highlight on hover */
+#decorationThemeModal .decor-theme-property:hover::before {
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      #efbd52,
+      transparent
+    ) !important;
+}
+
+/* Touch devices: keep normal state; no sticky click color */
+@media (hover: none) {
+  #decorationThemeModal .decor-theme-property:hover,
+  #decorationThemeModal .decor-theme-property:nth-child(5):hover {
+    background:
+      linear-gradient(
+        145deg,
+        rgba(151,148,140,.92),
+        rgba(116,114,108,.90)
+      ) !important;
+
+    border-color:
+      rgba(255,255,255,.46)
+      !important;
+
+    box-shadow:
+      0 12px 30px rgba(32,29,24,.12),
+      inset 0 1px 0 rgba(255,255,255,.18)
+      !important;
+
+    transform:none !important;
+  }
+}
+</style>
+
+
+<style>
+/* =========================================================
+   DECORATION SUMMARY — MATCH CATERING SUMMARY DESIGN
+   ========================================================= */
+
+[data-decoration-page] .workflow-summary {
+  background:#ffffff !important;
+  border:1px solid #ded3c1 !important;
+  border-radius:20px !important;
+  overflow:hidden !important;
+  box-shadow:none !important;
+}
+
+/* White header like Catering */
+[data-decoration-page] .workflow-summary > .panel__head {
+  background:#ffffff !important;
+  padding:22px 26px !important;
+  border-bottom:1px solid #e7ddcf !important;
+}
+
+[data-decoration-page] .workflow-summary > .panel__head h5 {
+  font-family:"Cormorant Garamond",serif !important;
+  font-size:1.9rem !important;
+  font-weight:700 !important;
+  line-height:1.05 !important;
+  color:#16231e !important;
+}
+
+/* Entire summary body white */
+[data-decoration-page] .workflow-summary > .panel__body {
+  background:#ffffff !important;
+  padding:28px 26px 24px !important;
+}
+
+/* Bigger Catering-style total */
+[data-decoration-page] .workflow-summary [data-decoration-total] {
+  font-family:"Cormorant Garamond",serif !important;
+  font-size:2.55rem !important;
+  line-height:1 !important;
+  font-weight:600 !important;
+  color:#24573f !important;
+  letter-spacing:.01em !important;
+}
+
+[data-decoration-page] .workflow-summary [data-decoration-total]
++ .small {
+  margin-top:8px !important;
+  font-size:.95rem !important;
+  color:#5d6963 !important;
+}
+
+/* Empty-state text spacing like Catering */
+[data-decoration-page] [data-decoration-empty] {
+  margin-top:30px !important;
+  margin-bottom:22px !important;
+  font-size:.94rem !important;
+  line-height:1.5 !important;
+  color:#5d6963 !important;
+}
+
+/* Remove the white inner box / bar look */
+[data-decoration-page] .decor-summary-list {
+  margin:0 !important;
+  padding:0 !important;
+  background:transparent !important;
+  border:0 !important;
+  border-radius:0 !important;
+}
+
+/* Selected sections become simple Catering-style rows */
+[data-decoration-page] .decor-summary-item {
+  grid-template-columns:30px minmax(0,1fr) !important;
+  gap:12px !important;
+  padding:16px 0 !important;
+  border-bottom:1px solid #ece3d7 !important;
+}
+
+[data-decoration-page] .decor-summary-icon {
+  color:#c89235 !important;
+  font-size:1rem !important;
+  padding-top:2px !important;
+}
+
+[data-decoration-page] .decor-summary-label {
+  margin-bottom:5px !important;
+  color:#746456 !important;
+  font-size:.70rem !important;
+  font-weight:700 !important;
+  letter-spacing:.14em !important;
+  text-transform:uppercase !important;
+}
+
+[data-decoration-page] .decor-summary-content strong {
+  color:#20312a !important;
+  font-size:.94rem !important;
+  font-weight:500 !important;
+  line-height:1.42 !important;
+}
+
+[data-decoration-page] .decor-summary-price {
+  margin-top:4px !important;
+  color:#b7791f !important;
+  font-size:.86rem !important;
+}
+
+/* Selected item + price list */
+[data-decoration-page] .summary-priced-list li {
+  padding:4px 0 !important;
+  font-size:.90rem !important;
+  line-height:1.38 !important;
+}
+
+[data-decoration-page] .summary-priced-list .price {
+  color:#b7791f !important;
+  font-size:.86rem !important;
+  font-weight:600 !important;
+}
+
+/* Give the pricing note a Catering-style divider */
+[data-decoration-page] .workflow-summary .decor-summary-list + p,
+[data-decoration-page] .workflow-summary [data-decoration-status] + .decor-summary-list + p {
+  padding-top:22px !important;
+  margin-top:18px !important;
+  border-top:1px solid #e8ded1 !important;
+}
+
+/* General final-price note */
+[data-decoration-page] .workflow-summary .panel__body > p.small.text-ink-soft:last-of-type {
+  padding-top:22px !important;
+  margin-top:18px !important;
+  margin-bottom:22px !important;
+  border-top:1px solid #e8ded1 !important;
+  color:#5d6963 !important;
+  font-size:.91rem !important;
+  line-height:1.55 !important;
+}
+
+/* Buttons match Catering */
+[data-decoration-page] #saveDecorationPrice {
+  min-height:53px !important;
+  border-radius:999px !important;
+  font-size:.91rem !important;
+  letter-spacing:.03em !important;
+}
+
+[data-decoration-page] .workflow-summary [data-decoration-continue] {
+  min-height:53px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  border-radius:999px !important;
+  font-size:.91rem !important;
+  letter-spacing:.08em !important;
+}
+
+/* Keep Saved state gold */
+[data-decoration-page] #saveDecorationPrice.is-saved,
+[data-decoration-page] #saveDecorationPrice.is-saved:hover,
+[data-decoration-page] #saveDecorationPrice.is-saved:focus {
+  background:#c89235 !important;
+  border-color:#c89235 !important;
+  color:#ffffff !important;
+  opacity:1 !important;
+}
+
+/* Do not show an empty-looking summary container */
+[data-decoration-page] .decor-summary-list:empty {
+  display:none !important;
+}
+
+@media(max-width:991.98px){
+  [data-decoration-page] .workflow-summary > .panel__body {
+    max-height:none !important;
+  }
+}
+</style>
+
+
+<style>
+/* =========================================================
+   DECORATION CARDS — MATCH CLEAN CATERING CARD DESIGN
+   Visual-only refinement. Existing data, prices, IDs,
+   selection logic, modal logic and summary logic stay unchanged.
+   ========================================================= */
+
+/* ---------- shared card look ---------- */
+
+[data-decoration-page] .decoration-theme-card,
+[data-decoration-page] .decoration-option-card{
+  position:relative !important;
+  overflow:hidden !important;
+
+  display:flex !important;
+  flex-direction:column !important;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,.97),
+      rgba(250,247,240,.91)
+    ) !important;
+
+  border:1px solid rgba(193,176,145,.60) !important;
+  border-radius:18px !important;
+
+  box-shadow:
+    0 9px 20px rgba(35,31,24,.06),
+    inset 0 1px 0 rgba(255,255,255,.96) !important;
+
+  transition:
+    transform .22s ease,
+    border-color .22s ease,
+    box-shadow .22s ease,
+    background .22s ease !important;
+}
+
+/* champagne accent rail */
+[data-decoration-page] .decoration-theme-card::before,
+[data-decoration-page] .decoration-option-card::before{
+  content:"";
+  position:absolute;
+  top:18px;
+  bottom:18px;
+  left:0;
+
+  width:3px;
+  border-radius:999px;
+
+  background:
+    linear-gradient(
+      180deg,
+      transparent,
+      #e1bd70 15%,
+      #b77a20 50%,
+      #e1bd70 84%,
+      transparent
+    );
+
+  opacity:.86;
+}
+
+/* ---------- theme cards ---------- */
+
+[data-decoration-page] .decoration-theme-card{
+  min-height:245px !important;
+  height:245px !important;
+  max-height:245px !important;
+
+  padding:20px 20px 18px 22px !important;
+}
+
+[data-decoration-page] .decoration-theme-card__top{
+  min-height:58px !important;
+
+  display:flex !important;
+  align-items:flex-start !important;
+  justify-content:space-between !important;
+  gap:14px !important;
+
+  margin:0 !important;
+}
+
+[data-decoration-page] .decoration-theme-card__top strong{
+  flex:1 1 auto !important;
+
+  color:#123f33 !important;
+
+  font-family:"Karla",sans-serif !important;
+  font-size:1.08rem !important;
+  font-weight:700 !important;
+  line-height:1.34 !important;
+  letter-spacing:-.01em !important;
+}
+
+[data-decoration-page] .decoration-theme-card__desc{
+  min-height:72px !important;
+  max-height:72px !important;
+
+  margin:8px 0 10px !important;
+
+  color:#52615a !important;
+
+  font-family:"Karla",sans-serif !important;
+  font-size:.96rem !important;
+  line-height:1.5 !important;
+
+  overflow:hidden !important;
+}
+
+[data-decoration-page] .decoration-theme-card__price{
+  margin:auto 0 14px !important;
+  padding-top:11px !important;
+
+  color:#a96d18 !important;
+
+  font-family:"Cormorant Garamond",serif !important;
+  font-size:1.35rem !important;
+  font-weight:700 !important;
+  line-height:1.15 !important;
+
+  border-top:1px solid rgba(181,145,75,.25) !important;
+}
+
+[data-decoration-page] .decoration-theme-explore{
+  min-height:44px !important;
+
+  margin:0 !important;
+
+  border:1.5px solid #17483a !important;
+  border-radius:999px !important;
+
+  background:#fff !important;
+  color:#17483a !important;
+
+  font-family:"Karla",sans-serif !important;
+  font-size:.88rem !important;
+  font-weight:500 !important;
+  letter-spacing:.07em !important;
+}
+
+[data-decoration-page] .decoration-theme-explore:hover{
+  background:#17483a !important;
+  color:#fff !important;
+}
+
+/* ---------- decoration elements + add-ons ---------- */
+
+[data-decoration-page] .decoration-section-grid{
+  display:grid !important;
+  grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  gap:16px !important;
+  align-items:stretch !important;
+}
+
+[data-decoration-page] .decoration-option-card{
+  min-height:165px !important;
+  height:165px !important;
+  max-height:165px !important;
+
+  padding:20px 20px 18px 22px !important;
+}
+
+[data-decoration-page] .decoration-option-card__head{
+  display:flex !important;
+  align-items:flex-start !important;
+  justify-content:space-between !important;
+  gap:14px !important;
+
+  min-height:60px !important;
+}
+
+[data-decoration-page] .decoration-option-card__head strong{
+  flex:1 1 auto !important;
+
+  color:#123f33 !important;
+
+  font-family:"Karla",sans-serif !important;
+  font-size:1.03rem !important;
+  font-weight:700 !important;
+  line-height:1.34 !important;
+  letter-spacing:-.01em !important;
+}
+
+[data-decoration-page] .decoration-option-card__price{
+  margin:auto 0 0 !important;
+  padding-top:13px !important;
+
+  color:#a96d18 !important;
+
+  font-family:"Cormorant Garamond",serif !important;
+  font-size:1.30rem !important;
+  font-weight:700 !important;
+  line-height:1.15 !important;
+
+  border-top:1px solid rgba(181,145,75,.25) !important;
+}
+
+/* ---------- clearer selector ---------- */
+
+[data-decoration-page] .decoration-select{
+  appearance:none !important;
+  -webkit-appearance:none !important;
+
+  display:inline-grid !important;
+  place-content:center !important;
+
+  width:28px !important;
+  height:28px !important;
+  min-width:28px !important;
+
+  margin:0 !important;
+
+  background:#fff !important;
+  border:2px solid #17483a !important;
+  border-radius:50% !important;
+
+  box-shadow:0 3px 8px rgba(23,72,58,.08) !important;
+
+  transition:
+    transform .2s ease,
+    border-color .2s ease,
+    box-shadow .2s ease,
+    background .2s ease !important;
+}
+
+[data-decoration-page] .decoration-select::before{
+  content:"" !important;
+
+  width:11px !important;
+  height:11px !important;
+
+  border-radius:50% !important;
+
+  background:#c89235 !important;
+
+  transform:scale(0) !important;
+  transition:transform .14s ease !important;
+}
+
+[data-decoration-page] .decoration-select:checked{
+  border-color:#b77a20 !important;
+  background:#fff9eb !important;
+
+  box-shadow:
+    0 0 0 5px rgba(191,139,47,.11),
+    0 5px 12px rgba(51,39,20,.10) !important;
+}
+
+[data-decoration-page] .decoration-select:checked::before{
+  transform:scale(1) !important;
+}
+
+/* ---------- hover / selected ---------- */
+
+[data-decoration-page] .decoration-theme-card:hover,
+[data-decoration-page] .decoration-option-card:hover{
+  transform:translateY(-4px) !important;
+
+  border-color:rgba(183,122,32,.78) !important;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,.99),
+      rgba(252,248,238,.93)
+    ) !important;
+
+  box-shadow:
+    0 16px 34px rgba(42,34,22,.10),
+    inset 0 1px 0 rgba(255,255,255,1) !important;
+}
+
+[data-decoration-page] .decoration-theme-card.selected,
+[data-decoration-page] .decoration-option-card.selected{
+  border:1.5px solid #c89235 !important;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,.99),
+      rgba(255,248,232,.95)
+    ) !important;
+
+  box-shadow:
+    0 0 0 3px rgba(200,146,53,.08),
+    0 15px 30px rgba(45,35,20,.10) !important;
+}
+
+[data-decoration-page] .decoration-theme-card.selected strong,
+[data-decoration-page] .decoration-option-card.selected strong{
+  color:#0f392e !important;
+}
+
+/* ---------- section headings for cleaner scan ---------- */
+
+[data-decoration-page] .panel > .panel__head h5{
+  color:#173f34 !important;
+
+  font-family:"Cormorant Garamond",serif !important;
+  font-size:1.75rem !important;
+  font-weight:700 !important;
+}
+
+/* ---------- responsive ---------- */
+
+@media(max-width:767.98px){
+  [data-decoration-page] .choice-grid,
+  [data-decoration-page] .decoration-section-grid{
+    grid-template-columns:1fr !important;
+  }
+
+  [data-decoration-page] .decoration-theme-card,
+  [data-decoration-page] .decoration-option-card{
+    height:auto !important;
+    max-height:none !important;
+  }
+
+  [data-decoration-page] .decoration-theme-card{
+    min-height:235px !important;
+  }
+
+  [data-decoration-page] .decoration-option-card{
+    min-height:155px !important;
+  }
+
+  [data-decoration-page] .decoration-theme-card__desc{
+    min-height:0 !important;
+    max-height:none !important;
+  }
+}
+</style>
+
+
+<style>
+/* =========================================================
+   DECORATION CARDS — MATCH THE NEW CATERING / PHOTOGRAPHY LOOK
+   ========================================================= */
+
+/* Shared royal card */
+[data-decoration-page] .decoration-theme-card,
+[data-decoration-page] .decoration-option-card{
+  position:relative !important;
+  overflow:hidden !important;
+
+  display:flex !important;
+  flex-direction:column !important;
+
+  padding:0 !important;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,.95),
+      rgba(250,247,239,.88)
+    ) !important;
+
+  border:1px solid rgba(190,165,120,.48) !important;
+  border-radius:24px !important;
+
+  box-shadow:
+    0 12px 28px rgba(42,34,23,.075),
+    inset 0 1px 0 rgba(255,255,255,.96) !important;
+
+  transition:
+    transform .24s ease,
+    border-color .24s ease,
+    box-shadow .24s ease,
+    background .24s ease !important;
+}
+
+/* Gold left accent */
+[data-decoration-page] .decoration-theme-card::before,
+[data-decoration-page] .decoration-option-card::before{
+  content:"";
+  position:absolute;
+  top:18px;
+  bottom:18px;
+  left:0;
+
+  width:4px;
+  border-radius:999px;
+
+  background:
+    linear-gradient(
+      180deg,
+      transparent,
+      #e1bd70 15%,
+      #b77a20 50%,
+      #e1bd70 84%,
+      transparent
+    );
+
+  opacity:.92;
+  z-index:3;
+}
+
+/* =========================================================
+   THEME CARD
+   ========================================================= */
+
+[data-decoration-page] .decoration-theme-card{
+  height:315px !important;
+  min-height:315px !important;
+  max-height:315px !important;
+}
+
+/* Header band */
+[data-decoration-page] .decoration-theme-card__top{
+  position:relative !important;
+  z-index:2 !important;
+
+  width:100% !important;
+  min-height:82px !important;
+  height:82px !important;
+  max-height:82px !important;
+
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  gap:16px !important;
+
+  margin:0 !important;
+  padding:20px 24px 18px 34px !important;
+
+  background:
+    linear-gradient(
+      110deg,
+      rgba(15,70,54,.17) 0%,
+      rgba(31,91,69,.10) 52%,
+      rgba(205,164,80,.035) 100%
+    ) !important;
+
+  border-bottom:1px solid rgba(181,145,75,.34) !important;
+}
+
+/* gold underline under title */
+[data-decoration-page] .decoration-theme-card__top::after{
+  content:"";
+  position:absolute;
+  left:34px;
+  bottom:-1px;
+
+  width:76px;
+  height:2px;
+  border-radius:999px;
+
+  background:
+    linear-gradient(90deg,#a96e18,#e3bf72,#a96e18);
+}
+
+/* Theme title */
+[data-decoration-page] .decoration-theme-card__top strong{
+  flex:1 1 auto !important;
+
+  margin:0 !important;
+
+  color:#123f33 !important;
+
+  font-family:"Cormorant Garamond",serif !important;
+  font-size:1.55rem !important;
+  font-weight:700 !important;
+  line-height:1.12 !important;
+  letter-spacing:0 !important;
+}
+
+/* Theme content body */
+[data-decoration-page] .decoration-theme-card__desc{
+  min-height:96px !important;
+  max-height:96px !important;
+
+  margin:0 !important;
+  padding:24px 28px 12px 34px !important;
+
+  color:#5e6d66 !important;
+
+  font-family:"Karla",sans-serif !important;
+  font-size:1.02rem !important;
+  line-height:1.55 !important;
+
+  overflow:hidden !important;
+}
+
+/* Theme price */
+[data-decoration-page] .decoration-theme-card__price{
+  margin:auto 28px 14px 34px !important;
+  padding-top:15px !important;
+
+  color:#a96d18 !important;
+
+  font-family:"Cormorant Garamond",serif !important;
+  font-size:1.48rem !important;
+  font-weight:700 !important;
+  line-height:1.1 !important;
+
+  border-top:1px solid rgba(181,145,75,.25) !important;
+}
+
+/* Explore */
+[data-decoration-page] .decoration-theme-explore{
+  width:auto !important;
+  min-height:52px !important;
+
+  margin:0 28px 24px 34px !important;
+  padding:.65rem 1rem !important;
+
+  border:1.5px solid #17483a !important;
+  border-radius:999px !important;
+
+  background:rgba(255,255,255,.70) !important;
+  color:#17483a !important;
+
+  font-family:"Karla",sans-serif !important;
+  font-size:.95rem !important;
+  font-weight:500 !important;
+  letter-spacing:.07em !important;
+}
+
+/* =========================================================
+   ELEMENT + ADD-ON CARDS
+   ========================================================= */
+
+[data-decoration-page] .decoration-section-grid{
+  display:grid !important;
+  grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  gap:18px !important;
+  align-items:stretch !important;
+}
+
+[data-decoration-page] .decoration-option-card{
+  height:190px !important;
+  min-height:190px !important;
+  max-height:190px !important;
+}
+
+/* Header band */
+[data-decoration-page] .decoration-option-card__head{
+  position:relative !important;
+  z-index:2 !important;
+
+  width:100% !important;
+  min-height:78px !important;
+  height:78px !important;
+  max-height:78px !important;
+
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  gap:14px !important;
+
+  margin:0 !important;
+  padding:18px 22px 17px 32px !important;
+
+  background:
+    linear-gradient(
+      110deg,
+      rgba(15,70,54,.16) 0%,
+      rgba(31,91,69,.09) 55%,
+      rgba(205,164,80,.03) 100%
+    ) !important;
+
+  border-bottom:1px solid rgba(181,145,75,.32) !important;
+}
+
+/* underline */
+[data-decoration-page] .decoration-option-card__head::after{
+  content:"";
+  position:absolute;
+  left:32px;
+  bottom:-1px;
+
+  width:64px;
+  height:2px;
+  border-radius:999px;
+
+  background:
+    linear-gradient(90deg,#a96e18,#e3bf72,#a96e18);
+}
+
+/* Option title */
+[data-decoration-page] .decoration-option-card__head strong{
+  flex:1 1 auto !important;
+
+  margin:0 !important;
+
+  color:#123f33 !important;
+
+  font-family:"Cormorant Garamond",serif !important;
+  font-size:1.32rem !important;
+  font-weight:700 !important;
+  line-height:1.14 !important;
+}
+
+/* Option price */
+[data-decoration-page] .decoration-option-card__price{
+  margin:auto 24px 24px 32px !important;
+  padding-top:16px !important;
+
+  color:#a96d18 !important;
+
+  font-family:"Cormorant Garamond",serif !important;
+  font-size:1.38rem !important;
+  font-weight:700 !important;
+  line-height:1.1 !important;
+
+  border-top:1px solid rgba(181,145,75,.25) !important;
+}
+
+/* =========================================================
+   RADIO / CHECKBOX
+   ========================================================= */
+
+[data-decoration-page] .decoration-select{
+  appearance:none !important;
+  -webkit-appearance:none !important;
+
+  display:inline-grid !important;
+  place-content:center !important;
+
+  width:31px !important;
+  height:31px !important;
+  min-width:31px !important;
+
+  margin:0 !important;
+
+  background:#fffdf7 !important;
+
+  border:2px solid #17483a !important;
+  border-radius:50% !important;
+
+  box-shadow:
+    0 4px 10px rgba(23,72,58,.08) !important;
+}
+
+[data-decoration-page] .decoration-select::before{
+  content:"";
+  width:12px !important;
+  height:12px !important;
+
+  border-radius:50% !important;
+
+  background:#c89235 !important;
+
+  transform:scale(0) !important;
+  transition:transform .14s ease !important;
+}
+
+[data-decoration-page] .decoration-select:checked{
+  border-color:#b77a20 !important;
+  background:#fff8e9 !important;
+
+  box-shadow:
+    0 0 0 5px rgba(191,139,47,.12),
+    0 5px 12px rgba(51,39,20,.10) !important;
+}
+
+[data-decoration-page] .decoration-select:checked::before{
+  transform:scale(1) !important;
+}
+
+/* =========================================================
+   HOVER / SELECTED
+   ========================================================= */
+
+[data-decoration-page] .decoration-theme-card:hover,
+[data-decoration-page] .decoration-option-card:hover{
+  transform:translateY(-5px) !important;
+
+  border-color:rgba(183,122,32,.72) !important;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,.99),
+      rgba(252,248,238,.93)
+    ) !important;
+
+  box-shadow:
+    0 20px 40px rgba(38,31,20,.11),
+    inset 0 1px 0 rgba(255,255,255,1) !important;
+}
+
+[data-decoration-page] .decoration-theme-card.selected,
+[data-decoration-page] .decoration-option-card.selected{
+  border:1.5px solid #c89235 !important;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,.99),
+      rgba(255,249,235,.95)
+    ) !important;
+
+  box-shadow:
+    0 0 0 3px rgba(200,146,53,.08),
+    0 18px 36px rgba(45,35,20,.10) !important;
+}
+
+[data-decoration-page] .decoration-theme-card.selected .decoration-theme-card__top,
+[data-decoration-page] .decoration-option-card.selected .decoration-option-card__head{
+  background:
+    linear-gradient(
+      110deg,
+      rgba(12,62,47,.23),
+      rgba(24,75,57,.14) 58%,
+      rgba(205,160,69,.07)
+    ) !important;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media(max-width:767.98px){
+
+  [data-decoration-page] .choice-grid,
+  [data-decoration-page] .decoration-section-grid{
+    grid-template-columns:1fr !important;
+  }
+
+  [data-decoration-page] .decoration-theme-card,
+  [data-decoration-page] .decoration-option-card{
+    height:auto !important;
+    max-height:none !important;
+  }
+
+  [data-decoration-page] .decoration-theme-card{
+    min-height:300px !important;
+  }
+
+  [data-decoration-page] .decoration-option-card{
+    min-height:180px !important;
+  }
+
+  [data-decoration-page] .decoration-theme-card__desc{
+    min-height:0 !important;
+    max-height:none !important;
+  }
+}
+</style>
+
+
+<style>
+/* =========================================================
+   FINAL DECORATION OPTION CARD CONTENT
+   Adds concise descriptions to the middle of every
+   Decoration Element and Add-on card while preserving
+   all existing names, IDs, prices and selection logic.
+   ========================================================= */
+
+[data-decoration-page] .decoration-option-card{
+  height:225px !important;
+  min-height:225px !important;
+  max-height:225px !important;
+}
+
+/* Header stays consistent with the Catering-style card */
+[data-decoration-page] .decoration-option-card__head{
+  flex:0 0 78px !important;
+}
+
+/* Short description in the previous empty middle area */
+[data-decoration-page] .decoration-option-card__desc{
+  position:relative !important;
+  z-index:2 !important;
+
+  flex:1 1 auto !important;
+
+  display:flex !important;
+  align-items:flex-start !important;
+
+  margin:0 !important;
+  padding:18px 32px 12px 32px !important;
+
+  color:#66736d !important;
+
+  font-family:"Karla",sans-serif !important;
+  font-size:.94rem !important;
+  font-weight:400 !important;
+  line-height:1.48 !important;
+  letter-spacing:.003em !important;
+}
+
+/* Keep every price on the same baseline */
+[data-decoration-page] .decoration-option-card__price{
+  flex:0 0 auto !important;
+
+  margin:0 24px 22px 32px !important;
+  padding-top:14px !important;
+
+  color:#a96d18 !important;
+
+  font-family:"Cormorant Garamond",serif !important;
+  font-size:1.38rem !important;
+  font-weight:700 !important;
+  line-height:1.1 !important;
+
+  border-top:1px solid rgba(181,145,75,.25) !important;
+}
+
+/* Slightly clearer text on hover/selection */
+[data-decoration-page] .decoration-option-card:hover .decoration-option-card__desc,
+[data-decoration-page] .decoration-option-card.selected .decoration-option-card__desc{
+  color:#4f6058 !important;
+}
+
+@media(max-width:767.98px){
+  [data-decoration-page] .decoration-option-card{
+    height:auto !important;
+    min-height:210px !important;
+    max-height:none !important;
+  }
+
+  [data-decoration-page] .decoration-option-card__head{
+    flex-basis:auto !important;
+  }
+
+  [data-decoration-page] .decoration-option-card__desc{
+    padding:17px 26px 12px 32px !important;
+  }
+}
+</style>
+
+</head>
+
+<body>
+
+<!-- =========================================================
+     NAVIGATION
+     ========================================================= -->
+
+<nav class="navbar navbar-expand-lg bb-nav sticky-top">
+
+  <div class="container-fluid px-3 px-lg-4">
+
+    <a
+      class="navbar-brand"
+      href="/prototype/index.html"
+    >
+      Bliss &amp; Beyond
+      <small>Customer Portal</small>
+    </a>
+
+    <div class="d-flex align-items-center gap-3">
+
+      <a
+        class="d-none d-md-inline small"
+        href="/prototype/index.html"
+      >
+        <i class="bi bi-house-door me-1"></i>
+        Public site
+      </a>
+
+      <div class="dropdown">
+
+        <button
+          class="btn btn-forest btn-sm dropdown-toggle"
+          data-bs-toggle="dropdown"
+        >
+          Amara Perera
+        </button>
+
+        <ul class="dropdown-menu dropdown-menu-end">
+
+          <li>
+            <a
+              class="dropdown-item"
+              href="/prototype/customer/profile.html"
+            >
+              Profile
+            </a>
+          </li>
+
+          <li>
+            <a
+              class="dropdown-item"
+              href="/prototype/login.html"
+            >
+              Sign out
+            </a>
+          </li>
+
+        </ul>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</nav>
+
+<div class="bb-shell">
+
+<main
+  class="bb-main"
+  data-decoration-page
+>
+
+<!-- =========================================================
+     HEADER
+     ========================================================= -->
+
+<div
+  class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-3"
+>
+
+  <div>
+
+    <span class="eyebrow">
+      Customer portal
+    </span>
+
+    <h1 class="h2 mt-1 mb-1">
+      Customize Decoration
+    </h1>
+
+    <p class="small text-ink-soft mb-0">
+      Choose your event theme, decoration elements and finishing details.
+    </p>
+
+  </div>
+
+  <div class="d-flex gap-2">
+
+    <a
+      class="btn btn-outline-forest btn-sm"
+      href="/prototype/customer/services.html"
+    >
+      Back to Services
+    </a>
+
+    <a
+      class="btn btn-gold btn-sm"
+      href="/prototype/customer/review.html"
+      data-decoration-continue
+    >
+      Continue to Review
+    </a>
+
+  </div>
+
+</div>
+
+<!-- =========================================================
+     EVENT CONTEXT
+     ========================================================= -->
+
+<div class="workflow-context">
+
+  <div class="workflow-meta">
+
+    <span
+      class="bb-badge gold"
+      data-decoration-event-type
+    >
+      Wedding
+    </span>
+
+    <span
+      class="bb-badge"
+      data-decoration-event-guests
+    >
+      150 Guests
+    </span>
+
+    <span
+      class="bb-badge"
+      data-decoration-event-date
+    >
+      20 December 2026
+    </span>
+
+  </div>
+
+</div>
+
+<div class="row g-4">
+
+<!-- =========================================================
+     LEFT
+     ========================================================= -->
+
+<div class="col-lg-8">
+
+<!-- =========================================================
+     THEMES
+     ========================================================= -->
+
+<section class="panel mb-4">
+
+  <div class="panel__head">
+    <h5>Decoration Theme</h5>
+  </div>
+
+  <div class="panel__body">
+
+    <div class="choice-grid">
+
+      <label class="decoration-theme-card">
+
+        <div class="decoration-theme-card__top">
+
+          <strong>Luxury</strong>
+
+          <input
+            class="decoration-select"
+            type="radio"
+            name="theme"
+            id="luxury"
+            value="Luxury"
+            data-decoration-option
+            data-group="theme"
+            data-price="350000"
+            data-label="Luxury"
+          >
+
+        </div>
+
+        <div class="decoration-theme-card__desc">
+          Elegant premium styling with rich textures,
+          statement décor and polished details.
+        </div>
+
+        <div class="decoration-theme-card__price">
+          350,000 MMK
+        </div>
+
+        <button
+          class="btn btn-outline-forest btn-sm w-100 decoration-theme-explore"
+          type="button"
+          data-explore-theme="Luxury"
+        >
+          Explore
+        </button>
+
+      </label>
+
+      <label class="decoration-theme-card">
+
+        <div class="decoration-theme-card__top">
+
+          <strong>Romantic</strong>
+
+          <input
+            class="decoration-select"
+            type="radio"
+            name="theme"
+            id="romantic"
+            value="Romantic"
+            data-decoration-option
+            data-group="theme"
+            data-price="300000"
+            data-label="Romantic"
+          >
+
+        </div>
+
+        <div class="decoration-theme-card__desc">
+          Soft floral styling, warm tones and elegant
+          accents for weddings and receptions.
+        </div>
+
+        <div class="decoration-theme-card__price">
+          300,000 MMK
+        </div>
+
+        <button
+          class="btn btn-outline-forest btn-sm w-100 decoration-theme-explore"
+          type="button"
+          data-explore-theme="Romantic"
+        >
+          Explore
+        </button>
+
+      </label>
+
+      <label class="decoration-theme-card">
+
+        <div class="decoration-theme-card__top">
+
+          <strong>Garden</strong>
+
+          <input
+            class="decoration-select"
+            type="radio"
+            name="theme"
+            id="garden"
+            value="Garden"
+            data-decoration-option
+            data-group="theme"
+            data-price="280000"
+            data-label="Garden"
+          >
+
+        </div>
+
+        <div class="decoration-theme-card__desc">
+          Fresh greenery, floral details and natural styling
+          for indoor or outdoor events.
+        </div>
+
+        <div class="decoration-theme-card__price">
+          280,000 MMK
+        </div>
+
+        <button
+          class="btn btn-outline-forest btn-sm w-100 decoration-theme-explore"
+          type="button"
+          data-explore-theme="Garden"
+        >
+          Explore
+        </button>
+
+      </label>
+
+      <label class="decoration-theme-card">
+
+        <div class="decoration-theme-card__top">
+
+          <strong>
+            Myanmar Traditional
+          </strong>
+
+          <input
+            class="decoration-select"
+            type="radio"
+            name="theme"
+            id="myanmar-traditional"
+            value="Myanmar Traditional"
+            data-decoration-option
+            data-group="theme"
+            data-price="320000"
+            data-label="Myanmar Traditional"
+          >
+
+        </div>
+
+        <div class="decoration-theme-card__desc">
+          Traditional Myanmar-inspired colours,
+          floral styling and ceremonial presentation.
+        </div>
+
+        <div class="decoration-theme-card__price">
+          320,000 MMK
+        </div>
+
+        <button
+          class="btn btn-outline-forest btn-sm w-100 decoration-theme-explore"
+          type="button"
+          data-explore-theme="Myanmar Traditional"
+        >
+          Explore
+        </button>
+
+      </label>
+
+    </div>
+
+  </div>
+
+</section>
+
+<!-- =========================================================
+     DECORATION ELEMENTS
+     ========================================================= -->
+
+<section class="panel mb-4">
+
+  <div class="panel__head">
+    <h5>Decoration Elements</h5>
+  </div>
+
+  <div class="panel__body">
+
+    <div class="decoration-section-grid">
+
+      <label class="decoration-option-card">
+        <div class="decoration-option-card__head">
+          <strong>Stage Decoration</strong>
+          <input
+            class="decoration-select"
+            type="checkbox"
+            id="stage-decoration"
+            data-decoration-option
+            data-group="elements"
+            data-price="250000"
+            data-label="Stage Decoration"
+          >
+        </div>
+        
+        <div class="decoration-option-card__desc">
+          Statement styling for the main stage and focal event area.
+        </div>
+
+        <div class="decoration-option-card__price">
+          250,000 MMK
+        </div>
+      </label>
+
+      <label class="decoration-option-card">
+        <div class="decoration-option-card__head">
+          <strong>Backdrop</strong>
+          <input
+            class="decoration-select"
+            type="checkbox"
+            id="backdrop"
+            data-decoration-option
+            data-group="elements"
+            data-price="180000"
+            data-label="Backdrop"
+          >
+        </div>
+        
+        <div class="decoration-option-card__desc">
+          A polished decorative background for ceremonies, photos and key moments.
+        </div>
+
+        <div class="decoration-option-card__price">
+          180,000 MMK
+        </div>
+      </label>
+
+      <label class="decoration-option-card">
+        <div class="decoration-option-card__head">
+          <strong>Entrance Decoration</strong>
+          <input
+            class="decoration-select"
+            type="checkbox"
+            id="entrance-decoration"
+            data-decoration-option
+            data-group="elements"
+            data-price="150000"
+            data-label="Entrance Decoration"
+          >
+        </div>
+        
+        <div class="decoration-option-card__desc">
+          Welcoming floral and decorative details for the event entrance.
+        </div>
+
+        <div class="decoration-option-card__price">
+          150,000 MMK
+        </div>
+      </label>
+
+      <label class="decoration-option-card">
+        <div class="decoration-option-card__head">
+          <strong>Guest Tables</strong>
+          <input
+            class="decoration-select"
+            type="checkbox"
+            id="guest-tables"
+            data-decoration-option
+            data-group="elements"
+            data-price="120000"
+            data-label="Guest Tables"
+          >
+        </div>
+        
+        <div class="decoration-option-card__desc">
+          Coordinated table styling to create a refined guest experience.
+        </div>
+
+        <div class="decoration-option-card__price">
+          120,000 MMK
+        </div>
+      </label>
+
+      <label class="decoration-option-card">
+        <div class="decoration-option-card__head">
+          <strong>Head Table</strong>
+          <input
+            class="decoration-select"
+            type="checkbox"
+            id="head-table"
+            data-decoration-option
+            data-group="elements"
+            data-price="130000"
+            data-label="Head Table"
+          >
+        </div>
+        
+        <div class="decoration-option-card__desc">
+          Elegant feature-table styling for the couple or honored guests.
+        </div>
+
+        <div class="decoration-option-card__price">
+          130,000 MMK
+        </div>
+      </label>
+
+      <label class="decoration-option-card">
+        <div class="decoration-option-card__head">
+          <strong>Aisle Decoration</strong>
+          <input
+            class="decoration-select"
+            type="checkbox"
+            id="aisle-decoration"
+            data-decoration-option
+            data-group="elements"
+            data-price="100000"
+            data-label="Aisle Decoration"
+          >
+        </div>
+        
+        <div class="decoration-option-card__desc">
+          Graceful floral and decorative accents along the ceremony aisle.
+        </div>
+
+        <div class="decoration-option-card__price">
+          100,000 MMK
+        </div>
+      </label>
+
+      <label class="decoration-option-card">
+        <div class="decoration-option-card__head">
+          <strong>Ceiling Decoration</strong>
+          <input
+            class="decoration-select"
+            type="checkbox"
+            id="ceiling-decoration"
+            data-decoration-option
+            data-group="elements"
+            data-price="170000"
+            data-label="Ceiling Decoration"
+          >
+        </div>
+        
+        <div class="decoration-option-card__desc">
+          Overhead styling that adds depth, atmosphere and visual impact.
+        </div>
+
+        <div class="decoration-option-card__price">
+          170,000 MMK
+        </div>
+      </label>
+
+      <label class="decoration-option-card">
+        <div class="decoration-option-card__head">
+          <strong>Photo Area Decoration</strong>
+          <input
+            class="decoration-select"
+            type="checkbox"
+            id="photo-area-decoration"
+            data-decoration-option
+            data-group="elements"
+            data-price="140000"
+            data-label="Photo Area Decoration"
+          >
+        </div>
+        
+        <div class="decoration-option-card__desc">
+          A dedicated styled space for memorable guest photographs.
+        </div>
+
+        <div class="decoration-option-card__price">
+          140,000 MMK
+        </div>
+      </label>
+
+      <label class="decoration-option-card">
+        <div class="decoration-option-card__head">
+          <strong>Cake Table Decoration</strong>
+          <input
+            class="decoration-select"
+            type="checkbox"
+            id="cake-table-decoration"
+            data-decoration-option
+            data-group="elements"
+            data-price="110000"
+            data-label="Cake Table Decoration"
+          >
+        </div>
+        
+        <div class="decoration-option-card__desc">
+          Elegant styling to highlight the cake and dessert display.
+        </div>
+
+        <div class="decoration-option-card__price">
+          110,000 MMK
+        </div>
+      </label>
+
+      <label class="decoration-option-card">
+        <div class="decoration-option-card__head">
+          <strong>Gift Table Decoration</strong>
+          <input
+            class="decoration-select"
+            type="checkbox"
+            id="gift-table-decoration"
+            data-decoration-option
+            data-group="elements"
+            data-price="90000"
+            data-label="Gift Table Decoration"
+          >
+        </div>
+        
+        <div class="decoration-option-card__desc">
+          Neat decorative touches for gifts, cards and keepsakes.
+        </div>
+
+        <div class="decoration-option-card__price">
+          90,000 MMK
+        </div>
+      </label>
+
+      <label class="decoration-option-card">
+        <div class="decoration-option-card__head">
+          <strong>Lounge Area Decoration</strong>
+          <input
+            class="decoration-select"
+            type="checkbox"
+            id="lounge-area-decoration"
+            data-decoration-option
+            data-group="elements"
+            data-price="125000"
+            data-label="Lounge Area Decoration"
+          >
+        </div>
+        
+        <div class="decoration-option-card__desc">
+          Comfortable decorative styling for relaxed guest seating areas.
+        </div>
+
+        <div class="decoration-option-card__price">
+          125,000 MMK
+        </div>
+      </label>
+
+    </div>
+
+  </div>
+
+</section>
+
+<!-- =========================================================
+     ADD-ONS
+     ========================================================= -->
+
+<section class="panel mb-4">
+
+  <div class="panel__head">
+    <h5>Decoration Add-ons</h5>
+  </div>
+
+  <div class="panel__body">
+
+    <div class="decoration-section-grid">
+
+      <label class="decoration-option-card">
+        <div class="decoration-option-card__head">
+          <strong>Candles</strong>
+          <input
+            class="decoration-select"
+            type="checkbox"
+            id="candles"
+            data-decoration-option
+            data-group="addons"
+            data-price="60000"
+            data-label="Candles"
+          >
+        </div>
+        
+        <div class="decoration-option-card__desc">
+          Warm candlelight accents for a soft and romantic atmosphere.
+        </div>
+
+        <div class="decoration-option-card__price">
+          60,000 MMK
+        </div>
+      </label>
+
+      <label class="decoration-option-card">
+        <div class="decoration-option-card__head">
+          <strong>Welcome Sign</strong>
+          <input
+            class="decoration-select"
+            type="checkbox"
+            id="welcome-sign"
+            data-decoration-option
+            data-group="addons"
+            data-price="80000"
+            data-label="Welcome Sign"
+          >
+        </div>
+        
+        <div class="decoration-option-card__desc">
+          A stylish personalized sign to greet guests at the entrance.
+        </div>
+
+        <div class="decoration-option-card__price">
+          80,000 MMK
+        </div>
+      </label>
+
+      <label class="decoration-option-card">
+        <div class="decoration-option-card__head">
+          <strong>Photo Backdrop</strong>
+          <input
+            class="decoration-select"
+            type="checkbox"
+            id="photo-backdrop"
+            data-decoration-option
+            data-group="addons"
+            data-price="140000"
+            data-label="Photo Backdrop"
+          >
+        </div>
+        
+        <div class="decoration-option-card__desc">
+          A decorative photo feature designed for memorable event pictures.
+        </div>
+
+        <div class="decoration-option-card__price">
+          140,000 MMK
+        </div>
+      </label>
+
+      <label class="decoration-option-card">
+        <div class="decoration-option-card__head">
+          <strong>Custom Signage</strong>
+          <input
+            class="decoration-select"
+            type="checkbox"
+            id="custom-signage"
+            data-decoration-option
+            data-group="addons"
+            data-price="100000"
+            data-label="Custom Signage"
+          >
+        </div>
+        
+        <div class="decoration-option-card__desc">
+          Personalized event signs for names, directions or special messages.
+        </div>
+
+        <div class="decoration-option-card__price">
+          100,000 MMK
+        </div>
+      </label>
+
+      <label class="decoration-option-card">
+        <div class="decoration-option-card__head">
+          <strong>Floral Centrepieces</strong>
+          <input
+            class="decoration-select"
+            type="checkbox"
+            id="floral-centrepieces"
+            data-decoration-option
+            data-group="addons"
+            data-price="160000"
+            data-label="Floral Centrepieces"
+          >
+        </div>
+        
+        <div class="decoration-option-card__desc">
+          Elegant floral arrangements to enhance guest tables.
+        </div>
+
+        <div class="decoration-option-card__price">
+          160,000 MMK
+        </div>
+      </label>
+
+      <label class="decoration-option-card">
+        <div class="decoration-option-card__head">
+          <strong>Fairy Lights</strong>
+          <input
+            class="decoration-select"
+            type="checkbox"
+            id="fairy-lights"
+            data-decoration-option
+            data-group="addons"
+            data-price="90000"
+            data-label="Fairy Lights"
+          >
+        </div>
+        
+        <div class="decoration-option-card__desc">
+          Warm decorative lighting for a romantic and inviting atmosphere.
+        </div>
+
+        <div class="decoration-option-card__price">
+          90,000 MMK
+        </div>
+      </label>
+
+      <label class="decoration-option-card">
+        <div class="decoration-option-card__head">
+          <strong>Table Number Signs</strong>
+          <input
+            class="decoration-select"
+            type="checkbox"
+            id="table-number-signs"
+            data-decoration-option
+            data-group="addons"
+            data-price="70000"
+            data-label="Table Number Signs"
+          >
+        </div>
+        
+        <div class="decoration-option-card__desc">
+          Stylish numbering to guide guests clearly to their tables.
+        </div>
+
+        <div class="decoration-option-card__price">
+          70,000 MMK
+        </div>
+      </label>
+
+      <label class="decoration-option-card">
+        <div class="decoration-option-card__head">
+          <strong>Chair Decorations</strong>
+          <input
+            class="decoration-select"
+            type="checkbox"
+            id="chair-decorations"
+            data-decoration-option
+            data-group="addons"
+            data-price="85000"
+            data-label="Chair Decorations"
+          >
+        </div>
+        
+        <div class="decoration-option-card__desc">
+          Elegant accents to enhance and coordinate guest seating.
+        </div>
+
+        <div class="decoration-option-card__price">
+          85,000 MMK
+        </div>
+      </label>
+
+      <label class="decoration-option-card">
+        <div class="decoration-option-card__head">
+          <strong>Hanging Florals</strong>
+          <input
+            class="decoration-select"
+            type="checkbox"
+            id="hanging-florals"
+            data-decoration-option
+            data-group="addons"
+            data-price="95000"
+            data-label="Hanging Florals"
+          >
+        </div>
+        
+        <div class="decoration-option-card__desc">
+          Suspended floral styling for an elegant overhead display.
+        </div>
+
+        <div class="decoration-option-card__price">
+          95,000 MMK
+        </div>
+      </label>
+
+      <label class="decoration-option-card">
+        <div class="decoration-option-card__head">
+          <strong>Lantern Decoration</strong>
+          <input
+            class="decoration-select"
+            type="checkbox"
+            id="lantern-decoration"
+            data-decoration-option
+            data-group="addons"
+            data-price="75000"
+            data-label="Lantern Decoration"
+          >
+        </div>
+        
+        <div class="decoration-option-card__desc">
+          Classic lantern accents that add warmth and decorative charm.
+        </div>
+
+        <div class="decoration-option-card__price">
+          75,000 MMK
+        </div>
+      </label>
+
+      <label class="decoration-option-card">
+        <div class="decoration-option-card__head">
+          <strong>Flower Arch</strong>
+          <input
+            class="decoration-select"
+            type="checkbox"
+            id="flower-arch"
+            data-decoration-option
+            data-group="addons"
+            data-price="120000"
+            data-label="Flower Arch"
+          >
+        </div>
+        
+        <div class="decoration-option-card__desc">
+          A statement floral arch for entrances, ceremonies or photo moments.
+        </div>
+
+        <div class="decoration-option-card__price">
+          120,000 MMK
+        </div>
+      </label>
+
+    </div>
+
+  </div>
+
+</section>
+
+<!-- =========================================================
+     NOTES
+     ========================================================= -->
+
+<section class="panel">
+
+  <div class="panel__head">
+    <h5>Additional Decoration Notes</h5>
+  </div>
+
+  <div class="panel__body">
+
+    <label
+      class="form-label"
+      for="decorationNotes"
+    >
+      Tell us about preferred colours, flowers,
+      cultural details, materials or special decoration requests.
+    </label>
+
+    <textarea
+      class="form-control decoration-note-box"
+      id="decorationNotes"
+      rows="4"
+      data-decoration-notes
+    ></textarea>
+
+  </div>
+
+</section>
+
+</div>
+
+<!-- =========================================================
+     RIGHT SUMMARY
+     ========================================================= -->
+
+<div class="col-lg-4">
+
+  <div
+    class="panel workflow-summary position-sticky"
+    style="top:90px"
+  >
+
+    <div class="panel__head">
+      <h5>Your Decoration</h5>
+    </div>
+
+    <div class="panel__body">
+
+      <div class="mb-3">
+
+        <div
+          class="bb-price"
+          data-decoration-total
+        >
+          0 MMK
+        </div>
+
+        <div class="small text-ink-soft mt-1">
+          Estimated decoration total
+        </div>
+
+      </div>
+
+      <p
+        class="small text-ink-soft mb-3"
+        data-decoration-empty
+      >
+        Choose a decoration theme or option to begin.
+      </p>
+
+      <div
+        class="small text-danger mb-2"
+        data-decoration-status
+        aria-live="polite"
+      ></div>
+
+      <ul class="decor-summary-list">
+
+        <li
+          class="decor-summary-item is-empty"
+          data-summary-row="theme"
+        >
+
+          <div class="decor-summary-icon">
+            <i class="bi bi-stars"></i>
+          </div>
+
+          <div class="decor-summary-content">
+
+            <span class="decor-summary-label">
+              Theme
+            </span>
+
+            <strong data-summary-theme>
+              -
+            </strong>
+
+            <div
+              class="decor-summary-price"
+              data-summary-theme-price
+            >
+              -
+            </div>
+
+          </div>
+
+        </li>
+
+        <li
+          class="decor-summary-item is-empty"
+          data-summary-row="elements"
+        >
+
+          <div class="decor-summary-icon">
+            <i class="bi bi-flower1"></i>
+          </div>
+
+          <div class="decor-summary-content">
+
+            <span class="decor-summary-label">
+              Decoration Elements
+            </span>
+
+            <strong data-summary-elements>
+              -
+            </strong>
+
+          </div>
+
+        </li>
+
+        <li
+          class="decor-summary-item is-empty"
+          data-summary-row="addons"
+        >
+
+          <div class="decor-summary-icon">
+            <i class="bi bi-gem"></i>
+          </div>
+
+          <div class="decor-summary-content">
+
+            <span class="decor-summary-label">
+              Add-ons
+            </span>
+
+            <strong data-summary-addons>
+              -
+            </strong>
+
+          </div>
+
+        </li>
+
+        <li
+          class="decor-summary-item is-empty"
+          data-summary-row="notes"
+        >
+
+          <div class="decor-summary-icon">
+            <i class="bi bi-journal-text"></i>
+          </div>
+
+          <div class="decor-summary-content">
+
+            <span class="decor-summary-label">
+              Additional Notes
+            </span>
+
+            <strong data-summary-notes>
+              -
+            </strong>
+
+          </div>
+
+        </li>
+
+      </ul>
+
+      <p class="small text-ink-soft mb-3">
+        Final pricing may change depending on design complexity,
+        materials and event setup requirements.
+      </p>
+
+      <div class="d-grid gap-2">
+
+        <button
+          class="btn btn-gold"
+          type="button"
+          id="saveDecorationPrice"
+        >
+          Save Price
+        </button>
+
+        <a
+          class="btn btn-outline-forest"
+          href="/prototype/customer/review.html"
+          data-decoration-continue
+        >
+          Continue to Review
+        </a>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+</div>
+
+</main>
+</div>
+
+<!-- =========================================================
+     THEME MODAL
+     ========================================================= -->
+
+<div
+  class="modal fade"
+  id="decorationThemeModal"
+  tabindex="-1"
+  aria-hidden="true"
+>
+
+  <div
+    class="modal-dialog modal-dialog-centered modal-dialog-scrollable"
+  >
+
+    <div class="modal-content">
+
+      <div class="modal-header">
+
+        <div>
+
+          <div class="eyebrow">
+            Decoration Theme Details
+          </div>
+
+          <h3
+            class="mb-1"
+            data-theme-modal-title
+          >
+            Theme
+          </h3>
+
+          <p
+            class="small text-ink-soft mb-0"
+            data-theme-modal-intro
+          ></p>
+
+        </div>
+
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+
+      </div>
+
+      <div class="modal-body">
+
+        <div class="decor-theme-hero">
+
+          <img
+            src=""
+            alt=""
+            data-theme-modal-image
+          >
+
+          <div class="decor-theme-info">
+
+            <span class="decor-theme-info__label">
+              Decoration Theme
+            </span>
+
+            <h3
+              class="decor-theme-info__name"
+              data-theme-modal-hero-title
+            >
+              Theme
+            </h3>
+
+            <div class="decor-theme-info__divider"></div>
+
+            <div
+              class="decor-theme-info__price"
+              data-theme-modal-hero-price
+            >
+              0 MMK
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="decor-theme-included">
+
+          <span class="decor-theme-included__eyebrow">
+            What's Included
+          </span>
+
+          <h4 class="decor-theme-included__title">
+            Theme Details
+          </h4>
+
+          <div
+            class="decor-theme-properties"
+            data-theme-modal-properties
+          ></div>
+
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+
+        <button
+          class="btn btn-outline-forest"
+          type="button"
+          data-bs-dismiss="modal"
+        >
+          Back
+        </button>
+
+        <button
+          class="btn btn-gold"
+          type="button"
+          id="chooseDecorationTheme"
+        >
+          Choose This Theme
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<script
+  src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+></script>
+
+<script
+  src="/prototype/assets/js/main.js"
+></script>
+
+<!-- =========================================================
+     SAVE + SUMMARY
+     ========================================================= -->
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+  const SERVICE_ID = 'decoration';
+  const BACKEND_SERVICE_ID = 2;
+  const SERVICE_TITLE = 'Decoration & Styling';
+
+  const SAVE_TEXT = 'Save Decoration';
+  const SAVED_TEXT = '✓ Saved';
+
+  const money = value =>
+    Number(value || 0).toLocaleString('en-US') + ' MMK';
+
+  const saveBtn =
+    document.getElementById('saveDecorationPrice');
+
+  const statusEl =
+    document.querySelector('[data-decoration-status]');
+
+  const notesInput =
+    document.querySelector('[data-decoration-notes]');
+
+  const emptyEl =
+    document.querySelector('[data-decoration-empty]');
+
+  const continueLinks =
+    [...document.querySelectorAll('[data-decoration-continue]')];
+
+  let isSaved = false;
+  let isRestoring = false;
+  let isCatalogAvailable = true;
+
+  function selectedByGroup(group) {
+
+    return [
+      ...document.querySelectorAll(
+        '[data-decoration-option]:checked'
+      )
+    ].filter(
+      input =>
+        input.dataset.group === group
+    );
+
+  }
+
+  function getInputLabel(input) {
+
+    return (
+      input?.dataset?.label ||
+      input?.value ||
+      input?.name ||
+      ''
+    );
+
+  }
+
+  function getInputPrice(input) {
+
+    return Number(
+      input?.dataset?.price || 0
+    );
+
+  }
+
+  function buildState() {
+
+    const theme =
+      selectedByGroup('theme')[0] || null;
+
+    const elements =
+      selectedByGroup('elements');
+
+    const addOns =
+      selectedByGroup('addons');
+
+    const notes =
+      notesInput?.value.trim() || '';
+
+    const total = [
+      ...(theme ? [theme] : []),
+      ...elements,
+      ...addOns
+    ].reduce(
+      (sum,item) =>
+        sum + getInputPrice(item),
+      0
+    );
+
+    return {
+
+      serviceId:SERVICE_ID,
+
+      backendServiceId:
+        BACKEND_SERVICE_ID,
+
+      title:
+        SERVICE_TITLE,
+
+      estimatedTotal:
+        total,
+
+      options:[
+        theme
+          ? getInputLabel(theme)
+          : '',
+        ...elements.map(getInputLabel),
+        ...addOns.map(getInputLabel)
+      ].filter(Boolean),
+
+      selections:{
+
+        theme:
+          theme
+            ? {
+                id:theme.id || '',
+                label:getInputLabel(theme),
+                price:getInputPrice(theme)
+              }
+            : null,
+
+        elements:
+          elements.map(item => ({
+            id:item.id || '',
+            label:getInputLabel(item),
+            price:getInputPrice(item)
+          })),
+
+        addOns:
+          addOns.map(item => ({
+            id:item.id || '',
+            label:getInputLabel(item),
+            price:getInputPrice(item)
+          })),
+
+        notes
+
+      }
+
+    };
+
+  }
+
+  function setStatus(message='') {
+
+    if(statusEl){
+      statusEl.textContent = message;
+    }
+
+  }
+
+  function syncAvailabilityUI() {
+
+    document
+      .querySelectorAll('[data-decoration-option]')
+      .forEach(input => {
+
+        input.disabled =
+          !isCatalogAvailable;
+
+      });
+
+    if(notesInput){
+
+      notesInput.disabled =
+        !isCatalogAvailable;
+
+    }
+
+    if(saveBtn){
+
+      saveBtn.disabled =
+        !isCatalogAvailable;
+
+    }
+
+    continueLinks.forEach(link => {
+
+      const locked =
+        !isCatalogAvailable;
+
+      link.classList.toggle(
+        'disabled',
+        locked
+      );
+
+      link.setAttribute(
+        'aria-disabled',
+        locked ? 'true' : 'false'
+      );
+
+      link.tabIndex =
+        locked ? -1 : 0;
+
+      link.style.pointerEvents =
+        locked ? 'none' : '';
+
+    });
+
+  }
+
+  function setSaveState(saved) {
+
+    isSaved = Boolean(saved);
+
+    if(!saveBtn){
+      return;
+    }
+
+    saveBtn.textContent =
+      saved
+        ? SAVED_TEXT
+        : SAVE_TEXT;
+
+    saveBtn.classList.toggle(
+      'is-saved',
+      saved
+    );
+
+    syncAvailabilityUI();
+
+  }
+
+  function updateSelectedServices(total) {
+
+    const current =
+      typeof bbGetSelectedServices === 'function'
+        ? bbGetSelectedServices()
+            .filter(
+              item =>
+                item.id !== SERVICE_ID
+            )
+        : [];
+
+    if(total > 0){
+
+      current.push({
+
+        id:SERVICE_ID,
+
+        title:SERVICE_TITLE,
+
+        estimatedTotal:total
+
+      });
+
+    }
+
+    if(
+      typeof bbSetSelectedServices === 'function'
+    ){
+
+      bbSetSelectedServices(
+        current
+      );
+
+    }
+
+  }
+
+  function persistDecoration() {
+
+    if(!isCatalogAvailable){
+      return null;
+    }
+
+    const state =
+      buildState();
+
+    if(!state.options.length){
+
+      setStatus(
+        'Please choose at least one decoration option before saving.'
+      );
+
+      setSaveState(false);
+
+      return null;
+
+    }
+
+    setStatus('');
+
+    if(
+      typeof bbSetServiceData === 'function'
+    ){
+
+      bbSetServiceData(
+        SERVICE_ID,
+        state
+      );
+
+    }
+
+    updateSelectedServices(
+      state.estimatedTotal
+    );
+
+    setSaveState(true);
+
+    return state;
+
+  }
+
+  function clearControls() {
+
+    document
+      .querySelectorAll('[data-decoration-option]')
+      .forEach(input => {
+
+        input.checked = false;
+
+      });
+
+    if(notesInput){
+      notesInput.value = '';
+    }
+
+  }
+
+  function restoreDecoration(saved) {
+
+    if(!saved){
+
+      updateDecorationSummary();
+
+      setSaveState(false);
+
+      return;
+
+    }
+
+    isRestoring = true;
+
+    clearControls();
+
+    const savedTheme =
+      saved.selections?.theme;
+
+    if(savedTheme){
+
+      const input =
+        (
+          savedTheme.id &&
+          document.getElementById(
+            savedTheme.id
+          )
+        )
+        ||
+        [
+          ...document.querySelectorAll(
+            '[data-group="theme"]'
+          )
+        ].find(
+          item =>
+            getInputLabel(item) ===
+            savedTheme.label
+        );
+
+      if(input){
+        input.checked = true;
+      }
+
+    }
+
+    const restoreList =
+      (items,group) => {
+
+        (
+          Array.isArray(items)
+            ? items
+            : []
+        ).forEach(item => {
+
+          const input =
+            (
+              item?.id &&
+              document.getElementById(
+                item.id
+              )
+            )
+            ||
+            [
+              ...document.querySelectorAll(
+                `[data-group="${group}"]`
+              )
+            ].find(
+              option =>
+                getInputLabel(option) ===
+                item?.label
+            );
+
+          if(input){
+            input.checked = true;
+          }
+
+        });
+
+      };
+
+    restoreList(
+      saved.selections?.elements,
+      'elements'
+    );
+
+    restoreList(
+      saved.selections?.addOns,
+      'addons'
+    );
+
+    if(notesInput){
+
+      notesInput.value =
+        saved.selections?.notes || '';
+
+    }
+
+    updateDecorationSummary();
+
+    isSaved = true;
+
+    if(saveFeedbackTimer){
+      clearTimeout(saveFeedbackTimer);
+      saveFeedbackTimer = null;
+    }
+
+    if(saveBtn){
+      saveBtn.textContent = SAVE_TEXT;
+      saveBtn.classList.remove('is-saved');
+    }
+
+    syncAvailabilityUI();
+
+    isRestoring = false;
+
+  }
+
+  function updateCardSelectionUI() {
+
+    document
+      .querySelectorAll(
+        '.decoration-theme-card, .decoration-option-card'
+      )
+      .forEach(card => {
+
+        const input =
+          card.querySelector(
+            '[data-decoration-option]'
+          );
+
+        card.classList.toggle(
+          'selected',
+          !!input?.checked
+        );
+
+      });
+
+  }
+
+  function updateDecorationSummary() {
+
+    const theme =
+      selectedByGroup('theme');
+
+    const elements =
+      selectedByGroup('elements');
+
+    const addons =
+      selectedByGroup('addons');
+
+    const notes =
+      notesInput?.value.trim() || '';
+
+    const totalFor =
+      items =>
+        items.reduce(
+          (sum,item) =>
+            sum + getInputPrice(item),
+          0
+        );
+
+    const themeTotal =
+      totalFor(theme);
+
+    const elementTotal =
+      totalFor(elements);
+
+    const addonTotal =
+      totalFor(addons);
+
+    const grandTotal =
+      themeTotal +
+      elementTotal +
+      addonTotal;
+
+    document.querySelector(
+      '[data-decoration-total]'
+    ).textContent =
+      money(grandTotal);
+
+    const themeEl =
+      document.querySelector(
+        '[data-summary-theme]'
+      );
+
+    const themePriceEl =
+      document.querySelector(
+        '[data-summary-theme-price]'
+      );
+
+    const themeRow =
+      document.querySelector(
+        '[data-summary-row="theme"]'
+      );
+
+    if(theme.length){
+
+      themeEl.textContent =
+        getInputLabel(theme[0]);
+
+      themePriceEl.textContent =
+        money(themeTotal);
+
+      themeRow.classList.remove(
+        'is-empty'
+      );
+
+    }else{
+
+      themeEl.textContent = '-';
+
+      themePriceEl.textContent = '-';
+
+      themeRow.classList.add(
+        'is-empty'
+      );
+
+    }
+
+    const elementsEl =
+      document.querySelector(
+        '[data-summary-elements]'
+      );
+
+    const elementsRow =
+      document.querySelector(
+        '[data-summary-row="elements"]'
+      );
+
+    if(elements.length){
+
+      elementsEl.innerHTML = `
+
+        <ul class="summary-priced-list">
+
+          ${elements.map(item => `
+
+            <li>
+
+              <span>
+                ${getInputLabel(item)}
+              </span>
+
+              <span class="price">
+                ${money(getInputPrice(item))}
+              </span>
+
+            </li>
+
+          `).join('')}
+
+        </ul>
+
+      `;
+
+      elementsRow.classList.remove(
+        'is-empty'
+      );
+
+    }else{
+
+      elementsEl.textContent = '-';
+
+      elementsRow.classList.add(
+        'is-empty'
+      );
+
+    }
+
+    const addonsEl =
+      document.querySelector(
+        '[data-summary-addons]'
+      );
+
+    const addonsRow =
+      document.querySelector(
+        '[data-summary-row="addons"]'
+      );
+
+    if(addons.length){
+
+      addonsEl.innerHTML = `
+
+        <ul class="summary-priced-list">
+
+          ${addons.map(item => `
+
+            <li>
+
+              <span>
+                ${getInputLabel(item)}
+              </span>
+
+              <span class="price">
+                ${money(getInputPrice(item))}
+              </span>
+
+            </li>
+
+          `).join('')}
+
+        </ul>
+
+      `;
+
+      addonsRow.classList.remove(
+        'is-empty'
+      );
+
+    }else{
+
+      addonsEl.textContent = '-';
+
+      addonsRow.classList.add(
+        'is-empty'
+      );
+
+    }
+
+    const notesEl =
+      document.querySelector(
+        '[data-summary-notes]'
+      );
+
+    const notesRow =
+      document.querySelector(
+        '[data-summary-row="notes"]'
+      );
+
+    if(notes){
+
+      notesEl.textContent = notes;
+
+      notesRow.classList.remove(
+        'is-empty'
+      );
+
+    }else{
+
+      notesEl.textContent = '-';
+
+      notesRow.classList.add(
+        'is-empty'
+      );
+
+    }
+
+    const anyChoice =
+      theme.length ||
+      elements.length ||
+      addons.length ||
+      notes;
+
+    if(emptyEl){
+
+      emptyEl.classList.toggle(
+        'd-none',
+        !!anyChoice
+      );
+
+    }
+
+    updateCardSelectionUI();
+
+  }
+
+  document.addEventListener(
+    'change',
+    function(event){
+
+      if(
+        !event.target.matches(
+          '[data-decoration-option]'
+        )
+      ){
+        return;
+      }
+
+      if(!isCatalogAvailable){
+        return;
+      }
+
+      if(
+        !isRestoring &&
+        isSaved
+      ){
+
+        setSaveState(false);
+
+      }
+
+      setStatus('');
+
+      updateDecorationSummary();
+
+    }
+  );
+
+  notesInput?.addEventListener(
+    'input',
+    function(){
+
+      if(!isCatalogAvailable){
+        return;
+      }
+
+      if(
+        !isRestoring &&
+        isSaved
+      ){
+
+        setSaveState(false);
+
+      }
+
+      setStatus('');
+
+      updateDecorationSummary();
+
+    }
+  );
+
+  saveBtn?.addEventListener(
+    'click',
+    function(event){
+
+      event.preventDefault();
+      event.stopPropagation();
+
+      persistDecoration();
+
+    }
+  );
+
+  continueLinks.forEach(link => {
+
+    link.addEventListener(
+      'click',
+      function(event){
+
+        const state = buildState();
+
+        if(!state.options.length){
+
+          event.preventDefault();
+
+          setStatus(
+            'Please choose at least one decoration option before continuing.'
+          );
+
+          return;
+
+        }
+
+        persistDecoration();
+
+      }
+    );
+
+  });
+
+  async function checkBackendAvailability() {
+
+    try{
+
+      const response =
+        await fetch(
+          'http://localhost:8081/api/services/2',
+          {
+            cache:'no-store'
+          }
+        );
+
+      if(!response.ok){
+
+        throw new Error(
+          `HTTP ${response.status}`
+        );
+
+      }
+
+      const data =
+        await response.json();
+
+      const serviceName =
+        String(
+          data?.name ||
+          data?.title ||
+          ''
+        ).toLowerCase();
+
+      if(
+        Number(data?.id) !==
+          BACKEND_SERVICE_ID
+        ||
+        !serviceName.includes(
+          'decoration'
+        )
+      ){
+
+        throw new Error(
+          'Unexpected service payload'
+        );
+
+      }
+
+      isCatalogAvailable =
+        data?.available !== false;
+
+      setStatus(
+        isCatalogAvailable
+          ? ''
+          : 'Decoration & Styling is currently unavailable.'
+      );
+
+      syncAvailabilityUI();
+
+    }catch(error){
+
+      console.log(
+        'Decoration catalog unavailable; using frontend fallback.'
+      );
+
+      isCatalogAvailable = true;
+
+      syncAvailabilityUI();
+
+    }
+
+  }
+
+  /*
+     Start this customization page blank every time it is opened.
+     Previously saved decoration data can still remain available to
+     other pages until the user saves a new decoration selection.
+  */
+  clearControls();
+  isSaved = false;
+
+  if(saveBtn){
+    saveBtn.textContent = SAVE_TEXT;
+    saveBtn.classList.remove('is-saved');
+  }
+
+  setStatus('');
+  updateDecorationSummary();
+  syncAvailabilityUI();
+
+  checkBackendAvailability();
+
+});
+</script>
+
+<!-- =========================================================
+     THEME POPUP
+     ========================================================= -->
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+  const themeDetails = {
+
+    "Luxury":{
+      title:"Luxury Decoration",
+
+      price:"350,000 MMK",
+
+      image:
+        "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1400&q=85",
+
+      intro:
+        "Elegant premium styling designed for formal weddings, receptions and sophisticated celebrations.",
+
+      properties:[
+        "Rich fabrics and polished decorative finishes",
+        "Statement floral arrangements",
+        "Premium stage and backdrop styling",
+        "Gold, ivory, champagne or deep-tone accents",
+        "Elegant table and entrance presentation"
+      ]
+    },
+
+    "Romantic":{
+      title:"Romantic Decoration",
+
+      price:"300,000 MMK",
+
+      image:
+        "https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=1400&q=85",
+
+      intro:
+        "Soft and graceful styling with florals, warm colours and intimate decorative details.",
+
+      properties:[
+        "Soft pink, blush, ivory and warm neutral tones",
+        "Fresh or artificial floral accents",
+        "Warm candle and fairy-light details",
+        "Elegant couple or head-table styling",
+        "Photo-friendly reception atmosphere"
+      ]
+    },
+
+    "Garden":{
+      title:"Garden Decoration",
+
+      price:"280,000 MMK",
+
+      image:
+        "https://peragarden.netlify.app/wedding-venue-evening-lights-romantic-atmosphere.jpg",
+
+      intro:
+        "Fresh natural styling using greenery, flowers and airy details for indoor or outdoor celebrations.",
+
+      properties:[
+        "Greenery and natural floral styling",
+        "Fresh, light and open presentation",
+        "Suitable for outdoor or garden-inspired venues",
+        "Wood, white and natural decorative accents",
+        "Simple elegant table and aisle décor"
+      ]
+    },
+
+    "Myanmar Traditional":{
+      title:"Myanmar Traditional Decoration",
+
+      price:"320,000 MMK",
+
+      image:
+        "https://cattleyawedding.com/wp-content/uploads/2024/03/MY-Wedding-13.jpg",
+
+      intro:
+        "Myanmar-inspired styling that combines traditional colours, ceremonial presentation and elegant floral details.",
+
+      properties:[
+        "Traditional Myanmar-inspired colour palette",
+        "Ceremonial floral and stage presentation",
+        "Gold and warm decorative accents",
+        "Suitable for Myanmar wedding traditions",
+        "Traditional details blended with modern event styling"
+      ]
+    }
+
+  };
+
+  const modalEl =
+    document.getElementById(
+      'decorationThemeModal'
+    );
+
+  const modal =
+    new bootstrap.Modal(
+      modalEl
+    );
+
+  let activeThemeName = '';
+
+  document
+    .querySelectorAll(
+      '[data-explore-theme]'
+    )
+    .forEach(button => {
+
+      button.addEventListener(
+        'click',
+        function(event){
+
+          event.preventDefault();
+
+          event.stopPropagation();
+
+          const themeName =
+            this.dataset.exploreTheme;
+
+          const detail =
+            themeDetails[themeName];
+
+          if(!detail){
+            return;
+          }
+
+          activeThemeName =
+            themeName;
+
+          modalEl
+            .querySelector(
+              '[data-theme-modal-title]'
+            )
+            .textContent =
+              detail.title;
+
+          modalEl
+            .querySelector(
+              '[data-theme-modal-intro]'
+            )
+            .textContent =
+              detail.intro;
+
+          modalEl
+            .querySelector(
+              '[data-theme-modal-hero-title]'
+            )
+            .textContent =
+              themeName;
+
+          modalEl
+            .querySelector(
+              '[data-theme-modal-hero-price]'
+            )
+            .textContent =
+              detail.price;
+
+          const image =
+            modalEl.querySelector(
+              '[data-theme-modal-image]'
+            );
+
+          image.src =
+            detail.image;
+
+          image.alt =
+            detail.title;
+
+          const propertyContainer =
+            modalEl.querySelector(
+              '[data-theme-modal-properties]'
+            );
+
+          propertyContainer.innerHTML =
+            '';
+
+          requestAnimationFrame(() => {
+
+            propertyContainer.innerHTML =
+              detail.properties
+                .map(item => `
+
+                  <div class="decor-theme-property">
+
+                    <i class="bi bi-check-lg"></i>
+
+                    <span>
+                      ${item}
+                    </span>
+
+                  </div>
+
+                `)
+                .join('');
+
+          });
+
+          modal.show();
+
+        }
+      );
+
+    });
+
+  document
+    .getElementById(
+      'chooseDecorationTheme'
+    )
+    ?.addEventListener(
+      'click',
+      function(){
+
+        const input =
+          [
+            ...document.querySelectorAll(
+              '[data-group="theme"]'
+            )
+          ].find(
+            item =>
+              item.value ===
+              activeThemeName
+          );
+
+        if(input){
+
+          input.checked =
+            true;
+
+          input.dispatchEvent(
+            new Event(
+              'change',
+              {
+                bubbles:true
+              }
+            )
+          );
+
+        }
+
+        modal.hide();
+
+      }
+    );
+
+});
+</script>
+
+<!-- =========================================================
+     EVENT CONTEXT
+     ========================================================= -->
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+  function readSelectedEventContext() {
+
+    if(
+      typeof window.bbGetEventContext ===
+      'function'
+    ){
+
+      const context =
+        window.bbGetEventContext();
+
+      if(context){
+        return context;
+      }
+
+    }
+
+    try{
+
+      const raw =
+        sessionStorage.getItem(
+          'bb_event_context'
+        );
+
+      if(raw){
+
+        return JSON.parse(
+          raw
+        );
+
+      }
+
+    }catch(error){}
+
+    return{
+
+      eventType:
+        sessionStorage.getItem(
+          'bbEventType'
+        )
+        ||
+        'Wedding',
+
+      eventDate:
+        sessionStorage.getItem(
+          'bbEventDate'
+        )
+        ||
+        '2026-12-20',
+
+      guests:
+        Number(
+          sessionStorage.getItem(
+            'bbEventGuests'
+          )
+          ||
+          150
+        )
+
+    };
+
+  }
+
+  const context =
+    readSelectedEventContext();
+
+  const typeEl =
+    document.querySelector(
+      '[data-decoration-event-type]'
+    );
+
+  const guestEl =
+    document.querySelector(
+      '[data-decoration-event-guests]'
+    );
+
+  const dateEl =
+    document.querySelector(
+      '[data-decoration-event-date]'
+    );
+
+  if(typeEl){
+
+    typeEl.textContent =
+      context.eventType ||
+      context.type ||
+      'Wedding';
+
+  }
+
+  if(guestEl){
+
+    guestEl.textContent =
+      Number(
+        context.guests ||
+        context.guestCount ||
+        150
+      )
+      +
+      ' Guests';
+
+  }
+
+  const rawDate =
+    context.eventDate ||
+    context.date ||
+    '2026-12-20';
+
+  if(dateEl){
+
+    if(
+      /^\d{4}-\d{2}-\d{2}$/
+        .test(rawDate)
+    ){
+
+      const [y,m,d] =
+        rawDate
+          .split('-')
+          .map(Number);
+
+      dateEl.textContent =
+        new Date(
+          y,
+          m - 1,
+          d
+        )
+        .toLocaleDateString(
+          'en-GB',
+          {
+            day:'2-digit',
+            month:'long',
+            year:'numeric'
+          }
+        );
+
+    }else{
+
+      dateEl.textContent =
+        rawDate;
+
+    }
+
+  }
+
+});
+</script>
+
+
+</body>
+</html>

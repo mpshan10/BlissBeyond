@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Manage Services | Bliss &amp; Beyond</title>
+<meta name="description" content="Manage the real Bliss & Beyond service and Catering catalogs.">
+<link rel="icon" href="/prototype/../favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Karla:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="/prototype/assets/css/style.css" rel="stylesheet">
+<style>
+html:not(.bb-admin-authorized) body { visibility: hidden; }
+.catalog-tabs { gap: .5rem; border-bottom: 1px solid var(--bb-line); }
+.catalog-tabs .nav-link { color: var(--bb-green); border: 0; border-bottom: 3px solid transparent; border-radius: 0; font-weight: 700; }
+.catalog-tabs .nav-link.active { color: var(--bb-gold); background: transparent; border-bottom-color: var(--bb-gold); }
+.catalog-toolbar { background: #fbf8f0; }
+.catalog-search { width: min(100%, 390px); }
+.catalog-description { display: -webkit-box; overflow: hidden; max-width: 440px; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.catalog-actions { width: 86px; }
+.catalog-table { min-width: 850px; }
+.catalog-table th, .catalog-table td { vertical-align: middle; }
+.catalog-empty { padding: 3rem 1rem !important; color: var(--bb-ink-soft) !important; text-align: center; }
+@media (max-width: 575px) {
+  .catalog-toolbar, .catalog-toolbar > div { align-items: stretch !important; width: 100%; }
+  .catalog-search, .catalog-toolbar .form-select { width: 100% !important; }
+}
+</style>
+</head>
+<body data-admin-page data-admin-services-page>
+
+<nav class="navbar bb-nav sticky-top"><div class="container-fluid px-3 px-lg-4">
+  <a class="navbar-brand" href="/prototype/index.html">Bliss &amp; Beyond<small>Admin Console</small></a>
+  <div class="d-flex align-items-center gap-3"><a class="d-none d-md-inline small" href="/prototype/index.html"><i class="bi bi-house-door me-1"></i>Public site</a><div class="dropdown">
+    <button class="btn btn-forest btn-sm dropdown-toggle" data-bs-toggle="dropdown" data-admin-display>Administrator</button>
+    <ul class="dropdown-menu dropdown-menu-end"><li><a class="dropdown-item" href="/prototype/customer/profile.html">Profile</a></li><li><a class="dropdown-item" href="/prototype/login.html" data-admin-sign-out>Sign out</a></li></ul>
+  </div></div>
+</div></nav>
+
+<div class="bb-shell">
+  <aside class="bb-side">
+    <h6>Overview</h6><a href="/prototype/admin/dashboard.html">Dashboard</a>
+    <h6>Catalogue</h6><a href="/prototype/admin/customers.html">Customers</a><a href="/prototype/admin/packages.html">Packages</a><a href="/prototype/admin/venues.html">Venues</a><a class="active" href="/prototype/admin/services.html">Services</a>
+    <h6>Operations</h6><a href="/prototype/admin/bookings.html">Bookings</a><a href="/prototype/admin/consultations.html">Consultations</a><a href="/prototype/admin/quotations.html">Quotations</a><a href="/prototype/admin/payments.html">Payments</a><a href="/prototype/admin/reports.html">Reports</a>
+    <h6>Account</h6><a href="/prototype/login.html" data-admin-sign-out>Sign out</a>
+  </aside>
+
+  <main class="bb-main">
+    <div class="mb-4"><span class="eyebrow">Admin console</span><h1 class="h2 mt-1 mb-1">Manage Services</h1><p class="small text-ink-soft mb-0">Manage future-facing service and Catering catalog prices without altering historical bookings.</p></div>
+    <div class="alert alert-danger d-none" data-admin-catalog-message role="alert" aria-live="polite"></div>
+
+    <div class="panel overflow-hidden">
+      <ul class="nav catalog-tabs px-3 pt-2" role="tablist">
+        <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#serviceCatalog" type="button">Services <span class="badge text-bg-light ms-1" data-service-count>-</span></button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#diningStyleCatalog" type="button">Dining Styles <span class="badge text-bg-light ms-1" data-dining-style-count>-</span></button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#addOnCatalog" type="button">Catering Add-ons <span class="badge text-bg-light ms-1" data-addon-count>-</span></button></li>
+      </ul>
+
+      <div class="tab-content">
+        <section class="tab-pane fade show active" id="serviceCatalog">
+          <div class="panel__head catalog-toolbar"><div class="input-group catalog-search"><span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span><input class="form-control border-start-0" type="search" placeholder="Search service name or description" data-service-search></div><select class="form-select form-select-sm" style="width:auto" data-service-availability aria-label="Filter services by availability"><option value="ALL">All availability</option><option value="AVAILABLE">Available</option><option value="UNAVAILABLE">Unavailable</option></select></div>
+          <div class="panel__body p-0"><div class="table-responsive"><table class="table catalog-table mb-0"><thead><tr><th>Service</th><th>Description</th><th>Starting Price</th><th>Availability</th><th>Actions</th></tr></thead><tbody data-service-rows><tr><td colspan="5" class="catalog-empty">Loading services...</td></tr></tbody></table></div></div>
+        </section>
+
+        <section class="tab-pane fade" id="diningStyleCatalog">
+          <div class="panel__head catalog-toolbar"><div class="input-group catalog-search"><span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span><input class="form-control border-start-0" type="search" placeholder="Search dining style or key" data-dining-style-search></div><select class="form-select form-select-sm" style="width:auto" data-dining-style-availability aria-label="Filter dining styles by availability"><option value="ALL">All availability</option><option value="AVAILABLE">Available</option><option value="UNAVAILABLE">Unavailable</option></select></div>
+          <div class="panel__body p-0"><div class="table-responsive"><table class="table catalog-table mb-0"><thead><tr><th>Style</th><th>Key</th><th>Price per Guest</th><th>Availability</th><th>Actions</th></tr></thead><tbody data-dining-style-rows><tr><td colspan="5" class="catalog-empty">Loading dining styles...</td></tr></tbody></table></div></div>
+        </section>
+
+        <section class="tab-pane fade" id="addOnCatalog">
+          <div class="panel__head catalog-toolbar"><div class="input-group catalog-search"><span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span><input class="form-control border-start-0" type="search" placeholder="Search add-on name or description" data-addon-search></div><div class="d-flex gap-2 flex-wrap"><select class="form-select form-select-sm" style="width:auto" data-addon-billing-type aria-label="Filter add-ons by billing type"><option value="ALL">All billing types</option><option value="PER_GUEST">Per guest</option><option value="FLAT">Flat</option><option value="PER_UNIT">Per unit</option></select><select class="form-select form-select-sm" style="width:auto" data-addon-availability aria-label="Filter add-ons by availability"><option value="ALL">All availability</option><option value="AVAILABLE">Available</option><option value="UNAVAILABLE">Unavailable</option></select></div></div>
+          <div class="panel__body p-0"><div class="table-responsive"><table class="table catalog-table mb-0"><thead><tr><th>Add-on</th><th>Billing Type</th><th>Price</th><th>Availability</th><th>Actions</th></tr></thead><tbody data-addon-rows><tr><td colspan="5" class="catalog-empty">Loading add-ons...</td></tr></tbody></table></div></div>
+        </section>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="modal fade" id="serviceEditModal" tabindex="-1" aria-hidden="true"><div class="modal-dialog modal-dialog-centered"><div class="modal-content"><form data-service-edit-form>
+  <div class="modal-header"><h5 class="modal-title">Edit Service</h5><button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button></div>
+  <div class="modal-body"><input type="hidden" data-service-edit-id><div class="row g-3"><div class="col-12"><label class="form-label" for="serviceEditName">Name</label><input class="form-control" id="serviceEditName" required maxlength="120" data-service-edit-name></div><div class="col-12"><label class="form-label" for="serviceEditDescription">Description</label><textarea class="form-control" id="serviceEditDescription" rows="4" maxlength="800" data-service-edit-description></textarea></div><div class="col-md-7"><label class="form-label" for="serviceEditPrice">Starting Price (MMK)</label><input class="form-control" id="serviceEditPrice" type="number" min="0" step="0.01" required data-service-edit-price></div><div class="col-md-5"><label class="form-label" for="serviceEditAvailability">Availability</label><select class="form-select" id="serviceEditAvailability" data-service-edit-available><option value="true">Available</option><option value="false">Unavailable</option></select></div></div></div>
+  <div class="modal-footer"><button class="btn btn-outline-secondary" type="button" data-bs-dismiss="modal">Cancel</button><button class="btn btn-gold" type="submit" data-service-edit-save>Save Changes</button></div>
+</form></div></div></div>
+
+<div class="modal fade" id="diningStyleEditModal" tabindex="-1" aria-hidden="true"><div class="modal-dialog modal-dialog-centered"><div class="modal-content"><form data-dining-style-edit-form>
+  <div class="modal-header"><h5 class="modal-title">Edit Dining Style</h5><button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button></div>
+  <div class="modal-body"><input type="hidden" data-dining-style-edit-id><div class="row g-3"><div class="col-md-5"><label class="form-label" for="diningStyleEditKey">Stable Key</label><input class="form-control" id="diningStyleEditKey" readonly data-dining-style-edit-key></div><div class="col-md-7"><label class="form-label" for="diningStyleEditName">Name</label><input class="form-control" id="diningStyleEditName" required maxlength="120" data-dining-style-edit-name></div><div class="col-12"><label class="form-label" for="diningStyleEditDescription">Description</label><textarea class="form-control" id="diningStyleEditDescription" rows="4" maxlength="800" data-dining-style-edit-description></textarea></div><div class="col-md-7"><label class="form-label" for="diningStyleEditPrice">Price per Guest (MMK)</label><input class="form-control" id="diningStyleEditPrice" type="number" min="0" step="0.01" required data-dining-style-edit-price></div><div class="col-md-5"><label class="form-label" for="diningStyleEditAvailability">Availability</label><select class="form-select" id="diningStyleEditAvailability" data-dining-style-edit-available><option value="true">Available</option><option value="false">Unavailable</option></select></div></div></div>
+  <div class="modal-footer"><button class="btn btn-outline-secondary" type="button" data-bs-dismiss="modal">Cancel</button><button class="btn btn-gold" type="submit" data-dining-style-edit-save>Save Changes</button></div>
+</form></div></div></div>
+
+<div class="modal fade" id="addOnEditModal" tabindex="-1" aria-hidden="true"><div class="modal-dialog modal-dialog-centered"><div class="modal-content"><form data-addon-edit-form>
+  <div class="modal-header"><h5 class="modal-title">Edit Catering Add-on</h5><button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button></div>
+  <div class="modal-body"><input type="hidden" data-addon-edit-id><div class="row g-3"><div class="col-12"><label class="form-label" for="addOnEditName">Name</label><input class="form-control" id="addOnEditName" required maxlength="120" data-addon-edit-name></div><div class="col-12"><label class="form-label" for="addOnEditDescription">Description</label><textarea class="form-control" id="addOnEditDescription" rows="4" maxlength="800" data-addon-edit-description></textarea></div><div class="col-md-4"><label class="form-label" for="addOnEditBilling">Billing Type</label><select class="form-select" id="addOnEditBilling" data-addon-edit-billing><option value="PER_GUEST">Per guest</option><option value="FLAT">Flat</option><option value="PER_UNIT">Per unit</option></select></div><div class="col-md-4"><label class="form-label" for="addOnEditPrice">Price (MMK)</label><input class="form-control" id="addOnEditPrice" type="number" min="0" step="0.01" required data-addon-edit-price></div><div class="col-md-4"><label class="form-label" for="addOnEditAvailability">Availability</label><select class="form-select" id="addOnEditAvailability" data-addon-edit-available><option value="true">Available</option><option value="false">Unavailable</option></select></div></div></div>
+  <div class="modal-footer"><button class="btn btn-outline-secondary" type="button" data-bs-dismiss="modal">Cancel</button><button class="btn btn-gold" type="submit" data-addon-edit-save>Save Changes</button></div>
+</form></div></div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/prototype/assets/js/main.js"></script>
+<script src="/prototype/assets/js/admin.js"></script>
+</body>
+</html>

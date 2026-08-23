@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Consultation Management | Bliss &amp; Beyond</title>
+<meta name="description" content="Manage real customer consultation requests and schedules.">
+<link rel="icon" href="/prototype/../favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Karla:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="/prototype/assets/css/style.css" rel="stylesheet">
+<style>
+html:not(.bb-admin-authorized) body { visibility: hidden; }
+[data-admin-consultations-page] .bb-side { width: 216px; flex-basis: 216px; padding-inline: .8rem; }
+[data-admin-consultations-page] .bb-side a { white-space: nowrap; }
+[data-admin-consultations-page] .bb-main { padding: 1.65rem clamp(.9rem, 1.8vw, 1.8rem) 2.5rem; }
+.consultation-admin-panel { overflow: hidden; border-radius: 18px; box-shadow: 0 16px 44px rgba(24, 57, 47, .08); }
+.consultation-admin-toolbar { background: linear-gradient(135deg, #fff 0%, #fbf8f0 100%); }
+.consultation-admin-search { width: min(100%, 430px); }
+.consultation-admin-table-wrap { overflow-x: auto; padding: 0; }
+.consultation-admin-table { min-width: 1080px; margin: 0; table-layout: fixed; }
+.consultation-admin-table > thead th { padding: .9rem .8rem; background: #f7f3e9; white-space: nowrap; }
+.consultation-admin-table > tbody td { padding: 1rem .8rem; vertical-align: middle; }
+.consultation-admin-table th:nth-child(1) { width: 105px; }
+.consultation-admin-table th:nth-child(2) { width: 230px; }
+.consultation-admin-table th:nth-child(3) { width: 180px; }
+.consultation-admin-table th:nth-child(4) { width: 135px; }
+.consultation-admin-table th:nth-child(5) { width: 150px; }
+.consultation-admin-table th:nth-child(6) { width: 180px; }
+.consultation-admin-table th:nth-child(7) { width: 120px; }
+.consultation-admin-table th:nth-child(8) { width: 205px; }
+.consultation-actions { display: flex; flex-wrap: wrap; gap: .4rem; }
+.consultation-detail-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+.consultation-detail-item { padding: .9rem 1rem; border: 1px solid var(--bb-line); border-radius: 12px; background: #fbfaf6; }
+.consultation-detail-item.wide { grid-column: 1 / -1; }
+.consultation-detail-label { margin-bottom: .25rem; color: var(--bb-ink-soft); font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+@media (max-width: 991px) { [data-admin-consultations-page] .bb-side { width: 100%; flex-basis: auto; } [data-admin-consultations-page] .bb-main { width: 100%; } }
+@media (max-width: 575px) { .consultation-admin-toolbar, .consultation-admin-toolbar > div { align-items: stretch !important; width: 100%; } .consultation-admin-search, .consultation-admin-toolbar .form-select { width: 100% !important; } .consultation-detail-grid { grid-template-columns: 1fr; } .consultation-detail-item.wide { grid-column: auto; } }
+</style>
+</head>
+<body data-admin-page data-admin-consultations-page>
+
+<nav class="navbar bb-nav sticky-top"><div class="container-fluid px-3 px-lg-4">
+  <a class="navbar-brand" href="/prototype/index.html">Bliss &amp; Beyond<small>Admin Console</small></a>
+  <div class="d-flex align-items-center gap-3"><a class="d-none d-md-inline small" href="/prototype/index.html"><i class="bi bi-house-door me-1"></i>Public site</a><div class="dropdown"><button class="btn btn-forest btn-sm dropdown-toggle" data-bs-toggle="dropdown" data-admin-display>Administrator</button><ul class="dropdown-menu dropdown-menu-end"><li><a class="dropdown-item" href="/prototype/customer/profile.html">Profile</a></li><li><a class="dropdown-item" href="/prototype/login.html" data-admin-sign-out>Sign out</a></li></ul></div></div>
+</div></nav>
+
+<div class="bb-shell">
+  <aside class="bb-side">
+    <h6>Overview</h6><a href="/prototype/admin/dashboard.html">Dashboard</a>
+    <h6>Catalogue</h6><a href="/prototype/admin/customers.html">Customers</a><a href="/prototype/admin/packages.html">Packages</a><a href="/prototype/admin/venues.html">Venues</a><a href="/prototype/admin/services.html">Services</a>
+    <h6>Operations</h6><a href="/prototype/admin/bookings.html">Bookings</a><a class="active" href="/prototype/admin/consultations.html">Consultations</a><a href="/prototype/admin/quotations.html">Quotations</a><a href="/prototype/admin/payments.html">Payments</a><a href="/prototype/admin/reports.html">Reports</a>
+    <h6>Account</h6><a href="/prototype/login.html" data-admin-sign-out>Sign out</a>
+  </aside>
+
+  <main class="bb-main">
+    <div class="mb-4"><span class="eyebrow">Admin console</span><h1 class="h2 mt-1 mb-1">Consultation Management</h1><p class="small text-ink-soft mb-0" data-admin-consultation-summary>Manage customer consultation requests, schedules and outcomes.</p></div>
+
+    <div class="row g-3 mb-4">
+      <div class="col-6 col-xl-3"><div class="stat-card"><div class="d-flex justify-content-between"><div><div class="stat-label">Total</div><div class="stat-value mt-1" data-admin-consultation-count="total">-</div></div><span class="feature-icon"><i class="bi bi-chat-square-text"></i></span></div></div></div>
+      <div class="col-6 col-xl-3"><div class="stat-card"><div class="d-flex justify-content-between"><div><div class="stat-label">Requested</div><div class="stat-value mt-1" data-admin-consultation-count="requested">-</div></div><span class="feature-icon"><i class="bi bi-hourglass-split"></i></span></div></div></div>
+      <div class="col-6 col-xl-3"><div class="stat-card"><div class="d-flex justify-content-between"><div><div class="stat-label">Scheduled</div><div class="stat-value mt-1" data-admin-consultation-count="scheduled">-</div></div><span class="feature-icon"><i class="bi bi-calendar-check"></i></span></div></div></div>
+      <div class="col-6 col-xl-3"><div class="stat-card"><div class="d-flex justify-content-between"><div><div class="stat-label">Completed</div><div class="stat-value mt-1" data-admin-consultation-count="completed">-</div></div><span class="feature-icon"><i class="bi bi-check2-circle"></i></span></div></div></div>
+    </div>
+
+    <div class="alert alert-danger d-none" data-admin-consultation-message role="alert" aria-live="polite"></div>
+
+    <div class="panel consultation-admin-panel">
+      <div class="panel__head consultation-admin-toolbar">
+        <div class="input-group consultation-admin-search"><span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span><input class="form-control border-start-0" type="search" placeholder="Search ID, customer, type, or planner" data-admin-consultation-search></div>
+        <select class="form-select form-select-sm" style="width:auto" data-admin-consultation-status aria-label="Filter by consultation status"><option value="ALL">All statuses</option><option value="REQUESTED">Requested</option><option value="SCHEDULED">Scheduled</option><option value="COMPLETED">Completed</option><option value="CANCELLED">Cancelled</option></select>
+      </div>
+      <div class="panel__body consultation-admin-table-wrap"><div class="table-responsive"><table class="table consultation-admin-table align-middle"><thead><tr><th>ID</th><th>Customer</th><th>Type</th><th>Date</th><th>Time</th><th>Planner</th><th>Status</th><th>Actions</th></tr></thead><tbody data-admin-consultation-rows><tr><td colspan="8" class="text-center py-5 text-ink-soft">Loading consultations...</td></tr></tbody></table></div></div>
+    </div>
+  </main>
+</div>
+
+<div class="modal fade" id="consultationDetailModal" tabindex="-1" aria-hidden="true"><div class="modal-dialog modal-lg modal-dialog-centered"><div class="modal-content">
+  <div class="modal-header"><div><span class="eyebrow">Consultation record</span><h5 class="modal-title mt-1" data-admin-consultation-detail-title>Consultation Details</h5></div><button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button></div>
+  <div class="modal-body"><div class="consultation-detail-grid" data-admin-consultation-detail><div class="text-center py-4 text-ink-soft">Loading details...</div></div></div>
+  <div class="modal-footer"><button class="btn btn-outline-secondary" type="button" data-bs-dismiss="modal">Close</button></div>
+</div></div></div>
+
+<div class="modal fade" id="consultationScheduleModal" tabindex="-1" aria-hidden="true"><div class="modal-dialog modal-dialog-centered"><div class="modal-content"><form data-admin-consultation-schedule-form>
+  <div class="modal-header"><div><span class="eyebrow">Requested consultation</span><h5 class="modal-title mt-1">Schedule Consultation</h5></div><button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button></div>
+  <div class="modal-body"><input type="hidden" data-admin-consultation-schedule-id><div class="row g-3">
+    <div class="col-12"><div class="small text-ink-soft" data-admin-consultation-schedule-customer></div></div>
+    <div class="col-12"><label class="form-label" for="consultationScheduleDate">Consultation Date</label><input class="form-control" id="consultationScheduleDate" type="date" required data-admin-consultation-schedule-date></div>
+    <div class="col-6"><label class="form-label" for="consultationScheduleStart">Start Time</label><input class="form-control" id="consultationScheduleStart" type="time" required data-admin-consultation-schedule-start></div>
+    <div class="col-6"><label class="form-label" for="consultationScheduleEnd">End Time</label><input class="form-control" id="consultationScheduleEnd" type="time" required data-admin-consultation-schedule-end></div>
+    <div class="col-12"><label class="form-label" for="consultationSchedulePlanner">Planner</label><input class="form-control" id="consultationSchedulePlanner" maxlength="120" placeholder="Leave empty if unassigned" data-admin-consultation-schedule-planner></div>
+  </div></div>
+  <div class="modal-footer"><button class="btn btn-outline-secondary" type="button" data-bs-dismiss="modal">Cancel</button><button class="btn btn-gold" type="submit" data-admin-consultation-schedule-save>Save Schedule</button></div>
+</form></div></div></div>
+
+<div class="modal fade" id="consultationActionModal" tabindex="-1" aria-hidden="true"><div class="modal-dialog modal-dialog-centered"><div class="modal-content">
+  <div class="modal-header"><h5 class="modal-title" data-admin-consultation-action-title>Update Consultation</h5><button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button></div>
+  <div class="modal-body"><p class="mb-0" data-admin-consultation-action-message></p></div>
+  <div class="modal-footer"><button class="btn btn-outline-secondary" type="button" data-bs-dismiss="modal">Keep Current Status</button><button class="btn btn-gold" type="button" data-admin-consultation-action-confirm>Confirm</button></div>
+</div></div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/prototype/assets/js/main.js"></script>
+<script src="/prototype/assets/js/admin.js"></script>
+</body>
+</html>

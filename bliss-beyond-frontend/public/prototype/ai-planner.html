@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Event Planner | Bliss &amp; Beyond</title>
+<meta name="description" content="Get instant AI recommendations for event packages, venues, menus and budget.">
+<link rel="icon" href="/prototype/../favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Karla:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="/prototype/assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg bb-nav sticky-top">
+  <div class="container">
+    <a class="navbar-brand me-4" href="/prototype/index.html">Bliss &amp; Beyond<small>Events &amp; Catering</small></a>
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#bbNav" aria-label="Menu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="bbNav">
+      <ul class="navbar-nav ms-auto align-items-lg-center"><li class="nav-item"><a class="nav-link" href="/prototype/index.html">Home</a></li><li class="nav-item"><a class="nav-link" href="/prototype/about.html">About</a></li><li class="nav-item"><a class="nav-link" href="/prototype/services.html">Services</a></li><li class="nav-item"><a class="nav-link" href="/prototype/packages.html">Packages</a></li><li class="nav-item"><a class="nav-link" href="/prototype/venues.html">Venues</a></li><li class="nav-item"><a class="nav-link" href="/prototype/faq.html">FAQ</a></li><li class="nav-item"><a class="nav-link" href="/prototype/contact.html">Contact</a></li></ul>
+      <div class="d-flex gap-2 mt-3 mt-lg-0 ms-lg-3">
+        <a class="btn btn-outline-forest btn-sm" href="/prototype/login.html">Login</a>
+        <a class="btn btn-gold btn-sm" href="/prototype/register.html">Get Started</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<header class="page-head">
+  <div class="container">
+    
+    <h1 class="mb-2">AI Event Planner</h1>
+    <p class="mb-0 col-lg-7">Answer five questions and get matched packages, venues, a menu direction and a budget estimate.</p>
+  </div>
+</header>
+
+<section class="section"><div class="container"><div class="row g-4">
+  <div class="col-lg-5"><div class="ai-panel">
+    <span class="eyebrow">Your brief</span><h3 class="mt-2 mb-3">Tell us about the event</h3>
+    <form id="aiForm" class="row g-3">
+      <div class="col-12"><label class="form-label">Event type</label>
+        <select class="form-select" name="type">
+          <option value="wedding">Wedding</option><option value="birthday">Birthday</option>
+          <option value="corporate">Corporate event</option><option value="engagement">Engagement</option>
+          <option value="graduation">Graduation</option><option value="anniversary">Anniversary</option></select></div>
+      <div class="col-6"><label class="form-label">Guests</label><input class="form-control" type="number" name="guests" value="150" min="10"></div>
+      <div class="col-6"><label class="form-label">Budget (USD)</label><input class="form-control" type="number" name="budget" value="9000" step="500"></div>
+      <div class="col-12"><label class="form-label">Style</label>
+        <select class="form-select" name="style"><option value="classic">Classic &amp; formal</option>
+        <option value="rustic">Rustic &amp; garden</option><option value="modern">Modern &amp; vibrant</option>
+        <option value="minimal">Minimal &amp; corporate</option></select></div>
+      <div class="col-12"><label class="form-label">Anything else?</label>
+        <textarea class="form-control" rows="3" placeholder="Sunset ceremony, live band, vegetarian menu..."></textarea></div>
+      <div class="col-12"><button class="btn btn-gold w-100" type="submit">Generate my plan</button></div>
+    </form>
+  </div></div>
+  <div class="col-lg-7">
+    <div id="aiLoading" class="ai-result d-none text-center py-5">
+      <div class="spinner-border text-secondary mb-3" role="status"></div>
+      <p class="mb-0 text-ink-soft">Analysing 8 packages and 42 venuesâ€¦</p></div>
+    <div id="aiResult" class="ai-result d-none"></div>
+    <div class="bb-card mt-3"><div class="bb-card__body">
+      <h5>How the planner works</h5>
+      <p class="small text-ink-soft mb-0">The prototype scores each package against your event type, guest count, budget fit and style preference, then estimates catering at $45 per guest plus a share of package costs. In production this runs against live availability and pricing.</p>
+    </div></div>
+  </div>
+</div></div></section>
+
+<footer class="bb-footer">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-4">
+        <a class="navbar-brand d-block h4 mb-2" href="/prototype/index.html">Bliss &amp; Beyond</a>
+        <p class="small mb-3">AI-powered event planning and catering management for weddings, celebrations and corporate gatherings since 2014.</p>
+        <div class="d-flex gap-3 fs-5">
+          <a href="#"><i class="bi bi-instagram"></i></a><a href="#"><i class="bi bi-facebook"></i></a>
+          <a href="#"><i class="bi bi-pinterest"></i></a><a href="#"><i class="bi bi-linkedin"></i></a>
+        </div>
+      </div>
+      <div class="col-6 col-lg-2"><h5 class="h6 mb-3">Explore</h5>
+        <ul class="list-unstyled d-grid gap-2">
+          <li><a href="/prototype/about.html">About Us</a></li><li><a href="/prototype/services.html">Services</a></li>
+          <li><a href="/prototype/packages.html">Packages</a></li><li><a href="/prototype/venues.html">Venues</a></li>
+          </ul></div>
+      <div class="col-6 col-lg-2"><h5 class="h6 mb-3">Account</h5>
+        <ul class="list-unstyled d-grid gap-2">
+          <li><a href="/prototype/login.html">Login</a></li><li><a href="/prototype/register.html">Register</a></li>
+          <li><a href="/prototype/customer/dashboard.html">Customer Portal</a></li>
+          <li><a href="/prototype/admin/dashboard.html">Admin Panel</a></li>
+          <li><a href="/prototype/faq.html">FAQ</a></li></ul></div>
+      <div class="col-lg-4"><h5 class="h6 mb-3">Stay in touch</h5>
+        <p class="small mb-2">18 Rosewood Avenue, Colombo 05 Â· +94 11 234 5678 Â· hello@blissandbeyond.com</p>
+        <form class="d-flex flex-column flex-sm-row gap-2 align-items-stretch" data-demo="note">
+          <input class="form-control form-control-sm" type="email" placeholder="Email address" required>
+          <button class="btn btn-gold btn-sm" type="submit">Subscribe</button>
+          <span class="d-none" data-demo-note></span>
+        </form>
+        <p class="small mt-2 mb-0 text-white-50">Prototype only â€” no data is stored.</p>
+      </div>
+    </div>
+    <div class="foot-bottom mt-4 d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2">
+      <span>&copy; 2026 Bliss &amp; Beyond. Frontend prototype.</span>
+      <span>Privacy Policy Â· Terms of Service</span>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/prototype/assets/js/main.js"></script>
+<script type="module" src="/prototype/assets/js/ai-planner.js"></script>
+</body>
+</html>

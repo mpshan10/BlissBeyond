@@ -1,0 +1,4567 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="utf-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1">
+
+<title>
+  Customize Florals | Bliss & Beyond
+</title>
+
+<link
+  rel="icon"
+  href="/prototype/../favicon.ico">
+
+<link
+  href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Karla:wght@300;400;500;600;700&display=swap"
+  rel="stylesheet">
+
+<link
+  href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+  rel="stylesheet">
+
+<link
+  href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+  rel="stylesheet">
+
+<link
+  href="/prototype/assets/css/style.css"
+  rel="stylesheet">
+
+
+<style>
+
+/* =========================================
+   INTRO
+========================================= */
+
+.floral-intro {
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(244, 238, 226, 0.95),
+      rgba(255, 255, 255, 0.96)
+    );
+
+  border:
+    1px solid rgba(160, 132, 77, 0.18);
+
+  border-radius: 20px;
+
+  padding: 28px;
+
+  margin-bottom: 28px;
+
+}
+
+
+.floral-intro-icon {
+
+  width: 54px;
+
+  height: 54px;
+
+  border-radius: 50%;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  background: #f5ead3;
+
+  color: #8b6b32;
+
+  font-size: 24px;
+
+  flex-shrink: 0;
+
+}
+
+
+
+/* =========================================
+   SECTION ICON
+========================================= */
+
+.section-icon {
+
+  color: #a77a3f;
+
+  margin-right: 7px;
+
+}
+
+
+
+/* =========================================
+   NORMAL OPTION CARDS
+========================================= */
+
+/* =========================================
+   NORMAL OPTION CARDS - FIXED ALIGNMENT
+========================================= */
+
+.floral-option {
+  display: flex;
+}
+
+.floral-option .form-check {
+  width: 100%;
+  min-height: 145px;
+  background: linear-gradient(180deg, #fffdf8, #ffffff);
+  border: 1px solid rgba(221, 211, 195, 0.92);
+  border-radius: 16px;
+  box-shadow: 0 8px 22px rgba(18, 47, 39, 0.06);
+  padding: 22px 20px 20px 55px;
+
+  position: relative;
+
+  display: flex;
+
+  transition:
+    transform .25s ease,
+    border-color .25s ease,
+    box-shadow .25s ease,
+    background .25s ease;
+}
+
+
+/* Checkbox */
+.floral-option .form-check-input {
+  position: absolute;
+
+  left: 22px;
+  top: 22px;
+
+  margin: 0;
+
+  width: 19px;
+  height: 19px;
+}
+
+
+/* Content beside checkbox */
+.floral-option .form-check-label {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  cursor: pointer;
+}
+
+
+/* Option name */
+.option-title {
+  display: block;
+
+  min-height: 24px;
+
+  font-weight: 600;
+  font-size: 17px;
+
+  color: #263c31;
+
+  margin: 0 0 6px 0;
+}
+
+
+/* Description */
+.option-description {
+  display: block;
+
+  font-size: 13px;
+  color: #7b7b72;
+  line-height: 1.5;
+
+  /*
+     Same description area for every card.
+     This keeps prices aligned.
+  */
+  min-height: 42px;
+
+  margin-bottom: 8px;
+}
+
+
+/* Price */
+.option-price {
+  display: block;
+
+  margin-top: auto;
+
+  color: #9b743a;
+
+  font-size: 14px;
+  font-weight: 700;
+}
+
+
+/* Hover */
+.floral-option .form-check:hover {
+  border-color: rgba(185, 140, 63, 0.35);
+  transform: translateY(-3px);
+  box-shadow: 0 14px 28px rgba(18, 47, 39, 0.08);
+}
+
+
+/* Selected */
+.floral-option
+.form-check:has(.form-check-input:checked) {
+  border: 2px solid #b89552;
+  background: linear-gradient(180deg, rgba(255, 250, 241, 0.98), #fff);
+  box-shadow: 0 14px 30px rgba(185, 148, 82, 0.14);
+}
+
+
+
+/* =========================================
+   SELECTED NORMAL CARD
+========================================= */
+
+.floral-option
+.form-check:has(
+  .form-check-input:checked
+) {
+
+  border:
+    2px solid #b89552;
+
+  background: linear-gradient(180deg, rgba(255, 250, 241, 0.98), #fff);
+  box-shadow: 0 14px 30px rgba(185, 148, 82, 0.14);
+
+}
+
+
+
+/* =========================================
+   FLOWER IMAGE CARD
+========================================= */
+
+.flower-image-card {
+
+  display: block;
+
+  height: 100%;
+
+  background: linear-gradient(180deg, #fffdf8, #ffffff);
+  border: 1px solid rgba(221, 211, 195, 0.92);
+  border-radius: 16px;
+  box-shadow: 0 8px 22px rgba(18, 47, 39, 0.06);
+
+  overflow: hidden;
+
+  cursor: pointer;
+
+  transition:
+    transform .25s ease,
+    border-color .25s ease,
+    box-shadow .25s ease,
+    background .25s ease;
+
+}
+
+
+.flower-image-card:hover {
+
+  transform: translateY(-3px);
+  border-color: rgba(185, 140, 63, 0.35);
+  box-shadow: 0 16px 30px rgba(18, 47, 39, 0.08);
+
+}
+
+
+.flower-card-image {
+
+  width: 100%;
+
+  height: 190px;
+
+  object-fit: cover;
+
+  display: block;
+
+}
+
+
+.flower-card-content {
+
+  padding: 15px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: .35rem;
+
+}
+
+
+.flower-card-content .form-check-input {
+
+  margin-right: 7px;
+
+}
+
+
+.flower-card-title {
+
+  color: #263c31;
+
+  font-size: 16px;
+
+  font-weight: 600;
+
+}
+
+
+.flower-card-description {
+
+  display: block;
+
+  margin-top: 6px;
+
+  margin-left: 25px;
+
+  color: #85857c;
+
+  font-size: 12px;
+
+}
+
+
+.flower-image-card:has(
+  .form-check-input:checked
+) {
+
+  border:
+    2px solid #b89552;
+
+  background: #fffaf1;
+  box-shadow: 0 14px 30px rgba(185, 148, 82, 0.15);
+
+}
+
+
+.flower-image-card:has(
+  .form-check-input:checked
+)
+.flower-card-title {
+
+  color: #9b743a;
+
+}
+
+
+
+/* =========================================
+   PALETTES
+========================================= */
+
+.palette-option {
+
+  height: 100%;
+
+  padding: 16px;
+  background: linear-gradient(180deg, #fffdf8, #ffffff);
+  border: 1px solid rgba(221, 211, 195, 0.92);
+  border-radius: 16px;
+  box-shadow: 0 8px 22px rgba(18, 47, 39, 0.06);
+  transition:
+    transform .25s ease,
+    border-color .25s ease,
+    box-shadow .25s ease,
+    background .25s ease;
+
+}
+
+
+.palette-option:hover {
+
+  border-color: rgba(185, 140, 63, 0.35);
+  transform: translateY(-2px);
+  box-shadow: 0 14px 28px rgba(18, 47, 39, 0.08);
+
+}
+
+.palette-option .form-check {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: .75rem;
+}
+
+.palette-option .form-check-input {
+  margin-top: .15rem;
+}
+
+
+.palette-option:has(
+  .form-check-input:checked
+) {
+
+  border:
+    2px solid #b89552;
+
+  background: linear-gradient(180deg, rgba(255, 250, 241, 0.98), #fff);
+  box-shadow: 0 14px 30px rgba(185, 148, 82, 0.14);
+
+}
+
+
+.palette-dots {
+
+  display: flex;
+
+  gap: 8px;
+  margin-top: 12px;
+
+}
+
+
+.palette-dot {
+
+  width: 21px;
+
+  height: 21px;
+
+  border-radius: 50%;
+
+  border:
+    1px solid
+    rgba(0,0,0,.08);
+
+}
+
+
+
+/* =========================================
+   SUMMARY
+========================================= */
+
+.workflow-summary {
+
+  position: sticky;
+
+  top: 95px;
+  background: linear-gradient(180deg, #fffdf8, #faf7ef);
+  border: 1px solid rgba(221, 211, 195, 0.88);
+  border-radius: 20px;
+  box-shadow: 0 12px 28px rgba(18, 47, 39, 0.08);
+
+}
+
+.workflow-summary .panel__head {
+  padding: 1rem 1.15rem;
+}
+
+.workflow-summary .panel__body {
+  padding: 1.1rem 1.15rem 1.15rem;
+}
+
+
+.summary-note {
+
+  padding: 12px;
+  background: #fffaf2;
+  border: 1px solid rgba(185, 140, 63, 0.12);
+  border-radius: 12px;
+  color: #6e6d62;
+
+  font-size: 12px;
+
+  line-height: 1.7;
+
+}
+
+
+.special-request {
+
+  min-height: 120px;
+
+  resize: vertical;
+
+}
+
+
+.summary-list {
+
+  list-style: none;
+
+  padding-left: 0;
+
+  margin-bottom: 0;
+
+}
+
+
+.summary-list li {
+
+  padding: 7px 0;
+
+  border-bottom:
+    1px solid
+    rgba(0,0,0,.06);
+
+}
+
+
+.bb-price {
+
+  font-family:
+    "Cormorant Garamond",
+    serif;
+
+  font-size: 1.4rem;
+
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: 0.01em;
+
+}
+
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media
+(max-width: 991.98px) {
+
+  .workflow-summary {
+
+    position: static;
+
+  }
+
+
+  .flower-card-image {
+
+    height: 160px;
+
+  }
+
+}
+
+</style>
+
+
+<style>
+/* =========================================================
+   FLORAL TEXT CARDS — MATCH CATERING CARD DESIGN
+   Applies to Bouquets and Venue Florals.
+   ========================================================= */
+
+.floral-option{
+  display:flex !important;
+}
+
+.floral-option .form-check{
+  position:relative !important;
+  overflow:hidden !important;
+  isolation:isolate !important;
+
+  display:flex !important;
+  flex-direction:column !important;
+
+  width:100% !important;
+  min-height:255px !important;
+  height:255px !important;
+
+  margin:0 !important;
+  padding:0 !important;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,.98),
+      rgba(249,245,236,.92)
+    ) !important;
+
+  border:1px solid rgba(190,164,119,.50) !important;
+  border-radius:22px !important;
+
+  box-shadow:
+    0 12px 28px rgba(38,31,22,.075),
+    inset 0 1px 0 rgba(255,255,255,.98) !important;
+
+  transition:
+    transform .24s ease,
+    border-color .24s ease,
+    box-shadow .24s ease,
+    background .24s ease !important;
+}
+
+/* Gold side rail */
+.floral-option .form-check::before{
+  content:"";
+  position:absolute;
+  top:18px;
+  bottom:18px;
+  left:0;
+
+  width:3px;
+  border-radius:999px;
+
+  background:
+    linear-gradient(
+      180deg,
+      transparent,
+      #e1bd70 15%,
+      #b77a20 50%,
+      #e1bd70 84%,
+      transparent
+    );
+
+  z-index:3;
+}
+
+/* subtle glow */
+.floral-option .form-check::after{
+  content:"";
+  position:absolute;
+
+  width:180px;
+  height:180px;
+
+  top:-90px;
+  right:-70px;
+
+  border-radius:50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(207,165,79,.15),
+      rgba(207,165,79,.04) 45%,
+      transparent 74%
+    );
+
+  pointer-events:none;
+  z-index:0;
+}
+
+/* Circle selector — same visual language as Catering */
+.floral-option .form-check-input{
+  position:absolute !important;
+  top:20px !important;
+  right:22px !important;
+  left:auto !important;
+
+  appearance:none !important;
+  -webkit-appearance:none !important;
+
+  width:30px !important;
+  height:30px !important;
+  min-width:30px !important;
+
+  margin:0 !important;
+
+  display:grid !important;
+  place-content:center !important;
+
+  background:#fffdf8 !important;
+  border:2px solid #17483a !important;
+  border-radius:50% !important;
+
+  box-shadow:0 3px 9px rgba(23,72,58,.09) !important;
+
+  z-index:6 !important;
+  cursor:pointer !important;
+}
+
+.floral-option .form-check-input::before{
+  content:"";
+
+  width:11px;
+  height:11px;
+
+  border-radius:50%;
+  background:#c89235 !important;
+
+  transform:scale(0);
+  transition:transform .15s ease;
+}
+
+.floral-option .form-check-input:checked{
+  border-color:#b77a20 !important;
+
+  box-shadow:
+    0 0 0 5px rgba(191,139,47,.11),
+    0 4px 10px rgba(45,35,20,.10) !important;
+}
+
+.floral-option .form-check-input:checked::before{
+  transform:scale(1);
+}
+
+/* Label fills the whole card */
+.floral-option .form-check-label{
+  position:relative !important;
+  z-index:2 !important;
+
+  display:flex !important;
+  flex-direction:column !important;
+
+  width:100% !important;
+  height:100% !important;
+
+  padding:0 !important;
+
+  cursor:pointer !important;
+}
+
+/* Header band */
+.floral-option .option-title{
+  position:relative !important;
+
+  display:flex !important;
+  align-items:center !important;
+
+  min-height:78px !important;
+  height:78px !important;
+
+  margin:0 !important;
+  padding:18px 70px 16px 30px !important;
+
+  color:#123f33 !important;
+
+  font-family:"Cormorant Garamond",serif !important;
+  font-size:1.5rem !important;
+  font-weight:700 !important;
+  line-height:1.12 !important;
+
+  background:
+    linear-gradient(
+      110deg,
+      rgba(15,70,54,.17),
+      rgba(31,91,69,.09) 58%,
+      rgba(205,164,80,.03)
+    ) !important;
+
+  border-bottom:1px solid rgba(181,145,75,.33) !important;
+}
+
+/* Gold underline */
+.floral-option .option-title::after{
+  content:"";
+  position:absolute;
+
+  left:30px;
+  bottom:-1px;
+
+  width:78px;
+  height:2px;
+
+  border-radius:999px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #a96e18,
+      #e3bf72,
+      #a96e18
+    );
+}
+
+/* Description */
+.floral-option .option-description{
+  position:relative !important;
+  z-index:2 !important;
+
+  flex:1 1 auto !important;
+
+  display:block !important;
+
+  min-height:0 !important;
+
+  margin:0 !important;
+  padding:20px 30px 10px 30px !important;
+
+  color:#53665e !important;
+
+  font-family:"Karla",sans-serif !important;
+  font-size:1.18rem !important;
+  font-weight:400 !important;
+  line-height:1.6 !important;
+}
+
+/* Price at bottom */
+.floral-option .option-price{
+  position:relative !important;
+  z-index:2 !important;
+
+  display:block !important;
+
+  margin:0 30px 20px 30px !important;
+  padding-top:14px !important;
+
+  color:#a96d18 !important;
+
+  font-family:"Cormorant Garamond",serif !important;
+  font-size:1.38rem !important;
+  font-weight:700 !important;
+  line-height:1.05 !important;
+
+  border-top:1px solid rgba(181,145,75,.25) !important;
+}
+
+/* Hover */
+.floral-option .form-check:hover{
+  transform:translateY(-5px) !important;
+
+  border-color:rgba(183,122,32,.72) !important;
+
+  box-shadow:
+    0 19px 38px rgba(38,31,20,.11),
+    inset 0 1px 0 rgba(255,255,255,1) !important;
+}
+
+/* Selected */
+.floral-option .form-check:has(.form-check-input:checked){
+  border:1.5px solid #c89235 !important;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,.99),
+      rgba(255,248,232,.94)
+    ) !important;
+
+  box-shadow:
+    0 0 0 3px rgba(200,146,53,.08),
+    0 17px 34px rgba(45,35,20,.10) !important;
+}
+
+.floral-option .form-check:has(.form-check-input:checked)
+.option-title{
+  background:
+    linear-gradient(
+      110deg,
+      rgba(12,62,47,.23),
+      rgba(24,75,57,.14) 58%,
+      rgba(205,160,69,.07)
+    ) !important;
+}
+
+/* Equal sizing */
+.floral-option .form-check,
+.floral-option .form-check-label{
+  width:100% !important;
+}
+
+/* Tablet / mobile */
+@media(max-width:767.98px){
+  .floral-option .form-check{
+    height:auto !important;
+    min-height:230px !important;
+  }
+
+  .floral-option .option-title{
+    height:auto !important;
+    min-height:72px !important;
+  }
+
+  .floral-option .option-description{
+    font-size:1.1rem !important;
+    line-height:1.55 !important;
+  }
+}
+</style>
+
+
+<style>
+/* =========================================================
+   FLORAL ESTIMATED PRICE — MATCH CATERING
+   ========================================================= */
+
+.workflow-summary{
+  background:#fff !important;
+  border:1px solid #ddcfbc !important;
+  border-radius:22px !important;
+  overflow:hidden !important;
+  box-shadow:0 10px 26px rgba(47,39,29,.05) !important;
+}
+
+.workflow-summary .panel__head{
+  padding:24px 26px !important;
+  background:#fff !important;
+  border-bottom:1px solid #e7ddd0 !important;
+}
+
+.workflow-summary .panel__head h5{
+  margin:0 !important;
+
+  color:#18251f !important;
+
+  font-family:"Cormorant Garamond",serif !important;
+  font-size:2rem !important;
+  font-weight:700 !important;
+  line-height:1.1 !important;
+}
+
+.workflow-summary .panel__body{
+  padding:30px 26px 24px !important;
+  background:#fff !important;
+}
+
+/* Estimated total */
+.workflow-summary .bb-price{
+  margin:0 !important;
+
+  color:#174c3b !important;
+
+  font-family:"Cormorant Garamond",serif !important;
+  font-size:2.75rem !important;
+  font-weight:600 !important;
+  line-height:1 !important;
+}
+
+.workflow-summary .bb-price + p{
+  margin-top:6px !important;
+  margin-bottom:28px !important;
+
+  color:#53635c !important;
+
+  font-size:.98rem !important;
+  line-height:1.45 !important;
+}
+
+/* Selection summary */
+.workflow-summary .summary-list{
+  margin:0 !important;
+  padding:0 !important;
+
+  list-style:none !important;
+}
+
+.workflow-summary .summary-list li{
+  display:flex !important;
+  align-items:flex-start !important;
+  gap:10px !important;
+
+  padding:12px 0 !important;
+
+  color:#18372d !important;
+
+  font-family:"Karla",sans-serif !important;
+  font-size:.96rem !important;
+  line-height:1.45 !important;
+
+  border-bottom:1px solid #ece3d7 !important;
+}
+
+.workflow-summary .summary-list li:first-child{
+  border-top:1px solid #ece3d7 !important;
+}
+
+.workflow-summary .summary-list li > i{
+  margin-top:2px !important;
+  color:#c89235 !important;
+}
+
+.workflow-summary .summary-list li small{
+  margin-top:3px !important;
+
+  color:#bd7410 !important;
+
+  font-size:.88rem !important;
+  font-weight:600 !important;
+}
+
+/* Hide the old extra divider */
+.workflow-summary hr{
+  display:none !important;
+}
+
+/* Plain final-pricing text, like Catering */
+.floral-final-pricing{
+  margin:26px 0 22px !important;
+  padding-top:22px !important;
+
+  border-top:1px solid #e7ddd0 !important;
+
+  color:#53635c !important;
+
+  font-family:"Karla",sans-serif !important;
+  font-size:.96rem !important;
+  line-height:1.65 !important;
+}
+
+/* Keep backend unavailable warning neat */
+.workflow-summary [data-floral-status]{
+  margin:0 0 18px !important;
+}
+
+/* Save button — Catering style */
+.workflow-summary [data-service-save]{
+  min-height:54px !important;
+
+  background:#c89235 !important;
+  border:1px solid #c89235 !important;
+  border-radius:999px !important;
+
+  color:#fff !important;
+
+  font-family:"Karla",sans-serif !important;
+  font-size:.96rem !important;
+  font-weight:600 !important;
+  letter-spacing:.02em !important;
+
+  opacity:1 !important;
+}
+
+.workflow-summary [data-service-save]:not(:disabled):hover{
+  background:#b88027 !important;
+  border-color:#b88027 !important;
+  color:#fff !important;
+}
+
+/* Saved state remains gold */
+.workflow-summary [data-service-save]:disabled{
+  background:#c89235 !important;
+  border-color:#c89235 !important;
+  color:#fff !important;
+  opacity:1 !important;
+}
+
+/* Continue button */
+.workflow-summary [data-service-continue]{
+  min-height:54px !important;
+
+  background:#fff !important;
+  border:1px solid #174c3b !important;
+  border-radius:999px !important;
+
+  color:#174c3b !important;
+
+  font-family:"Karla",sans-serif !important;
+  font-size:.96rem !important;
+  font-weight:500 !important;
+  letter-spacing:.08em !important;
+}
+
+/* Empty state should look simple, not like a large preview block */
+.workflow-summary .summary-list li.text-ink-soft{
+  display:block !important;
+
+  padding:0 0 24px !important;
+
+  color:#53635c !important;
+
+  border-top:0 !important;
+  border-bottom:1px solid #e7ddd0 !important;
+}
+
+@media(max-width:991.98px){
+  .workflow-summary{
+    position:static !important;
+  }
+}
+</style>
+
+
+<style>
+/* =========================================================
+   FLORAL SUMMARY — COMPACT STACKED ITEMS
+   Name on first line, price directly below it.
+   Narrow spacing to match Catering / Lighting.
+   ========================================================= */
+
+.workflow-summary .summary-list{
+  margin:0 !important;
+  padding:0 !important;
+  list-style:none !important;
+}
+
+.workflow-summary .summary-list li{
+  display:grid !important;
+  grid-template-columns:24px minmax(0,1fr) !important;
+  column-gap:10px !important;
+  align-items:start !important;
+
+  margin:0 !important;
+  padding:12px 0 13px !important;
+
+  border-bottom:1px solid #e8ded1 !important;
+
+  color:#18372d !important;
+
+  font-family:"Karla",sans-serif !important;
+  font-size:1rem !important;
+  line-height:1.35 !important;
+}
+
+.workflow-summary .summary-list li:first-child{
+  border-top:1px solid #e8ded1 !important;
+}
+
+.workflow-summary .summary-list li > i{
+  margin-top:2px !important;
+
+  color:#c89235 !important;
+  font-size:1rem !important;
+  line-height:1.2 !important;
+}
+
+/* The option name */
+.workflow-summary .summary-list li > span{
+  display:block !important;
+
+  color:#18372d !important;
+
+  font-size:1rem !important;
+  font-weight:500 !important;
+  line-height:1.35 !important;
+}
+
+/* Price/value directly below its related name */
+.workflow-summary .summary-list li > span > small{
+  display:block !important;
+
+  margin:4px 0 0 !important;
+  padding:0 !important;
+
+  color:#bd7410 !important;
+
+  font-size:.92rem !important;
+  font-weight:600 !important;
+  line-height:1.25 !important;
+}
+
+/* Keep general detail values neat too */
+.workflow-summary .summary-list li > span > small.text-ink-soft{
+  color:#bd7410 !important;
+}
+
+/* Compact spacing before final pricing */
+.floral-final-pricing{
+  margin:18px 0 18px !important;
+  padding-top:16px !important;
+
+  border-top:0 !important;
+
+  color:#53635c !important;
+
+  font-family:"Karla",sans-serif !important;
+  font-size:.96rem !important;
+  line-height:1.55 !important;
+}
+
+/* Empty state */
+.workflow-summary .summary-list li.text-ink-soft{
+  display:block !important;
+
+  padding:0 0 20px !important;
+
+  color:#53635c !important;
+
+  border-top:0 !important;
+  border-bottom:1px solid #e8ded1 !important;
+}
+
+/* Slightly tighter total area */
+.workflow-summary .bb-price + p{
+  margin-bottom:20px !important;
+}
+
+@media(max-width:575.98px){
+  .workflow-summary .summary-list li{
+    padding:11px 0 12px !important;
+  }
+
+  .workflow-summary .summary-list li > span{
+    font-size:.96rem !important;
+  }
+
+  .workflow-summary .summary-list li > span > small{
+    font-size:.88rem !important;
+  }
+}
+</style>
+
+
+<style>
+/* =========================================================
+   FLORAL SUMMARY — GROUPED LIKE SOUND, LIGHTING & AV
+   ========================================================= */
+
+.workflow-summary .summary-list{
+  margin:0 !important;
+  padding:0 !important;
+  list-style:none !important;
+}
+
+.floral-summary-group{
+  display:block !important;
+  width:100% !important;
+  margin:0 !important;
+  padding:15px 0 16px !important;
+  border-top:1px solid #e5d8c8 !important;
+}
+
+.floral-summary-group__title{
+  display:block !important;
+  width:100% !important;
+
+  margin:0 0 10px !important;
+  padding:0 !important;
+
+  color:#806653 !important;
+
+  font-family:"Karla",sans-serif !important;
+  font-size:.72rem !important;
+  font-weight:700 !important;
+  line-height:1.2 !important;
+
+  letter-spacing:.18em !important;
+  text-transform:uppercase !important;
+}
+
+.floral-summary-item{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) auto !important;
+  align-items:center !important;
+
+  column-gap:16px !important;
+
+  width:100% !important;
+
+  margin:0 !important;
+  padding:5px 0 5px 20px !important;
+}
+
+.floral-summary-item + .floral-summary-item{
+  margin-top:3px !important;
+  padding-top:8px !important;
+  border-top:1px dashed rgba(181,145,75,.28) !important;
+}
+
+.floral-summary-item__name{
+  position:relative !important;
+
+  display:block !important;
+
+  margin:0 !important;
+  padding:0 !important;
+
+  color:#173b31 !important;
+
+  font-family:"Karla",sans-serif !important;
+  font-size:1rem !important;
+  font-weight:500 !important;
+  line-height:1.35 !important;
+}
+
+.floral-summary-item__name::before{
+  content:"";
+
+  position:absolute;
+  left:-20px;
+  top:.48em;
+
+  width:7px;
+  height:7px;
+
+  border-radius:50%;
+  background:#c89235;
+}
+
+.floral-summary-item__price{
+  display:block !important;
+
+  margin:0 !important;
+  padding:0 !important;
+
+  color:#c87508 !important;
+
+  font-family:"Karla",sans-serif !important;
+  font-size:.96rem !important;
+  font-weight:600 !important;
+  line-height:1.35 !important;
+
+  white-space:nowrap !important;
+  text-align:right !important;
+}
+
+.floral-summary-detail{
+  display:block !important;
+  margin:0 !important;
+  padding:4px 0 0 20px !important;
+
+  color:#53635c !important;
+  font-family:"Karla",sans-serif !important;
+  font-size:.92rem !important;
+  line-height:1.45 !important;
+}
+
+.workflow-summary .summary-list li.text-ink-soft{
+  display:block !important;
+  padding:0 0 20px !important;
+  border:0 !important;
+  color:#53635c !important;
+}
+
+.floral-final-pricing{
+  margin:18px 0 18px !important;
+  padding-top:18px !important;
+  border-top:1px solid #e5d8c8 !important;
+}
+
+@media(max-width:575.98px){
+  .floral-summary-item{
+    column-gap:10px !important;
+    padding-left:18px !important;
+  }
+
+  .floral-summary-item__name::before{
+    left:-18px !important;
+  }
+
+  .floral-summary-item__price{
+    font-size:.88rem !important;
+  }
+}
+</style>
+
+
+<style>
+/* =========================================================
+   FINAL FIX — PREVENT FLORAL SUMMARY OVERLAP
+   Overrides older generic summary-list grid rules.
+   ========================================================= */
+
+.workflow-summary .summary-list > li.floral-summary-group{
+  display:block !important;
+  grid-template-columns:none !important;
+  column-gap:0 !important;
+  align-items:initial !important;
+
+  width:100% !important;
+  margin:0 !important;
+  padding:15px 0 16px !important;
+
+  border-top:1px solid #e5d8c8 !important;
+  border-bottom:0 !important;
+}
+
+.workflow-summary .summary-list > li.floral-summary-group:first-child{
+  border-top:1px solid #e5d8c8 !important;
+}
+
+.workflow-summary .floral-summary-group__title{
+  display:block !important;
+  width:100% !important;
+
+  margin:0 0 10px !important;
+  padding:0 !important;
+
+  color:#806653 !important;
+  font-family:"Karla",sans-serif !important;
+  font-size:.72rem !important;
+  font-weight:700 !important;
+  line-height:1.2 !important;
+
+  letter-spacing:.18em !important;
+  text-transform:uppercase !important;
+}
+
+.workflow-summary .floral-summary-item{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) max-content !important;
+  align-items:center !important;
+
+  width:100% !important;
+  min-width:0 !important;
+
+  column-gap:14px !important;
+
+  margin:0 !important;
+  padding:5px 0 5px 22px !important;
+
+  border:0 !important;
+}
+
+.workflow-summary .floral-summary-item + .floral-summary-item{
+  margin-top:3px !important;
+  padding-top:8px !important;
+  border-top:1px dashed rgba(181,145,75,.28) !important;
+}
+
+.workflow-summary .floral-summary-item__name{
+  position:relative !important;
+  display:block !important;
+
+  min-width:0 !important;
+  margin:0 !important;
+  padding:0 !important;
+
+  color:#173b31 !important;
+
+  font-family:"Karla",sans-serif !important;
+  font-size:1rem !important;
+  font-weight:500 !important;
+  line-height:1.35 !important;
+
+  overflow-wrap:anywhere !important;
+}
+
+.workflow-summary .floral-summary-item__name::before{
+  content:"";
+  position:absolute;
+
+  left:-22px !important;
+  top:.48em !important;
+
+  width:7px !important;
+  height:7px !important;
+
+  border-radius:50% !important;
+  background:#c89235 !important;
+}
+
+.workflow-summary .floral-summary-item__price{
+  display:block !important;
+
+  min-width:max-content !important;
+  margin:0 !important;
+  padding:0 !important;
+
+  color:#c87508 !important;
+
+  font-family:"Karla",sans-serif !important;
+  font-size:.96rem !important;
+  font-weight:600 !important;
+  line-height:1.35 !important;
+
+  white-space:nowrap !important;
+  text-align:right !important;
+}
+
+/* Non-price details also stay directly under their related title */
+.workflow-summary .floral-summary-detail{
+  display:block !important;
+  width:100% !important;
+
+  margin:0 !important;
+  padding:4px 0 0 22px !important;
+
+  color:#53635c !important;
+  font-family:"Karla",sans-serif !important;
+  font-size:.92rem !important;
+  line-height:1.45 !important;
+}
+
+/* Empty state */
+.workflow-summary .summary-list > li.text-ink-soft{
+  display:block !important;
+  grid-template-columns:none !important;
+
+  margin:0 !important;
+  padding:0 0 20px !important;
+
+  border-top:0 !important;
+  border-bottom:1px solid #e5d8c8 !important;
+}
+
+/* Compact final message spacing */
+.workflow-summary .floral-final-pricing{
+  margin:18px 0 18px !important;
+  padding-top:18px !important;
+  border-top:1px solid #e5d8c8 !important;
+}
+
+@media(max-width:575.98px){
+  .workflow-summary .floral-summary-item{
+    grid-template-columns:minmax(0,1fr) max-content !important;
+    column-gap:8px !important;
+    padding-left:18px !important;
+  }
+
+  .workflow-summary .floral-summary-item__name{
+    font-size:.94rem !important;
+  }
+
+  .workflow-summary .floral-summary-item__name::before{
+    left:-18px !important;
+  }
+
+  .workflow-summary .floral-summary-item__price{
+    font-size:.86rem !important;
+  }
+}
+</style>
+
+</head>
+
+
+
+<body>
+
+
+<main
+  class="container py-5"
+  data-simple-service-page>
+
+
+<!-- =========================================
+     HEADER
+========================================= -->
+
+<div
+  class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
+
+
+  <div>
+
+    <span class="eyebrow">
+
+      Customer Portal
+
+    </span>
+
+
+    <h1
+      class="h2 mt-1 mb-1"
+      data-service-title>
+
+      Customize Florals
+
+    </h1>
+
+
+    <p
+      class="small text-ink-soft mb-0"
+      data-service-context>
+
+      Choose flowers and floral styling
+      for your event.
+
+    </p>
+
+  </div>
+
+
+  <div class="d-flex gap-2">
+
+
+    <a
+      class="btn btn-outline-forest btn-sm"
+      data-service-back
+      href="/prototype/customer/services.html">
+
+      Back to Services
+
+    </a>
+
+
+    <a
+      class="btn btn-gold btn-sm"
+      data-service-continue
+      href="/prototype/customer/review.html">
+
+      Continue
+
+    </a>
+
+
+  </div>
+
+
+</div>
+
+
+
+<!-- =========================================
+     INTRO
+========================================= -->
+
+<div class="floral-intro">
+
+
+  <div
+    class="d-flex gap-3 align-items-start">
+
+
+    <div class="floral-intro-icon">
+
+      <i class="bi bi-flower1"></i>
+
+    </div>
+
+
+    <div>
+
+
+      <h4 class="mb-2">
+
+        Design your floral experience
+
+      </h4>
+
+
+      <p
+        class="text-ink-soft mb-0">
+
+        Choose bouquets,
+        venue flower decorations,
+        flower varieties,
+        colors and floral styling.
+
+        Your estimated price updates
+        automatically as you make
+        selections.
+
+      </p>
+
+
+    </div>
+
+
+  </div>
+
+
+</div>
+
+
+
+<div class="row g-4">
+
+
+<!-- =========================================
+     LEFT CONTENT
+========================================= -->
+
+<div class="col-lg-8">
+
+
+<!-- =========================================
+     BOUQUETS
+========================================= -->
+
+<div class="panel mb-4">
+
+
+  <div class="panel__head">
+
+
+    <div>
+
+      <h5 class="mb-1">
+
+        <i
+          class="bi bi-flower2 section-icon">
+        </i>
+
+        Bouquets
+
+      </h5>
+
+
+      <p
+        class="small text-ink-soft mb-0">
+
+        Choose personal flower
+        arrangements for your event.
+
+      </p>
+
+    </div>
+
+
+  </div>
+
+
+
+  <div class="panel__body">
+
+
+    <div class="row g-3">
+
+
+
+      <!-- Bridal Bouquet -->
+
+      <div
+        class="col-md-6 floral-option">
+
+
+        <div class="form-check">
+
+
+          <input
+            class="form-check-input"
+            type="checkbox"
+            id="bridalBouquet"
+
+            data-price-input
+            data-price="180000"
+            data-label="Bridal Bouquet">
+
+
+          <label
+            class="form-check-label"
+            for="bridalBouquet">
+
+
+            <span class="option-title">
+
+              Bridal Bouquet
+
+            </span>
+
+
+            <span class="option-description">
+
+              Signature bouquet
+              designed especially
+              for the bride.
+
+            </span>
+
+
+            <span class="option-price">
+
+              +180,000 MMK
+
+            </span>
+
+
+          </label>
+
+
+        </div>
+
+
+      </div>
+
+
+
+      <!-- Bridesmaid Bouquet -->
+
+      <div
+        class="col-md-6 floral-option">
+
+
+        <div class="form-check">
+
+
+          <input
+            class="form-check-input"
+            type="checkbox"
+            id="bridesmaidBouquet"
+
+            data-price-input
+            data-price="120000"
+            data-label="Bridesmaid Bouquet">
+
+
+          <label
+            class="form-check-label"
+            for="bridesmaidBouquet">
+
+
+            <span class="option-title">
+
+              Bridesmaid Bouquet
+
+            </span>
+
+
+            <span class="option-description">
+
+              Coordinated bouquet
+              designed for bridesmaids.
+
+            </span>
+
+
+            <span class="option-price">
+
+              +120,000 MMK
+
+            </span>
+
+
+          </label>
+
+
+        </div>
+
+
+      </div>
+
+
+
+      <!-- Flower Girl -->
+
+      <div
+        class="col-md-6 floral-option">
+
+
+        <div class="form-check">
+
+
+          <input
+            class="form-check-input"
+            type="checkbox"
+            id="flowerGirlBouquet"
+
+            data-price-input
+            data-price="80000"
+            data-label="Flower Girl Bouquet">
+
+
+          <label
+            class="form-check-label"
+            for="flowerGirlBouquet">
+
+
+            <span class="option-title">
+
+              Flower Girl Bouquet
+
+            </span>
+
+
+            <span class="option-description">
+
+              A smaller and delicate
+              floral arrangement.
+
+            </span>
+
+
+            <span class="option-price">
+
+              +80,000 MMK
+
+            </span>
+
+
+          </label>
+
+
+        </div>
+
+
+      </div>
+
+
+
+      <!-- Boutonniere -->
+
+      <div
+        class="col-md-6 floral-option">
+
+
+        <div class="form-check">
+
+
+          <input
+            class="form-check-input"
+            type="checkbox"
+            id="boutonniere"
+
+            data-price-input
+            data-price="45000"
+            data-label="Boutonniere">
+
+
+          <label
+            class="form-check-label"
+            for="boutonniere">
+
+
+            <span class="option-title">
+
+              Boutonniere
+
+            </span>
+
+
+            <span class="option-description">
+
+              Small floral accent
+              suitable for the groom
+              or special guests.
+
+            </span>
+
+
+            <span class="option-price">
+
+              +45,000 MMK
+
+            </span>
+
+
+          </label>
+
+
+        </div>
+
+
+      </div>
+
+
+    </div>
+
+
+  </div>
+
+
+</div>
+
+
+
+<!-- =========================================
+     VENUE FLORALS
+========================================= -->
+
+<div class="panel mb-4">
+
+
+  <div class="panel__head">
+
+
+    <div>
+
+
+      <h5 class="mb-1">
+
+        <i
+          class="bi bi-stars section-icon">
+        </i>
+
+        Venue Florals
+
+      </h5>
+
+
+      <p
+        class="small text-ink-soft mb-0">
+
+        Decorate your venue with
+        floral installations and
+        arrangements.
+
+      </p>
+
+
+    </div>
+
+
+  </div>
+
+
+
+  <div class="panel__body">
+
+
+    <div class="row g-3">
+
+
+
+      <!-- Flower Arch -->
+
+      <div
+        class="col-md-6 floral-option">
+
+
+        <div class="form-check">
+
+
+          <input
+            class="form-check-input"
+            type="checkbox"
+            id="flowerArch"
+
+            data-price-input
+            data-price="450000"
+            data-label="Flower Arch">
+
+
+          <label
+            class="form-check-label"
+            for="flowerArch">
+
+
+            <span class="option-title">
+
+              Flower Arch
+
+            </span>
+
+
+            <span class="option-description">
+
+              Large floral arch
+              suitable for ceremonies,
+              entrances or photography.
+
+            </span>
+
+
+            <span class="option-price">
+
+              +450,000 MMK
+
+            </span>
+
+
+          </label>
+
+
+        </div>
+
+
+      </div>
+
+
+
+      <!-- Aisle -->
+
+      <div
+        class="col-md-6 floral-option">
+
+
+        <div class="form-check">
+
+
+          <input
+            class="form-check-input"
+            type="checkbox"
+            id="aisleFlowers"
+
+            data-price-input
+            data-price="300000"
+            data-label="Aisle Flowers">
+
+
+          <label
+            class="form-check-label"
+            for="aisleFlowers">
+
+
+            <span class="option-title">
+
+              Aisle Flowers
+
+            </span>
+
+
+            <span class="option-description">
+
+              Floral arrangements
+              placed along the
+              ceremony aisle.
+
+            </span>
+
+
+            <span class="option-price">
+
+              +300,000 MMK
+
+            </span>
+
+
+          </label>
+
+
+        </div>
+
+
+      </div>
+
+
+
+      <!-- Stage -->
+
+      <div
+        class="col-md-6 floral-option">
+
+
+        <div class="form-check">
+
+
+          <input
+            class="form-check-input"
+            type="checkbox"
+            id="stageFlowers"
+
+            data-price-input
+            data-price="400000"
+            data-label="Stage Flowers">
+
+
+          <label
+            class="form-check-label"
+            for="stageFlowers">
+
+
+            <span class="option-title">
+
+              Stage Flowers
+
+            </span>
+
+
+            <span class="option-description">
+
+              Floral arrangements
+              for your main
+              event stage.
+
+            </span>
+
+
+            <span class="option-price">
+
+              +400,000 MMK
+
+            </span>
+
+
+          </label>
+
+
+        </div>
+
+
+      </div>
+
+
+
+      <!-- Entrance -->
+
+      <div
+        class="col-md-6 floral-option">
+
+
+        <div class="form-check">
+
+
+          <input
+            class="form-check-input"
+            type="checkbox"
+            id="entranceFlowers"
+
+            data-price-input
+            data-price="250000"
+            data-label="Entrance Flowers">
+
+
+          <label
+            class="form-check-label"
+            for="entranceFlowers">
+
+
+            <span class="option-title">
+
+              Entrance Flowers
+
+            </span>
+
+
+            <span class="option-description">
+
+              Welcoming floral
+              decorations at your
+              event entrance.
+
+            </span>
+
+
+            <span class="option-price">
+
+              +250,000 MMK
+
+            </span>
+
+
+          </label>
+
+
+        </div>
+
+
+      </div>
+
+
+
+      <!-- Centerpieces -->
+
+      <div
+        class="col-md-6 floral-option">
+
+
+        <div class="form-check">
+
+
+          <input
+            class="form-check-input"
+            type="checkbox"
+            id="tableCenterpieces"
+
+            data-price-input
+            data-price="200000"
+            data-label="Table Centerpieces">
+
+
+          <label
+            class="form-check-label"
+            for="tableCenterpieces">
+
+
+            <span class="option-title">
+
+              Table Centerpieces
+
+            </span>
+
+
+            <span class="option-description">
+
+              Floral decoration
+              for guest tables.
+
+            </span>
+
+
+            <span class="option-price">
+
+              +200,000 MMK
+
+            </span>
+
+
+          </label>
+
+
+        </div>
+
+
+      </div>
+
+
+
+      <!-- Photo Backdrop -->
+
+      <div
+        class="col-md-6 floral-option">
+
+
+        <div class="form-check">
+
+
+          <input
+            class="form-check-input"
+            type="checkbox"
+            id="photoBackdrop"
+
+            data-price-input
+            data-price="500000"
+            data-label="Floral Photo Backdrop">
+
+
+          <label
+            class="form-check-label"
+            for="photoBackdrop">
+
+
+            <span class="option-title">
+
+              Floral Photo Backdrop
+
+            </span>
+
+
+            <span class="option-description">
+
+              Decorative flower
+              installation for
+              photographs and portraits.
+
+            </span>
+
+
+            <span class="option-price">
+
+              +500,000 MMK
+
+            </span>
+
+
+          </label>
+
+
+        </div>
+
+
+      </div>
+
+
+    </div>
+
+
+  </div>
+
+
+</div>
+
+
+
+<!-- =========================================
+     FLOWER TYPES
+========================================= -->
+
+<div class="panel mb-4">
+
+
+  <div class="panel__head">
+
+
+    <div>
+
+
+      <h5 class="mb-1">
+
+        <i
+          class="bi bi-flower3 section-icon">
+        </i>
+
+        Preferred Flower Types
+
+      </h5>
+
+
+      <p
+        class="small text-ink-soft mb-0">
+
+        Choose the flowers
+        you would like the florist
+        to use.
+
+      </p>
+
+
+    </div>
+
+
+  </div>
+
+
+
+  <div class="panel__body">
+
+
+    <div class="row g-3">
+
+
+
+      <!-- Roses -->
+
+      <div class="col-6 col-md-4">
+
+
+        <label
+          class="flower-image-card"
+          for="roses">
+
+
+          <img
+            src="/prototype/assets/img/redrose.jpg"
+            class="flower-card-image"
+            alt="Roses">
+
+
+          <div class="flower-card-content">
+
+
+            <input
+              class="form-check-input"
+              type="checkbox"
+              id="roses"
+
+              data-price-input
+              data-price="0"
+              data-label="Roses">
+
+
+            <span class="flower-card-title">
+
+              Roses
+
+            </span>
+
+
+            <span class="flower-card-description">
+
+              Romantic & classic
+
+            </span>
+
+
+          </div>
+
+
+        </label>
+
+
+      </div>
+
+
+
+      <!-- Orchids -->
+
+      <div class="col-6 col-md-4">
+
+
+        <label
+          class="flower-image-card"
+          for="orchids">
+
+
+          <img
+            src="/prototype/assets/img/orchid.jpg"
+            class="flower-card-image"
+            alt="Orchids">
+
+
+          <div class="flower-card-content">
+
+
+            <input
+              class="form-check-input"
+              type="checkbox"
+              id="orchids"
+
+              data-price-input
+              data-price="0"
+              data-label="Orchids">
+
+
+            <span class="flower-card-title">
+
+              Orchids
+
+            </span>
+
+
+            <span class="flower-card-description">
+
+              Elegant & luxurious
+
+            </span>
+
+
+          </div>
+
+
+        </label>
+
+
+      </div>
+
+
+
+      <!-- Lilies -->
+
+      <div class="col-6 col-md-4">
+
+
+        <label
+          class="flower-image-card"
+          for="lilies">
+
+
+          <img
+            src="/prototype/assets/img/lilies.jpg"
+            class="flower-card-image"
+            alt="Lilies">
+
+
+          <div class="flower-card-content">
+
+
+            <input
+              class="form-check-input"
+              type="checkbox"
+              id="lilies"
+
+              data-price-input
+              data-price="0"
+              data-label="Lilies">
+
+
+            <span class="flower-card-title">
+
+              Lilies
+
+            </span>
+
+
+            <span class="flower-card-description">
+
+              Graceful & sophisticated
+
+            </span>
+
+
+          </div>
+
+
+        </label>
+
+
+      </div>
+
+
+
+      <!-- Peonies -->
+
+      <div class="col-6 col-md-4">
+
+
+        <label
+          class="flower-image-card"
+          for="peonies">
+
+
+          <img
+            src="/prototype/assets/img/peonie.jpg"
+            class="flower-card-image"
+            alt="Peonies">
+
+
+          <div class="flower-card-content">
+
+
+            <input
+              class="form-check-input"
+              type="checkbox"
+              id="peonies"
+
+              data-price-input
+              data-price="0"
+              data-label="Peonies">
+
+
+            <span class="flower-card-title">
+
+              Peonies
+
+            </span>
+
+
+            <span class="flower-card-description">
+
+              Soft & romantic
+
+            </span>
+
+
+          </div>
+
+
+        </label>
+
+
+      </div>
+
+
+
+      <!-- Hydrangeas -->
+
+      <div class="col-6 col-md-4">
+
+
+        <label
+          class="flower-image-card"
+          for="hydrangeas">
+
+
+          <img
+            src="/prototype/assets/img/hydra.jpg"
+            class="flower-card-image"
+            alt="Hydrangeas">
+
+
+          <div class="flower-card-content">
+
+
+            <input
+              class="form-check-input"
+              type="checkbox"
+              id="hydrangeas"
+
+              data-price-input
+              data-price="0"
+              data-label="Hydrangeas">
+
+
+            <span class="flower-card-title">
+
+              Hydrangeas
+
+            </span>
+
+
+            <span class="flower-card-description">
+
+              Full & elegant
+
+            </span>
+
+
+          </div>
+
+
+        </label>
+
+
+      </div>
+
+
+
+      <!-- Sunflowers -->
+
+      <div class="col-6 col-md-4">
+
+
+        <label
+          class="flower-image-card"
+          for="sunflowers">
+
+
+          <img
+            src="/prototype/assets/img/sunflower.jpg"
+            class="flower-card-image"
+            alt="Sunflowers">
+
+
+          <div class="flower-card-content">
+
+
+            <input
+              class="form-check-input"
+              type="checkbox"
+              id="sunflowers"
+
+              data-price-input
+              data-price="0"
+              data-label="Sunflowers">
+
+
+            <span class="flower-card-title">
+
+              Sunflowers
+
+            </span>
+
+
+            <span class="flower-card-description">
+
+              Bright & cheerful
+
+            </span>
+
+
+          </div>
+
+
+        </label>
+
+
+      </div>
+
+
+    </div>
+
+
+  </div>
+
+
+</div>
+
+
+
+<!-- =========================================
+     COLOR PALETTE
+========================================= -->
+
+<div class="panel mb-4">
+
+
+  <div class="panel__head">
+
+
+    <div>
+
+
+      <h5 class="mb-1">
+
+        <i
+          class="bi bi-palette section-icon">
+        </i>
+
+        Floral Color Palette
+
+      </h5>
+
+
+      <p
+        class="small text-ink-soft mb-0">
+
+        Choose the overall
+        color direction for
+        your floral design.
+
+      </p>
+
+
+    </div>
+
+
+  </div>
+
+
+
+  <div class="panel__body">
+
+
+    <div class="row g-3">
+
+
+
+      <!-- Romantic Blush -->
+
+      <div class="col-md-6">
+
+
+        <div class="palette-option">
+
+
+          <div class="form-check">
+
+
+            <input
+              class="form-check-input"
+              type="radio"
+              name="floralPalette"
+              id="romanticPalette"
+
+              data-price-input
+              data-price="0"
+              data-label="Romantic Blush">
+
+
+            <label
+              class="form-check-label fw-semibold"
+              for="romanticPalette">
+
+              Romantic Blush
+
+            </label>
+
+
+          </div>
+
+
+          <div class="palette-dots">
+
+
+            <span
+              class="palette-dot"
+              style="background:#f2c9c9;">
+            </span>
+
+
+            <span
+              class="palette-dot"
+              style="background:#f8e5dc;">
+            </span>
+
+
+            <span
+              class="palette-dot"
+              style="background:#fff5ee;">
+            </span>
+
+
+            <span
+              class="palette-dot"
+              style="background:#a9b9a1;">
+            </span>
+
+
+          </div>
+
+
+        </div>
+
+
+      </div>
+
+
+
+      <!-- White Green -->
+
+      <div class="col-md-6">
+
+
+        <div class="palette-option">
+
+
+          <div class="form-check">
+
+
+            <input
+              class="form-check-input"
+              type="radio"
+              name="floralPalette"
+              id="classicPalette"
+
+              data-price-input
+              data-price="0"
+              data-label="Classic White & Green">
+
+
+            <label
+              class="form-check-label fw-semibold"
+              for="classicPalette">
+
+              Classic White & Green
+
+            </label>
+
+
+          </div>
+
+
+          <div class="palette-dots">
+
+
+            <span
+              class="palette-dot"
+              style="background:#fffdf8;">
+            </span>
+
+
+            <span
+              class="palette-dot"
+              style="background:#e6eadf;">
+            </span>
+
+
+            <span
+              class="palette-dot"
+              style="background:#90a68b;">
+            </span>
+
+
+            <span
+              class="palette-dot"
+              style="background:#4c6955;">
+            </span>
+
+
+          </div>
+
+
+        </div>
+
+
+      </div>
+
+
+
+      <!-- Soft Pastel -->
+
+      <div class="col-md-6">
+
+
+        <div class="palette-option">
+
+
+          <div class="form-check">
+
+
+            <input
+              class="form-check-input"
+              type="radio"
+              name="floralPalette"
+              id="pastelPalette"
+
+              data-price-input
+              data-price="0"
+              data-label="Soft Pastel">
+
+
+            <label
+              class="form-check-label fw-semibold"
+              for="pastelPalette">
+
+              Soft Pastel
+
+            </label>
+
+
+          </div>
+
+
+          <div class="palette-dots">
+
+
+            <span
+              class="palette-dot"
+              style="background:#f5d8df;">
+            </span>
+
+
+            <span
+              class="palette-dot"
+              style="background:#dfd9f2;">
+            </span>
+
+
+            <span
+              class="palette-dot"
+              style="background:#d5e5ee;">
+            </span>
+
+
+            <span
+              class="palette-dot"
+              style="background:#f3e6bd;">
+            </span>
+
+
+          </div>
+
+
+        </div>
+
+
+      </div>
+
+
+
+      <!-- Bold -->
+
+      <div class="col-md-6">
+
+
+        <div class="palette-option">
+
+
+          <div class="form-check">
+
+
+            <input
+              class="form-check-input"
+              type="radio"
+              name="floralPalette"
+              id="boldPalette"
+
+              data-price-input
+              data-price="0"
+              data-label="Bold Celebration">
+
+
+            <label
+              class="form-check-label fw-semibold"
+              for="boldPalette">
+
+              Bold Celebration
+
+            </label>
+
+
+          </div>
+
+
+          <div class="palette-dots">
+
+
+            <span
+              class="palette-dot"
+              style="background:#b83c4d;">
+            </span>
+
+
+            <span
+              class="palette-dot"
+              style="background:#dc775c;">
+            </span>
+
+
+            <span
+              class="palette-dot"
+              style="background:#edae49;">
+            </span>
+
+
+            <span
+              class="palette-dot"
+              style="background:#516d4b;">
+            </span>
+
+
+          </div>
+
+
+        </div>
+
+
+      </div>
+
+
+    </div>
+
+
+  </div>
+
+
+</div>
+
+
+
+<!-- =========================================
+     FLORAL STYLE
+========================================= -->
+
+<div class="panel mb-4">
+
+
+  <div class="panel__head">
+
+
+    <h5 class="mb-0">
+
+      <i
+        class="bi bi-brush section-icon">
+      </i>
+
+      Floral Style
+
+    </h5>
+
+
+  </div>
+
+
+
+  <div class="panel__body">
+
+
+    <div class="row g-3">
+
+
+      <div class="col-md-6">
+
+
+        <label
+          for="floralStyle"
+          class="form-label fw-semibold">
+
+          Arrangement Style
+
+        </label>
+
+
+        <select
+          class="form-select"
+          id="floralStyle">
+
+
+          <option value="">
+
+            Select a style
+
+          </option>
+
+
+          <option>
+
+            Romantic & Elegant
+
+          </option>
+
+
+          <option>
+
+            Modern & Minimal
+
+          </option>
+
+
+          <option>
+
+            Luxury & Glamorous
+
+          </option>
+
+
+          <option>
+
+            Garden & Natural
+
+          </option>
+
+
+          <option>
+
+            Rustic
+
+          </option>
+
+
+          <option>
+
+            Traditional
+
+          </option>
+
+
+          <option>
+
+            Tropical
+
+          </option>
+
+
+        </select>
+
+
+      </div>
+
+
+
+      <div class="col-md-6">
+
+
+        <label
+          for="greeneryLevel"
+          class="form-label fw-semibold">
+
+          Greenery Preference
+
+        </label>
+
+
+        <select
+          class="form-select"
+          id="greeneryLevel">
+
+
+          <option value="">
+
+            Select preference
+
+          </option>
+
+
+          <option>
+
+            Minimal greenery
+
+          </option>
+
+
+          <option>
+
+            Balanced flowers & greenery
+
+          </option>
+
+
+          <option>
+
+            Greenery focused
+
+          </option>
+
+
+        </select>
+
+
+      </div>
+
+
+    </div>
+
+
+  </div>
+
+
+</div>
+
+
+
+<!-- =========================================
+     SPECIAL REQUEST
+========================================= -->
+
+<div class="panel">
+
+
+  <div class="panel__head">
+
+
+    <h5 class="mb-0">
+
+      <i
+        class="bi bi-chat-left-heart section-icon">
+      </i>
+
+      Special Floral Requests
+
+    </h5>
+
+
+  </div>
+
+
+
+  <div class="panel__body">
+
+
+    <label
+      for="floralNotes"
+      class="form-label small text-ink-soft">
+
+      Tell us about specific flowers,
+      colors, inspiration, allergies
+      or flowers you would prefer
+      us to avoid.
+
+    </label>
+
+
+    <textarea
+      class="form-control special-request"
+      id="floralNotes"
+      placeholder="Example: I would like ivory roses with eucalyptus greenery and small touches of blush pink..."></textarea>
+
+
+  </div>
+
+
+</div>
+
+
+</div>
+
+
+
+<!-- =========================================
+     RIGHT SUMMARY
+========================================= -->
+
+<div class="col-lg-4">
+
+
+  <div
+    class="panel workflow-summary">
+
+
+    <div class="panel__head">
+
+
+      <h5 class="mb-0">
+        Your Florals
+      </h5>
+
+
+    </div>
+
+
+
+    <div class="panel__body">
+
+
+      <div
+        class="bb-price mb-1"
+        data-service-estimate>
+
+        0 MMK
+
+      </div>
+
+
+      <p
+        class="small text-ink-soft mb-3">
+
+        Estimated floral service total
+
+      </p>
+
+
+
+      <ul
+        class="summary-list"
+        data-service-summary>
+
+
+        <li class="text-ink-soft">
+          Choose a floral service or option to begin.
+        </li>
+
+
+      </ul>
+
+
+
+      <hr>
+
+
+      <div
+        class="alert alert-warning py-2 px-3 small d-none"
+        data-floral-status>
+
+      </div>
+
+
+
+      <p class="floral-final-pricing">
+        Final pricing may change depending on flower availability,
+        season, quantity and venue size.
+      </p>
+
+
+
+      <div class="d-grid gap-2">
+
+
+        <button
+          class="btn btn-gold"
+          type="button"
+          data-service-save>
+
+          Save Florals
+
+        </button>
+
+
+
+        <a
+          class="btn btn-outline-forest"
+          data-service-continue
+          href="/prototype/customer/review.html">
+
+          Continue to Review
+
+        </a>
+
+
+      </div>
+
+
+    </div>
+
+
+  </div>
+
+
+</div>
+
+
+</div>
+
+
+</main>
+
+
+
+<script
+  src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+</script>
+
+
+<script
+  src="/prototype/assets/js/main.js">
+</script>
+
+
+
+<script>
+
+document.addEventListener(
+  'DOMContentLoaded',
+  () => {
+
+
+    /* =====================================
+       ELEMENTS
+    ===================================== */
+
+    const saveBtn =
+      document.querySelector(
+        '[data-service-save]'
+      );
+
+
+    const priceInputs =
+      Array.from(
+        document.querySelectorAll(
+        '[data-price-input]'
+        )
+      );
+
+
+    const estimateEl =
+      document.querySelector(
+        '[data-service-estimate]'
+      );
+
+
+    const summaryEl =
+      document.querySelector(
+        '[data-service-summary]'
+      );
+
+
+    const floralStyle =
+      document.getElementById(
+        'floralStyle'
+      );
+
+
+    const greeneryLevel =
+      document.getElementById(
+        'greeneryLevel'
+      );
+
+
+    const floralNotes =
+      document.getElementById(
+        'floralNotes'
+      );
+
+
+    const continueBtn =
+      document.querySelector(
+        '[data-service-continue]'
+      );
+
+
+    const backBtn =
+      document.querySelector(
+        '[data-service-back]'
+      );
+
+
+    const floralStatusEl =
+      document.querySelector(
+        '[data-floral-status]'
+      );
+
+
+    const defaultSaveText =
+      'Save Florals';
+
+
+    let restoring =
+      false;
+
+
+    let savedSignature =
+      '';
+
+
+    let backendAvailability =
+      'unknown';
+
+
+    let backendCatalog =
+      null;
+
+
+
+    /* =====================================
+       FORMAT MMK
+    ===================================== */
+
+    function formatMMK(value) {
+
+      return Number(
+        value || 0
+      ).toLocaleString(
+        'en-US'
+      ) + ' MMK';
+
+    }
+
+
+
+    function escapeHtml(value) {
+
+      return String(
+        value || ''
+      ).replace(
+        /[&<>"']/g,
+        (char) => ({
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#39;'
+        }[char])
+      );
+
+    }
+
+
+
+    function getSelectedItems() {
+
+      return Array.from(
+        document.querySelectorAll(
+          '[data-price-input]:checked'
+        )
+      )
+      .filter(
+        (input) => Number(
+          input.dataset.price || 0
+        ) > 0
+      )
+      .map(
+        (input) => ({
+          id: input.id || input.value || input.name,
+          value: input.value || input.id || input.name || '',
+          label: input.dataset.label
+            || input.value
+            || input.name
+            || input.id
+            || 'Option',
+          price: Number(input.dataset.price || 0)
+        })
+      );
+
+    }
+
+
+
+    function getFormDetails() {
+
+      const flowerTypes =
+        Array.from(
+          document.querySelectorAll(
+            '.flower-image-card input[type="checkbox"]:checked'
+          )
+        )
+        .map(
+          (input) => input.dataset.label
+            || input.id
+            || input.value
+            || 'Flower type'
+        );
+
+
+      const floralPaletteInput =
+        document.querySelector(
+          'input[name="floralPalette"]:checked'
+        );
+
+
+      return {
+        flowerTypes,
+        floralPalette:
+          floralPaletteInput?.dataset.label
+          || floralPaletteInput?.id
+          || floralPaletteInput?.value
+          || '',
+        floralStyle: floralStyle?.value || '',
+        greeneryLevel: greeneryLevel?.value || '',
+        floralNotes: floralNotes?.value?.trim() || ''
+      };
+
+    }
+
+    function buildSignature() {
+
+      return JSON.stringify({
+        items: getSelectedItems().map(
+          (item) => item.id
+        ),
+        ...getFormDetails()
+      });
+
+    }
+
+
+
+    function updateFloralSummary() {
+
+      const checkedPaid =
+        Array.from(
+          document.querySelectorAll('[data-price-input]:checked')
+        )
+        .filter(
+          (input) => Number(input.dataset.price || 0) > 0
+        );
+
+      const paidSelections =
+        checkedPaid.map(
+          (input) => ({
+            id: input.id || input.value || input.name,
+            value: input.value || input.id || input.name || '',
+            label:
+              input.dataset.label ||
+              input.value ||
+              input.name ||
+              input.id ||
+              'Option',
+            price: Number(input.dataset.price || 0)
+          })
+        );
+
+      const bouquetIds = new Set([
+        'bridalBouquet',
+        'bridesmaidBouquet',
+        'flowerGirlBouquet',
+        'boutonniere'
+      ]);
+
+      const venueIds = new Set([
+        'flowerArch',
+        'aisleFlowers',
+        'stageFlowers',
+        'entranceFlowers',
+        'tableCenterpieces',
+        'photoBackdrop'
+      ]);
+
+      const bouquetSelections =
+        paidSelections.filter((item) => bouquetIds.has(item.id));
+
+      const venueSelections =
+        paidSelections.filter((item) => venueIds.has(item.id));
+
+      const flowerTypes =
+        Array.from(
+          document.querySelectorAll(
+            '.flower-image-card input[type="checkbox"]:checked'
+          )
+        )
+        .map(
+          (input) =>
+            input.dataset.label ||
+            input.id ||
+            input.value ||
+            'Flower type'
+        );
+
+      const floralPaletteInput =
+        document.querySelector(
+          'input[name="floralPalette"]:checked'
+        );
+
+      const floralPalette =
+        floralPaletteInput?.dataset.label ||
+        floralPaletteInput?.id ||
+        floralPaletteInput?.value ||
+        '';
+
+      const arrangementStyle =
+        floralStyle?.value?.trim() || '';
+
+      const greeneryPreference =
+        greeneryLevel?.value?.trim() || '';
+
+      const specialRequests =
+        floralNotes?.value?.trim() || '';
+
+      const total =
+        paidSelections.reduce(
+          (sum, item) => sum + Number(item.price || 0),
+          0
+        );
+
+      const items = [...paidSelections];
+
+      const itemHtml = (item, plus = true) => `
+        <div class="floral-summary-item">
+          <span class="floral-summary-item__name">
+            ${escapeHtml(item.label)}
+          </span>
+          <span class="floral-summary-item__price">
+            ${plus ? '+' : ''}${formatMMK(item.price)}
+          </span>
+        </div>
+      `;
+
+      const summaryGroups = [];
+
+      if (bouquetSelections.length) {
+        summaryGroups.push(`
+          <li class="floral-summary-group">
+            <div class="floral-summary-group__title">Bouquets</div>
+            ${bouquetSelections.map((item) => itemHtml(item, true)).join('')}
+          </li>
+        `);
+      }
+
+      if (venueSelections.length) {
+        summaryGroups.push(`
+          <li class="floral-summary-group">
+            <div class="floral-summary-group__title">Venue Florals</div>
+            ${venueSelections.map((item) => itemHtml(item, true)).join('')}
+          </li>
+        `);
+      }
+
+      if (flowerTypes.length) {
+        summaryGroups.push(`
+          <li class="floral-summary-group">
+            <div class="floral-summary-group__title">Preferred Flower Types</div>
+            <div class="floral-summary-detail">
+              ${escapeHtml(flowerTypes.join(', '))}
+            </div>
+          </li>
+        `);
+      }
+
+      if (floralPalette) {
+        summaryGroups.push(`
+          <li class="floral-summary-group">
+            <div class="floral-summary-group__title">Floral Color Palette</div>
+            <div class="floral-summary-detail">
+              ${escapeHtml(floralPalette)}
+            </div>
+          </li>
+        `);
+      }
+
+      if (arrangementStyle) {
+        summaryGroups.push(`
+          <li class="floral-summary-group">
+            <div class="floral-summary-group__title">Arrangement Style</div>
+            <div class="floral-summary-detail">
+              ${escapeHtml(arrangementStyle)}
+            </div>
+          </li>
+        `);
+      }
+
+      if (greeneryPreference) {
+        summaryGroups.push(`
+          <li class="floral-summary-group">
+            <div class="floral-summary-group__title">Greenery Preference</div>
+            <div class="floral-summary-detail">
+              ${escapeHtml(greeneryPreference)}
+            </div>
+          </li>
+        `);
+      }
+
+      if (specialRequests) {
+        summaryGroups.push(`
+          <li class="floral-summary-group">
+            <div class="floral-summary-group__title">Special Floral Requests</div>
+            <div class="floral-summary-detail">
+              ${escapeHtml(specialRequests)}
+            </div>
+          </li>
+        `);
+      }
+
+      if (estimateEl) {
+        estimateEl.textContent = formatMMK(total);
+      }
+
+      if (summaryEl) {
+        summaryEl.innerHTML = summaryGroups.length
+          ? summaryGroups.join('')
+          : '<li class="text-ink-soft">Choose a floral service or option to begin.</li>';
+      }
+
+      return {
+        items,
+        paidSelections,
+        flowerTypes,
+        floralPalette,
+        arrangementStyle,
+        greeneryPreference,
+        specialRequests,
+        total
+      };
+
+    }
+
+
+    function refreshSummary() {
+
+      return updateFloralSummary();
+
+    }
+
+
+
+    function syncSelectedServices(total) {
+
+      if (
+        typeof bbGetSelectedServices !== 'function'
+        || typeof bbSetSelectedServices !== 'function'
+      ) {
+
+        return;
+
+      }
+
+
+      const current =
+        bbGetSelectedServices()
+        .filter(
+          (item) => item.id !== 'florals'
+        );
+
+
+      current.push({
+        id: 'florals',
+        title: 'Floral Design',
+        estimatedTotal: total
+      });
+
+
+      bbSetSelectedServices(current);
+
+    }
+
+
+
+    function syncSaveButton(saved) {
+
+      if (!saveBtn) {
+
+        return;
+
+      }
+
+
+      saveBtn.textContent =
+        saved ? '✓ Saved' : defaultSaveText;
+
+
+      saveBtn.disabled =
+        Boolean(saved);
+
+    }
+
+
+
+    function saveFloral() {
+
+      if (backendAvailability === 'unavailable') {
+        alert('Floral Design is currently unavailable.');
+        return false;
+      }
+
+
+      const liveState = updateFloralSummary();
+
+      if (!liveState.items.length) {
+
+        alert(
+          'Please choose at least one floral service before saving.'
+        );
+
+        return false;
+
+      }
+
+
+      const savedData = {
+        serviceId: 'florals',
+        backendServiceId: 8,
+        title: 'Floral Design',
+        estimatedTotal: liveState.total,
+        options: liveState.items.map(
+          (item) => item.label
+        ),
+        selections: {
+          checkedOptions: liveState.items,
+          flowerTypes: liveState.flowerTypes,
+          floralPalette: liveState.floralPalette,
+          floralStyle: floralStyle?.value || '',
+          greeneryLevel: greeneryLevel?.value || '',
+          floralNotes: floralNotes?.value?.trim() || ''
+        }
+      };
+
+
+      if (typeof bbSetServiceData === 'function') {
+
+        bbSetServiceData(
+          'florals',
+          savedData
+        );
+
+      }
+
+
+      syncSelectedServices(liveState.total);
+
+
+      savedSignature = buildSignature();
+      syncSaveButton(true);
+
+
+      return true;
+
+    }
+
+
+
+    function restoreSavedFloral() {
+
+      if (typeof bbGetServiceData !== 'function') {
+
+        updateFloralSummary();
+        syncSaveButton(false);
+        return;
+
+      }
+
+
+      const saved =
+        bbGetServiceData().florals;
+
+
+      if (!saved) {
+
+        updateFloralSummary();
+        savedSignature = '';
+        syncSaveButton(false);
+        return;
+
+      }
+
+
+      restoring = true;
+
+
+      const savedItems =
+        saved.selections?.checkedOptions
+        || saved.checkedOptions
+        || [];
+
+
+      savedItems.forEach(
+        (item) => {
+
+          const byId =
+            item?.id
+            ? document.getElementById(item.id)
+            : null;
+
+          if (
+            byId
+            && byId.matches('[data-price-input]')
+          ) {
+
+            byId.checked = true;
+            return;
+
+          }
+
+
+          const byValue =
+            priceInputs
+              .find(
+                (input) => input.value === (item?.value || '')
+                  && (input.dataset.label || input.id)
+                    === (item?.label || item?.id || input.dataset.label || input.id)
+              );
+
+          if (byValue) {
+
+            byValue.checked = true;
+
+          }
+
+        }
+      );
+
+
+      if (floralStyle) {
+
+        floralStyle.value =
+          saved.selections?.floralStyle
+          || saved.floralStyle
+          || '';
+
+      }
+
+
+      const savedFlowerTypes =
+        saved.selections?.flowerTypes
+        || saved.flowerTypes
+        || [];
+
+
+      savedFlowerTypes.forEach(
+        (label) => {
+
+          const match =
+            Array.from(
+              document.querySelectorAll(
+                '.flower-image-card input[type="checkbox"]'
+              )
+            ).find(
+              (input) =>
+                input.dataset.label === label
+                || input.id === label
+                || input.value === label
+            );
+
+
+          if (match) {
+            match.checked = true;
+          }
+
+        }
+      );
+
+
+      const savedPalette =
+        saved.selections?.floralPalette
+        || saved.floralPalette
+        || '';
+
+
+      if (savedPalette) {
+
+        const paletteInput =
+          Array.from(
+            document.querySelectorAll(
+              'input[name="floralPalette"]'
+            )
+          ).find(
+            (input) =>
+              input.dataset.label === savedPalette
+              || input.id === savedPalette
+              || input.value === savedPalette
+          );
+
+
+        if (paletteInput) {
+          paletteInput.checked = true;
+        }
+
+      }
+
+
+      if (greeneryLevel) {
+
+        greeneryLevel.value =
+          saved.selections?.greeneryLevel
+          || saved.greeneryLevel
+          || '';
+
+      }
+
+
+      if (floralNotes) {
+
+        floralNotes.value =
+          saved.selections?.floralNotes
+          || saved.floralNotes
+          || '';
+
+      }
+
+
+      restoring = false;
+
+
+      updateFloralSummary();
+      savedSignature = buildSignature();
+      syncSelectedServices(
+        updateFloralSummary().total
+      );
+      syncSaveButton(true);
+
+    }
+
+
+
+    function refreshSaveButtonState() {
+
+      if (restoring) {
+
+        return;
+
+      }
+
+
+      updateFloralSummary();
+
+
+      const currentSignature =
+        buildSignature();
+
+
+      if (
+        savedSignature
+        && currentSignature === savedSignature
+      ) {
+
+        syncSaveButton(true);
+        return;
+
+      }
+
+
+      syncSaveButton(false);
+
+    }
+
+
+
+    function setFloralControlsDisabled(disabled) {
+
+      priceInputs.forEach(
+        (input) => {
+          input.disabled = disabled;
+        }
+      );
+
+
+      if (floralStyle) floralStyle.disabled = disabled;
+      if (greeneryLevel) greeneryLevel.disabled = disabled;
+      if (floralNotes) floralNotes.disabled = disabled;
+
+
+      if (saveBtn) {
+        saveBtn.disabled = disabled;
+      }
+
+
+      if (continueBtn) {
+        continueBtn.classList.toggle('disabled', disabled);
+        continueBtn.setAttribute(
+          'aria-disabled',
+          disabled ? 'true' : 'false'
+        );
+        continueBtn.tabIndex = disabled ? -1 : 0;
+      }
+
+    }
+
+
+
+    function setFloralStatus(message, show) {
+
+      if (!floralStatusEl) return;
+
+      floralStatusEl.textContent = message || '';
+      floralStatusEl.classList.toggle('d-none', !show);
+
+    }
+
+
+
+    async function loadFloralAvailability() {
+
+      try {
+
+        const response = await fetch(
+          'http://localhost:8081/api/services/8'
+        );
+
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+
+        const data = await response.json();
+
+
+        if (Number(data?.id) !== 8) {
+          throw new Error('Unexpected Floral service payload');
+        }
+
+
+        if (
+          String(data?.name || '').toLowerCase() !== 'floral design'
+        ) {
+          throw new Error('Unexpected Floral service name');
+        }
+
+
+        backendCatalog = data;
+        backendAvailability = data.available ? 'available' : 'unavailable';
+
+
+        if (data.available) {
+          setFloralStatus('', false);
+          setFloralControlsDisabled(false);
+          refreshSaveButtonState();
+          return;
+        }
+
+
+        setFloralStatus('Floral Design is currently unavailable.', true);
+        setFloralControlsDisabled(true);
+
+        if (savedSignature) {
+          syncSaveButton(true);
+          if (saveBtn) saveBtn.disabled = true;
+        }
+
+
+      } catch (error) {
+
+        backendAvailability = 'fallback';
+        console.warn('Floral catalog unavailable; using frontend fallback.');
+        setFloralStatus('', false);
+        setFloralControlsDisabled(false);
+        refreshSaveButtonState();
+
+      }
+
+    }
+
+
+
+    /* =====================================
+       UPDATE ESTIMATED PRICE
+    ===================================== */
+
+    function updateEstimatedPrice() {
+
+      let total = 0;
+
+
+      priceInputs.forEach(
+        (input) => {
+
+
+          if (
+            input.checked
+          ) {
+
+            total += Number(
+              input.dataset.price
+              || 0
+            );
+
+          }
+
+
+        }
+      );
+
+
+      if (estimateEl) {
+
+        estimateEl.textContent =
+          formatMMK(total);
+
+      }
+
+    }
+
+
+
+    /* =====================================
+       CHECK IF PAID FLORAL SERVICE
+       IS SELECTED
+
+       Only options with price > 0 count.
+    ===================================== */
+
+    function hasPaidFloralService() {
+
+      return getSelectedItems().length > 0;
+
+    }
+
+
+
+    /* =====================================
+       SAVE BUTTON
+
+       IMPORTANT:
+       No paid service = cannot save.
+    ===================================== */
+
+    if (saveBtn) {
+
+
+      saveBtn.addEventListener(
+        'click',
+        (event) => {
+
+
+          /*
+             Prevent main.js from saving
+             when nothing valid is selected.
+          */
+
+          if (
+            !hasPaidFloralService()
+          ) {
+
+
+            event.preventDefault();
+
+            event.stopImmediatePropagation();
+
+
+            alert(
+              'Please choose at least one floral service before saving.'
+            );
+
+
+            return;
+
+          }
+
+
+
+          /*
+             Valid selection exists.
+
+             Keep same visual behavior
+             as cake.html.
+          */
+
+          saveFloral();
+
+
+        },
+        true
+      );
+
+
+    }
+
+
+
+    if (continueBtn) {
+
+      continueBtn.addEventListener(
+        'click',
+        (event) => {
+
+          if (backendAvailability === 'unavailable') {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            return;
+          }
+
+          event.preventDefault();
+          event.stopImmediatePropagation();
+
+          if (saveFloral()) {
+            window.location.href =
+              continueBtn.getAttribute('href')
+              || '/prototype/customer/review.html';
+          }
+
+        },
+        true
+      );
+
+    }
+
+
+
+    if (backBtn) {
+
+      backBtn.addEventListener(
+        'click',
+        (event) => {
+
+          event.preventDefault();
+          event.stopImmediatePropagation();
+
+          if (
+            backendAvailability !== 'unavailable'
+            && getSelectedItems().length
+          ) {
+            if (!saveFloral()) {
+              return;
+            }
+          }
+
+          window.location.href =
+            backBtn.getAttribute('href')
+            || '/prototype/customer/services.html';
+
+        },
+        true
+      );
+
+    }
+
+
+
+    /* =====================================
+       RESET SAVE BUTTON
+       IF OPTIONS CHANGE
+    ===================================== */
+
+    document.addEventListener(
+      'change',
+      (event) => {
+
+
+        if (
+          !event.target.matches(
+            '[data-price-input], #floralStyle, #greeneryLevel'
+          )
+        ) {
+
+          return;
+
+        }
+
+
+        refreshSaveButtonState();
+
+
+      }
+    );
+
+
+
+    /* =====================================
+       STYLE CHANGE = UNSAVED
+    ===================================== */
+
+    if (floralStyle) {
+
+
+      floralStyle.addEventListener(
+        'change',
+        refreshSaveButtonState
+      );
+
+
+    }
+
+
+
+    /* =====================================
+       GREENERY CHANGE = UNSAVED
+    ===================================== */
+
+    if (greeneryLevel) {
+
+
+      greeneryLevel.addEventListener(
+        'change',
+        refreshSaveButtonState
+      );
+
+
+    }
+
+
+
+    /* =====================================
+       NOTES CHANGE = UNSAVED
+    ===================================== */
+
+    if (floralNotes) {
+
+
+      floralNotes.addEventListener(
+        'input',
+        refreshSaveButtonState
+      );
+
+
+    }
+
+
+
+    /* =====================================
+       RESET FUNCTION
+    ===================================== */
+
+    function resetSaveButton() {
+
+
+      if (!saveBtn) {
+
+        return;
+
+      }
+
+
+      saveBtn.textContent =
+        defaultSaveText;
+
+
+      saveBtn.disabled =
+        false;
+
+
+    }
+
+
+/* =====================================
+   INITIAL PAGE STATE
+   Refresh = original empty page
+===================================== */
+
+// Do NOT restore previously saved selections
+restoring = true;
+
+// Clear every checkbox / radio button
+priceInputs.forEach((input) => {
+  input.checked = false;
+});
+
+// Clear Floral Style
+if (floralStyle) {
+  floralStyle.value = '';
+}
+
+// Clear Greenery Preference
+if (greeneryLevel) {
+  greeneryLevel.value = '';
+}
+
+// Clear Special Floral Requests
+if (floralNotes) {
+  floralNotes.value = '';
+}
+
+// Nothing is considered saved on this page load
+savedSignature = '';
+
+restoring = false;
+
+// Show:
+// 0 MMK
+// Choose a floral service or option to begin.
+updateFloralSummary();
+
+// Restore normal Save button
+syncSaveButton(false);
+
+// Check backend availability
+loadFloralAvailability();
+  }
+);
+
+</script>
+
+
+</body>
+
+</html>

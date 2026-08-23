@@ -1,0 +1,3216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Customize Entertainment | Bliss &amp; Beyond</title>
+<meta name="description" content="Customize entertainment services for your Bliss & Beyond event.">
+
+<link rel="icon" href="/prototype/../favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Karla:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="/prototype/assets/css/style.css" rel="stylesheet">
+
+<style>
+.bb-shell{display:block!important}
+.bb-main{width:100%!important;max-width:none!important;margin-left:0!important}
+
+.workflow-context{
+  padding:.85rem 1.25rem!important;
+  margin-bottom:1rem!important;
+}
+
+.panel__head h5{
+  font-size:1.3rem!important;
+  font-weight:600!important;
+  line-height:1.15;
+  letter-spacing:0.01em;
+}
+
+/* Different from page background, but still soft */
+.panel__body{
+  background:#eee9df;
+}
+
+.ent-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:1rem;
+}
+
+.ent-card{
+  min-height:225px;
+  height:225px;
+  padding:1rem 1.15rem;
+  display:flex;
+  flex-direction:column;
+  background:#fffdf9!important;
+  border-color:#d8c7a7!important;
+  box-shadow:0 5px 14px rgba(31,47,41,.05);
+}
+
+.ent-card__head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:.75rem;
+}
+
+.ent-card__list{
+  margin:.5rem 0 .25rem;
+  padding-left:1.1rem;
+  font-size:.84rem;
+  line-height:1.4;
+  color:#3f4542;
+}
+
+.ent-card__list li{
+  margin-bottom:.08rem;
+}
+
+.ent-card__summary{
+  margin:.25rem 0 .35rem;
+  font-size:.8rem;
+  line-height:1.35;
+  color:#3f4542;
+}
+
+.ent-card__price{
+  margin-top:auto;
+  padding-top:.25rem;
+}
+
+.ent-card strong{
+  color:#0d2922;
+}
+
+.ent-select{
+  appearance:none;
+  -webkit-appearance:none;
+  width:19px;
+  height:19px;
+  min-width:19px;
+  border:2.5px solid currentColor;
+  border-radius:50%;
+  background:transparent;
+  display:inline-grid;
+  place-content:center;
+  cursor:pointer;
+}
+
+.ent-select::before{
+  content:"";
+  width:9px;
+  height:9px;
+  border-radius:50%;
+  transform:scale(0);
+  background:currentColor;
+}
+
+.ent-select:checked::before{
+  transform:scale(1);
+}
+
+.detail-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:1rem;
+}
+
+.workflow-summary .panel__body{
+  max-height:calc(100vh - 180px);
+  overflow-y:auto;
+  overflow-x:hidden;
+  scrollbar-width:thin;
+}
+
+.workflow-summary [data-ent-total]{
+  font-family:"Cormorant Garamond", serif;
+  font-size:1.4rem!important;
+  line-height:1.05;
+  letter-spacing:0.01em;
+}
+
+.workflow-summary .pricing-row{
+  align-items:flex-start;
+}
+
+.workflow-summary .pricing-row>span{
+  flex:0 0 42%;
+}
+
+.workflow-summary .pricing-row>strong{
+  flex:1;
+  min-width:0;
+  text-align:left;
+  font-size:.84rem;
+  font-weight:400;
+  line-height:1.35;
+}
+
+.summary-service-list{
+  margin:0;
+  padding-left:1.05rem;
+  list-style:disc;
+}
+
+.summary-service-list li{
+  margin-bottom:.18rem;
+  line-height:1.35;
+  font-weight:400;
+}
+
+.workflow-summary [data-summary-notes]{
+  display:block;
+  width:100%;
+  max-width:100%;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+  word-break:normal;
+  text-align:left!important;
+  font-weight:400!important;
+  line-height:1.45;
+  max-height:180px;
+  overflow-y:auto;
+  padding-right:.25rem;
+}
+
+.workflow-summary .pricing-row.notes-row{
+  display:block!important;
+}
+
+.workflow-summary .pricing-row.notes-row>span{
+  display:block;
+  margin-bottom:.4rem;
+  font-weight:500;
+}
+
+.workflow-summary .pricing-row.notes-row>strong{
+  display:block;
+  width:100%;
+}
+
+@media(max-width:991.98px){
+  .detail-grid{grid-template-columns:1fr}
+}
+
+@media(max-width:767.98px){
+  .ent-grid{grid-template-columns:1fr}
+}
+</style>
+
+<style>
+/* Customer request guidance shown under each service summary */
+.ent-card {
+  min-height: 285px !important;
+  height: 285px !important;
+}
+
+.ent-card__request {
+  margin: .15rem 0 .4rem;
+  font-size: .78rem;
+  line-height: 1.35;
+  color: #3f4542;
+}
+
+.ent-card__request strong {
+  color: #0d2922 !important;
+  font-weight: 600;
+}
+</style>
+
+
+<style>
+/* Darker, clearer text inside entertainment cards */
+.ent-card__list,
+.ent-card__summary,
+.ent-card__request {
+  color: #161616 !important;
+}
+
+/* Remove extra space before the price */
+.ent-card__request {
+  margin: .12rem 0 0 !important;
+}
+
+.ent-card__price {
+  margin-top: 0 !important;
+  padding-top: .15rem !important;
+  color: #c88600 !important;
+  font-weight: 700 !important;
+}
+
+/* Keep cards compact after removing the gap */
+.ent-card {
+  min-height: 270px !important;
+  height: 270px !important;
+}
+</style>
+
+
+<style>
+/* Compact entertainment cards: remove unused bottom space */
+.ent-card {
+  min-height: 0 !important;
+  height: auto !important;
+  padding: 1rem 1.15rem 1.05rem !important;
+}
+
+/* Keep comfortable spacing between each information block */
+.ent-card__list {
+  margin: .5rem 0 .55rem !important;
+}
+
+.ent-card__summary {
+  margin: 0 0 .55rem !important;
+}
+
+.ent-card__request {
+  margin: 0 0 .7rem !important;
+  line-height: 1.4 !important;
+}
+
+/* Price should be close enough to the request, but not crowded */
+.ent-card__price {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+  line-height: 1.3 !important;
+  color: #d58b00 !important;
+  font-weight: 700 !important;
+}
+</style>
+
+
+<style>
+.performer-price-guide {
+  border-top: 1px solid rgba(0,0,0,.08);
+  padding-top: .65rem;
+}
+
+.performer-price-guide > div:not(.small) {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: .8rem;
+  line-height: 1.45;
+  margin-bottom: .18rem;
+}
+
+.performer-price-guide strong {
+  color: #0d2922;
+}
+
+.performer-price-guide span {
+  color: #161616;
+  text-align: right;
+}
+
+.workflow-summary [data-summary-count-price] {
+  color: #d58b00 !important;
+  font-weight: 600;
+}
+</style>
+
+
+<style>
+.workflow-summary [data-summary-duration-price],
+.workflow-summary [data-summary-start-price],
+.workflow-summary [data-summary-count-price] {
+  color: #d58b00 !important;
+  font-weight: 600;
+}
+</style>
+
+
+<style>
+.custom-time-picker{
+  position:relative;
+}
+
+.custom-time-display{
+  text-align:left;
+  background:#fff;
+  cursor:pointer;
+}
+
+.custom-time-popover{
+  position:absolute;
+  top:calc(100% + 6px);
+  left:0;
+  z-index:1050;
+  display:none;
+  width:270px;
+  padding:.7rem;
+  background:#fffdf9;
+  border:1px solid #d8c7a7;
+  border-radius:10px;
+  box-shadow:0 10px 28px rgba(31,47,41,.14);
+}
+
+.custom-time-picker.open .custom-time-popover{
+  display:block;
+}
+
+.custom-time-columns{
+  display:grid;
+  grid-template-columns:1fr 1fr 72px;
+  gap:.5rem;
+}
+
+.custom-time-label{
+  font-size:.72rem;
+  font-weight:600;
+  color:#0d2922;
+  margin-bottom:.35rem;
+  text-align:center;
+}
+
+.custom-time-scroll{
+  height:150px;
+  overflow-y:auto;
+  border:1px solid rgba(0,0,0,.09);
+  border-radius:7px;
+  scrollbar-width:thin;
+}
+
+.custom-time-scroll button,
+.custom-period-buttons button{
+  width:100%;
+  border:0;
+  background:transparent;
+  padding:.35rem .2rem;
+  color:#161616;
+  text-align:center;
+}
+
+.custom-time-scroll button:hover,
+.custom-period-buttons button:hover{
+  background:#f1eadf;
+}
+
+.custom-time-scroll button.active,
+.custom-period-buttons button.active{
+  background:#0d4a3d;
+  color:#fff;
+  font-weight:600;
+}
+
+.custom-period-buttons{
+  border:1px solid rgba(0,0,0,.09);
+  border-radius:7px;
+  overflow:hidden;
+}
+</style>
+
+
+<style>
+/* =========================================================
+   ENTERTAINMENT — MATCH ROYAL PHOTOGRAPHY DESIGN
+   Visual-only redesign. Existing data, prices and logic stay.
+   ========================================================= */
+
+:root{
+  --ent-page:#f4eee4;
+  --ent-panel:#ece5d9;
+  --ent-card:#fffdf9;
+  --ent-border:#ddd1c0;
+  --ent-green:#173f34;
+  --ent-gold:#c89235;
+  --ent-gold-deep:#a96d18;
+  --ent-text:#1d2c26;
+  --ent-soft:#66736d;
+}
+
+html, body{
+  background:var(--ent-page) !important;
+}
+
+body{
+  font-family:"Karla",sans-serif !important;
+  color:var(--ent-text) !important;
+}
+
+[data-entertainment-page]{
+  padding:28px 30px 52px !important;
+}
+
+[data-entertainment-page] h1,
+[data-entertainment-page] h2,
+[data-entertainment-page] h3,
+[data-entertainment-page] h4,
+[data-entertainment-page] h5{
+  font-family:"Cormorant Garamond",serif !important;
+}
+
+/* Top event context */
+[data-entertainment-page] .workflow-context{
+  background:#fff !important;
+  border:1px solid var(--ent-border) !important;
+  border-radius:16px !important;
+  padding:.8rem 1rem !important;
+  margin-bottom:1.1rem !important;
+  box-shadow:0 5px 16px rgba(47,39,29,.035) !important;
+}
+
+/* Main panels */
+[data-entertainment-page] .panel{
+  background:var(--ent-panel) !important;
+  border:1px solid var(--ent-border) !important;
+  border-radius:22px !important;
+  overflow:hidden !important;
+  box-shadow:0 10px 28px rgba(53,43,31,.05) !important;
+}
+
+[data-entertainment-page] .panel > .panel__head{
+  background:#fff !important;
+  padding:20px 24px !important;
+  border-bottom:1px solid #e6dccf !important;
+}
+
+[data-entertainment-page] .panel > .panel__head h5{
+  margin:0 !important;
+  color:#153f33 !important;
+  font-family:"Cormorant Garamond",serif !important;
+  font-size:1.78rem !important;
+  font-weight:700 !important;
+  line-height:1.1 !important;
+}
+
+[data-entertainment-page] .panel > .panel__body{
+  background:var(--ent-panel) !important;
+  padding:22px !important;
+}
+
+/* Two-column service grid */
+[data-entertainment-page] .ent-grid{
+  display:grid !important;
+  grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  gap:18px !important;
+  align-items:stretch !important;
+}
+
+/* Royal glass entertainment cards */
+[data-entertainment-page] .ent-card{
+  position:relative !important;
+  overflow:hidden !important;
+
+  display:flex !important;
+  flex-direction:column !important;
+
+  height:330px !important;
+  min-height:330px !important;
+  max-height:330px !important;
+
+  padding:0 !important;
+
+  background:
+    linear-gradient(145deg,
+      rgba(255,255,255,.86) 0%,
+      rgba(250,247,239,.73) 55%,
+      rgba(246,239,225,.66) 100%) !important;
+
+  border:1px solid rgba(181,155,105,.42) !important;
+  border-radius:22px !important;
+
+  -webkit-backdrop-filter:blur(15px) saturate(118%) !important;
+  backdrop-filter:blur(15px) saturate(118%) !important;
+
+  box-shadow:
+    0 12px 30px rgba(36,31,22,.075),
+    inset 0 1px 0 rgba(255,255,255,.96),
+    inset 0 0 24px rgba(200,146,53,.025) !important;
+
+  transition:
+    transform .24s ease,
+    border-color .24s ease,
+    box-shadow .24s ease,
+    background .24s ease !important;
+}
+
+/* champagne left rail */
+[data-entertainment-page] .ent-card::before{
+  content:"";
+  position:absolute;
+  top:19px;
+  bottom:19px;
+  left:0;
+  width:3px;
+  border-radius:999px;
+  background:
+    linear-gradient(
+      180deg,
+      transparent,
+      #e1bd70 15%,
+      #b77a20 50%,
+      #e1bd70 84%,
+      transparent
+    );
+  opacity:.9;
+}
+
+/* subtle royal glow */
+[data-entertainment-page] .ent-card::after{
+  content:"";
+  position:absolute;
+  width:205px;
+  height:205px;
+  top:-105px;
+  right:-82px;
+  border-radius:50%;
+  pointer-events:none;
+  background:
+    radial-gradient(circle,
+      rgba(207,165,79,.16) 0%,
+      rgba(207,165,79,.055) 43%,
+      transparent 72%);
+}
+
+/* Header band */
+[data-entertainment-page] .ent-card__head{
+  position:relative !important;
+  z-index:2 !important;
+
+  min-height:72px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  gap:16px !important;
+
+  margin:0 !important;
+  padding:19px 22px 17px 26px !important;
+
+  background:
+    linear-gradient(
+      110deg,
+      rgba(16,61,48,.15) 0%,
+      rgba(24,75,59,.09) 55%,
+      rgba(205,164,80,.035) 100%
+    ) !important;
+
+  border-bottom:1px solid rgba(181,145,75,.34) !important;
+}
+
+/* gold underline under title */
+[data-entertainment-page] .ent-card__head::after{
+  content:"";
+  position:absolute;
+  left:26px;
+  bottom:-1px;
+  width:62px;
+  height:2px;
+  border-radius:999px;
+  background:linear-gradient(90deg,#a96e18,#e3bf72,#a96e18);
+  box-shadow:0 1px 5px rgba(191,139,47,.18);
+}
+
+/* royal title */
+[data-entertainment-page] .ent-card__head strong{
+  color:#123d31 !important;
+  font-family:"Cormorant Garamond",serif !important;
+  font-size:1.38rem !important;
+  font-weight:700 !important;
+  line-height:1.15 !important;
+  letter-spacing:.005em !important;
+}
+
+/* selector */
+[data-entertainment-page] .ent-select{
+  appearance:none !important;
+  -webkit-appearance:none !important;
+
+  width:25px !important;
+  height:25px !important;
+  min-width:25px !important;
+
+  margin:0 !important;
+
+  display:inline-grid !important;
+  place-content:center !important;
+
+  border:2px solid var(--ent-green) !important;
+  border-radius:50% !important;
+  background:rgba(255,253,247,.88) !important;
+
+  box-shadow:0 3px 8px rgba(20,48,40,.08) !important;
+
+  transition:
+    transform .2s ease,
+    border-color .2s ease,
+    box-shadow .2s ease,
+    background .2s ease !important;
+}
+
+[data-entertainment-page] .ent-select::before{
+  content:"" !important;
+  width:9px !important;
+  height:9px !important;
+  border-radius:50% !important;
+  background:#b77a20 !important;
+  transform:scale(0) !important;
+  transition:transform .14s ease !important;
+}
+
+[data-entertainment-page] .ent-select:checked{
+  border-color:#b77a20 !important;
+  background:#fff9eb !important;
+  box-shadow:
+    0 0 0 5px rgba(191,139,47,.11),
+    0 5px 12px rgba(51,39,20,.10) !important;
+}
+
+[data-entertainment-page] .ent-select:checked::before{
+  transform:scale(1) !important;
+}
+
+/* list */
+[data-entertainment-page] .ent-card__list{
+  position:relative;
+  z-index:2;
+
+  margin:17px 24px 7px 27px !important;
+  padding-left:1rem !important;
+
+  color:#354a42 !important;
+  font-size:1.00rem !important;
+  line-height:1.5 !important;
+}
+
+[data-entertainment-page] .ent-card__list li{
+  margin-bottom:.12rem !important;
+}
+
+[data-entertainment-page] .ent-card__list li::marker{
+  color:#b48636 !important;
+}
+
+/* summary */
+[data-entertainment-page] .ent-card__summary{
+  position:relative;
+  z-index:2;
+
+  margin:5px 24px 7px 24px !important;
+
+  color:#6b756f !important;
+  font-size:.94rem !important;
+  line-height:1.45 !important;
+}
+
+/* customer request */
+[data-entertainment-page] .ent-card__request{
+  position:relative;
+  z-index:2;
+
+  margin:0 24px 8px 24px !important;
+
+  color:#5f6964 !important;
+  font-size:.84rem !important;
+  line-height:1.42 !important;
+}
+
+[data-entertainment-page] .ent-card__request strong{
+  color:#173f34 !important;
+  font-weight:700 !important;
+}
+
+/* price pinned to bottom */
+[data-entertainment-page] .ent-card__price{
+  position:relative;
+  z-index:2;
+
+  margin:auto 24px 20px 24px !important;
+  padding-top:11px !important;
+
+  color:#a96d18 !important;
+
+  font-family:"Cormorant Garamond",serif !important;
+  font-size:1.48rem !important;
+  font-weight:700 !important;
+  line-height:1.1 !important;
+
+  border-top:1px solid rgba(181,145,75,.25) !important;
+}
+
+/* Hover */
+[data-entertainment-page] .ent-card:hover{
+  transform:translateY(-6px) !important;
+
+  border-color:rgba(183,122,32,.72) !important;
+
+  background:
+    linear-gradient(145deg,
+      rgba(255,255,255,.95),
+      rgba(252,248,238,.86)) !important;
+
+  box-shadow:
+    0 22px 44px rgba(38,31,20,.12),
+    0 0 0 1px rgba(215,178,105,.10),
+    inset 0 1px 0 rgba(255,255,255,1) !important;
+}
+
+[data-entertainment-page] .ent-card:hover .ent-card__head{
+  background:
+    linear-gradient(
+      110deg,
+      rgba(13,62,47,.19),
+      rgba(25,78,60,.11) 58%,
+      rgba(211,170,87,.05)
+    ) !important;
+}
+
+/* Selected */
+[data-entertainment-page] .ent-card:has(.ent-select:checked){
+  border-color:#b77a20 !important;
+
+  background:
+    linear-gradient(145deg,
+      rgba(255,255,255,.96),
+      rgba(255,249,235,.86)) !important;
+
+  box-shadow:
+    0 0 0 1px rgba(183,122,32,.14),
+    0 20px 40px rgba(45,35,20,.11),
+    inset 0 0 28px rgba(200,146,53,.035) !important;
+}
+
+[data-entertainment-page] .ent-card:has(.ent-select:checked) .ent-card__head{
+  background:
+    linear-gradient(
+      110deg,
+      rgba(12,62,47,.21),
+      rgba(24,75,57,.13) 58%,
+      rgba(205,160,69,.07)
+    ) !important;
+}
+
+/* Entertainment Details panel */
+[data-entertainment-page] .detail-grid{
+  display:grid !important;
+  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+  gap:18px !important;
+}
+
+[data-entertainment-page] .detail-grid > div{
+  background:rgba(255,255,255,.86) !important;
+  border:1px solid rgba(205,194,177,.82) !important;
+  border-radius:18px !important;
+  padding:18px !important;
+  box-shadow:0 8px 20px rgba(47,39,29,.04) !important;
+}
+
+[data-entertainment-page] .form-label{
+  color:#173f34 !important;
+  font-weight:700 !important;
+  font-size:.92rem !important;
+}
+
+[data-entertainment-page] .form-control,
+[data-entertainment-page] .form-select{
+  background:#fff !important;
+  border:1px solid #d7ccbd !important;
+  border-radius:12px !important;
+  box-shadow:none !important;
+}
+
+[data-entertainment-page] .form-control:focus,
+[data-entertainment-page] .form-select:focus{
+  border-color:#b9975c !important;
+  box-shadow:0 0 0 .18rem rgba(200,146,53,.09) !important;
+}
+
+/* Price guide */
+[data-entertainment-page] .performer-price-guide{
+  margin-top:14px !important;
+  padding-top:12px !important;
+  border-top:1px solid rgba(181,145,75,.22) !important;
+}
+
+[data-entertainment-page] .performer-price-guide > div:not(.small){
+  font-size:.84rem !important;
+  color:#44534c !important;
+}
+
+[data-entertainment-page] .performer-price-guide strong{
+  color:#173f34 !important;
+}
+
+[data-entertainment-page] .performer-price-guide span{
+  color:#a96d18 !important;
+}
+
+/* Time picker styling */
+[data-entertainment-page] .custom-time-popover{
+  background:#fffdf9 !important;
+  border:1px solid #d8c7a7 !important;
+  border-radius:14px !important;
+  box-shadow:0 14px 32px rgba(31,47,41,.14) !important;
+}
+
+[data-entertainment-page] .custom-time-scroll button.active,
+[data-entertainment-page] .custom-period-buttons button.active{
+  background:#173f34 !important;
+  color:#fff !important;
+}
+
+/* =========================================================
+   SUMMARY — MATCH PHOTOGRAPHY
+   ========================================================= */
+
+[data-entertainment-page] .workflow-summary{
+  background:#fff !important;
+  border:1px solid var(--ent-border) !important;
+  border-radius:22px !important;
+  overflow:hidden !important;
+  box-shadow:0 10px 26px rgba(47,39,29,.05) !important;
+}
+
+[data-entertainment-page] .workflow-summary > .panel__head{
+  background:#fff !important;
+  padding:24px 26px !important;
+  border-bottom:1px solid #e7ddcf !important;
+}
+
+[data-entertainment-page] .workflow-summary > .panel__head h5{
+  font-size:2rem !important;
+  color:#15251e !important;
+}
+
+[data-entertainment-page] .workflow-summary > .panel__body{
+  background:#fff !important;
+  padding:30px 26px 24px !important;
+
+  max-height:calc(100vh - 180px) !important;
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  scrollbar-width:thin;
+}
+
+[data-entertainment-page] [data-ent-total]{
+  font-family:"Cormorant Garamond",serif !important;
+  font-size:2.75rem !important;
+  font-weight:600 !important;
+  line-height:1 !important;
+  color:#174c3b !important;
+}
+
+/* Remove boxed summary look */
+[data-entertainment-page] .pricing-box{
+  margin:24px 0 0 !important;
+  padding:0 !important;
+  background:transparent !important;
+  border:0 !important;
+  border-radius:0 !important;
+}
+
+/* Clean summary rows */
+[data-entertainment-page] .pricing-row{
+  display:block !important;
+  padding:16px 0 6px !important;
+  border-top:1px solid #ece3d7 !important;
+}
+
+[data-entertainment-page] .pricing-row > span{
+  display:block !important;
+  width:100% !important;
+  margin-bottom:6px !important;
+  color:#746456 !important;
+  font-size:.70rem !important;
+  font-weight:700 !important;
+  letter-spacing:.14em !important;
+  text-transform:uppercase !important;
+}
+
+[data-entertainment-page] .pricing-row > strong{
+  display:block !important;
+  width:100% !important;
+  color:#20312a !important;
+  font-size:.94rem !important;
+  font-weight:500 !important;
+  line-height:1.42 !important;
+  text-align:left !important;
+}
+
+[data-entertainment-page] .summary-service-list{
+  margin:0 !important;
+  padding-left:1rem !important;
+}
+
+[data-entertainment-page] .summary-service-list li{
+  margin-bottom:4px !important;
+  color:#20312a !important;
+  font-weight:400 !important;
+  line-height:1.4 !important;
+}
+
+[data-entertainment-page] [data-summary-performers-price],
+[data-entertainment-page] [data-summary-addons-price],
+[data-entertainment-page] [data-summary-duration-price],
+[data-entertainment-page] [data-summary-start-price],
+[data-entertainment-page] [data-summary-count-price]{
+  margin:0 0 7px !important;
+  color:#b7791f !important;
+  font-size:.86rem !important;
+  font-weight:600 !important;
+  text-align:left !important;
+}
+
+/* disclaimer */
+[data-entertainment-page] .pricing-box + p{
+  padding-top:22px !important;
+  margin-top:18px !important;
+  margin-bottom:22px !important;
+  border-top:1px solid #e8ded1 !important;
+  color:#5d6963 !important;
+  font-size:.91rem !important;
+  line-height:1.55 !important;
+}
+
+/* Save and continue */
+[data-entertainment-page] #saveEntertainmentPrice,
+[data-entertainment-page] .workflow-summary a[href="/prototype/customer/review.html"]{
+  min-height:54px !important;
+  border-radius:999px !important;
+}
+
+[data-entertainment-page] #saveEntertainmentPrice{
+  font-size:.92rem !important;
+  font-weight:600 !important;
+}
+
+[data-entertainment-page] .workflow-summary a[href="/prototype/customer/review.html"]{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  font-size:.91rem !important;
+  letter-spacing:.08em !important;
+}
+
+[data-entertainment-page] #saveEntertainmentPrice[data-saved="true"],
+[data-entertainment-page] #saveEntertainmentPrice[data-saved="true"]:hover{
+  background:var(--ent-gold) !important;
+  border-color:var(--ent-gold) !important;
+  color:#fff !important;
+  opacity:1 !important;
+}
+
+@media(max-width:991.98px){
+  [data-entertainment-page] .detail-grid{
+    grid-template-columns:1fr !important;
+  }
+
+  [data-entertainment-page] .workflow-summary{
+    position:static !important;
+  }
+
+  [data-entertainment-page] .workflow-summary > .panel__body{
+    max-height:none !important;
+  }
+}
+
+@media(max-width:767.98px){
+  [data-entertainment-page]{
+    padding:20px 14px 40px !important;
+  }
+
+  [data-entertainment-page] .ent-grid{
+    grid-template-columns:1fr !important;
+  }
+
+  [data-entertainment-page] .ent-card{
+    height:auto !important;
+    min-height:310px !important;
+    max-height:none !important;
+  }
+
+  [data-entertainment-page] .ent-card__head strong{
+    font-size:1.28rem !important;
+  }
+
+  [data-entertainment-page] .ent-card__list{
+    font-size:.96rem !important;
+  }
+}
+</style>
+
+
+<style>
+/* =========================================================
+   ENTERTAINMENT DETAILS — MODERN PREMIUM REDESIGN
+   Clean, neat, compact, and consistent with the royal
+   Photography + Entertainment card language.
+   ========================================================= */
+
+[data-entertainment-page] .detail-grid{
+  display:grid !important;
+  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+  gap:18px !important;
+  align-items:stretch !important;
+}
+
+/* Premium detail cards */
+[data-entertainment-page] .detail-grid > div{
+  position:relative !important;
+  overflow:hidden !important;
+
+  min-height:355px !important;
+
+  padding:22px 22px 20px !important;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,.94),
+      rgba(250,246,238,.84)
+    ) !important;
+
+  border:1px solid rgba(193,177,150,.52) !important;
+  border-radius:20px !important;
+
+  box-shadow:
+    0 12px 28px rgba(47,39,29,.07),
+    inset 0 1px 0 rgba(255,255,255,.96) !important;
+
+  transition:
+    transform .22s ease,
+    box-shadow .22s ease,
+    border-color .22s ease !important;
+}
+
+/* subtle champagne highlight */
+[data-entertainment-page] .detail-grid > div::before{
+  content:"";
+  position:absolute;
+  top:0;
+  left:22px;
+  right:22px;
+  height:2px;
+
+  border-radius:999px;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(200,146,53,.75),
+      transparent
+    );
+}
+
+/* soft luxury glow */
+[data-entertainment-page] .detail-grid > div::after{
+  content:"";
+  position:absolute;
+  width:150px;
+  height:150px;
+  top:-70px;
+  right:-55px;
+
+  border-radius:50%;
+  pointer-events:none;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(200,146,53,.11),
+      rgba(200,146,53,.025) 45%,
+      transparent 72%
+    );
+}
+
+[data-entertainment-page] .detail-grid > div:hover{
+  transform:translateY(-4px) !important;
+  border-color:rgba(183,122,32,.58) !important;
+
+  box-shadow:
+    0 18px 38px rgba(47,39,29,.10),
+    inset 0 1px 0 rgba(255,255,255,1) !important;
+}
+
+/* Labels */
+[data-entertainment-page] .detail-grid .form-label{
+  position:relative;
+  z-index:2;
+
+  display:block !important;
+
+  margin-bottom:13px !important;
+
+  color:#17483a !important;
+
+  font-size:.78rem !important;
+  font-weight:700 !important;
+  letter-spacing:.15em !important;
+  text-transform:uppercase !important;
+}
+
+/* Input/select styling */
+[data-entertainment-page] .detail-grid .form-control,
+[data-entertainment-page] .detail-grid .form-select{
+  position:relative;
+  z-index:2;
+
+  min-height:52px !important;
+
+  padding:.72rem 1rem !important;
+
+  background:
+    rgba(255,255,255,.86) !important;
+
+  border:1px solid #d5c8b6 !important;
+  border-radius:14px !important;
+
+  color:#35423d !important;
+
+  font-size:.95rem !important;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.86) !important;
+
+  transition:
+    border-color .2s ease,
+    box-shadow .2s ease,
+    background .2s ease !important;
+}
+
+[data-entertainment-page] .detail-grid .form-control:hover,
+[data-entertainment-page] .detail-grid .form-select:hover{
+  border-color:#c3ab81 !important;
+  background:#fff !important;
+}
+
+[data-entertainment-page] .detail-grid .form-control:focus,
+[data-entertainment-page] .detail-grid .form-select:focus{
+  border-color:#b98531 !important;
+  background:#fff !important;
+
+  box-shadow:
+    0 0 0 .18rem rgba(200,146,53,.10) !important;
+}
+
+/* Price guide becomes an elegant list */
+[data-entertainment-page] .performer-price-guide{
+  position:relative;
+  z-index:2;
+
+  margin-top:18px !important;
+  padding-top:16px !important;
+
+  border-top:1px solid rgba(181,145,75,.24) !important;
+}
+
+/* Each price row */
+[data-entertainment-page] .performer-price-guide > div:not(.small){
+  position:relative;
+
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) auto !important;
+  gap:12px !important;
+  align-items:center !important;
+
+  margin:0 !important;
+  padding:6px 0 !important;
+
+  font-size:.88rem !important;
+  line-height:1.35 !important;
+}
+
+/* tiny gold dot for visual rhythm */
+[data-entertainment-page] .performer-price-guide > div:not(.small)::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:50%;
+
+  width:5px;
+  height:5px;
+
+  border-radius:50%;
+
+  background:#c89235;
+
+  transform:translateY(-50%);
+}
+
+/* indent label after dot */
+[data-entertainment-page] .performer-price-guide > div:not(.small) strong{
+  padding-left:14px !important;
+
+  color:#183f34 !important;
+
+  font-size:.90rem !important;
+  font-weight:700 !important;
+}
+
+/* price */
+[data-entertainment-page] .performer-price-guide > div:not(.small) span{
+  color:#b7791f !important;
+
+  font-size:.88rem !important;
+  font-weight:600 !important;
+
+  white-space:nowrap !important;
+  text-align:right !important;
+}
+
+/* supporting note */
+[data-entertainment-page] .performer-price-guide > .small{
+  margin-top:12px !important;
+  padding-top:11px !important;
+
+  border-top:1px dashed rgba(181,145,75,.22) !important;
+
+  color:#69756f !important;
+
+  font-size:.84rem !important;
+  line-height:1.55 !important;
+}
+
+/* Cleaner time control */
+[data-entertainment-page] .custom-time-display{
+  min-height:52px !important;
+
+  display:flex !important;
+  align-items:center !important;
+
+  color:#35423d !important;
+
+  font-size:.95rem !important;
+
+  background:
+    rgba(255,255,255,.86) !important;
+
+  border:1px solid #d5c8b6 !important;
+  border-radius:14px !important;
+}
+
+[data-entertainment-page] .custom-time-display:hover{
+  border-color:#c3ab81 !important;
+  background:#fff !important;
+}
+
+/* Time picker popup */
+[data-entertainment-page] .custom-time-popover{
+  width:285px !important;
+
+  padding:.85rem !important;
+
+  background:
+    rgba(255,253,249,.98) !important;
+
+  border:1px solid #d9c9ad !important;
+  border-radius:16px !important;
+
+  box-shadow:
+    0 18px 42px rgba(31,47,41,.16) !important;
+
+  -webkit-backdrop-filter:blur(12px);
+  backdrop-filter:blur(12px);
+}
+
+[data-entertainment-page] .custom-time-label{
+  color:#17483a !important;
+
+  font-size:.70rem !important;
+  font-weight:700 !important;
+  letter-spacing:.1em !important;
+  text-transform:uppercase !important;
+}
+
+[data-entertainment-page] .custom-time-scroll,
+[data-entertainment-page] .custom-period-buttons{
+  border-color:#dfd3c2 !important;
+  border-radius:10px !important;
+}
+
+[data-entertainment-page] .custom-time-scroll button,
+[data-entertainment-page] .custom-period-buttons button{
+  color:#35423d !important;
+  border-radius:7px !important;
+}
+
+[data-entertainment-page] .custom-time-scroll button:hover,
+[data-entertainment-page] .custom-period-buttons button:hover{
+  background:#f4ede1 !important;
+}
+
+[data-entertainment-page] .custom-time-scroll button.active,
+[data-entertainment-page] .custom-period-buttons button.active{
+  background:#17483a !important;
+  color:#fff !important;
+}
+
+/* Number field consistency */
+[data-entertainment-page] #entPerformerCount{
+  font-weight:500 !important;
+}
+
+/* Responsive */
+@media(max-width:991.98px){
+  [data-entertainment-page] .detail-grid{
+    grid-template-columns:1fr !important;
+  }
+
+  [data-entertainment-page] .detail-grid > div{
+    min-height:0 !important;
+  }
+}
+
+@media(max-width:575.98px){
+  [data-entertainment-page] .detail-grid > div{
+    padding:18px !important;
+    border-radius:17px !important;
+  }
+
+  [data-entertainment-page] .performer-price-guide > div:not(.small){
+    grid-template-columns:1fr !important;
+    gap:2px !important;
+  }
+
+  [data-entertainment-page] .performer-price-guide > div:not(.small) span{
+    padding-left:14px !important;
+    text-align:left !important;
+  }
+}
+</style>
+
+
+<style>
+/* =========================================================
+   ALIGN ENTERTAINMENT DETAIL CARD FOOTNOTES
+   ========================================================= */
+
+/* Make all three cards use the same vertical structure */
+[data-entertainment-page] .detail-grid > div{
+  display:flex !important;
+  flex-direction:column !important;
+  height:100% !important;
+  min-height:355px !important;
+}
+
+/* Keep the price-guide section flexible */
+[data-entertainment-page] .detail-grid .performer-price-guide{
+  display:flex !important;
+  flex-direction:column !important;
+  flex:1 1 auto !important;
+  width:100% !important;
+}
+
+/* Push all explanatory notes to the exact same bottom position */
+[data-entertainment-page] .detail-grid .performer-price-guide > .small{
+  margin-top:auto !important;
+  padding-top:14px !important;
+  min-height:72px !important;
+
+  display:flex !important;
+  align-items:flex-start !important;
+
+  border-top:1px dashed rgba(181,145,75,.22) !important;
+}
+
+/* Keep price rows compact so all three cards align */
+[data-entertainment-page] .detail-grid .performer-price-guide > div:not(.small){
+  flex:0 0 auto !important;
+}
+
+/* Tablet/mobile cards can return to natural height */
+@media(max-width:991.98px){
+  [data-entertainment-page] .detail-grid > div{
+    min-height:0 !important;
+  }
+
+  [data-entertainment-page] .detail-grid .performer-price-guide > .small{
+    min-height:0 !important;
+  }
+}
+</style>
+
+
+<style>
+/* =========================================================
+   EMPTY ENTERTAINMENT SUMMARY — SAME STYLE AS CATERING
+   ========================================================= */
+
+/* Empty-state message */
+[data-entertainment-page] .ent-empty-summary{
+  margin:30px 0 22px !important;
+  color:#5d6963 !important;
+  font-size:.96rem !important;
+  line-height:1.55 !important;
+}
+
+/* When no real entertainment choice exists, hide all detailed rows. */
+[data-entertainment-page] .pricing-box.ent-is-empty{
+  display:none !important;
+}
+
+/* Empty-state divider + pricing message */
+[data-entertainment-page] .ent-empty-pricing-note{
+  margin:0 0 22px !important;
+  padding-top:22px !important;
+  border-top:1px solid #e8ded1 !important;
+  color:#5d6963 !important;
+  font-size:.94rem !important;
+  line-height:1.55 !important;
+}
+
+/* Match Catering's solid green Continue button */
+[data-entertainment-page] .workflow-summary a[href="/prototype/customer/review.html"]{
+  background:#0f4b3b !important;
+  border-color:#0f4b3b !important;
+  color:#fff !important;
+}
+
+[data-entertainment-page] .workflow-summary a[href="/prototype/customer/review.html"]:hover{
+  background:#0b3e31 !important;
+  border-color:#0b3e31 !important;
+  color:#fff !important;
+}
+</style>
+
+
+<style>
+/* =========================================================
+   ENTERTAINMENT ESTIMATE — PHOTOGRAPHY-STYLE EMPTY STATE
+   ========================================================= */
+
+[data-entertainment-page] .workflow-summary{
+  background:#fff !important;
+  border:1px solid #ddd1c0 !important;
+  border-radius:22px !important;
+  overflow:hidden !important;
+}
+
+[data-entertainment-page] .workflow-summary > .panel__head{
+  background:#fff !important;
+  padding:24px 26px !important;
+  border-bottom:1px solid #e7ddcf !important;
+}
+
+[data-entertainment-page] .workflow-summary > .panel__head h5{
+  margin:0 !important;
+  color:#15251e !important;
+  font-family:"Cormorant Garamond",serif !important;
+  font-size:2rem !important;
+  font-weight:700 !important;
+}
+
+[data-entertainment-page] .workflow-summary > .panel__body{
+  background:#fff !important;
+  padding:30px 26px 24px !important;
+}
+
+/* Total identical in hierarchy to Photography */
+[data-entertainment-page] [data-ent-total]{
+  color:#174c3b !important;
+  font-family:"Cormorant Garamond",serif !important;
+  font-size:2.75rem !important;
+  font-weight:600 !important;
+  line-height:1 !important;
+}
+
+[data-entertainment-page] .ent-photo-empty-message{
+  margin:30px 0 26px !important;
+  color:#5d6963 !important;
+  font-size:.96rem !important;
+  line-height:1.55 !important;
+}
+
+[data-entertainment-page] .ent-photo-empty-note{
+  margin:0 0 24px !important;
+  padding-top:22px !important;
+  border-top:1px solid #e8ded1 !important;
+  color:#5d6963 !important;
+  font-size:.94rem !important;
+  line-height:1.55 !important;
+}
+
+/* Absolutely no empty Performers/Add-ons/Duration rows before selection */
+[data-entertainment-page] .workflow-summary.is-empty .pricing-box,
+[data-entertainment-page] .workflow-summary.is-empty .pricing-box + p{
+  display:none !important;
+}
+
+/* Buttons like Photography */
+[data-entertainment-page] #saveEntertainmentPrice{
+  min-height:54px !important;
+  border-radius:999px !important;
+  background:#c89235 !important;
+  border-color:#c89235 !important;
+  color:#fff !important;
+  font-weight:600 !important;
+}
+
+[data-entertainment-page] .workflow-summary a[href="/prototype/customer/review.html"]{
+  min-height:54px !important;
+  border-radius:999px !important;
+  background:#fff !important;
+  border:1px solid #174c3b !important;
+  color:#174c3b !important;
+}
+</style>
+
+
+<style>
+/* =========================================================
+   ENTERTAINMENT SUMMARY — SHOW ONLY CUSTOMER'S CHOICES
+   ========================================================= */
+
+[data-entertainment-page] .ent-summary-row.is-empty{
+  display:none !important;
+}
+
+[data-entertainment-page] .ent-summary-row{
+  display:block !important;
+  padding:18px 0 !important;
+  border-top:1px solid #ece3d7 !important;
+}
+
+[data-entertainment-page] .ent-summary-row > span{
+  display:block !important;
+  margin-bottom:8px !important;
+
+  color:#746456 !important;
+  font-size:.70rem !important;
+  font-weight:700 !important;
+  letter-spacing:.14em !important;
+  text-transform:uppercase !important;
+}
+
+[data-entertainment-page] .ent-summary-row > strong{
+  display:block !important;
+  width:100% !important;
+}
+
+[data-entertainment-page] .ent-selected-list{
+  list-style:none !important;
+  margin:0 !important;
+  padding:0 !important;
+}
+
+[data-entertainment-page] .ent-selected-list li{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) auto !important;
+  gap:12px !important;
+  align-items:start !important;
+
+  padding:6px 0 !important;
+
+  color:#20312a !important;
+  font-size:.91rem !important;
+  font-weight:400 !important;
+  line-height:1.4 !important;
+}
+
+[data-entertainment-page] .ent-selected-list li + li{
+  border-top:1px dashed #ece3d7 !important;
+}
+
+[data-entertainment-page] .ent-selected-name{
+  position:relative;
+  padding-left:14px;
+}
+
+[data-entertainment-page] .ent-selected-name::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:.58em;
+
+  width:5px;
+  height:5px;
+  border-radius:50%;
+  background:#c89235;
+}
+
+[data-entertainment-page] .ent-selected-price{
+  color:#b7791f !important;
+  font-weight:600 !important;
+  white-space:nowrap !important;
+  text-align:right !important;
+}
+
+[data-entertainment-page] .ent-detail-value{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) auto !important;
+  gap:12px !important;
+  align-items:center !important;
+
+  color:#20312a !important;
+  font-size:.91rem !important;
+  font-weight:400 !important;
+}
+
+[data-entertainment-page] .ent-detail-price{
+  color:#b7791f !important;
+  font-weight:600 !important;
+  white-space:nowrap !important;
+}
+
+[data-entertainment-page] .pricing-box:not(:has(.ent-summary-row:not(.is-empty))){
+  display:none !important;
+}
+
+@media(max-width:420px){
+  [data-entertainment-page] .ent-selected-list li,
+  [data-entertainment-page] .ent-detail-value{
+    grid-template-columns:1fr !important;
+    gap:2px !important;
+  }
+
+  [data-entertainment-page] .ent-selected-price,
+  [data-entertainment-page] .ent-detail-price{
+    padding-left:14px !important;
+    text-align:left !important;
+  }
+}
+/* Smaller Additional Notes instruction text */
+[data-entertainment-page] label[for="entNotes"] {
+    font-size: 0.72rem !important;
+    line-height: 1.5 !important;
+    letter-spacing: 0.11em !important;
+}
+</style>
+
+</head>
+
+<body>
+
+<nav class="navbar navbar-expand-lg bb-nav sticky-top">
+  <div class="container-fluid px-3 px-lg-4">
+    <a class="navbar-brand" href="/prototype/index.html">
+      Bliss &amp; Beyond
+      <small>Customer Portal</small>
+    </a>
+
+    <div class="d-flex align-items-center gap-3">
+      <a class="d-none d-md-inline small" href="/prototype/index.html">
+        <i class="bi bi-house-door me-1"></i>Public site
+      </a>
+
+      <div class="dropdown">
+        <button class="btn btn-forest btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+          Amara Perera
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><a class="dropdown-item" href="/prototype/customer/profile.html">Profile</a></li>
+          <li><a class="dropdown-item" href="/prototype/login.html">Sign out</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="bb-shell">
+<main class="bb-main" data-entertainment-page>
+
+  <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-3">
+    <div>
+      <span class="eyebrow">Customer portal</span>
+      <h1 class="h2 mt-1 mb-1">Customize Entertainment</h1>
+      <p class="small text-ink-soft mb-0">
+        Choose performers and entertainment services for your event.
+      </p>
+    </div>
+
+    <div class="d-flex gap-2">
+      <a class="btn btn-outline-forest btn-sm" href="/prototype/customer/services.html">
+        Back to Services
+      </a>
+      <a class="btn btn-gold btn-sm" href="/prototype/customer/review.html">
+        Continue to Review
+      </a>
+    </div>
+  </div>
+
+  <div class="workflow-context">
+    <div class="workflow-meta">
+      <span class="bb-badge gold" data-ent-event-type>Wedding</span>
+      <span class="bb-badge" data-ent-event-guests>150 Guests</span>
+      <span class="bb-badge" data-ent-event-date>20 December 2026</span>
+    </div>
+  </div>
+
+  <div class="row g-4">
+
+    <div class="col-lg-8">
+
+      <!-- PERFORMERS -->
+      <div class="panel mb-4">
+        <div class="panel__head">
+          <h5 class="mb-0">Performers</h5>
+        </div>
+
+        <div class="panel__body">
+          <div class="ent-grid">
+
+            <label class="choice-card ent-card">
+              <div class="ent-card__head">
+                <strong>DJ</strong>
+                <input class="ent-select" type="checkbox"
+                       data-ent-option data-group="performers"
+                       data-price="350000" data-label="DJ"
+                       data-ent-id="dj">
+              </div>
+              <ul class="ent-card__list">
+                <li>Event music mixing</li>
+                <li>Dance-floor playlist</li>
+                <li>Music transitions</li>
+              </ul>
+              <p class="ent-card__summary">Great for energetic receptions and parties.</p>
+              <p class="ent-card__request"><strong>Customer request:</strong> Customers can request preferred songs, artists, playlists and songs to avoid.</p>
+              <div class="text-gold small ent-card__price">350,000 MMK</div>
+            </label>
+
+            <label class="choice-card ent-card">
+              <div class="ent-card__head">
+                <strong>Live Band</strong>
+                <input class="ent-select" type="checkbox"
+                       data-ent-option data-group="performers"
+                       data-price="650000" data-label="Live Band"
+                       data-ent-id="live-band">
+              </div>
+              <ul class="ent-card__list">
+                <li>Live singers & musicians</li>
+                <li>Popular event songs</li>
+                <li>Reception performance</li>
+              </ul>
+              <p class="ent-card__summary">Ideal for a lively and premium event atmosphere.</p>
+              <p class="ent-card__request"><strong>Customer request:</strong> Customers can request favorite songs, music genres and special songs for important moments.</p>
+              <div class="text-gold small ent-card__price">650,000 MMK</div>
+            </label>
+
+            <label class="choice-card ent-card">
+              <div class="ent-card__head">
+                <strong>Acoustic Singer</strong>
+                <input class="ent-select" type="checkbox"
+                       data-ent-option data-group="performers"
+                       data-price="300000" data-label="Acoustic Singer"
+                       data-ent-id="acoustic-singer">
+              </div>
+              <ul class="ent-card__list">
+                <li>Live vocal performance</li>
+                <li>Soft acoustic songs</li>
+                <li>Relaxed background music</li>
+              </ul>
+              <p class="ent-card__summary">Best for romantic ceremonies and dinner periods.</p>
+              <p class="ent-card__request"><strong>Customer request:</strong> Customers can request preferred songs, romantic music and songs for the ceremony or dinner.</p>
+              <div class="text-gold small ent-card__price">300,000 MMK</div>
+            </label>
+
+            <label class="choice-card ent-card">
+              <div class="ent-card__head">
+                <strong>MC / Host</strong>
+                <input class="ent-select" type="checkbox"
+                       data-ent-option data-group="performers"
+                       data-price="250000" data-label="MC / Host"
+                       data-ent-id="mc-host">
+              </div>
+              <ul class="ent-card__list">
+                <li>Guest announcements</li>
+                <li>Program coordination</li>
+                <li>Stage introductions</li>
+              </ul>
+              <p class="ent-card__summary">Keeps the event program clear, smooth and engaging.</p>
+              <p class="ent-card__request"><strong>Customer request:</strong> Customers can request preferred language, announcements, introductions and special program activities.</p>
+              <div class="text-gold small ent-card__price">250,000 MMK</div>
+            </label>
+
+            <label class="choice-card ent-card">
+              <div class="ent-card__head">
+                <strong>Myanmar Traditional Performance</strong>
+                <input class="ent-select" type="checkbox"
+                       data-ent-option data-group="performers"
+                       data-price="450000" data-label="Myanmar Traditional Performance"
+                       data-ent-id="myanmar-traditional-performance">
+              </div>
+              <ul class="ent-card__list">
+                <li>Traditional music</li>
+                <li>Myanmar cultural performance</li>
+                <li>Traditional costumes</li>
+              </ul>
+              <p class="ent-card__summary">Adds a meaningful Myanmar cultural element to the event.</p>
+              <p class="ent-card__request"><strong>Customer request:</strong> Customers can request preferred traditional music, cultural performances and special ceremonial pieces.</p>
+              <div class="text-gold small ent-card__price">450,000 MMK</div>
+            </label>
+
+            <label class="choice-card ent-card">
+              <div class="ent-card__head">
+                <strong>Dance Performance</strong>
+                <input class="ent-select" type="checkbox"
+                       data-ent-option data-group="performers"
+                       data-price="400000" data-label="Dance Performance"
+                       data-ent-id="dance-performance">
+              </div>
+              <ul class="ent-card__list">
+                <li>Choreographed performance</li>
+                <li>Group or solo dancers</li>
+                <li>Stage entertainment</li>
+              </ul>
+              <p class="ent-card__summary">A visual performance that adds energy to the program.</p>
+              <p class="ent-card__request"><strong>Customer request:</strong> Customers can request dance styles, preferred songs, performance themes and special choreography.</p>
+              <div class="text-gold small ent-card__price">400,000 MMK</div>
+            </label>
+
+            <label class="choice-card ent-card">
+              <div class="ent-card__head">
+                <strong>Violinist</strong>
+                <input class="ent-select" type="checkbox"
+                       data-ent-option data-group="performers"
+                       data-price="280000" data-label="Violinist"
+                       data-ent-id="violinist">
+              </div>
+              <ul class="ent-card__list">
+                <li>Live violin music</li>
+                <li>Ceremony background music</li>
+                <li>Romantic song selection</li>
+              </ul>
+              <p class="ent-card__summary">Creates an elegant atmosphere for ceremonies and dinners.</p>
+              <p class="ent-card__request"><strong>Customer request:</strong> Customers can request favorite songs, romantic pieces and music for entrances or ceremony moments.</p>
+              <div class="text-gold small ent-card__price">280,000 MMK</div>
+            </label>
+
+            <label class="choice-card ent-card">
+              <div class="ent-card__head">
+                <strong>Traditional Music Ensemble</strong>
+                <input class="ent-select" type="checkbox"
+                       data-ent-option data-group="performers"
+                       data-price="500000" data-label="Traditional Music Ensemble"
+                       data-ent-id="traditional-music-ensemble">
+              </div>
+              <ul class="ent-card__list">
+                <li>Myanmar traditional instruments</li>
+                <li>Live cultural music</li>
+                <li>Ceremonial performance</li>
+              </ul>
+              <p class="ent-card__summary">Suitable for weddings and culturally themed celebrations.</p>
+              <p class="ent-card__request"><strong>Customer request:</strong> Customers can request preferred Myanmar traditional songs, instruments and ceremonial music.</p>
+              <div class="text-gold small ent-card__price">500,000 MMK</div>
+            </label>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ENTERTAINMENT ADD-ONS -->
+      <div class="panel mb-4">
+        <div class="panel__head">
+          <h5 class="mb-0">Entertainment Add-ons</h5>
+        </div>
+
+        <div class="panel__body">
+          <div class="ent-grid">
+
+            <label class="choice-card ent-card">
+              <div class="ent-card__head">
+                <strong>Karaoke Setup</strong>
+                <input class="ent-select" type="checkbox"
+                       data-ent-option data-group="addons"
+                       data-price="180000" data-label="Karaoke Setup"
+                       data-ent-id="karaoke-setup">
+              </div>
+              <ul class="ent-card__list">
+                <li>Microphones</li>
+                <li>Karaoke music system</li>
+                <li>Guest song activity</li>
+              </ul>
+              <p class="ent-card__summary">A fun interactive activity for guests and families.</p>
+              <p class="ent-card__request"><strong>Customer request:</strong> Customers can request favorite karaoke songs, music languages and preferred song selections.</p>
+              <div class="text-gold small ent-card__price">180,000 MMK</div>
+            </label>
+
+            <label class="choice-card ent-card">
+              <div class="ent-card__head">
+                <strong>Interactive Games</strong>
+                <input class="ent-select" type="checkbox"
+                       data-ent-option data-group="addons"
+                       data-price="150000" data-label="Interactive Games"
+                       data-ent-id="interactive-games">
+              </div>
+              <ul class="ent-card__list">
+                <li>Guest participation</li>
+                <li>Simple event games</li>
+                <li>Group activities</li>
+              </ul>
+              <p class="ent-card__summary">Helps guests interact and keeps the celebration lively.</p>
+              <p class="ent-card__request"><strong>Customer request:</strong> Customers can request preferred games, guest activities, prizes and activities suitable for different age groups.</p>
+              <div class="text-gold small ent-card__price">150,000 MMK</div>
+            </label>
+
+            <label class="choice-card ent-card">
+              <div class="ent-card__head">
+                <strong>LED Dance Floor</strong>
+                <input class="ent-select" type="checkbox"
+                       data-ent-option data-group="addons"
+                       data-price="300000" data-label="LED Dance Floor"
+                       data-ent-id="led-dance-floor">
+              </div>
+              <ul class="ent-card__list">
+                <li>Illuminated dance area</li>
+                <li>Reception entertainment</li>
+                <li>Party atmosphere</li>
+              </ul>
+              <p class="ent-card__summary">Adds a modern visual feature to evening celebrations.</p>
+              <p class="ent-card__request"><strong>Customer request:</strong> Customers can request preferred lighting effects, music atmosphere and special dance-floor moments.</p>
+              <div class="text-gold small ent-card__price">300,000 MMK</div>
+            </label>
+
+            <label class="choice-card ent-card">
+              <div class="ent-card__head">
+                <strong>Special Entrance Music</strong>
+                <input class="ent-select" type="checkbox"
+                       data-ent-option data-group="addons"
+                       data-price="100000" data-label="Special Entrance Music"
+                       data-ent-id="special-entrance-music">
+              </div>
+              <ul class="ent-card__list">
+                <li>Custom entrance song</li>
+                <li>Timed music cue</li>
+                <li>Couple or VIP entrance</li>
+              </ul>
+              <p class="ent-card__summary">Creates a memorable entrance moment for the event.</p>
+              <p class="ent-card__request"><strong>Customer request:</strong> Customers can request a specific entrance song, timing and music for the couple, family or VIP entrance.</p>
+              <div class="text-gold small ent-card__price">100,000 MMK</div>
+            </label>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- DETAILS -->
+      <div class="panel mb-4">
+        <div class="panel__head">
+          <h5 class="mb-0">Entertainment Details</h5>
+        </div>
+
+        <div class="panel__body">
+          <div class="detail-grid">
+
+            <div>
+              <label class="form-label" for="entDuration">Duration</label>
+              <select class="form-select" id="entDuration" data-ent-duration>
+                <option value="" data-price="0">Select duration</option>
+                <option value="4 hours" data-price="0">4 hours</option>
+                <option value="6 hours" data-price="100000">6 hours</option>
+                <option value="8 hours" data-price="180000">8 hours</option>
+              </select>
+
+              <div class="performer-price-guide mt-3">
+                <div><strong>4 hours</strong><span>No additional charge</span></div>
+                <div><strong>6 hours</strong><span>+100,000 MMK</span></div>
+                <div><strong>8 hours</strong><span>+180,000 MMK</span></div>
+                <div class="small text-ink-soft mt-1">
+                  Longer entertainment service increases the service charge.
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label class="form-label" for="entStartTimeDisplay">Start Time</label>
+
+              <div class="custom-time-picker" data-time-picker>
+                <button class="form-control custom-time-display"
+                        type="button"
+                        id="entStartTimeDisplay"
+                        data-time-display
+                        aria-expanded="false">
+                  06:00 PM
+                </button>
+
+                <div class="custom-time-popover" data-time-popover>
+                  <div class="custom-time-columns">
+
+                    <div class="custom-time-column">
+                      <div class="custom-time-label">Hour</div>
+                      <div class="custom-time-scroll" data-hour-list>
+                        <button type="button" data-hour="1">1</button>
+                        <button type="button" data-hour="2">2</button>
+                        <button type="button" data-hour="3">3</button>
+                        <button type="button" data-hour="4">4</button>
+                        <button type="button" data-hour="5">5</button>
+                        <button type="button" data-hour="6" class="active">6</button>
+                        <button type="button" data-hour="7">7</button>
+                        <button type="button" data-hour="8">8</button>
+                        <button type="button" data-hour="9">9</button>
+                        <button type="button" data-hour="10">10</button>
+                        <button type="button" data-hour="11">11</button>
+                        <button type="button" data-hour="12">12</button>
+                      </div>
+                    </div>
+
+                    <div class="custom-time-column">
+                      <div class="custom-time-label">Minute</div>
+                      <div class="custom-time-scroll" data-minute-list>
+                        <button type="button" data-minute="1">1</button>
+                        <button type="button" data-minute="2">2</button>
+                        <button type="button" data-minute="3">3</button>
+                        <button type="button" data-minute="4">4</button>
+                        <button type="button" data-minute="5">5</button>
+                        <button type="button" data-minute="6">6</button>
+                        <button type="button" data-minute="7">7</button>
+                        <button type="button" data-minute="8">8</button>
+                        <button type="button" data-minute="9">9</button>
+                        <button type="button" data-minute="10">10</button>
+                        <button type="button" data-minute="11">11</button>
+                        <button type="button" data-minute="12">12</button>
+                        <button type="button" data-minute="13">13</button>
+                        <button type="button" data-minute="14">14</button>
+                        <button type="button" data-minute="15">15</button>
+                        <button type="button" data-minute="16">16</button>
+                        <button type="button" data-minute="17">17</button>
+                        <button type="button" data-minute="18">18</button>
+                        <button type="button" data-minute="19">19</button>
+                        <button type="button" data-minute="20">20</button>
+                        <button type="button" data-minute="21">21</button>
+                        <button type="button" data-minute="22">22</button>
+                        <button type="button" data-minute="23">23</button>
+                        <button type="button" data-minute="24">24</button>
+                        <button type="button" data-minute="25">25</button>
+                        <button type="button" data-minute="26">26</button>
+                        <button type="button" data-minute="27">27</button>
+                        <button type="button" data-minute="28">28</button>
+                        <button type="button" data-minute="29">29</button>
+                        <button type="button" data-minute="30">30</button>
+                        <button type="button" data-minute="31">31</button>
+                        <button type="button" data-minute="32">32</button>
+                        <button type="button" data-minute="33">33</button>
+                        <button type="button" data-minute="34">34</button>
+                        <button type="button" data-minute="35">35</button>
+                        <button type="button" data-minute="36">36</button>
+                        <button type="button" data-minute="37">37</button>
+                        <button type="button" data-minute="38">38</button>
+                        <button type="button" data-minute="39">39</button>
+                        <button type="button" data-minute="40">40</button>
+                        <button type="button" data-minute="41">41</button>
+                        <button type="button" data-minute="42">42</button>
+                        <button type="button" data-minute="43">43</button>
+                        <button type="button" data-minute="44">44</button>
+                        <button type="button" data-minute="45">45</button>
+                        <button type="button" data-minute="46">46</button>
+                        <button type="button" data-minute="47">47</button>
+                        <button type="button" data-minute="48">48</button>
+                        <button type="button" data-minute="49">49</button>
+                        <button type="button" data-minute="50">50</button>
+                        <button type="button" data-minute="51">51</button>
+                        <button type="button" data-minute="52">52</button>
+                        <button type="button" data-minute="53">53</button>
+                        <button type="button" data-minute="54">54</button>
+                        <button type="button" data-minute="55">55</button>
+                        <button type="button" data-minute="56">56</button>
+                        <button type="button" data-minute="57">57</button>
+                        <button type="button" data-minute="58">58</button>
+                        <button type="button" data-minute="59">59</button>
+                        <button type="button" data-minute="60">60</button>
+                      </div>
+                    </div>
+
+                    <div class="custom-time-column custom-period-column">
+                      <div class="custom-time-label">Period</div>
+                      <div class="custom-period-buttons">
+                        <button type="button" data-period="AM">AM</button>
+                        <button type="button" data-period="PM" class="active">PM</button>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+
+                <input type="hidden" value="18:00" data-ent-start>
+              </div>
+
+              <div class="performer-price-guide mt-3">
+                <div><strong>Up to 6:00 PM</strong><span>No additional charge</span></div>
+                <div><strong>After 6:00 PM</strong><span>+50,000 MMK</span></div>
+                <div><strong>After 9:00 PM</strong><span>+100,000 MMK</span></div>
+                <div class="small text-ink-soft mt-1">
+                  Later starting times include an additional evening service charge.
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label class="form-label" for="entPerformerCount">Number of Performers</label>
+              <input class="form-control" id="entPerformerCount"
+                     type="number" min="1" max="30" value="1"
+                     data-ent-count>
+
+              <div class="performer-price-guide mt-3">
+                <div><strong>1 performer</strong><span>No additional charge</span></div>
+                <div><strong>2 performers</strong><span>+100,000 MMK</span></div>
+                <div><strong>3 performers</strong><span>+200,000 MMK</span></div>
+                <div><strong>4 performers</strong><span>+300,000 MMK</span></div>
+                <div class="small text-ink-soft mt-1">Each additional performer after the first adds 100,000 MMK.</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- NOTES -->
+      <div class="panel">
+        <div class="panel__head">
+          <h5 class="mb-0">Additional Entertainment Notes</h5>
+        </div>
+
+        <div class="panel__body">
+          <label class="form-label" for="entNotes">
+            Tell us about preferred songs, performance style, special entrances, cultural requests or other entertainment needs.
+          </label>
+          <textarea class="form-control" id="entNotes" rows="4" data-ent-notes></textarea>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- SELECTION SUMMARY -->
+    <div class="col-lg-4">
+      <div class="panel workflow-summary position-sticky" style="top:90px">
+
+        <div class="panel__head">
+          <h5 class="mb-0">Your Entertainment</h5>
+        </div>
+
+        <div class="panel__body">
+
+          <div class="mb-4">
+            <div class="bb-price" data-ent-total>0 MMK</div>
+            <div class="small text-ink-soft mt-1">Estimated entertainment total</div>
+          </div>
+
+          <div class="pricing-box mb-3">
+
+            <div class="pricing-row ent-summary-row is-empty" data-ent-summary-row="performers">
+              <span>Performers</span>
+              <strong data-summary-performers>-</strong>
+            </div>
+
+            <div class="pricing-row ent-summary-row is-empty" data-ent-summary-row="addons">
+              <span>Add-ons</span>
+              <strong data-summary-addons>-</strong>
+            </div>
+
+            <div class="pricing-row ent-summary-row is-empty" data-ent-summary-row="duration">
+              <span>Duration</span>
+              <strong data-summary-duration>-</strong>
+            </div>
+
+            <div class="pricing-row ent-summary-row is-empty" data-ent-summary-row="start">
+              <span>Start Time</span>
+              <strong data-summary-start>-</strong>
+            </div>
+
+            <div class="pricing-row ent-summary-row is-empty" data-ent-summary-row="count">
+              <span>Performers Count</span>
+              <strong data-summary-count>-</strong>
+            </div>
+
+            <div class="pricing-row notes-row ent-summary-row is-empty" data-ent-summary-row="notes">
+              <span>Additional Notes</span>
+              <strong data-summary-notes>-</strong>
+            </div>
+
+          </div>
+
+          <p class="small text-ink-soft mb-3">
+            Estimated prices vary depending on selected entertainment services and duration.
+          </p>
+
+          <div class="small text-danger mb-2" data-ent-status role="status" aria-live="polite" hidden></div>
+
+          <div class="d-grid gap-2">
+            <button class="btn btn-gold" type="button" id="saveEntertainmentPrice">
+              Save Price
+            </button>
+
+            <a class="btn btn-outline-forest" href="/prototype/customer/review.html">
+              Continue to Review
+            </a>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/prototype/assets/js/main.js"></script>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const picker = document.querySelector('[data-time-picker]');
+  if (!picker) return;
+
+  const display = picker.querySelector('[data-time-display]');
+  const popover = picker.querySelector('[data-time-popover]');
+  const hidden = picker.querySelector('[data-ent-start]');
+
+  let hour = 6;
+  let minute = 0;
+  let period = 'PM';
+
+  function updateTime() {
+    const displayMinute = minute === 60 ? '00' : String(minute).padStart(2, '0');
+    display.textContent =
+      String(hour).padStart(2, '0') + ':' + displayMinute + ' ' + period;
+
+    let hour24 = hour % 12;
+    if (period === 'PM') hour24 += 12;
+
+    hidden.value =
+      String(hour24).padStart(2, '0') + ':' + displayMinute;
+
+    hidden.dispatchEvent(new Event('change', { bubbles: true }));
+  }
+
+  function syncActiveButtons() {
+    const hour24 = hidden.value ? Number(hidden.value.split(':')[0]) : 18;
+    const minuteValue = hidden.value ? Number(hidden.value.split(':')[1]) : 0;
+
+    const displayHour = hour24 % 12 || 12;
+    const displayPeriod = hour24 >= 12 ? 'PM' : 'AM';
+    const displayMinute = minuteValue === 0 ? 60 : minuteValue;
+
+    picker.querySelectorAll('[data-hour]').forEach((button) => {
+      button.classList.toggle('active', Number(button.dataset.hour) === displayHour);
+    });
+
+    picker.querySelectorAll('[data-minute]').forEach((button) => {
+      button.classList.toggle('active', Number(button.dataset.minute) === displayMinute);
+    });
+
+    picker.querySelectorAll('[data-period]').forEach((button) => {
+      button.classList.toggle('active', button.dataset.period === displayPeriod);
+    });
+  }
+
+  window.bbSetEntertainmentStartTime = function (value) {
+    if (!value || !/^\d{2}:\d{2}$/.test(value)) return;
+    const [hourString, minuteString] = value.split(':');
+    const hour24 = Number(hourString);
+    const minute24 = Number(minuteString);
+
+    hour = hour24 % 12 || 12;
+    minute = minute24 === 0 ? 60 : minute24;
+    period = hour24 >= 12 ? 'PM' : 'AM';
+
+    syncActiveButtons();
+    updateTime();
+  };
+
+  display.addEventListener('click', function (event) {
+    event.stopPropagation();
+    picker.classList.toggle('open');
+    display.setAttribute(
+      'aria-expanded',
+      picker.classList.contains('open') ? 'true' : 'false'
+    );
+  });
+
+  picker.querySelectorAll('[data-hour]').forEach(function (button) {
+    button.addEventListener('click', function () {
+      picker.querySelectorAll('[data-hour]').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      hour = Number(this.dataset.hour);
+      updateTime();
+    });
+  });
+
+  picker.querySelectorAll('[data-minute]').forEach(function (button) {
+    button.addEventListener('click', function () {
+      picker.querySelectorAll('[data-minute]').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      minute = Number(this.dataset.minute);
+      updateTime();
+    });
+  });
+
+  picker.querySelectorAll('[data-period]').forEach(function (button) {
+    button.addEventListener('click', function () {
+      picker.querySelectorAll('[data-period]').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      period = this.dataset.period;
+      updateTime();
+    });
+  });
+
+  document.addEventListener('click', function (event) {
+    if (!picker.contains(event.target)) {
+      picker.classList.remove('open');
+      display.setAttribute('aria-expanded', 'false');
+    }
+  });
+
+  updateTime();
+  syncActiveButtons();
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+
+  const money = value =>
+    Number(value || 0).toLocaleString('en-US') + ' MMK';
+
+  const SERVICE_ID = 'entertainment';
+  const BACKEND_SERVICE_ID = 4;
+  const SERVICE_TITLE = 'Entertainment';
+  const DEFAULT_START_TIME = '18:00';
+  const LEGACY_KEY = 'bbEstimatedEntertainmentPrice';
+  const optionSelector = '[data-ent-option]';
+  const notesEl = document.querySelector('[data-ent-notes]');
+  const durationEl = document.querySelector('[data-ent-duration]');
+  const countEl = document.querySelector('[data-ent-count]');
+  const saveBtn = document.getElementById('saveEntertainmentPrice');
+  const statusEl = document.querySelector('[data-ent-status]');
+  const continueBtn = document.querySelector('a.btn.btn-outline-forest[href="/prototype/customer/review.html"]');
+  const timePicker = document.querySelector('[data-time-picker]');
+  const timeDisplay = timePicker?.querySelector('[data-time-display]');
+  const timeButtons = timePicker ? timePicker.querySelectorAll('[data-hour], [data-minute], [data-period]') : [];
+  const availabilityUrl = 'http://localhost:8081/api/services/4';
+  const availabilityMessage = 'Entertainment is currently unavailable.';
+
+  function selected(group){
+    return [...document.querySelectorAll('[data-ent-option]:checked')]
+      .filter(input => input.dataset.group === group);
+  }
+
+  function total(items){
+    return items.reduce(
+      (sum,item) => sum + Number(item.dataset.price || 0),
+      0
+    );
+  }
+
+  function setText(selector,value){
+    const el = document.querySelector(selector);
+    if(el) el.textContent = value;
+  }
+
+  function setList(selector,items){
+    const el = document.querySelector(selector);
+    if(!el) return;
+
+    if(!items.length){
+      el.innerHTML = '-';
+      return;
+    }
+
+    el.innerHTML = `
+      <ul class="summary-service-list mb-0">
+        ${items.map(item => `<li>${item}</li>`).join('')}
+      </ul>
+    `;
+  }
+
+  function setTextContent(selector, value) {
+    const el = document.querySelector(selector);
+    if (el) el.textContent = value;
+  }
+
+  function formatTime(value){
+    if(!value) return '-';
+
+    const [hourString,minute] = value.split(':');
+    let hour = Number(hourString);
+    const suffix = hour >= 12 ? 'PM' : 'AM';
+    hour = hour % 12 || 12;
+
+    return `${hour}:${minute} ${suffix}`;
+  }
+
+  function setStatus(message = '') {
+    if (!statusEl) return;
+    statusEl.textContent = message;
+    statusEl.hidden = !message;
+  }
+
+  function setEntertainmentAvailability(available) {
+    [...document.querySelectorAll(optionSelector)].forEach((input) => {
+      input.disabled = !available;
+    });
+
+    if (durationEl) durationEl.disabled = !available;
+    if (countEl) countEl.disabled = !available;
+    if (notesEl) notesEl.disabled = !available;
+    if (saveBtn) saveBtn.disabled = !available;
+
+    const startInput = document.querySelector('[data-ent-start]');
+    if (startInput) startInput.disabled = !available;
+
+    if (timeDisplay) {
+      timeDisplay.disabled = !available;
+      timeDisplay.setAttribute('aria-disabled', String(!available));
+    }
+
+    timeButtons.forEach((button) => {
+      button.disabled = !available;
+    });
+
+    if (continueBtn) {
+      continueBtn.classList.toggle('disabled', !available);
+      continueBtn.setAttribute('aria-disabled', String(!available));
+      continueBtn.tabIndex = available ? 0 : -1;
+      continueBtn.style.pointerEvents = available ? '' : 'none';
+    }
+  }
+
+  async function checkEntertainmentAvailability() {
+    try {
+      const response = await fetch(availabilityUrl, {
+        cache: 'no-store',
+        headers: { Accept: 'application/json' }
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const service = await response.json();
+      const isValid =
+        Number(service?.id) === BACKEND_SERVICE_ID &&
+        String(service?.name || '').trim() === SERVICE_TITLE;
+
+      if (!isValid) {
+        throw new Error('Unexpected entertainment catalog payload');
+      }
+
+      setEntertainmentAvailability(Boolean(service.available));
+
+      if (service.available) {
+        if (statusEl?.textContent === availabilityMessage) {
+          setStatus('');
+        }
+      } else {
+        setStatus(availabilityMessage);
+      }
+    } catch (error) {
+      console.info('Entertainment catalog unavailable; using frontend fallback.');
+    }
+  }
+
+  function setSavedState(saved) {
+    if (!saveBtn) return;
+    saveBtn.textContent = saved ? '✓ Saved' : 'Save Entertainment';
+    saveBtn.dataset.saved = saved ? 'true' : 'false';
+  }
+
+  function markDirty() {
+    if (window.__bbEntertainmentRestoring) return;
+    setSavedState(false);
+    setStatus('');
+  }
+
+  function getHiddenStartTime() {
+    return document.querySelector('[data-ent-start]')?.value || DEFAULT_START_TIME;
+  }
+
+  function getSelectedOptionData(input) {
+    return {
+      id: input.dataset.entId || '',
+      label: input.dataset.label || input.value || '',
+      price: Number(input.dataset.price || 0)
+    };
+  }
+
+  function findInputBySavedItem(item) {
+    if (!item) return null;
+
+    if (item.id) {
+      const byId = document.querySelector(`${optionSelector}[data-ent-id="${item.id}"]`);
+      if (byId) return byId;
+    }
+
+    const label = item.label || item.name || item.title || item;
+    return [...document.querySelectorAll(optionSelector)]
+      .find((input) => input.dataset.label === label) || null;
+  }
+
+  function setDurationByValue(value) {
+    if (!durationEl) return;
+    durationEl.value = value || '';
+  }
+
+  function setCountByValue(value) {
+    if (!countEl) return;
+    countEl.value = value ? String(value) : '1';
+  }
+
+  function restoreFromLegacyData(raw) {
+    try {
+      window.__bbEntertainmentRestoring = true;
+      const legacy = JSON.parse(raw);
+      if (!legacy) return null;
+
+      [...document.querySelectorAll(optionSelector)].forEach((input) => {
+        input.checked = false;
+      });
+
+      ['performers', 'addons'].forEach((group) => {
+        const labels = String(legacy[group] || '')
+          .split(',')
+          .map((item) => item.trim())
+          .filter(Boolean)
+          .filter((item) => item !== 'None selected' && item !== '-');
+
+        labels.forEach((label) => {
+          const input = [...document.querySelectorAll(optionSelector)]
+            .find((el) => el.dataset.group === (group === 'addons' ? 'addons' : 'performers') && el.dataset.label === label);
+          if (input) input.checked = true;
+        });
+      });
+
+      if (legacy.duration && legacy.duration !== '-') {
+        setDurationByValue(
+          [...durationEl?.options || []].find((option) => option.textContent.trim() === legacy.duration)?.value || ''
+        );
+      }
+
+      if (legacy.startTime && legacy.startTime !== '-') {
+        const rawStart = legacy.startTime.trim();
+        const match = rawStart.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+        if (match && typeof window.bbSetEntertainmentStartTime === 'function') {
+          const [, hourString, minuteString, periodString] = match;
+          let hour24 = Number(hourString) % 12;
+          if (periodString.toUpperCase() === 'PM') hour24 += 12;
+          window.bbSetEntertainmentStartTime(`${String(hour24).padStart(2, '0')}:${minuteString}`);
+        }
+      }
+
+      if (legacy.performersCount) {
+        setCountByValue(Number(legacy.performersCount));
+      }
+
+      if (notesEl) {
+        notesEl.value = legacy.notes && legacy.notes !== '-' ? legacy.notes : '';
+      }
+
+      return updateSummary();
+    } catch (error) {
+      return null;
+    } finally {
+      window.__bbEntertainmentRestoring = false;
+    }
+  }
+
+  function updateSummary(){
+
+    const performers = selected('performers');
+    const addons = selected('addons');
+
+    const performersTotal = total(performers);
+    const addonsTotal = total(addons);
+
+    const durationSelect = durationEl;
+    const durationOption =
+      durationSelect?.options[durationSelect.selectedIndex];
+
+    const duration = durationSelect?.value || '';
+    const durationPrice = Number(durationOption?.dataset.price || 0);
+
+    const startTime = getHiddenStartTime();
+
+    const startHour = Number((startTime || '18:00').split(':')[0]);
+    const startTimePrice =
+      startHour >= 21 ? 100000 :
+      startHour > 18 ? 50000 : 0;
+
+    const count = countEl?.value || '1';
+
+    const performerCount = Math.max(1, Number(count) || 1);
+    const performerCountPrice = Math.max(0, performerCount - 1) * 100000;
+
+    const notes = notesEl?.value.trim() || '';
+
+    const grandTotal =
+      performersTotal +
+      addonsTotal +
+      durationPrice +
+      startTimePrice +
+      performerCountPrice;
+
+    setTextContent('[data-ent-total]',money(grandTotal));
+
+    setList(
+      '[data-summary-performers]',
+      performers.map(x => x.dataset.label)
+    );
+
+    setText(
+      '[data-summary-performers-price]',
+      performers.length ? money(performersTotal) : '-'
+    );
+
+    setList(
+      '[data-summary-addons]',
+      addons.map(x => x.dataset.label)
+    );
+
+    setText(
+      '[data-summary-addons-price]',
+      addons.length ? money(addonsTotal) : '-'
+    );
+
+    setText(
+      '[data-summary-duration]',
+      duration || '-'
+    );
+
+    setText(
+      '[data-summary-duration-price]',
+      duration
+        ? (durationPrice ? '+' + money(durationPrice) : 'No additional charge')
+        : '-'
+    );
+
+    setText(
+      '[data-summary-start]',
+      formatTime(startTime)
+    );
+
+    setText(
+      '[data-summary-start-price]',
+      startTime
+        ? (startTimePrice ? '+' + money(startTimePrice) : 'No additional charge')
+        : '-'
+    );
+
+    setText(
+      '[data-summary-count]',
+      performerCount
+    );
+
+    setText(
+      '[data-summary-count-price]',
+      performerCountPrice ? '+' + money(performerCountPrice) : 'No additional charge'
+    );
+
+    setText(
+      '[data-summary-notes]',
+      notes || '-'
+    );
+
+    return {
+      performers,
+      addons,
+      duration: durationSelect?.value || '',
+      durationLabel: durationSelect?.options[durationSelect.selectedIndex]?.textContent?.trim() || '',
+      durationPrice,
+      startTime,
+      startTimePrice,
+      performerCount,
+      performerCountPrice,
+      notes,
+      grandTotal
+    };
+  }
+
+  document.addEventListener('change',function(event){
+    if(
+      event.target.matches(optionSelector) ||
+      event.target.matches('[data-ent-duration]') ||
+      event.target.matches('[data-ent-start]') ||
+      event.target.matches('[data-ent-count]')
+    ){
+      if (window.__bbEntertainmentRestoring) return;
+      updateSummary();
+      markDirty();
+    }
+  });
+
+  countEl?.addEventListener('input',function(){
+    if (window.__bbEntertainmentRestoring) return;
+    updateSummary();
+    markDirty();
+  });
+
+  notesEl?.addEventListener('input',function(){
+    if (window.__bbEntertainmentRestoring) return;
+    updateSummary();
+    markDirty();
+  });
+
+  function buildSaveData() {
+    const state = updateSummary();
+    const performers = state.performers.map(getSelectedOptionData);
+    const addons = state.addons.map(getSelectedOptionData);
+    const hasMeaningfulSelection =
+      performers.length > 0 ||
+      addons.length > 0 ||
+      state.duration ||
+      state.startTime !== DEFAULT_START_TIME ||
+      state.performerCount > 1;
+
+    if (!hasMeaningfulSelection) {
+      setStatus('Please choose at least one entertainment option before saving.');
+      return null;
+    }
+
+    const options = [
+      ...performers.map((item) => item.label),
+      ...addons.map((item) => item.label)
+    ];
+
+    if (state.durationLabel) options.push(state.durationLabel);
+    if (state.startTime && state.startTime !== DEFAULT_START_TIME) options.push(`Start Time: ${formatTime(state.startTime)}`);
+    if (state.performerCount > 1) options.push(`Performers Count: ${state.performerCount}`);
+
+    return {
+      serviceId: SERVICE_ID,
+      backendServiceId: BACKEND_SERVICE_ID,
+      title: SERVICE_TITLE,
+      estimatedTotal: state.grandTotal,
+      options,
+      selections: {
+        performers,
+        addOns: addons,
+        duration: state.duration
+          ? {
+              value: state.duration,
+              label: state.durationLabel,
+              price: state.durationPrice
+            }
+          : null,
+        startTime: {
+          value: state.startTime,
+          price: state.startTimePrice
+        },
+        performerCount: {
+          value: state.performerCount,
+          price: state.performerCountPrice
+        },
+        notes: state.notes
+      }
+    };
+  }
+
+  function saveEntertainment() {
+    const data = buildSaveData();
+    if (!data) return false;
+
+    if (typeof bbSetServiceData === 'function') {
+      bbSetServiceData(SERVICE_ID, data);
+    }
+
+    if (typeof bbGetSelectedServices === 'function' && typeof bbSetSelectedServices === 'function') {
+      const current = bbGetSelectedServices().filter((item) => item.id !== SERVICE_ID);
+      current.push({
+        id: SERVICE_ID,
+        title: SERVICE_TITLE,
+        estimatedTotal: data.estimatedTotal
+      });
+      bbSetSelectedServices(current);
+    }
+
+    setSavedState(true);
+    setStatus('');
+    return data;
+  }
+
+  saveBtn?.addEventListener('click', function(){
+    saveEntertainment();
+  });
+
+  function restoreSavedEntertainment(saved) {
+    window.__bbEntertainmentRestoring = true;
+    [...document.querySelectorAll(optionSelector)].forEach((input) => {
+      input.checked = false;
+    });
+
+    const savedPerformers = Array.isArray(saved?.selections?.performers) ? saved.selections.performers : [];
+    const savedAddOns = Array.isArray(saved?.selections?.addOns) ? saved.selections.addOns : [];
+
+    if (savedPerformers.length || savedAddOns.length) {
+      [...savedPerformers, ...savedAddOns].forEach((item) => {
+        const input = findInputBySavedItem(item);
+        if (input) input.checked = true;
+      });
+    } else if (Array.isArray(saved?.options)) {
+      saved.options.forEach((label) => {
+        const input = [...document.querySelectorAll(optionSelector)]
+          .find((el) => el.dataset.label === label);
+        if (input) input.checked = true;
+      });
+    }
+
+    if (saved?.selections?.duration && durationEl) {
+      setDurationByValue(saved.selections.duration.value || '');
+    } else if (saved?.duration && durationEl) {
+      const legacyDuration = [...durationEl.options].find((option) => option.textContent.trim() === saved.duration);
+      if (legacyDuration) setDurationByValue(legacyDuration.value);
+    }
+
+    if (saved?.selections?.startTime?.value && typeof window.bbSetEntertainmentStartTime === 'function') {
+      window.bbSetEntertainmentStartTime(saved.selections.startTime.value);
+    } else if (saved?.startTime && typeof window.bbSetEntertainmentStartTime === 'function') {
+      const match = String(saved.startTime).match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+      if (match) {
+        const [, hourString, minuteString, periodString] = match;
+        let hour24 = Number(hourString) % 12;
+        if (periodString.toUpperCase() === 'PM') hour24 += 12;
+        window.bbSetEntertainmentStartTime(`${String(hour24).padStart(2, '0')}:${minuteString}`);
+      }
+    }
+
+    if (saved?.selections?.performerCount?.value) {
+      setCountByValue(saved.selections.performerCount.value);
+    } else if (saved?.performersCount) {
+      setCountByValue(Number(saved.performersCount));
+    }
+
+    if (notesEl) {
+      notesEl.value = saved?.selections?.notes ?? saved?.notes ?? '';
+    }
+
+    updateSummary();
+    window.__bbEntertainmentRestoring = false;
+  }
+
+  if (statusEl) {
+    statusEl.hidden = true;
+  }
+
+  /*
+    Open Entertainment with a clean, unselected UI just like Photography.
+    Saved data is not deleted; it is simply not restored into the controls
+    automatically when the page first opens.
+  */
+  const storedServiceData = typeof bbGetServiceData === 'function'
+    ? bbGetServiceData()[SERVICE_ID]
+    : null;
+
+  getAllInputs().forEach(function (input) {
+    input.checked = false;
+  });
+
+  if (durationEl) durationEl.value = '';
+  if (notesEl) notesEl.value = '';
+
+  /* Keep the control's normal default internally, but it will not count as
+     a user choice in the empty summary. */
+  if (countEl) countEl.value = '1';
+
+  updateSummary();
+  setSavedState(false);
+
+  if (continueBtn) {
+    continueBtn.addEventListener('click', function () {
+      saveEntertainment();
+    });
+  }
+
+  checkEntertainmentAvailability();
+});
+</script>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+  function readSelectedEventContext() {
+    if (typeof window.bbGetEventContext === 'function') {
+      const context = window.bbGetEventContext();
+      if (context) return context;
+    }
+
+    try {
+      const raw = sessionStorage.getItem('bb_event_context');
+      if (raw) return JSON.parse(raw);
+    } catch (error) {}
+
+    return {
+      eventType: sessionStorage.getItem('bbEventType') || 'Wedding',
+      eventDate: sessionStorage.getItem('bbEventDate') || '2026-12-20',
+      guests: Number(sessionStorage.getItem('bbEventGuests') || 150)
+    };
+  }
+
+  function formatEventDate(value) {
+    if (!value) return '20 December 2026';
+
+    if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+      const parts = value.split('-');
+      const date = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+
+      return date.toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric'
+      });
+    }
+
+    return value;
+  }
+
+  window.bbReadSelectedEventForServicePage = function () {
+    const context = readSelectedEventContext();
+
+    return {
+      eventType: context.eventType || context.type || 'Wedding',
+      eventDate: context.eventDate || context.date || '2026-12-20',
+      guests: Number(context.guests || context.guestCount || 150)
+    };
+  };
+
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  setTimeout(function () {
+    const getEvent = window.bbReadSelectedEventForServicePage;
+    if (typeof getEvent !== 'function') return;
+
+    const event = getEvent();
+
+    const typeEl = document.querySelector('[data-ent-event-type]');
+    const guestEl = document.querySelector('[data-ent-event-guests]');
+    const dateEl = document.querySelector('[data-ent-event-date]');
+
+    if (typeEl) typeEl.textContent = event.eventType;
+    if (guestEl) guestEl.textContent = event.guests + ' Guests';
+
+    if (dateEl) {
+      if (/^\d{4}-\d{2}-\d{2}$/.test(event.eventDate)) {
+        const [y,m,d] = event.eventDate.split('-').map(Number);
+        dateEl.textContent = new Date(y,m-1,d).toLocaleDateString('en-GB', {
+          day:'2-digit', month:'long', year:'numeric'
+        });
+      } else {
+        dateEl.textContent = event.eventDate;
+      }
+    }
+  }, 0);
+});
+</script>
+
+
+
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const page = document.querySelector('[data-entertainment-page]');
+  if (!page) return;
+
+  const summary = page.querySelector('.workflow-summary');
+  const body = summary?.querySelector('.panel__body');
+  const pricingBox = summary?.querySelector('.pricing-box');
+  const total = summary?.querySelector('[data-ent-total]');
+  const save = summary?.querySelector('#saveEntertainmentPrice');
+
+  if (!summary || !body || !pricingBox || !total) return;
+
+  const emptyMessage = document.createElement('p');
+  emptyMessage.className = 'ent-photo-empty-message';
+  emptyMessage.textContent = 'Choose a performer or entertainment option to begin.';
+
+  const emptyNote = document.createElement('p');
+  emptyNote.className = 'ent-photo-empty-note';
+  emptyNote.textContent = 'Final pricing will appear after you choose your entertainment options.';
+
+  function hasUserSelection() {
+    /* Only actual service choices or a deliberately selected duration count.
+       Default 6:00 PM and performer count 1 do NOT make the summary non-empty. */
+    const serviceChosen = page.querySelector('.ent-select:checked') !== null;
+    const durationChosen = !!page.querySelector('#entDuration')?.value;
+    const notesEntered = !!(page.querySelector('#entNotes')?.value || '').trim();
+
+    return serviceChosen || durationChosen || notesEntered;
+  }
+
+  function renderEmptyState() {
+    const empty = !hasUserSelection();
+    summary.classList.toggle('is-empty', empty);
+
+    if (empty) {
+      total.textContent = '0 MMK';
+
+      if (!emptyMessage.isConnected) {
+        pricingBox.before(emptyMessage);
+      }
+      if (!emptyNote.isConnected) {
+        pricingBox.after(emptyNote);
+      }
+
+      if (save) {
+        save.textContent = 'Save Entertainment';
+        save.dataset.saved = 'false';
+        save.disabled = false;
+      }
+    } else {
+      emptyMessage.remove();
+      emptyNote.remove();
+    }
+  }
+
+  page.addEventListener('change', function () {
+    setTimeout(renderEmptyState, 0);
+  });
+
+  page.addEventListener('input', function () {
+    setTimeout(renderEmptyState, 0);
+  });
+
+  /* Run after the page's own initialization code. */
+  setTimeout(renderEmptyState, 20);
+});
+</script>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const page = document.querySelector('[data-entertainment-page]');
+  if (!page) return;
+
+  const money = value =>
+    Number(value || 0).toLocaleString('en-US') + ' MMK';
+
+  function selected(group){
+    return [...page.querySelectorAll('[data-ent-option]:checked')]
+      .filter(input => input.dataset.group === group);
+  }
+
+  function renderItemGroup(group, rowName, targetSelector){
+    const items = selected(group);
+    const row = page.querySelector(`[data-ent-summary-row="${rowName}"]`);
+    const target = page.querySelector(targetSelector);
+
+    if (!row || !target) return;
+
+    if (!items.length){
+      row.classList.add('is-empty');
+      target.innerHTML = '-';
+      return;
+    }
+
+    row.classList.remove('is-empty');
+
+    target.innerHTML = `
+      <ul class="ent-selected-list">
+        ${items.map(item => `
+          <li>
+            <span class="ent-selected-name">${item.dataset.label}</span>
+            <span class="ent-selected-price">${money(item.dataset.price)}</span>
+          </li>
+        `).join('')}
+      </ul>
+    `;
+  }
+
+  function renderSelectedOnlySummary(){
+    renderItemGroup('performers', 'performers', '[data-summary-performers]');
+    renderItemGroup('addons', 'addons', '[data-summary-addons]');
+
+    const durationEl = page.querySelector('[data-ent-duration]');
+    const durationRow = page.querySelector('[data-ent-summary-row="duration"]');
+    const durationTarget = page.querySelector('[data-summary-duration]');
+
+    if (durationEl?.value){
+      const option = durationEl.options[durationEl.selectedIndex];
+      const price = Number(option?.dataset.price || 0);
+
+      durationRow?.classList.remove('is-empty');
+      if (durationTarget){
+        durationTarget.innerHTML = `
+          <div class="ent-detail-value">
+            <span>${option.textContent.trim()}</span>
+            <span class="ent-detail-price">
+              ${price ? '+' + money(price) : 'Included'}
+            </span>
+          </div>
+        `;
+      }
+    } else {
+      durationRow?.classList.add('is-empty');
+      if (durationTarget) durationTarget.innerHTML = '-';
+    }
+
+    const startValue = page.querySelector('[data-ent-start]')?.value || '18:00';
+    const startRow = page.querySelector('[data-ent-summary-row="start"]');
+    const startTarget = page.querySelector('[data-summary-start]');
+
+    const [hourString, minute] = startValue.split(':');
+    const hour24 = Number(hourString);
+    const startChanged = startValue !== '18:00';
+
+    if (startChanged){
+      const suffix = hour24 >= 12 ? 'PM' : 'AM';
+      const hour12 = hour24 % 12 || 12;
+      const price = hour24 >= 21 ? 100000 : hour24 > 18 ? 50000 : 0;
+
+      startRow?.classList.remove('is-empty');
+      if (startTarget){
+        startTarget.innerHTML = `
+          <div class="ent-detail-value">
+            <span>${hour12}:${minute} ${suffix}</span>
+            <span class="ent-detail-price">
+              ${price ? '+' + money(price) : 'Included'}
+            </span>
+          </div>
+        `;
+      }
+    } else {
+      startRow?.classList.add('is-empty');
+      if (startTarget) startTarget.innerHTML = '-';
+    }
+
+    const count = Math.max(1, Number(page.querySelector('[data-ent-count]')?.value || 1));
+    const countRow = page.querySelector('[data-ent-summary-row="count"]');
+    const countTarget = page.querySelector('[data-summary-count]');
+
+    if (count > 1){
+      const price = (count - 1) * 100000;
+
+      countRow?.classList.remove('is-empty');
+      if (countTarget){
+        countTarget.innerHTML = `
+          <div class="ent-detail-value">
+            <span>${count} performers</span>
+            <span class="ent-detail-price">+${money(price)}</span>
+          </div>
+        `;
+      }
+    } else {
+      countRow?.classList.add('is-empty');
+      if (countTarget) countTarget.innerHTML = '-';
+    }
+
+    const notes = (page.querySelector('[data-ent-notes]')?.value || '').trim();
+    const notesRow = page.querySelector('[data-ent-summary-row="notes"]');
+    const notesTarget = page.querySelector('[data-summary-notes]');
+
+    if (notes){
+      notesRow?.classList.remove('is-empty');
+      if (notesTarget) notesTarget.textContent = notes;
+    } else {
+      notesRow?.classList.add('is-empty');
+      if (notesTarget) notesTarget.textContent = '-';
+    }
+  }
+
+  page.addEventListener('change', function(){
+    setTimeout(renderSelectedOnlySummary, 0);
+  });
+
+  page.addEventListener('input', function(){
+    setTimeout(renderSelectedOnlySummary, 0);
+  });
+
+  /* Existing save/update handlers may rewrite the summary.
+     Re-apply the selected-only view after they finish. */
+  page.querySelector('#saveEntertainmentPrice')?.addEventListener('click', function(){
+    setTimeout(renderSelectedOnlySummary, 0);
+    setTimeout(renderSelectedOnlySummary, 100);
+    setTimeout(renderSelectedOnlySummary, 500);
+  });
+
+  setTimeout(renderSelectedOnlySummary, 30);
+});
+</script>
+
+</body>
+</html>

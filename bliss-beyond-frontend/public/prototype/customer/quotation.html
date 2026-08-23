@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quotation | Bliss &amp; Beyond</title>
+<meta name="description" content="Your Bliss &amp; Beyond quotation.">
+<link rel="icon" href="/prototype/../favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Karla:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="/prototype/assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+<nav class="navbar bb-nav sticky-top">
+  <div class="container-fluid px-3 px-lg-4">
+    <a class="navbar-brand" href="/prototype/index.html">Bliss &amp; Beyond<small>Customer Portal</small></a>
+    <div class="d-flex align-items-center gap-3">
+      <a class="d-none d-md-inline small" href="/prototype/index.html"><i class="bi bi-house-door me-1"></i>Public site</a>
+      <div class="dropdown">
+        <button class="btn btn-forest btn-sm dropdown-toggle" data-bs-toggle="dropdown" data-auth-display>Account</button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><a class="dropdown-item" href="/prototype/customer/profile.html">Profile</a></li>
+          <li><a class="dropdown-item" href="/prototype/login.html">Sign out</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</nav>
+<div class="bb-shell">
+  <aside class="bb-side">
+    <h6>Overview</h6><a href="/prototype/customer/dashboard.html">Dashboard</a><a href="/prototype/customer/profile.html">My Profile</a>
+    <h6>Plan your event</h6><a href="/prototype/customer/browse-packages.html">Browse Packages</a><a href="/prototype/customer/venue-selection.html">Venue Selection</a><a href="/prototype/customer/ai-recommendation.html">AI Recommendation</a><a href="/prototype/customer/booking.html">New Booking</a>
+    <h6>My bookings</h6><a href="/prototype/customer/consultation.html">Consultation</a><a href="/prototype/customer/booking-history.html">Booking History</a><a class="active" href="/prototype/customer/quotation.html">Quotations</a>
+    <h6>Account</h6><a href="/prototype/login.html">Sign out</a>
+  </aside>
+  <main class="bb-main" data-quotation-page>
+    <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
+      <div><span class="eyebrow">Customer portal</span><h1 class="h2 mt-1 mb-1" data-quotation-title>Quotations</h1><p class="small text-ink-soft mb-0" data-quotation-subtitle>Loading your quotations...</p></div>
+      <button class="btn btn-outline-forest btn-sm" type="button" onclick="window.print()">Print</button>
+    </div>
+    <div class="alert alert-danger d-none" data-quotation-error></div>
+    <div class="panel d-none" data-quotation-empty><div class="panel__body text-center py-5"><i class="bi bi-file-earmark-text fs-1 text-forest"></i><h2 class="h4 mt-3">No quotation prepared yet</h2><p class="text-ink-soft">No quotation has been prepared for this event yet.</p><div class="d-flex justify-content-center flex-wrap gap-2"><a class="btn btn-forest" href="/prototype/customer/dashboard.html">Back to Dashboard</a><a class="btn btn-outline-forest" href="/prototype/customer/booking-status.html">View Booking Status</a></div></div></div>
+    <div class="panel d-none" data-quotation-list-panel><div class="panel__body"><h2 class="h4 mb-3">Your quotations</h2><div class="list-group list-group-flush" data-quotation-list></div></div></div>
+    <div class="panel d-none" data-quotation-document><div class="panel__body">
+      <div class="d-flex flex-wrap justify-content-between gap-4 mb-4"><div><h2 class="h3 mb-1">Bliss &amp; Beyond</h2><p class="small text-ink-soft mb-0">Prepared quotation for your event</p></div><div class="text-md-end small text-ink-soft"><div><strong class="text-dark">Quotation</strong> <span data-quotation-reference></span></div><div>Created <span data-quotation-created></span></div><div>Expires <span data-quotation-expires></span></div><div class="mt-2"><span class="bb-badge gold" data-quotation-status></span></div></div></div>
+      <div class="row g-3 mb-4"><div class="col-md-6"><div class="small text-ink-soft">Event</div><strong data-quotation-event>Not available</strong></div><div class="col-md-6"><div class="small text-ink-soft">Venue</div><strong data-quotation-venue>Not available</strong><div class="small text-ink-soft" data-quotation-location></div></div><div class="col-md-6"><div class="small text-ink-soft">Event date</div><strong data-quotation-date>Not available</strong></div><div class="col-md-6"><div class="small text-ink-soft">Guests</div><strong data-quotation-guests>Not available</strong></div></div>
+      <div class="table-responsive"><table class="table align-middle"><thead><tr><th>Item</th><th>Details</th><th class="text-end">Amount</th></tr></thead><tbody data-quotation-services></tbody></table></div>
+      <div class="row justify-content-end"><div class="col-md-6 col-lg-5"><div class="d-flex justify-content-between small mb-1"><span class="text-ink-soft">Venue hire</span><strong data-quotation-venue-price>Price on request</strong></div><div class="d-flex justify-content-between small mb-1"><span class="text-ink-soft">Service subtotal</span><strong data-quotation-service-subtotal>MMK 0</strong></div><div class="d-flex justify-content-between small mb-1"><span class="text-ink-soft">Quotation subtotal</span><strong data-quotation-subtotal>MMK 0</strong></div><div class="d-flex justify-content-between small mb-1"><span class="text-ink-soft">Additional charges</span><strong data-quotation-additional>MMK 0</strong></div><div class="d-flex justify-content-between small mb-2"><span class="text-ink-soft">Discount</span><strong data-quotation-discount>MMK 0</strong></div><hr><div class="d-flex justify-content-between align-items-center"><span>Quotation total</span><span class="bb-price" data-quotation-total>MMK 0</span></div></div></div>
+      <p class="small text-ink-soft mt-4 mb-0 d-none" data-quotation-notes-label>Notes: <span data-quotation-notes></span></p>
+      <div class="border-top mt-4 pt-4 d-flex flex-wrap align-items-center justify-content-between gap-3" data-quotation-actions>
+        <span class="small text-ink-soft" data-quotation-action-message></span>
+        <div class="d-flex gap-2"><button class="btn btn-outline-danger d-none" type="button" data-quotation-reject>Reject Quotation</button><button class="btn btn-gold d-none" type="button" data-quotation-accept>Accept Quotation</button><a class="btn btn-gold d-none" href="#" data-quotation-payment-link>Proceed to Payment</a></div>
+      </div>
+    </div></div>
+  </main>
+</div>
+<div class="modal fade" id="quotationActionModal" tabindex="-1" aria-hidden="true" data-quotation-modal>
+  <div class="modal-dialog modal-dialog-centered"><div class="modal-content">
+    <div class="modal-header"><h5 class="modal-title" data-quotation-modal-title>Confirm action</h5><button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button></div>
+    <div class="modal-body"><p class="mb-0" data-quotation-modal-message></p></div>
+    <div class="modal-footer"><button class="btn btn-outline-forest" type="button" data-bs-dismiss="modal">Cancel</button><button class="btn btn-gold" type="button" data-quotation-confirm>Confirm</button></div>
+  </div></div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script><script src="/prototype/assets/js/main.js"></script>
+</body>
+</html>

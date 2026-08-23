@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Manage Payments | Bliss &amp; Beyond</title>
+<meta name="description" content="Verify real Bliss & Beyond customer payments.">
+<link rel="icon" href="/prototype/../favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Karla:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="/prototype/assets/css/style.css" rel="stylesheet">
+<style>html:not(.bb-admin-authorized) body { visibility: hidden; }</style>
+</head>
+<body data-admin-page data-admin-payments-page>
+
+<nav class="navbar bb-nav sticky-top">
+  <div class="container-fluid px-3 px-lg-4">
+    <a class="navbar-brand" href="/prototype/index.html">Bliss &amp; Beyond<small>Admin Console</small></a>
+    <div class="d-flex align-items-center gap-3">
+      <a class="d-none d-md-inline small" href="/prototype/index.html"><i class="bi bi-house-door me-1"></i>Public site</a>
+      <div class="dropdown">
+        <button class="btn btn-forest btn-sm dropdown-toggle" data-bs-toggle="dropdown" data-admin-display>Administrator</button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><a class="dropdown-item" href="/prototype/customer/profile.html">Profile</a></li>
+          <li><a class="dropdown-item" href="/prototype/login.html" data-admin-sign-out>Sign out</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="bb-shell">
+  <aside class="bb-side">
+    <h6>Overview</h6>
+    <a href="/prototype/admin/dashboard.html">Dashboard</a>
+    <h6>Catalogue</h6>
+    <a href="/prototype/admin/customers.html">Customers</a>
+    <a href="/prototype/admin/packages.html">Packages</a>
+    <a href="/prototype/admin/venues.html">Venues</a>
+    <a href="/prototype/admin/services.html">Services</a>
+    <h6>Operations</h6>
+    <a href="/prototype/admin/bookings.html">Bookings</a>
+    <a href="/prototype/admin/consultations.html">Consultations</a>
+    <a href="/prototype/admin/quotations.html">Quotations</a>
+    <a class="active" href="/prototype/admin/payments.html">Payments</a>
+    <a href="/prototype/admin/reports.html">Reports</a>
+    <h6>Account</h6>
+    <a href="/prototype/login.html" data-admin-sign-out>Sign out</a>
+  </aside>
+
+  <main class="bb-main">
+    <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
+      <div>
+        <span class="eyebrow">Finance operations</span>
+        <h1 class="h2 mt-1 mb-1">Manage Payments</h1>
+        <p class="small text-ink-soft mb-0" data-admin-payment-summary>Loading payments...</p>
+      </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+      <div class="col-6 col-xl-3"><div class="stat-card h-100"><div class="stat-label">Total payments</div><div class="stat-value mt-1" data-admin-payment-count="total">-</div></div></div>
+      <div class="col-6 col-xl-3"><div class="stat-card h-100"><div class="stat-label">Pending verification</div><div class="stat-value mt-1" data-admin-payment-count="pending">-</div></div></div>
+      <div class="col-6 col-xl-3"><div class="stat-card h-100"><div class="stat-label">Paid</div><div class="stat-value mt-1" data-admin-payment-count="paid">-</div></div></div>
+      <div class="col-6 col-xl-3"><div class="stat-card h-100"><div class="stat-label">Payments collected</div><div class="h4 text-gold mt-2 mb-0" data-admin-payment-collected>-</div></div></div>
+    </div>
+
+    <div class="alert alert-danger d-none" data-admin-payment-message role="alert" aria-live="polite"></div>
+
+    <div class="panel">
+      <div class="panel__head d-flex flex-wrap gap-2">
+        <div class="input-group" style="max-width:360px">
+          <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
+          <input class="form-control border-start-0" type="search" placeholder="Search payment, booking, or customer" data-admin-payment-search>
+        </div>
+        <div class="d-flex flex-wrap gap-2 ms-lg-auto">
+          <select class="form-select form-select-sm" style="width:auto" data-admin-payment-status-filter aria-label="Filter payments by status">
+            <option value="ALL">All statuses</option><option value="PENDING">Pending</option><option value="PAID">Paid</option><option value="FAILED">Failed</option><option value="REFUNDED">Refunded</option>
+          </select>
+          <select class="form-select form-select-sm" style="width:auto" data-admin-payment-type-filter aria-label="Filter payments by type">
+            <option value="ALL">All types</option><option value="DEPOSIT">Deposit</option><option value="BALANCE">Balance</option>
+          </select>
+        </div>
+      </div>
+      <div class="panel__body">
+        <div class="table-responsive">
+          <table class="table align-middle">
+            <thead><tr><th>Payment</th><th>Booking</th><th>Customer</th><th>Event</th><th>Type</th><th>Amount</th><th>Status</th><th>Method / Reference / Paid At</th><th>Actions</th></tr></thead>
+            <tbody data-admin-payment-rows><tr><td colspan="9" class="text-center py-5 text-ink-soft">Loading payments...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="modal fade" id="paymentConfirmModal" tabindex="-1" aria-labelledby="paymentConfirmModalTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered"><div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title" id="paymentConfirmModalTitle" data-payment-modal-title>Confirm Payment</h5>
+      <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+      <dl class="row mb-4">
+        <dt class="col-5">Customer</dt><dd class="col-7" data-payment-modal-customer></dd>
+        <dt class="col-5">Booking</dt><dd class="col-7" data-payment-modal-booking></dd>
+        <dt class="col-5">Payment type</dt><dd class="col-7" data-payment-modal-type></dd>
+        <dt class="col-5">Authoritative amount</dt><dd class="col-7 fw-bold text-gold" data-payment-modal-amount></dd>
+      </dl>
+      <div class="mb-3">
+        <label class="form-label" for="paymentMethod">Payment method <span class="text-ink-soft">(optional)</span></label>
+        <input class="form-control" id="paymentMethod" maxlength="50" data-payment-method placeholder="Bank transfer, cash, or other verified method">
+      </div>
+      <div>
+        <label class="form-label" for="paymentReference">Transaction reference <span class="text-ink-soft">(optional)</span></label>
+        <input class="form-control" id="paymentReference" maxlength="120" data-payment-reference placeholder="Verified bank or receipt reference">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline-secondary" type="button" data-bs-dismiss="modal">Cancel</button>
+      <button class="btn btn-gold" type="button" data-payment-confirm-submit>Confirm Payment</button>
+    </div>
+  </div></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/prototype/assets/js/main.js"></script>
+<script src="/prototype/assets/js/admin.js"></script>
+</body>
+</html>

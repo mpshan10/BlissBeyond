@@ -1,0 +1,498 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Select Services | Bliss &amp; Beyond</title>
+<meta name="description" content="Select event services for your Bliss &amp; Beyond booking prototype.">
+<link rel="icon" href="/prototype/../favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Karla:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="/prototype/assets/css/style.css" rel="stylesheet">
+
+<style>
+/* Editable event details on Select Services page */
+.event-edit-controls{
+  display:flex;
+  flex-wrap:wrap;
+  gap:.65rem;
+  align-items:center;
+}
+
+.event-edit-control{
+  width:auto;
+  min-width:145px;
+  height:42px;
+  padding:.45rem 2.2rem .45rem 1rem;
+  border:1px solid #dfd3bf;
+  border-radius:999px;
+  background-color:#f5efe4;
+  color:#173f35;
+  font-family:'Karla',sans-serif;
+  font-size:.9rem;
+  cursor:pointer;
+}
+
+.event-edit-control.event-date{
+  min-width:175px;
+  padding-right:1rem;
+}
+
+.event-edit-control:focus{
+  outline:none;
+  border-color:#b9852f;
+  box-shadow:0 0 0 .15rem rgba(185,133,47,.12);
+  background:#fff;
+}
+
+@media (max-width:575.98px){
+  .event-edit-control{
+    width:100%;
+  }
+}
+
+/* Main Services page card refinement */
+[data-services-page] .service-card {
+  border-radius: 18px;
+  box-shadow: 0 8px 22px rgba(18, 47, 39, 0.07);
+  border-color: rgba(221, 211, 195, 0.95);
+}
+
+[data-services-page] .service-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 30px rgba(18, 47, 39, 0.1);
+}
+
+[data-services-page] .service-card__hero {
+  min-height: 0;
+  aspect-ratio: 16 / 10;
+  padding: 1rem 1rem 0.95rem;
+}
+
+[data-services-page] .service-card__hero::after {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(8, 18, 15, 0.02),
+      rgba(8, 18, 15, 0.02) 36%,
+      rgba(8, 18, 15, 0.48)
+    );
+}
+
+[data-services-page] .service-card__body {
+  padding: 1.1rem 1.15rem 1.15rem;
+}
+
+[data-services-page] .service-card__body > p.small.text-ink-soft.mb-3 {
+  min-height: 4.8em;
+  margin-bottom: 0.9rem !important;
+}
+
+[data-services-page] .service-card .chip-row {
+  gap: 0.4rem;
+  margin-top: 0.15rem;
+}
+
+[data-services-page] .service-card__body > .d-flex.justify-content-between.align-items-center:last-child {
+  padding-top: 0.55rem;
+}
+</style>
+
+</head>
+<body>
+<nav class="navbar navbar-expand-lg bb-nav sticky-top">
+  <div class="container-fluid px-3 px-lg-4">
+    <a class="navbar-brand" href="/prototype/index.html">Bliss &amp; Beyond<small>Customer Portal</small></a>
+    <div class="d-flex align-items-center gap-3">
+      <a class="d-none d-md-inline small" href="/prototype/index.html"><i class="bi bi-house-door me-1"></i>Public site</a>
+      <div class="dropdown">
+        <button class="btn btn-forest btn-sm dropdown-toggle" data-bs-toggle="dropdown" data-auth-display>Account</button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><a class="dropdown-item" href="/prototype/customer/profile.html">Profile</a></li>
+          <li><a class="dropdown-item" href="/prototype/login.html">Sign out</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="bb-shell">
+  <aside class="bb-side">
+    <h6>Overview</h6>
+    <a href="/prototype/customer/dashboard.html">Dashboard</a>
+    <a href="/prototype/customer/profile.html">My Profile</a>
+    <h6>Plan your event</h6>
+    <a href="/prototype/customer/browse-packages.html">Browse Packages</a>
+    
+    <a href="/prototype/customer/venue-selection.html">Venue Selection</a>
+    <a class="active" href="/prototype/customer/services.html">Select Services</a>
+    <a href="/prototype/customer/ai-recommendation.html">AI Recommendation</a>
+    <a href="/prototype/customer/booking.html">New Booking</a>
+    <h6>My bookings</h6>
+    <a href="/prototype/customer/consultation.html">Consultation</a>
+    <a href="/prototype/customer/booking-history.html">Booking History</a>
+    
+    <a href="/prototype/customer/quotation.html">Quotations</a>
+    <h6>Account</h6>
+    <a href="/prototype/login.html">Sign out</a>
+  </aside>
+
+  <main class="bb-main" data-services-page>
+    <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
+      <div>
+        <span class="eyebrow">Customer portal</span>
+        <h1 class="h2 mt-1 mb-1">Choose the services that will bring your event to life</h1>
+        <p class="small text-ink-soft mb-0">Select only the services you need, then customize each one at your own pace.</p>
+      </div>
+      <div class="d-flex gap-2">
+        <a class="btn btn-outline-forest btn-sm" href="/prototype/customer/venue-selection.html">Back to Venue Selection</a>
+        <a class="btn btn-gold btn-sm" href="/prototype/customer/review.html" data-continue-review>Continue to Review</a>
+      </div>
+    </div>
+<div class="workflow-context p-4 mb-4">
+      <div class="row g-3 align-items-center">
+        <div class="col-lg-8">
+          <div class="workflow-context__title mb-2">Your Event</div>
+          <div class="workflow-context__value mb-2" data-event-venue>Willow Garden Estate</div>
+          <div class="event-edit-controls">
+            <select class="event-edit-control" id="serviceEventType" aria-label="Event Type">
+              <option value="Wedding">Wedding</option>
+              <option value="Anniversary">Anniversary</option>
+              <option value="Graduation">Graduation</option>
+              <option value="Birthday">Birthday</option>
+              <option value="Corporate">Corporate</option>
+              <option value="Engagement">Engagement</option>
+            </select>
+
+            <input class="event-edit-control event-date"
+                   id="serviceEventDate"
+                   type="date"
+                   aria-label="Event Date">
+
+            <select class="event-edit-control" id="serviceEventGuests" aria-label="Guests">
+              <option value="50">50 Guests</option>
+              <option value="100">100 Guests</option>
+              <option value="150">150 Guests</option>
+              <option value="200">200 Guests</option>
+              <option value="250">250 Guests</option>
+              <option value="300">300 Guests</option>
+              <option value="350">350 Guests</option>
+              <option value="400">400 Guests</option>
+              <option value="450">450 Guests</option>
+              <option value="500">500 Guests</option>
+            </select>
+          </div>
+        </div>
+        <div class="col-lg-4 text-lg-end">
+          <p class="small text-ink-soft mb-1">Venue-specific services are shown here using temporary session storage for this prototype.</p>
+          <span class="bb-badge gold" data-selected-count>0 Services Selected</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-lg-8">
+        <div class="row g-4">
+          <div class="col-md-6">
+            <article class="service-card" data-service-card data-service-id="catering" data-backend-service-id="1">
+              <div class="service-card__hero" style="background-image:url('/prototype/assets/img/catering.jpg')">
+                <span class="service-card__badge"><i class="bi bi-cup-hot"></i> Core service</span>
+              </div>
+              <div class="service-card__body">
+                <div class="d-flex justify-content-between align-items-start gap-3 mb-2">
+                  <div>
+                    <div class="service-card__meta mb-1">Catering</div>
+                    <h3 class="service-card__title">Catering</h3>
+                  </div>
+                  <div class="form-check m-0">
+                    <input class="form-check-input" type="checkbox" id="serviceCatering" value="catering" data-service-toggle data-label="Catering">
+                  </div>
+                </div>
+                <p class="small text-ink-soft mb-3">Create your perfect dining experience with custom menus, dining styles and service add-ons.</p>
+                <div class="chip-row mb-3">
+                  <span class="pill">Menus</span><span class="pill">Buffet</span><span class="pill">Plated</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                  <strong class="text-gold">From 35,000 MMK / guest</strong>
+                  <a class="btn btn-outline-forest btn-sm" href="/prototype/customer/catering.html">Choose Options</a>
+                </div>
+              </div>
+            </article>
+          </div>
+ <div class="col-md-6">
+            <article class="service-card" data-service-card data-service-id="decoration" data-backend-service-id="2">
+              <div class="service-card__hero" style="background-image:url('/prototype/assets/img/venue-1.jpg')">
+                <span class="service-card__badge"><i class="bi bi-flower1"></i> Styling</span>
+              </div>
+              <div class="service-card__body">
+                <div class="d-flex justify-content-between align-items-start gap-3 mb-2">
+                  <div>
+                    <div class="service-card__meta mb-1">Decoration &amp; Styling</div>
+                    <h3 class="service-card__title">Decoration</h3>
+                  </div>
+                  <div class="form-check m-0">
+                    <input class="form-check-input" type="checkbox" id="serviceDecoration" value="decoration" data-service-toggle data-label="Decoration">
+                  </div>
+                </div>
+                <p class="small text-ink-soft mb-3">Create the atmosphere with themes, florals, stage styling and elegant venue design.</p>
+                <div class="chip-row mb-3">
+                  <span class="pill">Themes</span><span class="pill">Florals</span><span class="pill">Stage</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                  <strong class="text-gold">From 900,000 MMK</strong>
+                  <a class="btn btn-outline-forest btn-sm" href="/prototype/customer/decoration.html">Choose Options</a>
+                </div>
+              </div>
+            </article>
+          </div>
+
+          <div class="col-md-6">
+            <article class="service-card" data-service-card data-service-id="photography" data-backend-service-id="3">
+              <div class="service-card__hero" style="background-image:url('/prototype/assets/img/venue-2.jpg')">
+                <span class="service-card__badge"><i class="bi bi-camera"></i> Media</span>
+              </div>
+              <div class="service-card__body">
+                <div class="d-flex justify-content-between align-items-start gap-3 mb-2">
+                  <div>
+                    <div class="service-card__meta mb-1">Photography &amp; Videography</div>
+                    <h3 class="service-card__title">Photography</h3>
+                  </div>
+                  <div class="form-check m-0">
+                    <input class="form-check-input" type="checkbox" id="servicePhotography" value="photography" data-service-toggle data-label="Photography &amp; Videography">
+                  </div>
+                </div>
+                <p class="small text-ink-soft mb-3">Capture your event with cinematic video, portraits, candid moments and digital delivery.</p>
+                <div class="chip-row mb-3">
+                  <span class="pill">Photo</span><span class="pill">Video</span><span class="pill">Drone</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                  <strong class="text-gold">From 650,000 MMK</strong>
+                  <a class="btn btn-outline-forest btn-sm" href="/prototype/customer/photography.html">Choose Options</a>
+                </div>
+              </div>
+            </article>
+          </div>
+<div class="col-md-6">
+            <article class="service-card" data-service-card data-service-id="entertainment" data-backend-service-id="4">
+              <div class="service-card__hero" style="background-image:url('/prototype/assets/img/venue-3.jpg')">
+                <span class="service-card__badge"><i class="bi bi-music-note-beamed"></i> Atmosphere</span>
+              </div>
+              <div class="service-card__body">
+                <div class="d-flex justify-content-between align-items-start gap-3 mb-2">
+                  <div>
+                    <div class="service-card__meta mb-1">Entertainment</div>
+                    <h3 class="service-card__title">Entertainment</h3>
+                  </div>
+                  <div class="form-check m-0">
+                    <input class="form-check-input" type="checkbox" id="serviceEntertainment" value="entertainment" data-service-toggle data-label="Entertainment">
+                  </div>
+                </div>
+                <p class="small text-ink-soft mb-3">Choose DJs, live bands, MCs and performances to shape the mood of the night.</p>
+                <div class="chip-row mb-3">
+                  <span class="pill">DJ</span><span class="pill">Live band</span><span class="pill">MC</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                  <strong class="text-gold">From 500,000 MMK</strong>
+                  <a class="btn btn-outline-forest btn-sm" href="/prototype/customer/entertainment.html">Choose Options</a>
+                </div>
+              </div>
+            </article>
+          </div>
+
+          <div class="col-md-6">
+            <article class="service-card" data-service-card data-service-id="lighting-av" data-backend-service-id="5">
+              <div class="service-card__hero" style="background-image:url('/prototype/assets/img/venue-2.jpg')">
+                <span class="service-card__badge"><i class="bi bi-broadcast"></i> Technical</span>
+              </div>
+              <div class="service-card__body">
+                <div class="d-flex justify-content-between align-items-start gap-3 mb-2">
+                  <div>
+                    <div class="service-card__meta mb-1">Lighting &amp; AV</div>
+                    <h3 class="service-card__title">Lighting &amp; AV</h3>
+                  </div>
+                  <div class="form-check m-0">
+                    <input class="form-check-input" type="checkbox" id="serviceLighting" value="lighting-av" data-service-toggle data-label="Lighting &amp; AV">
+                  </div>
+                </div>
+                <p class="small text-ink-soft mb-3">Choose sound systems, lighting, screens and stage equipment for your event.</p>
+                <div class="chip-row mb-3">
+                  <span class="pill">Sound</span><span class="pill">Lighting</span><span class="pill">Screens</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                  <strong class="text-gold">From 300,000 MMK</strong>
+                  <a class="btn btn-outline-forest btn-sm" href="/prototype/customer/lighting-av.html">Choose Options</a>
+                </div>
+              </div>
+            </article>
+          </div>
+<div class="col-md-6">
+            <article class="service-card" data-service-card data-service-id="cake" data-backend-service-id="6">
+              <div class="service-card__hero" style="background-image:url('/prototype/assets/img/cakie.jpg')">
+                <span class="service-card__badge"><i class="bi bi-cake2"></i> Dessert</span>
+              </div>
+              <div class="service-card__body">
+                <div class="d-flex justify-content-between align-items-start gap-3 mb-2">
+                  <div>
+                    <div class="service-card__meta mb-1">Cake &amp; Desserts</div>
+                    <h3 class="service-card__title">Cake</h3>
+                  </div>
+                  <div class="form-check m-0">
+                    <input class="form-check-input" type="checkbox" id="serviceCake" value="cake" data-service-toggle data-label="Cake">
+                  </div>
+                </div>
+                <p class="small text-ink-soft mb-3">Design a cake and dessert experience to match the tone of your event.</p>
+                <div class="chip-row mb-3">
+                  <span class="pill">Cake</span><span class="pill">Dessert bar</span><span class="pill">Cupcakes</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                  <strong class="text-gold">From 160,000 MMK</strong>
+                  <a class="btn btn-outline-forest btn-sm" href="/prototype/customer/cake.html">Choose Options</a>
+                </div>
+              </div>
+            </article>
+          </div>
+<div class="col-md-6">
+            <article class="service-card" data-service-card data-service-id="florals" data-backend-service-id="8">
+              <div class="service-card__hero" style="background-image:url('/prototype/assets/img/florale.jpg')">
+                <span class="service-card__badge"><i class="bi bi-flower1"></i> Floral</span>
+              </div>
+              <div class="service-card__body">
+                <div class="d-flex justify-content-between align-items-start gap-3 mb-2">
+                  <div>
+                    <div class="service-card__meta mb-1">Floral Design</div>
+                    <h3 class="service-card__title">Florals</h3>
+                  </div>
+                  <div class="form-check m-0">
+                    <input class="form-check-input" type="checkbox" id="serviceFlorals" value="florals" data-service-toggle data-label="Florals">
+                  </div>
+                </div>
+                <p class="small text-ink-soft mb-3">Bring the venue to life with bouquets, arches, centerpieces and floral styling.</p>
+                <div class="chip-row mb-3">
+                  <span class="pill">Bouquets</span><span class="pill">Arches</span><span class="pill">Centerpieces</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                  <strong class="text-gold">From 150,000 MMK</strong>
+                  <a class="btn btn-outline-forest btn-sm" href="/prototype/customer/florals.html">Choose Options</a>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-4">
+        <div class="panel workflow-summary position-sticky" style="top:90px">
+          <div class="panel__head">
+            <h5 class="mb-0">Your Services</h5>
+            <span class="bb-badge gold" data-selected-count>0 Services Selected</span>
+          </div>
+          <div class="panel__body">
+            <ul class="summary-list mb-3" data-services-summary>
+              <li class="text-ink-soft">No services selected yet.</li>
+            </ul>
+            <div class="pricing-box mb-3">
+              <div class="pricing-row"><span>TOTAL</span><strong class="bb-price" data-services-total>$0</strong></div>
+            </div>
+            <div class="d-grid gap-2">
+              <button class="btn btn-gold" type="button" data-save-services>Save Services</button>
+              <a class="btn btn-outline-forest" href="/prototype/customer/review.html" data-continue-review>Continue to Review</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/prototype/assets/js/main.js"></script>
+<script src="/prototype/assets/js/services.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const typeControl = document.getElementById('serviceEventType');
+  const dateControl = document.getElementById('serviceEventDate');
+  const guestControl = document.getElementById('serviceEventGuests');
+
+  function getContext() {
+    if (typeof window.bbGetEventContext === 'function') {
+      return window.bbGetEventContext() || {};
+    }
+
+    try {
+      return JSON.parse(sessionStorage.getItem('bbEventContext') || '{}');
+    } catch (e) {
+      return {};
+    }
+  }
+
+  function normalizeDateForInput(value) {
+    if (!value) return '';
+
+    // Already YYYY-MM-DD
+    if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
+
+    const parsed = new Date(value);
+    if (Number.isNaN(parsed.getTime())) return '';
+
+    const y = parsed.getFullYear();
+    const m = String(parsed.getMonth() + 1).padStart(2, '0');
+    const d = String(parsed.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+  }
+
+  function loadControls() {
+    const ctx = getContext();
+
+    typeControl.value = ctx.eventType || ctx.type || 'Wedding';
+    dateControl.value = normalizeDateForInput(ctx.eventDate || ctx.date) || '2026-12-20';
+
+    const guests = String(ctx.guests || ctx.guestCount || 150);
+    const existing = Array.from(guestControl.options).some(option => option.value === guests);
+
+    if (!existing) {
+      const option = document.createElement('option');
+      option.value = guests;
+      option.textContent = `${guests} Guests`;
+      guestControl.appendChild(option);
+    }
+
+    guestControl.value = guests;
+  }
+
+  function saveControls() {
+    const current = getContext();
+
+    const updated = {
+      ...current,
+      eventType: typeControl.value,
+      type: typeControl.value,
+      eventDate: dateControl.value,
+      date: dateControl.value,
+      guests: Number(guestControl.value),
+      guestCount: Number(guestControl.value)
+    };
+
+    if (typeof window.bbSetEventContext === 'function') {
+      window.bbSetEventContext(updated);
+    } else {
+      sessionStorage.setItem('bbEventContext', JSON.stringify(updated));
+    }
+
+    // Compatibility with pages that read separate prototype keys.
+    sessionStorage.setItem('bbEventType', typeControl.value);
+    sessionStorage.setItem('bbEventDate', dateControl.value);
+    sessionStorage.setItem('bbEventGuests', guestControl.value);
+  }
+
+  [typeControl, dateControl, guestControl].forEach(function (control) {
+    control.addEventListener('change', saveControls);
+  });
+
+  loadControls();
+});
+</script>
+
+</body>
+</html>

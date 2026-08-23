@@ -1,0 +1,2992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Customize Photography | Bliss &amp; Beyond</title>
+<meta name="description" content="Customize photography and videography for your Bliss &amp; Beyond event.">
+<link rel="icon" href="/prototype/../favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Karla:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="/prototype/assets/css/style.css" rel="stylesheet">
+
+<style>
+.bb-shell {
+  display: block !important;
+}
+
+.bb-main {
+  width: 100% !important;
+  max-width: none !important;
+  margin-left: 0 !important;
+}
+
+.workflow-context {
+  padding: .85rem 1.25rem !important;
+  margin-bottom: 1rem !important;
+}
+
+.panel__head h5 {
+  font-size: 1.3rem !important;
+  font-weight: 600 !important;
+  line-height: 1.15;
+  letter-spacing: 0.01em;
+}
+
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.photo-card {
+  min-height: 175px;
+  height: 175px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.photo-card__title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+}
+
+.photo-card__desc {
+  min-height: 3rem;
+  max-height: 3rem;
+  line-height: 1.5rem;
+  margin-top: .4rem;
+  overflow: hidden;
+}
+
+.photo-card__price {
+  margin-top: auto;
+}
+
+.photo-select {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 19px;
+  height: 19px;
+  min-width: 19px;
+  border: 2.5px solid currentColor;
+  border-radius: 50%;
+  background: transparent;
+  display: inline-grid;
+  place-content: center;
+  cursor: pointer;
+}
+
+.photo-select::before {
+  content: "";
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  transform: scale(0);
+  background: currentColor;
+}
+
+.photo-select:checked::before {
+  transform: scale(1);
+}
+
+.workflow-summary .panel__body {
+  max-height: calc(100vh - 180px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+}
+
+.workflow-summary [data-photo-total] {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1.4rem !important;
+  line-height: 1.05;
+  letter-spacing: 0.01em;
+}
+
+.workflow-summary .pricing-row strong {
+  font-size: .84rem;
+  font-weight: 400;
+  line-height: 1.35;
+}
+
+@media (max-width: 767.98px) {
+  .photo-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+
+<style>
+.photo-card {
+  min-height: 255px !important;
+  height: 255px !important;
+}
+
+.photo-card__desc {
+  min-height: 5.4rem !important;
+  max-height: 5.4rem !important;
+  line-height: 1.35rem !important;
+  overflow: hidden;
+}
+
+.photo-card__price {
+  margin-top: auto;
+  margin-bottom: .65rem;
+}
+
+.photo-explore-btn {
+  flex-shrink: 0;
+  margin-top: 0 !important;
+}
+
+.photo-detail-item {
+  padding: .8rem 0;
+  border-bottom: 1px solid rgba(0,0,0,.08);
+}
+
+.photo-detail-item:last-child {
+  border-bottom: 0;
+}
+</style>
+
+
+<style>
+.photo-card {
+  min-height: 215px !important;
+  height: 215px !important;
+}
+
+.photo-card__desc {
+  min-height: 3rem !important;
+  max-height: 3rem !important;
+  line-height: 1.5rem !important;
+}
+</style>
+
+
+<style>
+/* Detailed service information shown directly in the interface cards */
+.photo-card {
+  min-height: 235px !important;
+  height: 235px !important;
+}
+
+.photo-card__desc {
+  min-height: 6rem !important;
+  max-height: 6rem !important;
+  line-height: 1.45rem !important;
+  overflow: visible !important;
+}
+
+.photo-card__price {
+  margin-top: auto;
+}
+</style>
+
+
+<style>
+/* Easy-to-scan service lists */
+.photo-card {
+  min-height: 205px !important;
+  height: 205px !important;
+}
+
+.photo-card__list {
+  margin: .65rem 0 .5rem;
+  padding-left: 1.15rem;
+  font-size: .84rem;
+  line-height: 1.5;
+  color: var(--ink-soft, #6c6c68);
+}
+
+.photo-card__list li {
+  margin-bottom: .18rem;
+}
+
+.photo-card__list li:last-child {
+  margin-bottom: 0;
+}
+
+.photo-card__price {
+  margin-top: auto;
+}
+</style>
+
+
+<style>
+/* Short summary sentence below each service list */
+.photo-card {
+  min-height: 255px !important;
+  height: 255px !important;
+}
+
+.photo-card__summary {
+  margin: .35rem 0 .55rem;
+  font-size: .8rem;
+  line-height: 1.35;
+  color: var(--ink-soft, #6c6c68);
+}
+
+.photo-card__price {
+  margin-top: auto;
+}
+</style>
+
+
+<style>
+/* More compact cards and clearer text */
+.photo-card {
+  min-height: 215px !important;
+  height: 215px !important;
+  padding: 1rem 1.15rem !important;
+}
+
+.photo-card__list {
+  margin: .45rem 0 .3rem !important;
+  padding-left: 1.1rem !important;
+  color: #3f4542 !important;
+  line-height: 1.4 !important;
+}
+
+.photo-card__list li {
+  margin-bottom: .08rem !important;
+}
+
+.photo-card__summary {
+  margin: .25rem 0 .35rem !important;
+  color: #3f4542 !important;
+  line-height: 1.35 !important;
+}
+
+.photo-card__price {
+  margin-top: auto !important;
+  padding-top: .25rem;
+}
+
+.photo-card strong {
+  color: #0d2922 !important;
+}
+</style>
+
+
+<style>
+/* Give the area behind the option cards a distinct, muted tone.
+   It is intentionally different from the main page background. */
+.panel__body {
+  background-color: #eee9df !important;
+}
+
+/* Keep the option cards clean and clearly separated from that background. */
+.photo-card {
+  background-color: #fffdf9 !important;
+  border-color: #d8c7a7 !important;
+  box-shadow: 0 5px 14px rgba(31, 47, 41, 0.05);
+}
+</style>
+
+
+<style>
+/* Selection Summary: show multiple selected services vertically */
+.workflow-summary .pricing-row {
+  align-items: flex-start;
+}
+
+.workflow-summary .pricing-row > span {
+  flex: 0 0 42%;
+}
+
+.workflow-summary .pricing-row > strong {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+}
+
+.summary-service-list {
+  margin: 0;
+  padding-left: 1.05rem;
+  list-style: disc;
+}
+
+.summary-service-list li {
+  margin-bottom: .18rem;
+  line-height: 1.35;
+  font-weight: 400;
+}
+
+.summary-service-list li:last-child {
+  margin-bottom: 0;
+}
+</style>
+
+
+<style>
+/* Selection Summary: allow long customer notes */
+.workflow-summary [data-summary-notes] {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: normal;
+  text-align: left !important;
+  font-weight: 400 !important;
+  line-height: 1.45;
+  max-height: 180px;
+  overflow-y: auto;
+  padding-right: .25rem;
+}
+
+/* Put Additional Notes on its own line so long text does not squeeze the title */
+.workflow-summary .pricing-row:has([data-summary-notes]) {
+  display: block !important;
+}
+
+.workflow-summary .pricing-row:has([data-summary-notes]) > span {
+  display: block;
+  margin-bottom: .4rem;
+  font-weight: 500;
+}
+
+.workflow-summary .pricing-row:has([data-summary-notes]) > strong {
+  display: block;
+  width: 100%;
+}
+</style>
+
+
+<style>
+/* =========================================================
+   FINAL PHOTOGRAPHY REDESIGN
+   Put LAST so it overrides all older photography styles.
+   ========================================================= */
+
+:root {
+  --photo-page:#f5efe4;
+  --photo-section:#eee8dc;
+  --photo-card:#ffffff;
+  --photo-border:#ded3c1;
+  --photo-green:#173f34;
+  --photo-gold:#c89235;
+  --photo-text:#18251f;
+  --photo-soft:#5d6963;
+}
+
+html, body {
+  background:var(--photo-page) !important;
+}
+
+body {
+  font-family:"Karla",sans-serif !important;
+  color:var(--photo-text) !important;
+}
+
+[data-photography-page] {
+  padding:28px 30px 52px !important;
+}
+
+[data-photography-page] h1,
+[data-photography-page] h2,
+[data-photography-page] h3,
+[data-photography-page] h4,
+[data-photography-page] h5 {
+  font-family:"Cormorant Garamond",serif !important;
+}
+
+/* event context */
+[data-photography-page] .workflow-context {
+  background:#fff !important;
+  border:1px solid var(--photo-border) !important;
+  border-radius:14px !important;
+  padding:.8rem 1rem !important;
+  margin-bottom:1.1rem !important;
+}
+
+/* main panels */
+[data-photography-page] .panel {
+  background:var(--photo-section) !important;
+  border:1px solid var(--photo-border) !important;
+  border-radius:18px !important;
+  overflow:hidden !important;
+  box-shadow:0 8px 24px rgba(49,40,27,.05) !important;
+}
+
+[data-photography-page] .panel > .panel__head {
+  background:#fff !important;
+  border-bottom:1px solid var(--photo-border) !important;
+  padding:19px 22px !important;
+}
+
+[data-photography-page] .panel > .panel__head h5 {
+  margin:0 !important;
+  color:var(--photo-text) !important;
+  font-size:1.55rem !important;
+  font-weight:700 !important;
+  line-height:1.1 !important;
+}
+
+[data-photography-page] .panel > .panel__body {
+  background:var(--photo-section) !important;
+  padding:20px !important;
+}
+
+/* card grid */
+[data-photography-page] .photo-grid {
+  display:grid !important;
+  grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  gap:16px !important;
+  align-items:stretch !important;
+}
+
+/* cards */
+[data-photography-page] .photo-card {
+  position:relative !important;
+  display:flex !important;
+  flex-direction:column !important;
+
+  width:100% !important;
+  height:235px !important;
+  min-height:235px !important;
+  max-height:235px !important;
+
+  padding:19px !important;
+
+  background:#fff !important;
+  border:1px solid #ddd3c4 !important;
+  border-radius:16px !important;
+  box-shadow:none !important;
+
+  transition:
+    transform .2s ease,
+    border-color .2s ease,
+    box-shadow .2s ease !important;
+}
+
+[data-photography-page] .photo-card:hover {
+  transform:translateY(-3px) !important;
+  border-color:#cbbba3 !important;
+  box-shadow:0 12px 26px rgba(52,43,30,.08) !important;
+}
+
+[data-photography-page] .photo-card:has(.photo-select:checked) {
+  border-color:var(--photo-gold) !important;
+  box-shadow:
+    0 0 0 1px rgba(200,146,53,.15),
+    0 12px 24px rgba(52,43,30,.07) !important;
+}
+
+/* card title */
+[data-photography-page] .photo-card__title {
+  min-height:44px !important;
+  display:flex !important;
+  align-items:flex-start !important;
+  justify-content:space-between !important;
+  gap:12px !important;
+}
+
+[data-photography-page] .photo-card__title strong {
+  color:#102d25 !important;
+  font-size:1rem !important;
+  font-weight:700 !important;
+  line-height:1.35 !important;
+}
+
+/* round selector */
+[data-photography-page] .photo-select {
+  appearance:none !important;
+  -webkit-appearance:none !important;
+
+  width:22px !important;
+  height:22px !important;
+  min-width:22px !important;
+
+  margin:1px 0 0 !important;
+
+  display:inline-grid !important;
+  place-content:center !important;
+
+  border:2.5px solid #111 !important;
+  border-radius:50% !important;
+  background:#fff !important;
+}
+
+[data-photography-page] .photo-select::before {
+  content:"" !important;
+  width:9px !important;
+  height:9px !important;
+  border-radius:50% !important;
+  background:#111 !important;
+  transform:scale(0) !important;
+  transition:transform .14s ease !important;
+}
+
+[data-photography-page] .photo-select:checked::before {
+  transform:scale(1) !important;
+}
+
+/* included list */
+[data-photography-page] .photo-card__list {
+  margin:.35rem 0 .22rem !important;
+  padding-left:1.05rem !important;
+  color:#3d4943 !important;
+  font-size:.82rem !important;
+  line-height:1.38 !important;
+}
+
+[data-photography-page] .photo-card__list li {
+  margin-bottom:.08rem !important;
+}
+
+/* summary sentence */
+[data-photography-page] .photo-card__summary {
+  margin:.24rem 0 .32rem !important;
+  color:#647069 !important;
+  font-size:.79rem !important;
+  line-height:1.35 !important;
+}
+
+/* price */
+[data-photography-page] .photo-card__price {
+  margin-top:auto !important;
+  padding-top:.25rem !important;
+  color:var(--photo-gold) !important;
+  font-size:.84rem !important;
+  font-weight:600 !important;
+}
+
+/* notes */
+[data-photography-page] #photographyNotes {
+  min-height:108px !important;
+  background:#fff !important;
+  border:1px solid #d7cec0 !important;
+  border-radius:11px !important;
+  box-shadow:none !important;
+}
+
+/* =========================================================
+   RIGHT SUMMARY — SAME AS CATERING / DECORATION
+   ========================================================= */
+
+[data-photography-page] .workflow-summary {
+  background:#fff !important;
+  border:1px solid var(--photo-border) !important;
+  border-radius:20px !important;
+  overflow:hidden !important;
+  box-shadow:none !important;
+}
+
+[data-photography-page] .workflow-summary > .panel__head {
+  background:#fff !important;
+  padding:23px 26px !important;
+  border-bottom:1px solid #e7ddcf !important;
+}
+
+[data-photography-page] .workflow-summary > .panel__head h5 {
+  color:#16231e !important;
+  font-family:"Cormorant Garamond",serif !important;
+  font-size:1.95rem !important;
+  font-weight:700 !important;
+}
+
+[data-photography-page] .workflow-summary > .panel__body {
+  background:#fff !important;
+  padding:29px 26px 24px !important;
+  max-height:calc(100vh - 180px) !important;
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+}
+
+/* large green total */
+[data-photography-page] [data-photo-total] {
+  color:#24573f !important;
+  font-family:"Cormorant Garamond",serif !important;
+  font-size:2.65rem !important;
+  font-weight:600 !important;
+  line-height:1 !important;
+}
+
+[data-photography-page] [data-photo-total] + .small {
+  margin-top:8px !important;
+  color:var(--photo-soft) !important;
+  font-size:.95rem !important;
+}
+
+/* remove old pricing-box card */
+[data-photography-page] .pricing-box {
+  margin:24px 0 0 !important;
+  padding:0 !important;
+  background:transparent !important;
+  border:0 !important;
+  border-radius:0 !important;
+}
+
+/* section rows */
+[data-photography-page] .pricing-row {
+  display:block !important;
+  padding:16px 0 6px !important;
+  border-top:1px solid #ece3d7 !important;
+}
+
+[data-photography-page] .pricing-row > span {
+  display:block !important;
+  width:100% !important;
+  margin-bottom:6px !important;
+  color:#746456 !important;
+  font-size:.70rem !important;
+  font-weight:700 !important;
+  letter-spacing:.14em !important;
+  text-transform:uppercase !important;
+}
+
+[data-photography-page] .pricing-row > strong {
+  display:block !important;
+  width:100% !important;
+  color:#20312a !important;
+  font-size:.94rem !important;
+  font-weight:500 !important;
+  line-height:1.42 !important;
+  text-align:left !important;
+}
+
+/* selected services list */
+[data-photography-page] .summary-service-list {
+  margin:0 !important;
+  padding-left:1rem !important;
+}
+
+[data-photography-page] .summary-service-list li {
+  margin-bottom:4px !important;
+  color:#20312a !important;
+  font-weight:400 !important;
+  line-height:1.4 !important;
+}
+
+/* group total prices */
+[data-photography-page] [data-summary-photography-price],
+[data-photography-page] [data-summary-videography-price],
+[data-photography-page] [data-summary-additional-price] {
+  margin:0 0 8px !important;
+  color:#b7791f !important;
+  font-size:.86rem !important;
+  font-weight:600 !important;
+  text-align:left !important;
+}
+
+/* notes summary */
+[data-photography-page] [data-summary-notes] {
+  display:block !important;
+  width:100% !important;
+  max-width:100% !important;
+  color:#20312a !important;
+  font-size:.90rem !important;
+  font-weight:400 !important;
+  line-height:1.45 !important;
+  white-space:pre-wrap !important;
+  overflow-wrap:anywhere !important;
+  text-align:left !important;
+}
+
+/* disclaimer */
+[data-photography-page] .pricing-box + p {
+  padding-top:22px !important;
+  margin-top:18px !important;
+  margin-bottom:22px !important;
+  border-top:1px solid #e8ded1 !important;
+  color:var(--photo-soft) !important;
+  font-size:.91rem !important;
+  line-height:1.55 !important;
+}
+
+/* buttons */
+[data-photography-page] #savePhotographyPrice,
+[data-photography-page] .workflow-summary a[href="/prototype/customer/review.html"] {
+  min-height:53px !important;
+  border-radius:999px !important;
+}
+
+[data-photography-page] #savePhotographyPrice {
+  font-size:.91rem !important;
+  letter-spacing:.03em !important;
+}
+
+[data-photography-page] .workflow-summary a[href="/prototype/customer/review.html"] {
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  font-size:.91rem !important;
+  letter-spacing:.08em !important;
+}
+
+[data-photography-page] #savePhotographyPrice[data-saved="true"],
+[data-photography-page] #savePhotographyPrice[data-saved="true"]:hover {
+  background:var(--photo-gold) !important;
+  border-color:var(--photo-gold) !important;
+  color:#fff !important;
+  opacity:1 !important;
+}
+
+@media(max-width:991.98px) {
+  [data-photography-page] .workflow-summary {
+    position:static !important;
+  }
+
+  [data-photography-page] .workflow-summary > .panel__body {
+    max-height:none !important;
+  }
+}
+
+@media(max-width:767.98px) {
+  [data-photography-page] {
+    padding:20px 14px 40px !important;
+  }
+
+  [data-photography-page] .photo-grid {
+    grid-template-columns:1fr !important;
+  }
+
+  [data-photography-page] .photo-card {
+    height:auto !important;
+    min-height:215px !important;
+    max-height:none !important;
+  }
+}
+</style>
+
+
+<style>
+/* =========================================================
+   PHOTOGRAPHY SUMMARY — SHOW ONLY WHAT CUSTOMER CHOOSES
+   Same behavior/style as Catering and Decoration.
+   ========================================================= */
+
+[data-photography-page] [data-photo-empty]{
+  margin-top:30px !important;
+  margin-bottom:22px !important;
+  color:#5d6963 !important;
+  font-size:.94rem !important;
+  line-height:1.5 !important;
+}
+
+[data-photography-page] .photo-summary-row.is-empty{
+  display:none !important;
+}
+
+[data-photography-page] .photo-summary-row{
+  display:block !important;
+  padding:16px 0 !important;
+  border-top:1px solid #ece3d7 !important;
+}
+
+[data-photography-page] .photo-summary-row > span{
+  display:block !important;
+  margin-bottom:8px !important;
+
+  color:#746456 !important;
+  font-size:.70rem !important;
+  font-weight:700 !important;
+  letter-spacing:.14em !important;
+  text-transform:uppercase !important;
+}
+
+[data-photography-page] .photo-summary-row > strong{
+  display:block !important;
+  width:100% !important;
+}
+
+[data-photography-page] .photo-selected-list{
+  list-style:none !important;
+  margin:0 !important;
+  padding:0 !important;
+}
+
+[data-photography-page] .photo-selected-list li{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) auto !important;
+  gap:12px !important;
+  align-items:start !important;
+
+  padding:6px 0 !important;
+
+  color:#20312a !important;
+  font-size:.90rem !important;
+  font-weight:400 !important;
+  line-height:1.4 !important;
+}
+
+[data-photography-page] .photo-selected-list li + li{
+  border-top:1px dashed #ece3d7 !important;
+}
+
+[data-photography-page] .photo-selected-name{
+  position:relative;
+  padding-left:14px;
+}
+
+[data-photography-page] .photo-selected-name::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:.58em;
+
+  width:5px;
+  height:5px;
+  border-radius:50%;
+  background:#c89235;
+}
+
+[data-photography-page] .photo-selected-price{
+  color:#b7791f !important;
+  font-weight:600 !important;
+  white-space:nowrap !important;
+  text-align:right !important;
+}
+
+[data-photography-page] [data-summary-notes]{
+  color:#20312a !important;
+  font-size:.90rem !important;
+  font-weight:400 !important;
+  line-height:1.45 !important;
+}
+
+@media(max-width:420px){
+  [data-photography-page] .photo-selected-list li{
+    grid-template-columns:1fr !important;
+    gap:2px !important;
+  }
+
+  [data-photography-page] .photo-selected-price{
+    padding-left:14px !important;
+    text-align:left !important;
+  }
+}
+</style>
+
+
+<style>
+/* =========================================================
+   MODERN PHOTOGRAPHY UI — MATCH CATERING + DECORATION
+   Visual refresh only. Existing data, prices and JS stay.
+   ========================================================= */
+
+:root{
+  --photo-page:#f4eee4;
+  --photo-panel:#ece5d9;
+  --photo-card:#fffdf9;
+  --photo-border:#ddd1c0;
+  --photo-green:#173f34;
+  --photo-gold:#c89235;
+  --photo-text:#1d2c26;
+  --photo-soft:#66736d;
+}
+
+/* Page typography */
+[data-photography-page]{
+  color:var(--photo-text) !important;
+}
+
+[data-photography-page] h1,
+[data-photography-page] h2,
+[data-photography-page] h3,
+[data-photography-page] h4,
+[data-photography-page] h5{
+  font-family:"Cormorant Garamond",serif !important;
+  color:var(--photo-green) !important;
+}
+
+[data-photography-page] > .d-flex h1{
+  font-size:2.25rem !important;
+  font-weight:700 !important;
+  letter-spacing:-.01em !important;
+}
+
+[data-photography-page] > .d-flex p{
+  color:var(--photo-soft) !important;
+  font-size:.92rem !important;
+}
+
+/* Section panel */
+[data-photography-page] .panel{
+  background:var(--photo-panel) !important;
+  border:1px solid var(--photo-border) !important;
+  border-radius:22px !important;
+  overflow:hidden !important;
+  box-shadow:0 10px 28px rgba(53,43,31,.05) !important;
+}
+
+[data-photography-page] .panel > .panel__head{
+  background:#ffffff !important;
+  padding:20px 24px !important;
+  border-bottom:1px solid #e6dccf !important;
+}
+
+[data-photography-page] .panel > .panel__head h5{
+  font-size:1.62rem !important;
+  font-weight:700 !important;
+  color:#17261f !important;
+}
+
+[data-photography-page] .panel > .panel__body{
+  background:var(--photo-panel) !important;
+  padding:22px !important;
+}
+
+/* Clean two-column grid */
+[data-photography-page] .photo-grid{
+  display:grid !important;
+  grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  gap:18px !important;
+  align-items:stretch !important;
+}
+
+/* Modern card */
+[data-photography-page] .photo-card{
+  position:relative !important;
+  display:flex !important;
+  flex-direction:column !important;
+
+  height:250px !important;
+  min-height:250px !important;
+  max-height:250px !important;
+
+  padding:22px !important;
+
+  background:rgba(255,255,255,.96) !important;
+  border:1px solid #ddd3c5 !important;
+  border-radius:20px !important;
+
+  box-shadow:
+    0 8px 20px rgba(47,39,29,.045) !important;
+
+  transition:
+    transform .22s ease,
+    border-color .22s ease,
+    box-shadow .22s ease,
+    background .22s ease !important;
+}
+
+[data-photography-page] .photo-card:hover{
+  transform:translateY(-4px) !important;
+  border-color:#c9b792 !important;
+  background:#ffffff !important;
+
+  box-shadow:
+    0 16px 32px rgba(47,39,29,.09) !important;
+}
+
+[data-photography-page] .photo-card:has(.photo-select:checked){
+  border-color:var(--photo-gold) !important;
+
+  box-shadow:
+    0 0 0 1px rgba(200,146,53,.15),
+    0 14px 30px rgba(47,39,29,.08) !important;
+}
+
+/* Title */
+[data-photography-page] .photo-card__title{
+  min-height:48px !important;
+  display:flex !important;
+  align-items:flex-start !important;
+  justify-content:space-between !important;
+  gap:16px !important;
+}
+
+[data-photography-page] .photo-card__title strong{
+  font-family:"Karla",sans-serif !important;
+  color:#132a22 !important;
+  font-size:1.02rem !important;
+  font-weight:700 !important;
+  line-height:1.35 !important;
+  letter-spacing:-.01em !important;
+}
+
+/* Selection radio */
+[data-photography-page] .photo-select{
+  width:24px !important;
+  height:24px !important;
+  min-width:24px !important;
+
+  border:2.5px solid #111 !important;
+  background:#fff !important;
+
+  transition:
+    border-color .2s ease,
+    box-shadow .2s ease,
+    transform .2s ease !important;
+}
+
+[data-photography-page] .photo-select:hover{
+  transform:scale(1.05) !important;
+}
+
+[data-photography-page] .photo-select:checked{
+  border-color:#111 !important;
+  box-shadow:0 0 0 4px rgba(200,146,53,.08) !important;
+}
+
+/* Included details */
+[data-photography-page] .photo-card__list{
+  margin:.6rem 0 .4rem !important;
+  padding-left:1.1rem !important;
+
+  color:#47554f !important;
+
+  font-size:.84rem !important;
+  line-height:1.45 !important;
+}
+
+[data-photography-page] .photo-card__list li{
+  margin-bottom:.18rem !important;
+}
+
+[data-photography-page] .photo-card__list li::marker{
+  color:#7c8a84 !important;
+}
+
+/* Summary sentence */
+[data-photography-page] .photo-card__summary{
+  margin:.25rem 0 .4rem !important;
+
+  color:#74807a !important;
+
+  font-size:.80rem !important;
+  line-height:1.38 !important;
+}
+
+/* Price */
+[data-photography-page] .photo-card__price{
+  margin-top:auto !important;
+
+  color:var(--photo-gold) !important;
+
+  font-size:.92rem !important;
+  font-weight:600 !important;
+  letter-spacing:.01em !important;
+}
+
+/* Tiny gold divider above price */
+[data-photography-page] .photo-card__price::before{
+  content:"";
+  display:block;
+  width:38px;
+  height:2px;
+  margin-bottom:8px;
+
+  border-radius:999px;
+  background:linear-gradient(90deg,var(--photo-gold),rgba(200,146,53,0));
+}
+
+/* Header buttons */
+[data-photography-page] > .d-flex .btn{
+  border-radius:999px !important;
+  padding:.48rem 1rem !important;
+}
+
+/* Notes */
+[data-photography-page] #photographyNotes{
+  background:#fff !important;
+  border:1px solid #d7ccbd !important;
+  border-radius:14px !important;
+
+  padding:14px 16px !important;
+
+  color:#22332c !important;
+  font-family:"Karla",sans-serif !important;
+}
+
+[data-photography-page] #photographyNotes:focus{
+  border-color:#b9975c !important;
+  box-shadow:0 0 0 .18rem rgba(200,146,53,.09) !important;
+}
+
+/* Event context */
+[data-photography-page] .workflow-context{
+  background:#fff !important;
+  border:1px solid var(--photo-border) !important;
+  border-radius:16px !important;
+  box-shadow:0 5px 16px rgba(47,39,29,.035) !important;
+}
+
+/* =========================================================
+   SUMMARY PANEL — CLEAN CATERING STYLE
+   ========================================================= */
+
+[data-photography-page] .workflow-summary{
+  background:#fff !important;
+  border:1px solid var(--photo-border) !important;
+  border-radius:22px !important;
+  overflow:hidden !important;
+  box-shadow:0 10px 26px rgba(47,39,29,.05) !important;
+}
+
+[data-photography-page] .workflow-summary > .panel__head{
+  padding:24px 26px !important;
+  background:#fff !important;
+}
+
+[data-photography-page] .workflow-summary > .panel__head h5{
+  font-size:2rem !important;
+  color:#15251e !important;
+}
+
+[data-photography-page] .workflow-summary > .panel__body{
+  padding:30px 26px 24px !important;
+  background:#fff !important;
+}
+
+[data-photography-page] [data-photo-total]{
+  font-size:2.75rem !important;
+  color:#24573f !important;
+}
+
+[data-photography-page] [data-photo-empty]{
+  margin-top:30px !important;
+  padding-top:0 !important;
+  color:#64706a !important;
+}
+
+/* Selected summary rows */
+[data-photography-page] .photo-summary-row{
+  position:relative;
+  padding:18px 0 !important;
+}
+
+[data-photography-page] .photo-summary-row::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:0;
+  width:100%;
+  height:1px;
+  background:#ece3d7;
+}
+
+[data-photography-page] .photo-summary-row > span{
+  margin-bottom:8px !important;
+  color:#766454 !important;
+
+  font-size:.71rem !important;
+  letter-spacing:.15em !important;
+}
+
+[data-photography-page] .photo-selected-list li{
+  padding:7px 0 !important;
+  font-size:.91rem !important;
+}
+
+[data-photography-page] .photo-selected-price{
+  color:#b7791f !important;
+  font-weight:600 !important;
+}
+
+/* Buttons */
+[data-photography-page] #savePhotographyPrice{
+  min-height:54px !important;
+  border-radius:999px !important;
+
+  font-size:.92rem !important;
+  font-weight:600 !important;
+}
+
+[data-photography-page] .workflow-summary a[href="/prototype/customer/review.html"]{
+  min-height:54px !important;
+  border-radius:999px !important;
+}
+
+/* Responsive */
+@media(max-width:767.98px){
+  [data-photography-page] .photo-grid{
+    grid-template-columns:1fr !important;
+  }
+
+  [data-photography-page] .photo-card{
+    height:auto !important;
+    min-height:230px !important;
+    max-height:none !important;
+  }
+}
+</style>
+
+
+<style>
+/* =========================================================
+   PHOTOGRAPHY CARDS — BIGGER TYPE + MORE MODERN / PREMIUM
+   Visual-only refinement. Data and logic unchanged.
+   ========================================================= */
+
+/* Give cards a cleaner premium surface */
+[data-photography-page] .photo-card{
+  position:relative !important;
+  overflow:hidden !important;
+
+  height:265px !important;
+  min-height:265px !important;
+  max-height:265px !important;
+
+  padding:24px 24px 22px !important;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,.98),
+      rgba(252,249,244,.96)
+    ) !important;
+
+  border:1px solid rgba(209,197,178,.95) !important;
+  border-radius:22px !important;
+
+  box-shadow:
+    0 10px 26px rgba(50,42,31,.055),
+    inset 0 1px 0 rgba(255,255,255,.92) !important;
+
+  transition:
+    transform .24s ease,
+    border-color .24s ease,
+    box-shadow .24s ease,
+    background .24s ease !important;
+}
+
+/* Subtle decorative glow */
+[data-photography-page] .photo-card::before{
+  content:"";
+  position:absolute;
+  top:-90px;
+  right:-90px;
+
+  width:190px;
+  height:190px;
+  border-radius:50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(200,146,53,.10) 0%,
+      rgba(200,146,53,.04) 42%,
+      transparent 72%
+    );
+
+  pointer-events:none;
+}
+
+/* Fine gold accent at bottom-left */
+[data-photography-page] .photo-card::after{
+  content:"";
+  position:absolute;
+  left:24px;
+  bottom:18px;
+
+  width:42px;
+  height:2px;
+  border-radius:999px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #c89235,
+      rgba(200,146,53,.15)
+    );
+
+  opacity:.85;
+  pointer-events:none;
+}
+
+/* Hover = soft lift and richer border */
+[data-photography-page] .photo-card:hover{
+  transform:translateY(-5px) !important;
+
+  background:#ffffff !important;
+
+  border-color:#c7ad7e !important;
+
+  box-shadow:
+    0 18px 38px rgba(50,42,31,.10),
+    inset 0 1px 0 rgba(255,255,255,.98) !important;
+}
+
+/* Selected card = gold outline + elegant glow */
+[data-photography-page] .photo-card:has(.photo-select:checked){
+  border-color:#c89235 !important;
+
+  background:
+    linear-gradient(
+      145deg,
+      #fffefa,
+      #fffaf0
+    ) !important;
+
+  box-shadow:
+    0 0 0 1px rgba(200,146,53,.15),
+    0 16px 34px rgba(70,52,25,.10) !important;
+}
+
+/* =========================================================
+   BIGGER TYPOGRAPHY
+   ========================================================= */
+
+[data-photography-page] .photo-card__title{
+  min-height:50px !important;
+  gap:18px !important;
+}
+
+/* Main title bigger */
+[data-photography-page] .photo-card__title strong{
+  font-family:"Karla",sans-serif !important;
+
+  color:#102d25 !important;
+
+  font-size:1.12rem !important;
+  font-weight:700 !important;
+  line-height:1.35 !important;
+  letter-spacing:-.012em !important;
+}
+
+/* Included items slightly bigger */
+[data-photography-page] .photo-card__list{
+  margin:.55rem 0 .4rem !important;
+  padding-left:1.15rem !important;
+
+  color:#43514b !important;
+
+  font-size:.91rem !important;
+  line-height:1.5 !important;
+}
+
+[data-photography-page] .photo-card__list li{
+  margin-bottom:.16rem !important;
+}
+
+[data-photography-page] .photo-card__list li::marker{
+  color:#7e8b85 !important;
+}
+
+/* Description slightly bigger and more readable */
+[data-photography-page] .photo-card__summary{
+  margin:.28rem 0 .45rem !important;
+
+  color:#6b7771 !important;
+
+  font-size:.87rem !important;
+  line-height:1.45 !important;
+}
+
+/* Price more prominent */
+[data-photography-page] .photo-card__price{
+  margin-top:auto !important;
+  padding-top:.35rem !important;
+  padding-bottom:14px !important;
+
+  color:#c48724 !important;
+
+  font-size:1rem !important;
+  font-weight:700 !important;
+  letter-spacing:.01em !important;
+}
+
+/* Remove the previous price divider because the card now has
+   a cleaner bottom accent line */
+[data-photography-page] .photo-card__price::before{
+  display:none !important;
+}
+
+/* =========================================================
+   MODERN SELECT CIRCLE
+   ========================================================= */
+
+[data-photography-page] .photo-select{
+  width:27px !important;
+  height:27px !important;
+  min-width:27px !important;
+
+  margin-top:0 !important;
+
+  border:2px solid #17231e !important;
+  background:rgba(255,255,255,.94) !important;
+
+  box-shadow:
+    0 3px 8px rgba(29,34,31,.07) !important;
+
+  transition:
+    transform .2s ease,
+    box-shadow .2s ease,
+    border-color .2s ease,
+    background .2s ease !important;
+}
+
+[data-photography-page] .photo-select::before{
+  width:11px !important;
+  height:11px !important;
+
+  background:#17231e !important;
+}
+
+[data-photography-page] .photo-select:hover{
+  transform:scale(1.06) !important;
+  border-color:#c89235 !important;
+}
+
+/* Selected circle */
+[data-photography-page] .photo-select:checked{
+  border-color:#c89235 !important;
+  background:#fffaf0 !important;
+
+  box-shadow:
+    0 0 0 5px rgba(200,146,53,.10),
+    0 4px 10px rgba(60,46,24,.08) !important;
+}
+
+[data-photography-page] .photo-select:checked::before{
+  background:#17231e !important;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media(max-width:767.98px){
+  [data-photography-page] .photo-card{
+    height:auto !important;
+    min-height:245px !important;
+    max-height:none !important;
+  }
+
+  [data-photography-page] .photo-card__title strong{
+    font-size:1.08rem !important;
+  }
+
+  [data-photography-page] .photo-card__list{
+    font-size:.89rem !important;
+  }
+}
+</style>
+
+
+<style>
+/* =========================================================
+   PHOTOGRAPHY CARDS — REFINED EDITORIAL GLASS DESIGN
+   My redesign:
+   - slim premium title band, not a heavy green block
+   - translucent glass body
+   - elegant gold accent rail
+   - larger, cleaner typography
+   - selected card gets a subtle green/gold glow
+   ========================================================= */
+
+[data-photography-page] .photo-card{
+  position:relative !important;
+  overflow:hidden !important;
+
+  height:268px !important;
+  min-height:268px !important;
+  max-height:268px !important;
+
+  padding:0 !important;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,.72),
+      rgba(249,246,240,.54)
+    ) !important;
+
+  border:1px solid rgba(205,194,177,.82) !important;
+  border-radius:22px !important;
+
+  -webkit-backdrop-filter:blur(15px) saturate(118%) !important;
+  backdrop-filter:blur(15px) saturate(118%) !important;
+
+  box-shadow:
+    0 10px 26px rgba(42,35,26,.055),
+    inset 0 1px 0 rgba(255,255,255,.90) !important;
+
+  transition:
+    transform .24s ease,
+    border-color .24s ease,
+    box-shadow .24s ease,
+    background .24s ease !important;
+}
+
+/* Thin gold rail on the left */
+[data-photography-page] .photo-card::before{
+  content:"";
+  position:absolute;
+  top:17px;
+  bottom:17px;
+  left:0;
+
+  width:3px;
+
+  background:
+    linear-gradient(
+      180deg,
+      transparent 0%,
+      #c89235 18%,
+      #d6aa57 72%,
+      transparent 100%
+    );
+
+  opacity:.72;
+  border-radius:999px;
+}
+
+/* Soft corner glow */
+[data-photography-page] .photo-card::after{
+  content:"";
+  position:absolute;
+  width:170px;
+  height:170px;
+  top:-78px;
+  right:-65px;
+
+  border-radius:50%;
+  pointer-events:none;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(200,146,53,.09) 0%,
+      rgba(200,146,53,.025) 45%,
+      transparent 72%
+    );
+}
+
+/* =========================================================
+   TITLE BAND
+   ========================================================= */
+
+[data-photography-page] .photo-card__title{
+  position:relative !important;
+  z-index:2 !important;
+
+  min-height:68px !important;
+
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  gap:16px !important;
+
+  margin:0 !important;
+  padding:18px 21px 16px 24px !important;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(21,63,52,.085),
+      rgba(21,63,52,.025) 65%,
+      transparent 100%
+    ) !important;
+
+  border-bottom:1px solid rgba(194,182,163,.58) !important;
+}
+
+/* subtle gold line under the title area */
+[data-photography-page] .photo-card__title::after{
+  content:"";
+  position:absolute;
+  left:24px;
+  bottom:-1px;
+
+  width:54px;
+  height:2px;
+
+  border-radius:999px;
+  background:#c89235;
+}
+
+/* title */
+[data-photography-page] .photo-card__title strong{
+  color:#123b31 !important;
+  font-family:"Karla",sans-serif !important;
+
+  font-size:1.12rem !important;
+  font-weight:700 !important;
+  line-height:1.3 !important;
+  letter-spacing:-.01em !important;
+}
+
+/* =========================================================
+   SELECT CIRCLE
+   ========================================================= */
+
+[data-photography-page] .photo-select{
+  width:25px !important;
+  height:25px !important;
+  min-width:25px !important;
+
+  margin:0 !important;
+
+  background:rgba(255,255,255,.78) !important;
+  border:2px solid #173f34 !important;
+
+  box-shadow:
+    0 3px 8px rgba(20,48,40,.08) !important;
+
+  transition:
+    transform .2s ease,
+    border-color .2s ease,
+    box-shadow .2s ease,
+    background .2s ease !important;
+}
+
+[data-photography-page] .photo-select::before{
+  width:9px !important;
+  height:9px !important;
+  background:#173f34 !important;
+}
+
+[data-photography-page] .photo-select:hover{
+  transform:scale(1.06) !important;
+  border-color:#c89235 !important;
+}
+
+[data-photography-page] .photo-select:checked{
+  border-color:#c89235 !important;
+  background:#fffaf0 !important;
+
+  box-shadow:
+    0 0 0 4px rgba(200,146,53,.10),
+    0 4px 10px rgba(30,47,39,.09) !important;
+}
+
+/* =========================================================
+   BODY CONTENT
+   ========================================================= */
+
+[data-photography-page] .photo-card__list{
+  position:relative;
+  z-index:2;
+
+  margin:17px 24px 7px 27px !important;
+  padding-left:1rem !important;
+
+  color:#3f5149 !important;
+
+  font-size:.91rem !important;
+  line-height:1.48 !important;
+}
+
+[data-photography-page] .photo-card__list li{
+  margin-bottom:.12rem !important;
+}
+
+[data-photography-page] .photo-card__list li::marker{
+  color:#ad8b55 !important;
+  font-size:.8em !important;
+}
+
+/* supporting sentence */
+[data-photography-page] .photo-card__summary{
+  position:relative;
+  z-index:2;
+
+  margin:5px 24px 8px 24px !important;
+
+  color:#6a7872 !important;
+
+  font-size:.86rem !important;
+  line-height:1.42 !important;
+}
+
+/* price */
+[data-photography-page] .photo-card__price{
+  position:relative;
+  z-index:2;
+
+  margin:auto 24px 20px 24px !important;
+  padding-top:11px !important;
+
+  color:#bb7b1b !important;
+
+  font-size:1.02rem !important;
+  font-weight:700 !important;
+  letter-spacing:.01em !important;
+
+  border-top:1px solid rgba(200,146,53,.20) !important;
+}
+
+[data-photography-page] .photo-card__price::before{
+  display:none !important;
+}
+
+/* =========================================================
+   HOVER + SELECTED
+   ========================================================= */
+
+[data-photography-page] .photo-card:hover{
+  transform:translateY(-5px) !important;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,.88),
+      rgba(252,249,244,.74)
+    ) !important;
+
+  border-color:rgba(197,169,119,.95) !important;
+
+  box-shadow:
+    0 18px 38px rgba(42,35,26,.10),
+    inset 0 1px 0 rgba(255,255,255,.98) !important;
+}
+
+[data-photography-page] .photo-card:hover .photo-card__title{
+  background:
+    linear-gradient(
+      90deg,
+      rgba(21,63,52,.12),
+      rgba(21,63,52,.035) 68%,
+      transparent 100%
+    ) !important;
+}
+
+/* selected card */
+[data-photography-page] .photo-card:has(.photo-select:checked){
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,.92),
+      rgba(255,250,240,.76)
+    ) !important;
+
+  border-color:#c89235 !important;
+
+  box-shadow:
+    0 0 0 1px rgba(200,146,53,.12),
+    0 16px 34px rgba(48,38,25,.09) !important;
+}
+
+[data-photography-page] .photo-card:has(.photo-select:checked)
+.photo-card__title{
+  background:
+    linear-gradient(
+      90deg,
+      rgba(23,63,52,.14),
+      rgba(200,146,53,.05) 70%,
+      transparent 100%
+    ) !important;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media(max-width:767.98px){
+  [data-photography-page] .photo-card{
+    height:auto !important;
+    min-height:250px !important;
+    max-height:none !important;
+  }
+
+  [data-photography-page] .photo-card__title strong{
+    font-size:1.08rem !important;
+  }
+
+  [data-photography-page] .photo-card__list{
+    font-size:.89rem !important;
+  }
+}
+</style>
+
+
+<style>
+/* =========================================================
+   ROYAL PHOTOGRAPHY CARD REFINEMENT
+   Keeps the clean glass layout, but adds a restrained
+   emerald + champagne-gold luxury character.
+   ========================================================= */
+
+[data-photography-page] .photo-card{
+  background:
+    linear-gradient(145deg,
+      rgba(255,255,255,.86) 0%,
+      rgba(250,247,239,.73) 55%,
+      rgba(246,239,225,.66) 100%) !important;
+
+  border:1px solid rgba(181,155,105,.42) !important;
+
+  box-shadow:
+    0 12px 30px rgba(36,31,22,.075),
+    inset 0 1px 0 rgba(255,255,255,.96),
+    inset 0 0 24px rgba(200,146,53,.025) !important;
+}
+
+/* More elegant champagne side rail */
+[data-photography-page] .photo-card::before{
+  width:3px !important;
+  top:19px !important;
+  bottom:19px !important;
+  background:
+    linear-gradient(
+      180deg,
+      transparent,
+      #e1bd70 15%,
+      #b77a20 50%,
+      #e1bd70 84%,
+      transparent
+    ) !important;
+  opacity:.9 !important;
+}
+
+/* warmer royal glow */
+[data-photography-page] .photo-card::after{
+  width:205px !important;
+  height:205px !important;
+  top:-105px !important;
+  right:-82px !important;
+  background:
+    radial-gradient(circle,
+      rgba(207,165,79,.16) 0%,
+      rgba(207,165,79,.055) 43%,
+      transparent 72%) !important;
+}
+
+/* Royal emerald title strip */
+[data-photography-page] .photo-card__title{
+  min-height:72px !important;
+  padding:19px 22px 17px 26px !important;
+
+  background:
+    linear-gradient(
+      110deg,
+      rgba(16,61,48,.15) 0%,
+      rgba(24,75,59,.09) 55%,
+      rgba(205,164,80,.035) 100%
+    ) !important;
+
+  border-bottom:1px solid rgba(181,145,75,.34) !important;
+}
+
+/* Gold ornament-like underline */
+[data-photography-page] .photo-card__title::after{
+  left:26px !important;
+  width:62px !important;
+  height:2px !important;
+  background:
+    linear-gradient(90deg,#a96e18,#e3bf72,#a96e18) !important;
+  box-shadow:0 1px 5px rgba(191,139,47,.18) !important;
+}
+
+/* More editorial/royal title typography */
+[data-photography-page] .photo-card__title strong{
+  font-family:"Cormorant Garamond",serif !important;
+  color:#123d31 !important;
+  font-size:1.38rem !important;
+  font-weight:700 !important;
+  line-height:1.15 !important;
+  letter-spacing:.005em !important;
+}
+
+/* Body text */
+[data-photography-page] .photo-card__list{
+  color:#354a42 !important;
+  font-size:.92rem !important;
+}
+
+[data-photography-page] .photo-card__list li::marker{
+  color:#b48636 !important;
+}
+
+[data-photography-page] .photo-card__summary{
+  color:#6b756f !important;
+  font-size:.87rem !important;
+}
+
+/* Royal price treatment */
+[data-photography-page] .photo-card__price{
+  color:#a96d18 !important;
+  font-family:"Cormorant Garamond",serif !important;
+  font-size:1.48rem !important;
+  font-weight:700 !important;
+  letter-spacing:.015em !important;
+  border-top:1px solid rgba(181,145,75,.25) !important;
+}
+
+/* Elegant selector */
+[data-photography-page] .photo-select{
+  border-color:#173f34 !important;
+  background:rgba(255,253,247,.88) !important;
+}
+
+[data-photography-page] .photo-select:checked{
+  border-color:#b77a20 !important;
+  background:#fff9eb !important;
+  box-shadow:
+    0 0 0 5px rgba(191,139,47,.11),
+    0 5px 12px rgba(51,39,20,.10) !important;
+}
+
+[data-photography-page] .photo-select:checked::before{
+  background:#b77a20 !important;
+}
+
+/* Royal hover */
+[data-photography-page] .photo-card:hover{
+  transform:translateY(-6px) !important;
+
+  border-color:rgba(183,122,32,.72) !important;
+
+  background:
+    linear-gradient(145deg,
+      rgba(255,255,255,.95),
+      rgba(252,248,238,.86)) !important;
+
+  box-shadow:
+    0 22px 44px rgba(38,31,20,.12),
+    0 0 0 1px rgba(215,178,105,.10),
+    inset 0 1px 0 rgba(255,255,255,1) !important;
+}
+
+[data-photography-page] .photo-card:hover .photo-card__title{
+  background:
+    linear-gradient(
+      110deg,
+      rgba(13,62,47,.19),
+      rgba(25,78,60,.11) 58%,
+      rgba(211,170,87,.05)
+    ) !important;
+}
+
+/* Selected = richer emerald/champagne treatment */
+[data-photography-page] .photo-card:has(.photo-select:checked){
+  border-color:#b77a20 !important;
+
+  background:
+    linear-gradient(145deg,
+      rgba(255,255,255,.96),
+      rgba(255,249,235,.86)) !important;
+
+  box-shadow:
+    0 0 0 1px rgba(183,122,32,.14),
+    0 20px 40px rgba(45,35,20,.11),
+    inset 0 0 28px rgba(200,146,53,.035) !important;
+}
+
+[data-photography-page] .photo-card:has(.photo-select:checked) .photo-card__title{
+  background:
+    linear-gradient(
+      110deg,
+      rgba(12,62,47,.21),
+      rgba(24,75,57,.13) 58%,
+      rgba(205,160,69,.07)
+    ) !important;
+}
+
+/* Section headings also slightly more luxurious */
+[data-photography-page] .panel > .panel__head h5{
+  font-family:"Cormorant Garamond",serif !important;
+  font-size:1.78rem !important;
+  color:#153f33 !important;
+}
+
+/* Summary total gets a refined royal face */
+[data-photography-page] [data-photo-total]{
+  font-family:"Cormorant Garamond",serif !important;
+  color:#174c3b !important;
+  letter-spacing:.01em !important;
+}
+
+@media(max-width:767.98px){
+  [data-photography-page] .photo-card__title strong{
+    font-size:1.28rem !important;
+  }
+}
+</style>
+
+
+<style>
+/* =========================================================
+   FINAL PRICE ALIGNMENT FIX
+   Keep all photography card prices on the same baseline.
+   ========================================================= */
+
+[data-photography-page] .photo-card{
+  display:flex !important;
+  flex-direction:column !important;
+
+  height:315px !important;
+  min-height:315px !important;
+  max-height:315px !important;
+}
+
+/* Keep title area fixed */
+[data-photography-page] .photo-card__title{
+  flex:0 0 auto !important;
+}
+
+/* Keep list from stretching */
+[data-photography-page] .photo-card__list{
+  flex:0 0 auto !important;
+}
+
+/* Give every summary the same vertical space */
+[data-photography-page] .photo-card__summary{
+  flex:0 0 auto !important;
+
+  min-height:46px !important;
+  max-height:46px !important;
+
+  overflow:hidden !important;
+}
+
+/* Push all prices to the same bottom position */
+[data-photography-page] .photo-card__price{
+  margin:auto 30px 24px 30px !important;
+  padding-top:18px !important;
+
+  color:#a96d18 !important;
+
+  font-family:"Cormorant Garamond",serif !important;
+  font-size:1.24rem !important;
+  font-weight:700 !important;
+  line-height:1.1 !important;
+
+  border-top:1px solid rgba(181,145,75,.25) !important;
+
+  flex:0 0 auto !important;
+}
+
+/* Remove any older decorative pseudo-line */
+[data-photography-page] .photo-card__price::before{
+  display:none !important;
+}
+
+/* Mobile: let cards grow naturally */
+@media(max-width:767.98px){
+  [data-photography-page] .photo-card{
+    height:auto !important;
+    min-height:285px !important;
+    max-height:none !important;
+  }
+
+  [data-photography-page] .photo-card__summary{
+    min-height:0 !important;
+    max-height:none !important;
+    overflow:visible !important;
+  }
+
+  [data-photography-page] .photo-card__price{
+    margin:auto 24px 22px 24px !important;
+  }
+}
+</style>
+
+
+<style>
+/* =========================================================
+   EMPTY PHOTOGRAPHY SUMMARY — MATCH CATERING
+   ========================================================= */
+
+[data-photography-page] .workflow-summary > .panel__body{
+  background:#ffffff !important;
+}
+
+/* Empty state sits directly below the total, like Catering */
+[data-photography-page] [data-photo-empty]{
+  display:block;
+  margin:30px 0 22px !important;
+
+  color:#5d6963 !important;
+  font-size:.94rem !important;
+  line-height:1.5 !important;
+}
+
+/* Hide the old category area completely while nothing is selected */
+[data-photography-page] .pricing-box:has(.photo-summary-row.is-empty:nth-child(1))
+.photo-summary-row.is-empty{
+  display:none !important;
+}
+
+/* If every row is empty, collapse the whole pricing box */
+[data-photography-page] .pricing-box:not(:has(.photo-summary-row:not(.is-empty))){
+  display:none !important;
+}
+
+/* Divider before final pricing note */
+[data-photography-page] .pricing-box:not(:has(.photo-summary-row:not(.is-empty))) + p,
+[data-photography-page] [data-photo-empty] + .pricing-box + p{
+  padding-top:22px !important;
+  margin-top:0 !important;
+  border-top:1px solid #e8ded1 !important;
+}
+
+/* Keep the empty-state save button in normal, unsaved appearance */
+[data-photography-page] #savePhotographyPrice{
+  background:#c89235 !important;
+  border-color:#c89235 !important;
+  color:#ffffff !important;
+  opacity:1 !important;
+}
+</style>
+
+
+<style>
+/* =========================================================
+   FINAL PHOTOGRAPHY CARD CONTENT FONT SIZE
+   ========================================================= */
+
+/* Included-item text */
+[data-photography-page] .photo-card__list{
+  font-size:1.02rem !important;
+  line-height:1.55 !important;
+}
+
+/* Supporting description */
+[data-photography-page] .photo-card__summary{
+  font-size:.96rem !important;
+  line-height:1.5 !important;
+}
+
+/* Keep mobile text comfortable */
+@media(max-width:767.98px){
+  [data-photography-page] .photo-card__list{
+    font-size:.98rem !important;
+  }
+
+  [data-photography-page] .photo-card__summary{
+    font-size:.93rem !important;
+  }
+}
+</style>
+
+</head>
+
+<body>
+
+<nav class="navbar navbar-expand-lg bb-nav sticky-top">
+  <div class="container-fluid px-3 px-lg-4">
+    <a class="navbar-brand" href="/prototype/index.html">
+      Bliss &amp; Beyond
+      <small>Customer Portal</small>
+    </a>
+
+    <div class="d-flex align-items-center gap-3">
+      <a class="d-none d-md-inline small" href="/prototype/index.html">
+        <i class="bi bi-house-door me-1"></i>Public site
+      </a>
+
+      <div class="dropdown">
+        <button class="btn btn-forest btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+          Amara Perera
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><a class="dropdown-item" href="/prototype/customer/profile.html">Profile</a></li>
+          <li><a class="dropdown-item" href="/prototype/login.html">Sign out</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="bb-shell">
+  <main class="bb-main" data-photography-page>
+
+    <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-3">
+      <div>
+        <span class="eyebrow">Customer portal</span>
+        <h1 class="h2 mt-1 mb-1">Customize Photography</h1>
+        <p class="small text-ink-soft mb-0">
+          Choose photography, videography and additional media services for your event.
+        </p>
+      </div>
+
+      <div class="d-flex gap-2">
+        <a class="btn btn-outline-forest btn-sm" href="/prototype/customer/services.html">
+          Back to Services
+        </a>
+        <a class="btn btn-gold btn-sm" href="/prototype/customer/review.html">
+          Continue to Review
+        </a>
+      </div>
+    </div>
+
+    <div class="workflow-context">
+      <div class="workflow-meta">
+        <span class="bb-badge gold" data-photo-event-type>Wedding</span>
+        <span class="bb-badge" data-photo-event-guests>150 Guests</span>
+        <span class="bb-badge" data-photo-event-date>20 December 2026</span>
+      </div>
+    </div>
+
+    <div class="row g-4">
+
+      <div class="col-lg-8">
+
+        <!-- PHOTOGRAPHY -->
+        <div class="panel mb-4">
+          <div class="panel__head">
+            <h5 class="mb-0">Photography</h5>
+          </div>
+
+          <div class="panel__body">
+            <div class="photo-grid">
+
+              <label class="choice-card photo-card">
+                <div class="photo-card__title">
+                  <strong>Event Photography</strong>
+                  <input class="photo-select" type="checkbox"
+                         data-photo-option data-group="photography"
+                         data-price="350000" data-label="Event Photography"
+                         data-photo-id="event-photography">
+                </div>
+                <ul class="photo-card__list"><li>Ceremony & reception</li><li>Guests & group photos</li><li>Venue & key moments</li></ul>
+                <p class="photo-card__summary">Ideal for complete photo coverage of your celebration.</p>
+                <div class="text-gold small photo-card__price">350,000 MMK</div>
+              </label>
+
+              <label class="choice-card photo-card">
+                <div class="photo-card__title">
+                  <strong>Portrait Photography</strong>
+                  <input class="photo-select" type="checkbox"
+                         data-photo-option data-group="photography"
+                         data-price="280000" data-label="Portrait Photography"
+                         data-photo-id="portrait-photography">
+                </div>
+                <ul class="photo-card__list"><li>Couple & individual portraits</li><li>Family & VIP photos</li><li>Guided posing</li></ul>
+                <p class="photo-card__summary">Best for polished photos of couples, family and VIP guests.</p>
+                <div class="text-gold small photo-card__price">280,000 MMK</div>
+              </label>
+
+              <label class="choice-card photo-card">
+                <div class="photo-card__title">
+                  <strong>Candid Photography</strong>
+                  <input class="photo-select" type="checkbox"
+                         data-photo-option data-group="photography"
+                         data-price="250000" data-label="Candid Photography"
+                         data-photo-id="candid-photography">
+                </div>
+                <ul class="photo-card__list"><li>Natural expressions</li><li>Guest interactions</li><li>Unposed moments</li></ul>
+                <p class="photo-card__summary">Perfect for capturing genuine emotions and natural moments.</p>
+                <div class="text-gold small photo-card__price">250,000 MMK</div>
+              </label>
+
+              <label class="choice-card photo-card">
+                <div class="photo-card__title">
+                  <strong>Couple Session</strong>
+                  <input class="photo-select" type="checkbox"
+                         data-photo-option data-group="photography"
+                         data-price="220000" data-label="Couple Session"
+                         data-photo-id="couple-session">
+                </div>
+                <ul class="photo-card__list"><li>Dedicated couple photos</li><li>Guided poses</li><li>Creative venue shots</li></ul>
+                <p class="photo-card__summary">A focused session for memorable and creative couple portraits.</p>
+                <div class="text-gold small photo-card__price">220,000 MMK</div>
+              </label>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- VIDEOGRAPHY -->
+        <div class="panel mb-4">
+          <div class="panel__head">
+            <h5 class="mb-0">Videography</h5>
+          </div>
+
+          <div class="panel__body">
+            <div class="photo-grid">
+
+              <label class="choice-card photo-card">
+                <div class="photo-card__title">
+                  <strong>Full Event Video</strong>
+                  <input class="photo-select" type="checkbox"
+                         data-photo-option data-group="videography"
+                         data-price="500000" data-label="Full Event Video"
+                         data-photo-id="full-event-video">
+                </div>
+                <ul class="photo-card__list"><li>Ceremony & reception</li><li>Speeches & performances</li><li>Key event moments</li></ul>
+                <p class="photo-card__summary">Best for keeping a complete video record of the celebration.</p>
+                <div class="text-gold small photo-card__price">500,000 MMK</div>
+              </label>
+
+              <label class="choice-card photo-card">
+                <div class="photo-card__title">
+                  <strong>Highlight Video</strong>
+                  <input class="photo-select" type="checkbox"
+                         data-photo-option data-group="videography"
+                         data-price="320000" data-label="Highlight Video"
+                         data-photo-id="highlight-video">
+                </div>
+                <ul class="photo-card__list"><li>Best event moments</li><li>Short edited film</li><li>Music-based edit</li></ul>
+                <p class="photo-card__summary">A short and engaging way to remember the best moments.</p>
+                <div class="text-gold small photo-card__price">320,000 MMK</div>
+              </label>
+
+              <label class="choice-card photo-card">
+                <div class="photo-card__title">
+                  <strong>Same-Day Edit</strong>
+                  <input class="photo-select" type="checkbox"
+                         data-photo-option data-group="videography"
+                         data-price="280000" data-label="Same-Day Edit"
+                         data-photo-id="same-day-edit">
+                </div>
+                <ul class="photo-card__list"><li>Selected event footage</li><li>Fast editing</li><li>Same-day playback</li></ul>
+                <p class="photo-card__summary">Ideal for sharing event highlights with guests on the same day.</p>
+                <div class="text-gold small photo-card__price">280,000 MMK</div>
+              </label>
+
+              <label class="choice-card photo-card">
+                <div class="photo-card__title">
+                  <strong>Cinematic Film</strong>
+                  <input class="photo-select" type="checkbox"
+                         data-photo-option data-group="videography"
+                         data-price="420000" data-label="Cinematic Film"
+                         data-photo-id="cinematic-film">
+                </div>
+                <ul class="photo-card__list"><li>Creative camera angles</li><li>Natural audio & music</li><li>Cinematic editing</li></ul>
+                <p class="photo-card__summary">Perfect for couples who want a creative, story-style event film.</p>
+                <div class="text-gold small photo-card__price">420,000 MMK</div>
+              </label>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- ADDITIONAL -->
+        <div class="panel mb-4">
+          <div class="panel__head">
+            <h5 class="mb-0">Additional Services</h5>
+          </div>
+
+          <div class="panel__body">
+            <div class="photo-grid">
+
+              <label class="choice-card photo-card">
+                <div class="photo-card__title">
+                  <strong>Drone Photography</strong>
+                  <input class="photo-select" type="checkbox"
+                         data-photo-option data-group="additional"
+                         data-price="220000" data-label="Drone Photography"
+                         data-photo-id="drone-photography">
+                </div>
+                <ul class="photo-card__list"><li>Aerial venue photos</li><li>Outdoor event views</li><li>Entrance & landscape shots</li></ul>
+                <p class="photo-card__summary">Best for showing the venue and event atmosphere from above.</p>
+                <div class="text-gold small photo-card__price">220,000 MMK</div>
+              </label>
+
+              <label class="choice-card photo-card">
+                <div class="photo-card__title">
+                  <strong>Pre-Event Shoot</strong>
+                  <input class="photo-select" type="checkbox"
+                         data-photo-option data-group="additional"
+                         data-price="180000" data-label="Pre-Event Shoot"
+                         data-photo-id="pre-event-shoot">
+                </div>
+                <ul class="photo-card__list"><li>Couple or family session</li><li>Before the event</li><li>Invitation & display photos</li></ul>
+                <p class="photo-card__summary">Great for creating photos before the main event day.</p>
+                <div class="text-gold small photo-card__price">180,000 MMK</div>
+              </label>
+
+              <label class="choice-card photo-card">
+                <div class="photo-card__title">
+                  <strong>Photo Album</strong>
+                  <input class="photo-select" type="checkbox"
+                         data-photo-option data-group="additional"
+                         data-price="120000" data-label="Photo Album"
+                         data-photo-id="photo-album">
+                </div>
+                <ul class="photo-card__list"><li>Selected event photos</li><li>Professional page layout</li><li>Printed keepsake album</li></ul>
+                <p class="photo-card__summary">A lasting printed keepsake of your favorite event memories.</p>
+                <div class="text-gold small photo-card__price">120,000 MMK</div>
+              </label>
+
+              <label class="choice-card photo-card">
+                <div class="photo-card__title">
+                  <strong>Digital Gallery</strong>
+                  <input class="photo-select" type="checkbox"
+                         data-photo-option data-group="additional"
+                         data-price="80000" data-label="Digital Gallery"
+                         data-photo-id="digital-gallery">
+                </div>
+                <ul class="photo-card__list"><li>Edited photo collection</li><li>Online viewing</li><li>Download & sharing</li></ul>
+                <p class="photo-card__summary">A convenient way to view, download and share your event photos.</p>
+                <div class="text-gold small photo-card__price">80,000 MMK</div>
+              </label>
+
+              <label class="choice-card photo-card">
+                <div class="photo-card__title">
+                  <strong>Instant Photo Printing</strong>
+                  <input class="photo-select" type="checkbox"
+                         data-photo-option data-group="additional"
+                         data-price="150000" data-label="Instant Photo Printing"
+                         data-photo-id="instant-photo-printing">
+                </div>
+                <ul class="photo-card__list"><li>On-site photo printing</li><li>Guest keepsakes</li><li>Photos during the event</li></ul>
+                <p class="photo-card__summary">A fun way for guests to take home photos from the event.</p>
+                <div class="text-gold small photo-card__price">150,000 MMK</div>
+              </label>
+
+              <label class="choice-card photo-card">
+                <div class="photo-card__title">
+                  <strong>Photo Booth</strong>
+                  <input class="photo-select" type="checkbox"
+                         data-photo-option data-group="additional"
+                         data-price="200000" data-label="Photo Booth"
+                         data-photo-id="photo-booth">
+                </div>
+                <ul class="photo-card__list"><li>Dedicated photo area</li><li>Simple fun props</li><li>Individual & group photos</li></ul>
+                <p class="photo-card__summary">Adds an interactive and entertaining photo experience for guests.</p>
+                <div class="text-gold small photo-card__price">200,000 MMK</div>
+              </label>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- NOTES -->
+        <div class="panel">
+          <div class="panel__head">
+            <h5 class="mb-0">Additional Photography Notes</h5>
+          </div>
+
+          <div class="panel__body">
+            <label class="form-label" for="photographyNotes">
+              Tell us about preferred photography style, must-have shots, timing, locations or special requests.
+            </label>
+            <textarea class="form-control" id="photographyNotes" rows="4" data-photo-notes></textarea>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- SUMMARY -->
+      <div class="col-lg-4">
+        <div class="panel workflow-summary position-sticky" style="top:90px">
+
+          <div class="panel__head">
+            <h5 class="mb-0">Your Photography</h5>
+          </div>
+
+          <div class="panel__body">
+
+            <div class="mb-4">
+              <div class="bb-price" data-photo-total>0 MMK</div>
+              <div class="small text-ink-soft mt-1">Estimated photography total</div>
+            </div>
+
+            <p class="small text-ink-soft mb-3" data-photo-empty>
+              Choose a photography, videography or additional service to begin.
+            </p>
+
+            <div class="pricing-box mb-3">
+
+              <div class="pricing-row photo-summary-row is-empty" data-summary-row="photography">
+                <span>Photography</span>
+                <strong data-summary-photography>-</strong>
+              </div>
+
+              <div class="pricing-row photo-summary-row is-empty" data-summary-row="videography">
+                <span>Videography</span>
+                <strong data-summary-videography>-</strong>
+              </div>
+
+              <div class="pricing-row photo-summary-row is-empty" data-summary-row="additional">
+                <span>Additional Services</span>
+                <strong data-summary-additional>-</strong>
+              </div>
+
+              <div class="pricing-row photo-summary-row is-empty" data-summary-row="notes">
+                <span>Additional Notes</span>
+                <strong data-summary-notes>-</strong>
+              </div>
+
+            </div>
+
+            <p class="small text-ink-soft mb-3">
+              Final pricing will appear after you choose your photography services.
+            </p>
+
+            <div class="small text-danger mb-2" data-photo-status role="status" aria-live="polite" hidden></div>
+
+            <div class="d-grid gap-2">
+              <button class="btn btn-gold" type="button" id="savePhotographyPrice">
+                Save Price
+              </button>
+
+              <a class="btn btn-outline-forest" href="/prototype/customer/review.html">
+                Continue to Review
+              </a>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/prototype/assets/js/main.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const SERVICE_ID = 'photography';
+  const BACKEND_SERVICE_ID = 3;
+  const SERVICE_TITLE = 'Photography & Videography';
+  const LEGACY_KEY = 'bbEstimatedPhotographyPrice';
+  const summarySelectors = {
+    photography: {
+      items: '[data-summary-photography]',
+      price: '[data-summary-photography-price]'
+    },
+    videography: {
+      items: '[data-summary-videography]',
+      price: '[data-summary-videography-price]'
+    },
+    additional: {
+      items: '[data-summary-additional]',
+      price: '[data-summary-additional-price]'
+    }
+  };
+
+  const notesEl = document.querySelector('[data-photo-notes]');
+  const saveBtn = document.getElementById('savePhotographyPrice');
+  const statusEl = document.querySelector('[data-photo-status]');
+  const optionSelector = '[data-photo-option]';
+  const continueBtn = document.querySelector('a.btn.btn-outline-forest[href="/prototype/customer/review.html"]');
+  const controlSelector = `${optionSelector}, [data-photo-notes]`;
+  const BACKEND_SERVICE_URL = 'http://localhost:8081/api/services/3';
+  const SERVICE_UNAVAILABLE_MESSAGE = 'Photography & Videography is currently unavailable.';
+
+  const escapeHtml = (value) => String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+
+  const money = (value) => Number(value || 0).toLocaleString('en-US') + ' MMK';
+
+  function setText(selector, value) {
+    const el = document.querySelector(selector);
+    if (el) el.textContent = value;
+  }
+
+  function setList(selector, items) {
+    const el = document.querySelector(selector);
+    if (!el) return;
+
+    if (!items.length) {
+      el.innerHTML = '-';
+      return;
+    }
+
+    el.innerHTML = `
+      <ul class="summary-service-list mb-0">
+        ${items.map((item) => `<li>${escapeHtml(item)}</li>`).join('')}
+      </ul>
+    `;
+  }
+
+  function setStatus(message = '') {
+    if (!statusEl) return;
+    statusEl.textContent = message;
+    statusEl.hidden = !message;
+  }
+
+  function setAvailabilityState(available) {
+    const controls = [...document.querySelectorAll(controlSelector)];
+    controls.forEach((control) => {
+      control.disabled = !available;
+    });
+
+    if (saveBtn) {
+      saveBtn.disabled = !available;
+    }
+
+    if (continueBtn) {
+      continueBtn.classList.toggle('disabled', !available);
+      continueBtn.setAttribute('aria-disabled', String(!available));
+      continueBtn.style.pointerEvents = available ? '' : 'none';
+      continueBtn.tabIndex = available ? 0 : -1;
+    }
+  }
+
+  async function checkBackendAvailability() {
+    try {
+      const response = await fetch(BACKEND_SERVICE_URL, { headers: { Accept: 'application/json' } });
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const service = await response.json();
+      const isValidService =
+        Number(service?.id) === 3 &&
+        String(service?.name || '').trim() === 'Photography & Videography';
+
+      if (!isValidService) {
+        throw new Error('Unexpected service payload');
+      }
+
+      setAvailabilityState(Boolean(service.available));
+      if (!service.available) {
+        setStatus(SERVICE_UNAVAILABLE_MESSAGE);
+        const hasSavedPhotography = typeof bbGetServiceData === 'function' && !!bbGetServiceData()[SERVICE_ID];
+        setSavedState(hasSavedPhotography);
+      } else if (!statusEl?.textContent || statusEl.textContent === SERVICE_UNAVAILABLE_MESSAGE) {
+        setStatus('');
+      }
+    } catch (error) {
+      console.info('Photography catalog unavailable; using frontend fallback.');
+    }
+  }
+
+  function setSavedState(saved) {
+    if (!saveBtn) return;
+    saveBtn.textContent = saved ? '✓ Saved' : 'Save Photography';
+    saveBtn.dataset.saved = saved ? 'true' : 'false';
+  }
+
+  function markDirty() {
+    setSavedState(false);
+    setStatus('');
+  }
+
+  function getAllInputs() {
+    return [...document.querySelectorAll(optionSelector)];
+  }
+
+  function getCheckedInputs() {
+    return [...document.querySelectorAll(`${optionSelector}:checked`)];
+  }
+
+  function groupSelections(inputs) {
+    return {
+      photography: inputs.filter((input) => input.dataset.group === 'photography').map((input) => ({
+        id: input.dataset.photoId || '',
+        label: input.dataset.label || input.value || '',
+        price: Number(input.dataset.price || 0)
+      })),
+      videography: inputs.filter((input) => input.dataset.group === 'videography').map((input) => ({
+        id: input.dataset.photoId || '',
+        label: input.dataset.label || input.value || '',
+        price: Number(input.dataset.price || 0)
+      })),
+      additional: inputs.filter((input) => input.dataset.group === 'additional').map((input) => ({
+        id: input.dataset.photoId || '',
+        label: input.dataset.label || input.value || '',
+        price: Number(input.dataset.price || 0)
+      }))
+    };
+  }
+
+  function totalFor(items) {
+    return items.reduce((sum, item) => sum + Number(item.price || 0), 0);
+  }
+
+  function renderSummary(groups, notes) {
+
+    const photographyTotal = totalFor(groups.photography);
+    const videographyTotal = totalFor(groups.videography);
+    const additionalTotal = totalFor(groups.additional);
+    const grandTotal = photographyTotal + videographyTotal + additionalTotal;
+
+    setText('[data-photo-total]', money(grandTotal));
+
+    function renderGroup(groupName, items) {
+      const row = document.querySelector(`[data-summary-row="${groupName}"]`);
+      const target = document.querySelector(summarySelectors[groupName].items);
+
+      if (!row || !target) return;
+
+      if (!items.length) {
+        row.classList.add('is-empty');
+        target.innerHTML = '-';
+        return;
+      }
+
+      row.classList.remove('is-empty');
+
+      target.innerHTML = `
+        <ul class="photo-selected-list">
+          ${items.map((item) => `
+            <li>
+              <span class="photo-selected-name">
+                ${escapeHtml(item.label)}
+              </span>
+              <span class="photo-selected-price">
+                ${money(item.price)}
+              </span>
+            </li>
+          `).join('')}
+        </ul>
+      `;
+    }
+
+    renderGroup('photography', groups.photography);
+    renderGroup('videography', groups.videography);
+    renderGroup('additional', groups.additional);
+
+    const notesRow = document.querySelector('[data-summary-row="notes"]');
+    const notesTarget = document.querySelector('[data-summary-notes]');
+
+    if (notes) {
+      notesRow?.classList.remove('is-empty');
+      if (notesTarget) notesTarget.textContent = notes;
+    } else {
+      notesRow?.classList.add('is-empty');
+      if (notesTarget) notesTarget.textContent = '-';
+    }
+
+    const anyChoice =
+      groups.photography.length ||
+      groups.videography.length ||
+      groups.additional.length ||
+      notes;
+
+    const emptyState = document.querySelector('[data-photo-empty]');
+
+    if (emptyState) {
+      emptyState.classList.toggle('d-none', Boolean(anyChoice));
+    }
+
+    return grandTotal;
+  }
+
+  function updatePhotographySummary() {
+    const checkedInputs = getCheckedInputs();
+    const groups = groupSelections(checkedInputs);
+    const notes = notesEl?.value.trim() || '';
+
+    renderSummary(groups, notes);
+    return { checkedInputs, groups, notes, total: totalFor(groups.photography) + totalFor(groups.videography) + totalFor(groups.additional) };
+  }
+
+  function cssEscape(value) {
+    if (window.CSS && typeof window.CSS.escape === 'function') {
+      return window.CSS.escape(String(value));
+    }
+
+    return String(value).replace(/"/g, '\\"');
+  }
+
+  function findInputBySavedItem(item) {
+    if (!item) return null;
+
+    if (item.id) {
+      const byId = document.querySelector(`${optionSelector}[data-photo-id="${cssEscape(item.id)}"]`);
+      if (byId) return byId;
+    }
+
+    const label = item.label || item.name || item.title || item;
+    return getAllInputs().find((input) => input.dataset.label === label) || null;
+  }
+
+  function restoreSavedSelections(saved) {
+    getAllInputs().forEach((input) => {
+      input.checked = false;
+    });
+
+    const savedGroups = saved?.selections || {};
+    const hasStructuredSelections =
+      ['photography', 'videography', 'additional'].some((group) => Array.isArray(savedGroups[group]));
+
+    if (hasStructuredSelections) {
+      ['photography', 'videography', 'additional'].forEach((group) => {
+        const entries = Array.isArray(savedGroups[group]) ? savedGroups[group] : [];
+        entries.forEach((item) => {
+          const input = findInputBySavedItem(item);
+          if (input && input.dataset.group === group) {
+            input.checked = true;
+          }
+        });
+      });
+    } else if (Array.isArray(saved?.options)) {
+      saved.options.forEach((item) => {
+        const input = findInputBySavedItem(item);
+        if (input) {
+          input.checked = true;
+        }
+      });
+    }
+
+    if (notesEl) {
+      notesEl.value = savedGroups.notes ?? saved?.notes ?? '';
+    }
+
+    updatePhotographySummary();
+  }
+
+  function buildSaveData() {
+    const current = updatePhotographySummary();
+    const total = current.total;
+    const hasPaidSelection = current.checkedInputs.length > 0;
+
+    if (!hasPaidSelection) {
+      setStatus('Please choose at least one photography or videography option before saving.');
+      return null;
+    }
+
+    const options = [...current.groups.photography, ...current.groups.videography, ...current.groups.additional].map((item) => item.label);
+
+    return {
+      serviceId: SERVICE_ID,
+      backendServiceId: BACKEND_SERVICE_ID,
+      title: SERVICE_TITLE,
+      estimatedTotal: total,
+      options,
+      selections: {
+        photography: current.groups.photography,
+        videography: current.groups.videography,
+        additional: current.groups.additional,
+        notes: current.notes
+      }
+    };
+  }
+
+  function savePhotography() {
+    const data = buildSaveData();
+    if (!data) return false;
+
+    if (typeof bbSetServiceData === 'function') {
+      bbSetServiceData(SERVICE_ID, data);
+    }
+
+    if (typeof bbGetSelectedServices === 'function' && typeof bbSetSelectedServices === 'function') {
+      const current = bbGetSelectedServices().filter((item) => item.id !== SERVICE_ID);
+      current.push({
+        id: SERVICE_ID,
+        title: SERVICE_TITLE,
+        estimatedTotal: data.estimatedTotal
+      });
+      bbSetSelectedServices(current);
+    }
+
+    setSavedState(true);
+    setStatus('');
+    return data;
+  }
+
+  document.addEventListener('change', function (event) {
+    if (event.target.matches(optionSelector)) {
+      updatePhotographySummary();
+      markDirty();
+    }
+  });
+
+  notesEl?.addEventListener('input', function () {
+    updatePhotographySummary();
+    markDirty();
+  });
+
+  saveBtn?.addEventListener('click', function () {
+    const saved = savePhotography();
+    if (!saved) return;
+  });
+
+  /*
+    Start this page visually empty, like Catering.
+    Existing saved data is not deleted; it is simply not auto-selected
+    when the customer opens Photography again.
+  */
+  const savedPhotography = typeof bbGetServiceData === 'function'
+    ? bbGetServiceData()[SERVICE_ID]
+    : null;
+
+  getAllInputs().forEach((input) => {
+    input.checked = false;
+  });
+
+  if (notesEl) {
+    notesEl.value = '';
+  }
+
+  updatePhotographySummary();
+  setSavedState(false);
+
+  if (typeof localStorage !== 'undefined') {
+    try {
+      localStorage.getItem(LEGACY_KEY);
+    } catch (error) {}
+  }
+
+  checkBackendAvailability();
+});
+</script>
+
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+  function readSelectedEventContext() {
+    if (typeof window.bbGetEventContext === 'function') {
+      const context = window.bbGetEventContext();
+      if (context) return context;
+    }
+
+    try {
+      const raw = sessionStorage.getItem('bb_event_context');
+      if (raw) return JSON.parse(raw);
+    } catch (error) {}
+
+    return {
+      eventType: sessionStorage.getItem('bbEventType') || 'Wedding',
+      eventDate: sessionStorage.getItem('bbEventDate') || '2026-12-20',
+      guests: Number(sessionStorage.getItem('bbEventGuests') || 150)
+    };
+  }
+
+  function formatEventDate(value) {
+    if (!value) return '20 December 2026';
+
+    if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+      const parts = value.split('-');
+      const date = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+
+      return date.toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric'
+      });
+    }
+
+    return value;
+  }
+
+  window.bbReadSelectedEventForServicePage = function () {
+    const context = readSelectedEventContext();
+
+    return {
+      eventType: context.eventType || context.type || 'Wedding',
+      eventDate: context.eventDate || context.date || '2026-12-20',
+      guests: Number(context.guests || context.guestCount || 150)
+    };
+  };
+
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  setTimeout(function () {
+    const getEvent = window.bbReadSelectedEventForServicePage;
+    if (typeof getEvent !== 'function') return;
+
+    const event = getEvent();
+
+    const typeEl = document.querySelector('[data-photo-event-type]');
+    const guestEl = document.querySelector('[data-photo-event-guests]');
+    const dateEl = document.querySelector('[data-photo-event-date]');
+
+    if (typeEl) typeEl.textContent = event.eventType;
+    if (guestEl) guestEl.textContent = event.guests + ' Guests';
+
+    if (dateEl) {
+      if (/^\d{4}-\d{2}-\d{2}$/.test(event.eventDate)) {
+        const [y,m,d] = event.eventDate.split('-').map(Number);
+        dateEl.textContent = new Date(y,m-1,d).toLocaleDateString('en-GB', {
+          day:'2-digit', month:'long', year:'numeric'
+        });
+      } else {
+        dateEl.textContent = event.eventDate;
+      }
+    }
+  }, 0);
+});
+</script>
+
+</body>
+</html>

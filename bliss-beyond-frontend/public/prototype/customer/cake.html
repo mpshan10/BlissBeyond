@@ -1,0 +1,3785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Customize Cake &amp; Desserts | Bliss &amp; Beyond</title>
+
+<link rel="icon" href="/prototype/../favicon.ico">
+
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Karla:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
+<link href="/prototype/assets/css/style.css" rel="stylesheet">
+
+<style>
+
+.cake-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.cake-filter-btn {
+  border: 1px solid rgba(0,0,0,.12);
+  background: #fff;
+  color: var(--bb-green, #274438);
+  padding: 7px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  transition: .2s ease;
+}
+
+.cake-filter-btn:hover,
+.cake-filter-btn.active {
+  background: var(--bb-green, #274438);
+  border-color: var(--bb-green, #274438);
+  color: #fff;
+}
+
+.cake-card {
+  height: 100%;
+  background: #fff;
+  border: 1px solid rgba(0,0,0,.1);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: .2s ease;
+}
+
+.cake-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 28px rgba(0,0,0,.08);
+}
+
+.cake-card.selected {
+  border: 2px solid #b18a42;
+}
+
+.cake-card-image {
+  position: relative;
+}
+
+.cake-card-image img {
+  width: 100%;
+  height: 240px;
+  object-fit: cover;
+  display: block;
+}
+
+.cake-badge {
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  background: #fff;
+  color: #8f6b25;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgba(0,0,0,.1);
+}
+
+.cake-card-body {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 265px;
+  padding: 0;
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,.98),
+      rgba(249,245,236,.92)
+    );
+}
+
+/* Royal green heading band, matching the option cards */
+.cake-card-body h5 {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 78px;
+  margin: 0 !important;
+  padding: 18px 28px 16px;
+  color: #123f33;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1.45rem;
+  font-weight: 700;
+  line-height: 1.15;
+  background:
+    linear-gradient(
+      110deg,
+      rgba(15,70,54,.17),
+      rgba(31,91,69,.09) 58%,
+      rgba(205,164,80,.03)
+    );
+  border-bottom: 1px solid rgba(181,145,75,.33);
+}
+
+.cake-card-body h5::after {
+  content: "";
+  position: absolute;
+  left: 28px;
+  bottom: -1px;
+  width: 64px;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg,#a96e18,#e3bf72,#a96e18);
+}
+
+.cake-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 22px 28px 18px;
+  margin: 0 !important;
+}
+
+.cake-meta span {
+  font-size: .82rem;
+  padding: 7px 12px;
+  background: #f5f1e8;
+  border: 1px solid rgba(181,145,75,.13);
+  border-radius: 999px;
+  color: #4b5c52;
+}
+
+.cake-price {
+  margin: auto 28px 0 !important;
+  padding: 17px 0 15px;
+  color: #a96d18;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1.45rem;
+  font-weight: 700;
+  line-height: 1.1;
+  border-top: 1px solid rgba(181,145,75,.25);
+}
+
+.cake-card-body .btn {
+  width: calc(100% - 56px) !important;
+  margin: 0 28px 24px;
+  min-height: 42px;
+  border-radius: 999px;
+  letter-spacing: .08em;
+}
+
+.option-card {
+  height: 100%;
+  background: #fff;
+  border: 1px solid rgba(0,0,0,.09);
+  border-radius: 14px;
+  padding: 16px;
+}
+
+.option-price {
+  color: #b18a42;
+  font-weight: 600;
+}
+
+.selected-cake-box {
+  border: 2px solid #b18a42;
+  background: #fffaf0;
+  border-radius: 16px;
+  padding: 18px;
+}
+
+.selected-cake-box img {
+  width: 130px;
+  height: 130px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.summary-cake-image {
+  width: 100%;
+  height: 170px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.summary-list {
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 0;
+}
+
+.summary-list li {
+  padding: 7px 0;
+  border-bottom: 1px solid rgba(0,0,0,.06);
+}
+
+.workflow-summary {
+  position: sticky;
+  top: 95px;
+}
+
+.bb-price {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: 0.01em;
+}
+
+.event-recommendation {
+  background: #f5f1e8;
+  border-left: 4px solid #b18a42;
+  border-radius: 12px;
+  padding: 18px;
+}
+
+.modal-cake-image {
+  width: 100%;
+  height: 460px;
+  object-fit: cover;
+  border-radius: 16px;
+}
+
+.modal-cake-detail {
+  background: #f8f5ee;
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.hidden-cake-choice {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media (max-width: 991.98px) {
+  .workflow-summary {
+    position: static;
+  }
+}
+
+</style>
+
+<style>
+/* =========================================================
+   CAKE OPTION CARDS — MATCH LIGHTING / AV ROYAL STYLE
+   Applies to Flavor, Personalize, and Dessert Add-on cards.
+   Cake gallery cards are intentionally left unchanged.
+   ========================================================= */
+
+main.container .option-card{
+  position:relative !important;
+  overflow:hidden !important;
+  isolation:isolate !important;
+
+  display:flex !important;
+  flex-direction:column !important;
+
+  height:220px !important;
+  min-height:220px !important;
+  max-height:220px !important;
+
+  padding:0 !important;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,.97),
+      rgba(249,245,236,.91)
+    ) !important;
+
+  border:1px solid rgba(190,164,119,.50) !important;
+  border-radius:22px !important;
+
+  box-shadow:
+    0 12px 28px rgba(38,31,22,.075),
+    inset 0 1px 0 rgba(255,255,255,.98) !important;
+
+  transition:
+    transform .24s ease,
+    border-color .24s ease,
+    box-shadow .24s ease,
+    background .24s ease !important;
+}
+
+/* gold left rail */
+main.container .option-card::before{
+  content:"";
+  position:absolute;
+  top:18px;
+  bottom:18px;
+  left:0;
+  width:3px;
+  border-radius:999px;
+
+  background:
+    linear-gradient(
+      180deg,
+      transparent,
+      #e1bd70 15%,
+      #b77a20 50%,
+      #e1bd70 84%,
+      transparent
+    );
+
+  z-index:3;
+}
+
+/* subtle upper glow */
+main.container .option-card::after{
+  content:"";
+  position:absolute;
+  width:180px;
+  height:180px;
+  top:-90px;
+  right:-70px;
+  border-radius:50%;
+  pointer-events:none;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(207,165,79,.15),
+      rgba(207,165,79,.04) 45%,
+      transparent 74%
+    );
+
+  z-index:0;
+}
+
+/* make form fill card */
+main.container .option-card .form-check{
+  position:relative !important;
+  z-index:2 !important;
+
+  display:flex !important;
+  flex-direction:column !important;
+
+  width:100% !important;
+  height:100% !important;
+
+  margin:0 !important;
+  padding:0 !important;
+}
+
+/* label fills card */
+main.container .option-card .form-check-label{
+  position:relative !important;
+
+  display:flex !important;
+  flex-direction:column !important;
+
+  width:100% !important;
+  height:100% !important;
+
+  padding:0 !important;
+}
+
+/* heading band */
+main.container .option-card strong{
+  position:relative !important;
+  z-index:2 !important;
+
+  display:flex !important;
+  align-items:center !important;
+
+  min-height:66px !important;
+  height:66px !important;
+  max-height:66px !important;
+
+  margin:0 !important;
+  padding:16px 60px 14px 30px !important;
+
+  color:#123f33 !important;
+
+  font-family:"Cormorant Garamond",serif !important;
+  font-size:1.25rem !important;
+  font-weight:700 !important;
+  line-height:1.12 !important;
+
+  background:
+    linear-gradient(
+      110deg,
+      rgba(15,70,54,.17),
+      rgba(31,91,69,.09) 58%,
+      rgba(205,164,80,.03)
+    ) !important;
+
+  border-bottom:1px solid rgba(181,145,75,.33) !important;
+}
+
+/* gold underline */
+main.container .option-card strong::after{
+  content:"";
+  position:absolute;
+  left:30px;
+  bottom:-1px;
+
+  width:62px;
+  height:2px;
+  border-radius:999px;
+
+  background:
+    linear-gradient(90deg,#a96e18,#e3bf72,#a96e18);
+}
+
+/* radio / checkbox */
+main.container .option-card .form-check-input{
+  position:absolute !important;
+  top:18px !important;
+  right:22px !important;
+
+  appearance:none !important;
+  -webkit-appearance:none !important;
+
+  width:29px !important;
+  height:29px !important;
+  min-width:29px !important;
+
+  margin:0 !important;
+
+  display:grid !important;
+  place-content:center !important;
+
+  background:#fffdf8 !important;
+  border:2px solid #17483a !important;
+  border-radius:50% !important;
+
+  box-shadow:0 3px 9px rgba(23,72,58,.09) !important;
+
+  z-index:5 !important;
+}
+
+main.container .option-card .form-check-input::before{
+  content:"";
+  width:11px;
+  height:11px;
+  border-radius:50%;
+
+  background:#c89235 !important;
+
+  transform:scale(0);
+  transition:transform .15s ease;
+}
+
+main.container .option-card .form-check-input:checked{
+  border-color:#b77a20 !important;
+
+  box-shadow:
+    0 0 0 5px rgba(191,139,47,.11),
+    0 4px 10px rgba(45,35,20,.10) !important;
+}
+
+main.container .option-card .form-check-input:checked::before{
+  transform:scale(1);
+}
+
+/* content description */
+main.container .option-card .small.text-ink-soft{
+  position:relative !important;
+  z-index:2 !important;
+
+  flex:1 1 auto !important;
+
+  display:flex !important;
+  align-items:flex-start !important;
+
+  margin:0 !important;
+  padding:16px 30px 8px 30px !important;
+
+  color:#53665e !important;
+
+  font-size:1.02rem !important;
+  line-height:1.5 !important;
+  font-weight:400 !important;
+}
+
+/* price at bottom */
+main.container .option-card .option-price{
+  position:relative !important;
+  z-index:2 !important;
+
+  flex:0 0 auto !important;
+
+  margin:0 30px 18px 30px !important;
+  padding-top:11px !important;
+
+  color:#a96d18 !important;
+
+  font-family:"Cormorant Garamond",serif !important;
+  font-size:1.34rem !important;
+  font-weight:700 !important;
+  line-height:1.05 !important;
+
+  border-top:1px solid rgba(181,145,75,.25) !important;
+}
+
+/* hover */
+main.container .option-card:hover{
+  transform:translateY(-5px) !important;
+
+  border-color:rgba(183,122,32,.72) !important;
+
+  box-shadow:
+    0 19px 38px rgba(38,31,20,.11),
+    inset 0 1px 0 rgba(255,255,255,1) !important;
+}
+
+/* selected state */
+main.container .option-card:has(.form-check-input:checked){
+  border:1.5px solid #c89235 !important;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,.99),
+      rgba(255,248,232,.94)
+    ) !important;
+
+  box-shadow:
+    0 0 0 3px rgba(200,146,53,.08),
+    0 17px 34px rgba(45,35,20,.10) !important;
+}
+
+main.container .option-card:has(.form-check-input:checked) strong{
+  background:
+    linear-gradient(
+      110deg,
+      rgba(12,62,47,.23),
+      rgba(24,75,57,.14) 58%,
+      rgba(205,160,69,.07)
+    ) !important;
+}
+
+/* ensure equal card sizes across 3-col and 2-col layouts */
+main.container .col-md-4 > .option-card,
+main.container .col-md-6 > .option-card{
+  width:100% !important;
+}
+
+/* mobile */
+@media(max-width:767.98px){
+  main.container .option-card{
+    height:auto !important;
+    min-height:205px !important;
+    max-height:none !important;
+  }
+
+  main.container .option-card strong{
+    height:auto !important;
+    min-height:64px !important;
+    max-height:none !important;
+  }
+}
+</style>
+
+
+
+<style>
+/* =========================================================
+   CAKE SUMMARY — CATERING / LIGHTING STYLE
+   Category title on its own line.
+   Selected choices appear directly underneath.
+   ========================================================= */
+
+.workflow-summary{
+  background:#fff !important;
+  border:1px solid #ddcfbc !important;
+  border-radius:22px !important;
+  overflow:hidden !important;
+  box-shadow:0 10px 26px rgba(47,39,29,.05) !important;
+}
+
+.workflow-summary .panel__head{
+  background:#fff !important;
+  padding:24px 26px !important;
+  border-bottom:1px solid #e7ddd0 !important;
+}
+
+.workflow-summary .panel__head h5{
+  margin:0 !important;
+
+  color:#153f33 !important;
+
+  font-family:"Cormorant Garamond",serif !important;
+  font-size:2rem !important;
+  font-weight:700 !important;
+}
+
+.workflow-summary .panel__body{
+  background:#fff !important;
+  padding:30px 26px 24px !important;
+}
+
+/* TOTAL */
+.workflow-summary .bb-price{
+  margin:0 !important;
+
+  color:#174c3b !important;
+
+  font-family:"Cormorant Garamond",serif !important;
+  font-size:2.7rem !important;
+  font-weight:600 !important;
+  line-height:1 !important;
+}
+
+.workflow-summary .bb-price + p{
+  margin-top:6px !important;
+  margin-bottom:24px !important;
+}
+
+/* EMPTY STATE */
+.cake-summary-empty{
+  margin:28px 0 24px;
+
+  color:#617069;
+
+  font-family:"Karla",sans-serif;
+  font-size:1rem;
+  line-height:1.55;
+}
+
+/* =========================================================
+   CATEGORY
+   ========================================================= */
+
+.cake-summary-group{
+  display:block !important;
+  width:100% !important;
+
+  margin:0 !important;
+  padding:19px 0 20px !important;
+
+  border-top:1px solid #e8ded1 !important;
+}
+
+.cake-summary-group__title{
+  display:block !important;
+  width:100% !important;
+
+  margin:0 0 13px !important;
+  padding:0 !important;
+
+  color:#7a6252 !important;
+
+  font-family:"Karla",sans-serif !important;
+  font-size:.72rem !important;
+  font-weight:700 !important;
+  line-height:1.2 !important;
+
+  letter-spacing:.18em !important;
+  text-transform:uppercase !important;
+}
+
+/* =========================================================
+   SELECTED CHOICE
+   ========================================================= */
+
+.cake-summary-item{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) auto !important;
+
+  column-gap:18px !important;
+  align-items:center !important;
+
+  width:100% !important;
+
+  margin:0 !important;
+  padding:5px 0 5px 20px !important;
+}
+
+/* multiple choices inside same section */
+.cake-summary-item + .cake-summary-item{
+  margin-top:7px !important;
+  padding-top:11px !important;
+
+  border-top:1px dashed rgba(181,145,75,.28) !important;
+}
+
+/* CHOICE NAME */
+.cake-summary-item__name{
+  position:relative !important;
+
+  display:block !important;
+
+  margin:0 !important;
+  padding:0 !important;
+
+  color:#18372d !important;
+
+  font-family:"Karla",sans-serif !important;
+  font-size:1rem !important;
+  font-weight:500 !important;
+  line-height:1.4 !important;
+
+  letter-spacing:0 !important;
+  text-transform:none !important;
+}
+
+.cake-summary-item__name::before{
+  content:"";
+
+  position:absolute;
+
+  left:-20px;
+  top:.55em;
+
+  width:7px;
+  height:7px;
+
+  border-radius:50%;
+
+  background:#c89235;
+}
+
+/* PRICE */
+.cake-summary-item__price{
+  display:block !important;
+
+  margin:0 !important;
+  padding:0 !important;
+
+  color:#bd7410 !important;
+
+  font-family:"Karla",sans-serif !important;
+  font-size:.95rem !important;
+  font-weight:600 !important;
+  line-height:1.35 !important;
+
+  white-space:nowrap !important;
+  text-align:right !important;
+}
+
+/* FINAL DIVIDER */
+.workflow-summary hr{
+  margin:3px 0 22px !important;
+
+  border:0 !important;
+  border-top:1px solid #e7ddd0 !important;
+
+  opacity:1 !important;
+}
+
+/* FINAL PRICE MESSAGE */
+.workflow-summary hr + p{
+  margin-bottom:22px !important;
+
+  color:#617069 !important;
+
+  font-size:.98rem !important;
+  line-height:1.65 !important;
+}
+
+/* SAVE BUTTON */
+.workflow-summary [data-service-save]{
+  min-height:56px !important;
+
+  background:#d29a2e !important;
+  border:1px solid #d29a2e !important;
+  border-radius:999px !important;
+
+  color:#fff !important;
+
+  font-family:"Karla",sans-serif !important;
+  font-size:.96rem !important;
+  font-weight:600 !important;
+
+  opacity:1 !important;
+}
+
+.workflow-summary [data-service-save]:hover{
+  background:#c48c24 !important;
+  border-color:#c48c24 !important;
+}
+
+.workflow-summary [data-service-save]:disabled{
+  background:#d29a2e !important;
+  border-color:#d29a2e !important;
+
+  color:#fff !important;
+
+  opacity:1 !important;
+}
+
+/* CONTINUE BUTTON */
+.workflow-summary [data-service-continue]{
+  min-height:56px !important;
+
+  border-radius:999px !important;
+
+  font-family:"Karla",sans-serif !important;
+  font-size:.96rem !important;
+
+  letter-spacing:.08em !important;
+}
+
+/* MOBILE */
+@media(max-width:430px){
+
+  .workflow-summary .panel__body{
+    padding:26px 22px 22px !important;
+  }
+
+  .workflow-summary .bb-price{
+    font-size:2.35rem !important;
+  }
+
+  .cake-summary-item{
+    grid-template-columns:minmax(0,1fr) auto !important;
+
+    column-gap:10px !important;
+
+    padding-left:18px !important;
+  }
+
+  .cake-summary-item__name{
+    font-size:.94rem !important;
+  }
+
+  .cake-summary-item__name::before{
+    left:-18px;
+  }
+
+  .cake-summary-item__price{
+    font-size:.88rem !important;
+  }
+}
+</style>
+
+
+
+<style>
+/* Clarify single-choice vs multi-choice cake customization */
+#finishPanel .panel__head p::after{
+  content:" • Choose one";
+  color:#b7791f;
+  font-weight:600;
+}
+
+#decorativeAddonsPanel .panel__head p::after{
+  content:" • Multiple selections allowed";
+  color:#b7791f;
+  font-weight:600;
+}
+</style>
+
+
+<style>
+/* =========================================================
+   FINAL CAKE SUMMARY SPACING
+   Match Sound, Lighting & AV summary spacing
+   ========================================================= */
+
+.cake-summary-group{
+  display:block !important;
+  width:100% !important;
+
+  margin:0 !important;
+  padding:15px 0 16px !important;
+
+  border-top:1px solid #e8ded1 !important;
+}
+
+.cake-summary-group__title{
+  display:block !important;
+  width:100% !important;
+
+  margin:0 0 10px !important;
+  padding:0 !important;
+
+  color:#7a6252 !important;
+
+  font-family:"Karla",sans-serif !important;
+  font-size:.72rem !important;
+  font-weight:700 !important;
+  line-height:1.2 !important;
+
+  letter-spacing:.18em !important;
+  text-transform:uppercase !important;
+}
+
+.cake-summary-item{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) auto !important;
+
+  column-gap:14px !important;
+  align-items:center !important;
+
+  width:100% !important;
+
+  margin:0 !important;
+  padding:4px 0 4px 20px !important;
+}
+
+.cake-summary-item + .cake-summary-item{
+  margin-top:2px !important;
+  padding-top:8px !important;
+
+  border-top:1px dashed rgba(181,145,75,.28) !important;
+}
+
+.cake-summary-item__name{
+  position:relative !important;
+
+  display:block !important;
+
+  margin:0 !important;
+  padding:0 !important;
+
+  color:#18372d !important;
+
+  font-family:"Karla",sans-serif !important;
+  font-size:1rem !important;
+  font-weight:500 !important;
+  line-height:1.35 !important;
+}
+
+.cake-summary-item__name::before{
+  content:"";
+
+  position:absolute;
+
+  left:-20px;
+  top:.5em;
+
+  width:7px;
+  height:7px;
+
+  border-radius:50%;
+  background:#c89235;
+}
+
+.cake-summary-item__price{
+  display:block !important;
+
+  margin:0 !important;
+  padding:0 !important;
+
+  color:#bd7410 !important;
+
+  font-family:"Karla",sans-serif !important;
+  font-size:.95rem !important;
+  font-weight:600 !important;
+  line-height:1.35 !important;
+
+  white-space:nowrap !important;
+  text-align:right !important;
+}
+
+.workflow-summary hr{
+  margin:2px 0 18px !important;
+
+  border:0 !important;
+  border-top:1px solid #e7ddd0 !important;
+
+  opacity:1 !important;
+}
+
+.workflow-summary hr + p{
+  margin-top:0 !important;
+  margin-bottom:20px !important;
+
+  color:#617069 !important;
+
+  font-size:.98rem !important;
+  line-height:1.6 !important;
+}
+
+/* Keep mobile layout compact too */
+@media(max-width:430px){
+  .cake-summary-group{
+    padding:14px 0 15px !important;
+  }
+
+  .cake-summary-group__title{
+    margin-bottom:9px !important;
+  }
+
+  .cake-summary-item{
+    column-gap:10px !important;
+    padding-left:18px !important;
+  }
+
+  .cake-summary-item__name::before{
+    left:-18px !important;
+  }
+
+  .cake-summary-item__price{
+    font-size:.88rem !important;
+  }
+}
+</style>
+
+
+<style>
+/* =========================================================
+   FINAL CAKE SUMMARY LINE SPACING
+   Match the Sound, Lighting & AV summary rhythm
+   ========================================================= */
+
+.cake-summary-group {
+  display:block !important;
+  width:100% !important;
+
+  margin:0 !important;
+  padding:15px 0 17px !important;
+
+  border-top:1px solid #e5d8c8 !important;
+  border-bottom:0 !important;
+}
+
+.cake-summary-group:first-child {
+  border-top:1px solid #e5d8c8 !important;
+}
+
+.cake-summary-group__title {
+  margin:0 0 14px !important;
+  padding:0 !important;
+
+  color:#806653 !important;
+
+  font-family:"Karla",sans-serif !important;
+  font-size:.72rem !important;
+  font-weight:700 !important;
+  line-height:1.2 !important;
+
+  letter-spacing:.18em !important;
+  text-transform:uppercase !important;
+}
+
+.cake-summary-item {
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) auto !important;
+  align-items:center !important;
+
+  column-gap:16px !important;
+
+  margin:0 !important;
+  padding:5px 0 5px 24px !important;
+
+  border:0 !important;
+}
+
+.cake-summary-item + .cake-summary-item {
+  margin-top:3px !important;
+  padding-top:8px !important;
+
+  border-top:1px dashed rgba(181,145,75,.28) !important;
+}
+
+.cake-summary-item__name {
+  position:relative !important;
+
+  margin:0 !important;
+
+  color:#173b31 !important;
+
+  font-family:"Karla",sans-serif !important;
+  font-size:1rem !important;
+  font-weight:500 !important;
+  line-height:1.35 !important;
+}
+
+.cake-summary-item__name::before {
+  content:"";
+
+  position:absolute;
+  left:-24px;
+  top:.48em;
+
+  width:7px;
+  height:7px;
+
+  border-radius:50%;
+  background:#c89235;
+}
+
+.cake-summary-item__price {
+  margin:0 !important;
+
+  color:#c87508 !important;
+
+  font-family:"Karla",sans-serif !important;
+  font-size:.96rem !important;
+  font-weight:600 !important;
+  line-height:1.35 !important;
+
+  white-space:nowrap !important;
+  text-align:right !important;
+}
+
+/* Prevent the double-divider look below the summary */
+.workflow-summary hr {
+  margin:0 0 20px !important;
+
+  border:0 !important;
+  border-top:1px solid #e5d8c8 !important;
+
+  opacity:1 !important;
+}
+
+/* If HR comes directly after the grouped summary, hide the extra divider */
+.summary-list + hr {
+  display:none !important;
+}
+
+/* Final pricing text spacing like Lighting & AV */
+.workflow-summary .summary-list ~ p.small.text-ink-soft {
+  margin-top:0 !important;
+  margin-bottom:20px !important;
+  padding-top:18px !important;
+
+  border-top:1px solid #e5d8c8 !important;
+
+  color:#617069 !important;
+
+  font-size:.98rem !important;
+  line-height:1.6 !important;
+}
+
+/* Keep category gaps compact */
+.workflow-summary .summary-list {
+  margin-top:24px !important;
+}
+
+/* Mobile */
+@media(max-width:430px) {
+  .cake-summary-group {
+    padding:14px 0 15px !important;
+  }
+
+  .cake-summary-group__title {
+    margin-bottom:11px !important;
+  }
+
+  .cake-summary-item {
+    column-gap:10px !important;
+    padding-left:20px !important;
+  }
+
+  .cake-summary-item__name::before {
+    left:-20px !important;
+  }
+
+  .cake-summary-item__price {
+    font-size:.88rem !important;
+  }
+}
+</style>
+
+
+<style>
+/* =========================================================
+   CAKE GALLERY SELECTOR — MATCH CATERING / LIGHTING CARDS
+   Circle only, no Select/Selected text.
+   ========================================================= */
+
+.cake-card{
+  position:relative;
+}
+
+.cake-card-select{
+  position:absolute;
+  top:18px;
+  right:18px;
+  z-index:8;
+
+  width:30px;
+  height:30px;
+  min-width:30px;
+
+  margin:0;
+  padding:0;
+
+  appearance:none;
+  -webkit-appearance:none;
+
+  border:2px solid #17483a;
+  border-radius:50%;
+
+  background:#fffdf8;
+
+  display:grid;
+  place-content:center;
+
+  cursor:pointer;
+
+  box-shadow:0 3px 9px rgba(23,72,58,.09);
+
+  transition:
+    border-color .18s ease,
+    box-shadow .18s ease,
+    transform .18s ease;
+}
+
+.cake-card-select:hover{
+  transform:scale(1.04);
+  border-color:#b77a20;
+}
+
+.cake-card-select::before{
+  content:"";
+
+  width:11px;
+  height:11px;
+
+  border-radius:50%;
+  background:#c89235;
+
+  transform:scale(0);
+  transition:transform .15s ease;
+}
+
+.cake-card-select.is-selected{
+  border-color:#b77a20;
+
+  box-shadow:
+    0 0 0 5px rgba(191,139,47,.11),
+    0 4px 10px rgba(45,35,20,.10);
+}
+
+.cake-card-select.is-selected::before{
+  transform:scale(1);
+}
+
+/* Keep title text clear of the selector circle */
+.cake-card-body h5{
+  padding-right:72px !important;
+}
+
+/* On smaller screens keep the circle comfortably inside the card */
+@media(max-width:575.98px){
+  .cake-card-select{
+    top:14px;
+    right:14px;
+    width:28px;
+    height:28px;
+    min-width:28px;
+  }
+
+  .cake-card-body h5{
+    padding-right:62px !important;
+  }
+}
+</style>
+
+</head>
+
+<body>
+
+<main class="container py-5">
+
+  <!-- HEADER -->
+  <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
+
+    <div>
+
+      <span class="eyebrow">
+        Customer Portal
+      </span>
+
+      <h1 class="h2 mt-1 mb-1" data-service-title>
+        Customize Cake &amp; Desserts
+      </h1>
+
+      <p class="small text-ink-soft mb-0" data-service-context>
+        Explore cake designs selected for your event.
+      </p>
+
+    </div>
+
+
+    <div class="d-flex gap-2">
+
+      <a
+        class="btn btn-outline-forest btn-sm"
+        data-service-back
+        href="/prototype/customer/services.html">
+        Back to Services
+      </a>
+
+      <a
+        class="btn btn-gold btn-sm"
+        data-service-continue
+        href="/prototype/customer/review.html">
+        Continue
+      </a>
+
+    </div>
+
+  </div>
+
+
+  <div class="row g-4">
+
+    <!-- LEFT CONTENT -->
+    <div class="col-lg-8">
+
+
+      <!-- EVENT RECOMMENDATION -->
+      <div class="event-recommendation mb-4">
+
+        <div class="d-flex align-items-start gap-3">
+
+          <i class="bi bi-stars fs-4"></i>
+
+          <div>
+
+            <strong id="recommendationTitle">
+              Recommended for your event
+            </strong>
+
+            <p
+              class="small text-ink-soft mb-0 mt-1"
+              id="recommendationText">
+
+              We will show cake designs that best match your event type and guest count.
+
+            </p>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- FILTER -->
+      <div class="panel mb-4">
+
+        <div class="panel__head">
+
+          <div>
+            <h5 class="mb-1">
+              Explore Cake Designs
+            </h5>
+
+            <p class="small text-ink-soft mb-0">
+              Browse recommended styles or explore other designs.
+            </p>
+          </div>
+
+        </div>
+
+
+        <div class="panel__body">
+
+          <div
+            class="cake-toolbar"
+            id="cakeFilters">
+
+            <button
+              class="cake-filter-btn active"
+              type="button"
+              data-cake-filter="recommended">
+              Recommended
+            </button>
+
+            <button
+              class="cake-filter-btn"
+              type="button"
+              data-cake-filter="wedding">
+              Wedding
+            </button>
+
+            <button
+              class="cake-filter-btn"
+              type="button"
+              data-cake-filter="birthday">
+              Birthday
+            </button>
+
+
+             
+        
+
+            <button
+              class="cake-filter-btn"
+              type="button"
+              data-cake-filter="floral">
+              Floral
+            </button>
+
+
+            <button
+              class="cake-filter-btn"
+              type="button"
+              data-cake-filter="traditional">
+              Traditional
+            </button>
+
+        
+
+            <button
+              class="cake-filter-btn"
+              type="button"
+              data-cake-filter="all">
+              All Designs
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- CAKE GALLERY -->
+      <div class="panel mb-4">
+
+        <div class="panel__head">
+
+          <div>
+
+            <h5 class="mb-1" id="galleryTitle">
+              Recommended Cakes
+            </h5>
+
+            <p class="small text-ink-soft mb-0">
+              Click Explore Cake to see a larger image and full details.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div class="panel__body">
+
+          <!-- hidden actual selected cake input -->
+          <div id="cakeChoiceInputs"></div>
+
+          <div
+            class="row g-4"
+            id="cakeGallery">
+
+            <!-- cake cards generated by JS -->
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- SELECTED CAKE -->
+      <div
+        class="selected-cake-box mb-4 d-none"
+        id="selectedCakeBox">
+
+        <div class="d-flex flex-column flex-md-row gap-3">
+
+          <img
+            id="selectedCakeImage"
+            src=""
+            alt="Selected cake">
+
+          <div class="flex-grow-1">
+
+            <span class="eyebrow">
+              Your Selected Cake
+            </span>
+
+            <h4
+              class="mt-1 mb-1"
+              id="selectedCakeName">
+            </h4>
+
+            <p
+              class="small text-ink-soft mb-2"
+              id="selectedCakeDescription">
+            </p>
+
+            <div
+              class="cake-meta mb-3"
+              id="selectedCakeMeta">
+            </div>
+
+            <div
+              class="cake-price"
+              id="selectedCakePrice">
+            </div>
+
+            <button
+              class="btn btn-outline-forest btn-sm mt-3"
+              type="button"
+              id="changeCakeBtn">
+              Change Cake
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- FLAVOR -->
+      <div
+        class="panel mb-4"
+        id="flavorPanel">
+
+        <div class="panel__head">
+
+          <div>
+            <h5 class="mb-1">
+              Choose Your Flavor
+            </h5>
+
+            <p class="small text-ink-soft mb-0">
+              Select one flavor for your selected cake.
+            </p>
+          </div>
+
+        </div>
+
+
+        <div class="panel__body">
+
+          <div class="row g-3">
+
+            <div class="col-md-4">
+
+              <div class="option-card">
+
+                <div class="form-check">
+
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="cakeFlavor"
+                    data-price-input
+                    data-price="23000"
+                    data-label="Vanilla">
+
+                  <label class="form-check-label">
+
+                    <strong>
+                      Vanilla
+                    </strong>
+
+                    <div class="small text-ink-soft">
+                      Classic vanilla sponge with cream filling.
+                    </div>
+
+                    <div class="option-price mt-2">
+                      23,000 MMK
+                    </div>
+
+                  </label>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <div class="col-md-4">
+
+              <div class="option-card">
+
+                <div class="form-check">
+
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="cakeFlavor"
+                    data-price-input
+                    data-price="25000"
+                    data-label="Chocolate">
+
+                  <label class="form-check-label">
+
+                    <strong>
+                      Chocolate
+                    </strong>
+
+                    <div class="small text-ink-soft">
+                      Rich chocolate sponge with chocolate filling.
+                    </div>
+
+                    <div class="option-price mt-2">
+                      25,000 MMK
+                    </div>
+
+                  </label>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <div class="col-md-4">
+
+              <div class="option-card">
+
+                <div class="form-check">
+
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="cakeFlavor"
+                    data-price-input
+                    data-price="30000"
+                    data-label="Red Velvet">
+
+                  <label class="form-check-label">
+
+                    <strong>
+                      Red Velvet
+                    </strong>
+
+                    <div class="small text-ink-soft">
+                      Red velvet sponge with cream cheese-style filling.
+                    </div>
+
+                    <div class="option-price mt-2">
+                      30,000 MMK
+                    </div>
+
+                  </label>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <div class="col-md-4">
+
+              <div class="option-card">
+
+                <div class="form-check">
+
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="cakeFlavor"
+                    data-price-input
+                    data-price="30000"
+                    data-label="Strawberry">
+
+                  <label class="form-check-label">
+
+                    <strong>
+                      Strawberry
+                    </strong>
+
+                    <div class="small text-ink-soft">
+                      Strawberry sponge with light cream filling.
+                    </div>
+
+                    <div class="option-price mt-2">
+                      30,000 MMK
+                    </div>
+
+                  </label>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <div class="col-md-4">
+
+              <div class="option-card">
+
+                <div class="form-check">
+
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="cakeFlavor"
+                    data-price-input
+                    data-price="40000"
+                    data-label="Coffee">
+
+                  <label class="form-check-label">
+
+                    <strong>
+                      Coffee
+                    </strong>
+
+                    <div class="small text-ink-soft">
+                      Coffee sponge with smooth coffee cream.
+                    </div>
+
+                    <div class="option-price mt-2">
+                      40,000 MMK
+                    </div>
+
+                  </label>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <div class="col-md-4">
+
+              <div class="option-card">
+
+                <div class="form-check">
+
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="cakeFlavor"
+                    data-price-input
+                    data-price="50000"
+                    data-label="Matcha">
+
+                  <label class="form-check-label">
+
+                    <strong>
+                      Matcha
+                    </strong>
+
+                    <div class="small text-ink-soft">
+                      Matcha sponge with premium cream filling.
+                    </div>
+
+                    <div class="option-price mt-2">
+                      50,000 MMK
+                    </div>
+
+                  </label>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- CHOOSE YOUR FINISH -->
+      <div class="panel mb-4" id="finishPanel">
+
+        <div class="panel__head">
+
+          <div>
+            <h5 class="mb-1">
+              Choose Your Finish
+            </h5>
+
+            <p class="small text-ink-soft mb-0">
+              Select one cake finish.
+            </p>
+          </div>
+
+        </div>
+
+
+        <div class="panel__body">
+
+          <div class="row g-3">
+
+            <div class="col-md-6">
+
+              <div class="option-card">
+
+                <div class="form-check">
+
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="cakeFinish"
+                    data-price-input
+                    data-price="70000"
+                    data-label="Buttercream Finish">
+
+                  <label class="form-check-label">
+
+                    <strong>
+                      Buttercream Finish
+                    </strong>
+
+                    <div class="small text-ink-soft">
+                      Silky buttercream coating with a soft, elegant finish.
+                    </div>
+
+                    <div class="option-price mt-2">
+                      70,000 MMK
+                    </div>
+
+                  </label>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <div class="col-md-6">
+
+              <div class="option-card">
+
+                <div class="form-check">
+
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="cakeFinish"
+                    data-price-input
+                    data-price="100000"
+                    data-label="Fondant Finish">
+
+                  <label class="form-check-label">
+
+                    <strong>
+                      Fondant Finish
+                    </strong>
+
+                    <div class="small text-ink-soft">
+                      Smooth premium fondant finish for a polished, structured look.
+                    </div>
+
+                    <div class="option-price mt-2">
+                      100,000 MMK
+                    </div>
+
+                  </label>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- DECORATIVE ADD-ONS -->
+      <div class="panel mb-4" id="decorativeAddonsPanel">
+
+        <div class="panel__head">
+
+          <div>
+            <h5 class="mb-1">
+              Decorative Add-ons
+            </h5>
+
+            <p class="small text-ink-soft mb-0">
+              Optional decorations. You can select one or more.
+            </p>
+          </div>
+
+        </div>
+
+
+        <div class="panel__body">
+
+          <div class="row g-3">
+
+            <div class="col-md-6">
+
+              <div class="option-card">
+
+                <div class="form-check">
+
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    data-price-input
+                    data-price="50000"
+                    data-label="Fresh Flower Decoration">
+
+                  <label class="form-check-label">
+
+                    <strong>
+                      Fresh Flower Decoration
+                    </strong>
+
+                    <div class="small text-ink-soft">
+                      Additional fresh flowers arranged to match your event.
+                    </div>
+
+                    <div class="option-price mt-2">
+                      50,000 MMK
+                    </div>
+
+                  </label>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <div class="col-md-6">
+
+              <div class="option-card">
+
+                <div class="form-check">
+
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    data-price-input
+                    data-price="80000"
+                    data-label="Metallic Gold Details">
+
+                  <label class="form-check-label">
+
+                    <strong>
+                      Metallic Gold Details
+                    </strong>
+
+                    <div class="small text-ink-soft">
+                      Elegant gold decorative accents for a more luxurious look.
+                    </div>
+
+                    <div class="option-price mt-2">
+                      80,000 MMK
+                    </div>
+
+                  </label>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- DESSERT ADD ONS -->
+      <div class="panel">
+
+        <div class="panel__head">
+
+          <div>
+
+            <h5 class="mb-1">
+              Add Something Sweet
+            </h5>
+
+            <p class="small text-ink-soft mb-0">
+              Add optional desserts for your guests.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div class="panel__body">
+
+          <div class="row g-3">
+
+            <div class="col-md-4">
+
+              <div class="option-card">
+
+                <div class="form-check">
+
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    data-price-input
+                    data-price="120000"
+                    data-label="Cupcake Set">
+
+                  <label class="form-check-label">
+
+                    <strong>
+                      Cupcake Set
+                    </strong>
+
+                    <div class="small text-ink-soft">
+                      Assorted decorated cupcakes.
+                    </div>
+
+                    <div class="option-price mt-2">
+                      120,000 MMK
+                    </div>
+
+                  </label>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <div class="col-md-4">
+
+              <div class="option-card">
+
+                <div class="form-check">
+
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    data-price-input
+                    data-price="250000"
+                    data-label="Dessert Table">
+
+                  <label class="form-check-label">
+
+                    <strong>
+                      Dessert Table
+                    </strong>
+
+                    <div class="small text-ink-soft">
+                      Styled dessert display with assorted sweets.
+                    </div>
+
+                    <div class="option-price mt-2">
+                      250,000 MMK
+                    </div>
+
+                  </label>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <div class="col-md-4">
+
+              <div class="option-card">
+
+                <div class="form-check">
+
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    data-price-input
+                    data-price="150000"
+                    data-label="Macaron Set">
+
+                  <label class="form-check-label">
+
+                    <strong>
+                      Macaron Set
+                    </strong>
+
+                    <div class="small text-ink-soft">
+                      Assorted macarons for guest service.
+                    </div>
+
+                    <div class="option-price mt-2">
+                      150,000 MMK
+                    </div>
+
+                  </label>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- RIGHT SUMMARY -->
+    <div class="col-lg-4">
+
+      <div class="panel workflow-summary">
+
+        <div class="panel__head">
+
+          <h5 class="mb-0">
+            Your Cake
+          </h5>
+
+        </div>
+
+
+        <div class="panel__body">
+
+          <div
+            class="mb-3 d-none"
+            id="summaryCakeVisual">
+
+            <img
+              id="summaryCakeImage"
+              class="summary-cake-image"
+              src=""
+              alt="Selected cake">
+
+            <h5
+              class="mt-3 mb-1"
+              id="summaryCakeName">
+            </h5>
+
+            <div
+              class="small text-ink-soft"
+              id="summaryCakeMeta">
+            </div>
+
+          </div>
+
+
+          <div
+            class="bb-price mb-1"
+            data-service-estimate>
+            0 MMK
+          </div>
+
+          <p class="small text-ink-soft mb-3">
+            Estimated cake &amp; dessert total
+          </p>
+
+
+          <p class="cake-summary-empty" id="cakeSummaryEmpty">
+            Choose a cake to begin.
+          </p>
+
+          <ul
+            class="summary-list"
+            data-service-summary>
+
+            <li class="text-ink-soft">
+              Choose a cake to begin.
+            </li>
+
+          </ul>
+
+
+          <hr>
+
+
+          <p class="small text-ink-soft">
+            Final pricing may change depending on design complexity,
+            ingredients and setup requirements.
+          </p>
+
+
+          <div class="d-grid gap-2">
+
+            <button
+              class="btn btn-gold"
+              type="button"
+              data-service-save>
+
+              Save Cake &amp; Desserts
+
+            </button>
+
+            <a
+              class="btn btn-outline-forest"
+              data-service-continue
+              href="/prototype/customer/review.html">
+
+              Continue to Review
+
+            </a>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</main>
+
+
+<!-- EXPLORE CAKE MODAL -->
+<div
+  class="modal fade"
+  id="cakeDetailModal"
+  tabindex="-1"
+  aria-hidden="true">
+
+  <div class="modal-dialog modal-xl modal-dialog-centered">
+
+    <div class="modal-content border-0 rounded-4">
+
+      <div class="modal-header border-0">
+
+        <div>
+
+          <span class="eyebrow">
+            Cake Design
+          </span>
+
+          <h3
+            class="modal-title mt-1"
+            id="modalCakeName">
+          </h3>
+
+        </div>
+
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close">
+        </button>
+
+      </div>
+
+
+      <div class="modal-body pt-0">
+
+        <div class="row g-4 align-items-center">
+
+          <div class="col-lg-6">
+
+            <img
+              id="modalCakeImage"
+              class="modal-cake-image"
+              src=""
+              alt="Cake design">
+
+          </div>
+
+
+          <div class="col-lg-6">
+
+            <div
+              class="mb-3"
+              id="modalRecommendedBadge">
+            </div>
+
+            <p
+              class="text-ink-soft"
+              id="modalCakeDescription">
+            </p>
+
+
+            <div class="row g-3 my-2">
+
+              <div class="col-6">
+
+                <div class="modal-cake-detail">
+
+                  <small class="text-ink-soft">
+                    Tiers
+                  </small>
+
+                  <div
+                    class="fw-semibold"
+                    id="modalCakeTiers">
+                  </div>
+
+                </div>
+
+              </div>
+
+
+              <div class="col-6">
+
+                <div class="modal-cake-detail">
+
+                  <small class="text-ink-soft">
+                    Servings
+                  </small>
+
+                  <div
+                    class="fw-semibold"
+                    id="modalCakeServings">
+                  </div>
+
+                </div>
+
+              </div>
+
+
+              <div class="col-12">
+
+                <div class="modal-cake-detail">
+
+                  <small class="text-ink-soft">
+                    Style
+                  </small>
+
+                  <div
+                    class="fw-semibold"
+                    id="modalCakeStyle">
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <div class="mt-4">
+
+              <div class="small text-ink-soft">
+                Base Price
+              </div>
+
+              <div
+                class="cake-price fs-4"
+                id="modalCakePrice">
+              </div>
+
+            </div>
+
+
+            <div class="d-flex gap-2 mt-4">
+
+              <button
+                class="btn btn-outline-forest"
+                type="button"
+                data-bs-dismiss="modal">
+                Back
+              </button>
+
+              <button
+                class="btn btn-gold"
+                type="button"
+                id="chooseCakeBtn">
+                Choose This Cake
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script src="/prototype/assets/js/main.js"></script>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+  /* =============================================
+     SHARED SERVICE INITIALIZATION
+  ============================================= */
+
+  if (typeof bbInitSimpleServicePage === 'function') {
+
+    bbInitSimpleServicePage({
+      serviceId: 'cake',
+      title: 'Customize Cake & Desserts',
+      shortTitle: 'Cake & Desserts'
+    });
+
+  }
+
+
+  /* =============================================
+     CAKE DATA
+  ============================================= */
+
+  const cakes = [
+
+    {
+      id: 'classic-floral',
+      name: 'Classic Floral Wedding Cake',
+      image: '/prototype/assets/img/classic-floral.jpg',
+      eventTypes: ['wedding', 'engagement'],
+      tags: ['floral', 'wedding', 'elegant'],
+      tiers: '3 tiers',
+      servings: '100–150 guests',
+      price: 600000,
+      description:
+        'An elegant three-tier cake with soft floral styling, ideal for weddings and formal engagement celebrations.'
+    },
+
+    {
+      id: 'romantic-garden',
+      name: 'Romantic Garden Cake',
+      image: '/prototype/assets/img/garden.jpg',
+      eventTypes: ['wedding', 'engagement'],
+      tags: ['floral', 'wedding', 'garden'],
+      tiers: '3 tiers',
+      servings: '100–150 guests',
+      price: 680000,
+      description:
+        'A romantic floral cake inspired by outdoor and garden celebrations, with soft colors and delicate flower details.'
+    },
+
+    {
+      id: 'gold-luxury',
+      name: 'Crimson Rose Cake',
+      image: '/prototype/assets/img/rose.jpg',
+      eventTypes: ['wedding', 'engagement', 'corporate'],
+      tags: ['luxury', 'wedding', 'elegant','rose'],
+      tiers: '3 tiers',
+      servings: '120–160 guests',
+      price: 800000,
+      description:
+        'A premium cake with elegant gold detailing, designed for luxury weddings and formal events.'
+    },
+
+    {
+      id: 'minimal-elegant',
+      name: 'Royal Gold Pearl Cake',
+      image: '/prototype/assets/img/birthday.jpg',
+      eventTypes: ['wedding', 'birthday', 'engagement', 'corporate'],
+      tags: ['gold', 'elegant','luxury','champagne'],
+      tiers: '2 tiers',
+      servings: '60–90 guests',
+      price: 520000,
+      description:
+        'A clean modern design with subtle decoration for customers who prefer a simple, elegant style.'
+    },
+
+    {
+      id: 'traditional',
+      name: 'Traditional Myanmar Celebration Cake',
+      image: '/prototype/assets/img/traditional.jpg',
+      eventTypes: ['wedding', 'engagement'],
+      tags: ['traditional', 'wedding'],
+      tiers: '3 tiers',
+      servings: '100–150 guests',
+      price: 750000,
+      description:
+        'A traditional-inspired cake using rich colors and decorative details suited to Myanmar wedding celebrations.'
+    },
+
+    {
+      id: 'one-tier-floral',
+      name: 'One-Tier Floral Celebration Cake',
+      image: '/prototype/assets/img/floral.jpg',
+      eventTypes: ['birthday', 'engagement', 'anniversary'],
+      tags: ['one-tier', 'floral', 'elegant'],
+      tiers: '1 tier',
+      servings: '20–35 guests',
+      price: 180000,
+      description:
+        'A refined one-tier celebration cake with delicate floral decoration for smaller birthdays, engagements and anniversaries.'
+    },
+
+    {
+      id: 'one-tier-heart',
+      name: 'One-Tier Heart-Shaped Cake',
+      image: '/prototype/assets/img/1-tier-heart.jpg',
+      eventTypes: ['birthday', 'engagement', 'corporate'],
+      tags: ['one-tier', 'heart', 'elegant'],
+      tiers: '1 tier',
+      servings: '20–30 guests',
+      price: 160000,
+      description:
+        'A clean one-tier cake with modern minimal decoration, ideal for intimate celebrations and smaller formal events.'
+    },
+
+    {
+      id: 'one-tier-luxury',
+      name: 'One-Tier Gold Elegance Cake',
+      image: '/prototype/assets/img/golden.jpg',
+      eventTypes: ['birthday', 'engagement', 'anniversary', 'corporate'],
+      tags: ['one-tier', 'luxury', 'elegant'],
+      tiers: '1 tier',
+      servings: '25–40 guests',
+      price: 220000,
+      description:
+        'A premium one-tier cake with elegant gold accents for stylish birthdays, engagements and formal celebrations.'
+    },
+
+    {
+      id: 'birthday-pastel',
+      name: 'Pastel Birthday Cake',
+      image: '/prototype/assets/img/pastel.jpg',
+      eventTypes: ['birthday'],
+      tags: ['birthday', 'one-tier', 'minimal'],
+      tiers: '1 tier',
+      servings: '25–40 guests',
+      price: 200000,
+      description:
+        'A soft pastel one-tier cake with playful minimal styling for birthdays and intimate celebrations.'
+    },
+
+    {
+      id: 'birthday-chocolate',
+      name: 'Chocolate Drip Birthday Cake',
+      image: '/prototype/assets/img/choco.jpg',
+      eventTypes: ['birthday'],
+      tags: ['birthday', 'one-tier'],
+      tiers: '1 tier',
+      servings: '25–40 guests',
+      price: 220000,
+      description:
+        'A rich chocolate drip cake designed for birthday celebrations and casual parties.'
+    }
+
+  ];
+
+
+  /* =============================================
+     ELEMENTS
+  ============================================= */
+
+  const eventContext =
+    typeof bbGetEventContext === 'function'
+      ? bbGetEventContext()
+      : {
+          eventType: 'Wedding',
+          guests: 150
+        };
+
+  const eventType =
+    String(
+      eventContext.eventType || 'Wedding'
+    ).toLowerCase();
+
+  const guests =
+    Number(
+      eventContext.guests || 150
+    );
+
+
+  const gallery =
+    document.getElementById('cakeGallery');
+
+  const choiceInputs =
+    document.getElementById('cakeChoiceInputs');
+
+  const filterButtons =
+    [...document.querySelectorAll('[data-cake-filter]')];
+
+  const galleryTitle =
+    document.getElementById('galleryTitle');
+
+  const recommendationTitle =
+    document.getElementById('recommendationTitle');
+
+  const recommendationText =
+    document.getElementById('recommendationText');
+
+  const selectedCakeBox =
+    document.getElementById('selectedCakeBox');
+
+  const selectedCakeImage =
+    document.getElementById('selectedCakeImage');
+
+  const selectedCakeName =
+    document.getElementById('selectedCakeName');
+
+  const selectedCakeDescription =
+    document.getElementById('selectedCakeDescription');
+
+  const selectedCakeMeta =
+    document.getElementById('selectedCakeMeta');
+
+  const selectedCakePrice =
+    document.getElementById('selectedCakePrice');
+
+  const summaryCakeVisual =
+    document.getElementById('summaryCakeVisual');
+
+  const summaryCakeImage =
+    document.getElementById('summaryCakeImage');
+
+  const summaryCakeName =
+    document.getElementById('summaryCakeName');
+
+  const summaryCakeMeta =
+    document.getElementById('summaryCakeMeta');
+
+  const changeCakeBtn =
+    document.getElementById('changeCakeBtn');
+
+  const saveBtn =
+    document.querySelector('[data-service-save]');
+
+  const estimateEl =
+    document.querySelector('[data-service-estimate]');
+
+  const defaultSaveText =
+    'Save Cake & Desserts';
+
+
+  /* MODAL */
+
+  const modalElement =
+    document.getElementById('cakeDetailModal');
+
+  const cakeModal =
+    window.bootstrap && typeof window.bootstrap.Modal === 'function' && modalElement
+      ? new window.bootstrap.Modal(modalElement)
+      : {
+          show() {
+            modalElement.classList.add('show');
+            modalElement.style.display = 'block';
+            modalElement.setAttribute('aria-modal', 'true');
+            modalElement.removeAttribute('aria-hidden');
+            document.body.classList.add('modal-open');
+            if (!document.querySelector('[data-bb-fallback-backdrop]')) {
+              const backdrop = document.createElement('div');
+              backdrop.className = 'modal-backdrop fade show';
+              backdrop.dataset.bbFallbackBackdrop = 'true';
+              document.body.appendChild(backdrop);
+            }
+          },
+          hide() {
+            modalElement.classList.remove('show');
+            modalElement.style.display = 'none';
+            modalElement.setAttribute('aria-hidden', 'true');
+            document.body.classList.remove('modal-open');
+            document
+              .querySelectorAll('[data-bb-fallback-backdrop]')
+              .forEach((node) => node.remove());
+          }
+        };
+
+  const modalCakeName =
+    document.getElementById('modalCakeName');
+
+  const modalCakeImage =
+    document.getElementById('modalCakeImage');
+
+  const modalCakeDescription =
+    document.getElementById('modalCakeDescription');
+
+  const modalCakeTiers =
+    document.getElementById('modalCakeTiers');
+
+  const modalCakeServings =
+    document.getElementById('modalCakeServings');
+
+  const modalCakeStyle =
+    document.getElementById('modalCakeStyle');
+
+  const modalCakePrice =
+    document.getElementById('modalCakePrice');
+
+  const modalRecommendedBadge =
+    document.getElementById('modalRecommendedBadge');
+
+  const chooseCakeBtn =
+    document.getElementById('chooseCakeBtn');
+
+
+  let activeFilter = 'recommended';
+
+  let exploredCake = null;
+
+  let selectedCake = null;
+  const backendServiceId = 6;
+  const backendServiceName = 'Cake & Desserts';
+  const backendServiceUrl = 'http://localhost:8081/api/services/6';
+  const savedServiceData =
+    typeof bbGetServiceData === 'function'
+      ? bbGetServiceData()
+      : {};
+  const savedCakeState = savedServiceData.cake || null;
+  const defaultRecommendationText =
+    recommendationText?.textContent?.trim() ||
+    'Explore cake designs selected for your event.';
+  let backendServiceAvailable = true;
+  let cakeIsSaved = Boolean(
+    savedCakeState?.selectedCake?.id ||
+    savedCakeState?.selectedCakeId ||
+    savedCakeState?.cakeId
+  );
+
+  function setRecommendationText(message) {
+    if (recommendationText) {
+      recommendationText.textContent = message;
+    }
+  }
+
+  function syncSaveButtonState() {
+    if (!saveBtn) return;
+
+    if (!backendServiceAvailable) {
+      saveBtn.disabled = true;
+      return;
+    }
+
+    saveBtn.textContent = cakeIsSaved
+      ? '✓ Saved'
+      : defaultSaveText;
+    saveBtn.disabled = cakeIsSaved;
+  }
+
+  function syncCakeActionState() {
+    const disabled = !backendServiceAvailable;
+    const actionButtons = [
+      chooseCakeBtn,
+      changeCakeBtn
+    ];
+
+    actionButtons.forEach((button) => {
+      if (!button) return;
+      button.disabled = disabled;
+      button.setAttribute(
+        'aria-disabled',
+        disabled ? 'true' : 'false'
+      );
+    });
+
+    gallery
+      ?.querySelectorAll('[data-explore-cake], [data-select-cake]')
+      .forEach((button) => {
+        button.disabled = disabled;
+        button.setAttribute(
+          'aria-disabled',
+          disabled ? 'true' : 'false'
+        );
+      });
+
+    syncSaveButtonState();
+  }
+
+  function applySelectedCakeToUi(cake) {
+    if (!cake) return;
+
+    selectedCakeImage.src = cake.image;
+    selectedCakeImage.alt = cake.name;
+    selectedCakeName.textContent = cake.name;
+    selectedCakeDescription.textContent = cake.description;
+    selectedCakePrice.textContent = `Base price: ${formatMMK(cake.price)}`;
+    selectedCakeMeta.innerHTML = `
+
+      <span>
+        ${cake.tiers}
+      </span>
+
+      <span>
+        ${cake.servings}
+      </span>
+
+      ${cake.tags.map(
+        tag =>
+          `<span>${tag}</span>`
+      ).join('')}
+
+    `;
+
+    selectedCakeBox.classList.remove('d-none');
+
+    summaryCakeVisual.classList.remove('d-none');
+    summaryCakeImage.src = cake.image;
+    summaryCakeImage.alt = cake.name;
+    summaryCakeName.textContent = cake.name;
+    summaryCakeMeta.textContent = `${cake.tiers} Â· ${cake.servings}`;
+  }
+
+  function restoreSavedCakeSelection() {
+    const savedCakeId =
+      savedCakeState?.selectedCake?.id ||
+      savedCakeState?.selectedCakeId ||
+      savedCakeState?.cakeId;
+
+    if (!savedCakeId) return false;
+
+    const restoredCake =
+      cakes.find(
+        (item) => item.id === savedCakeId
+      );
+
+    if (!restoredCake) return false;
+
+    selectedCake = restoredCake;
+
+    const input =
+      document.getElementById(
+        `cake-choice-${restoredCake.id}`
+      );
+
+    if (input) {
+      input.checked = true;
+    }
+
+    applySelectedCakeToUi(restoredCake);
+    updateEstimatedPrice();
+    cakeIsSaved = true;
+    syncSaveButtonState();
+    return true;
+  }
+
+  function persistCakeSelection() {
+    if (!backendServiceAvailable) {
+      setRecommendationText(
+        'Cake & Desserts is currently unavailable.'
+      );
+      return false;
+    }
+
+    if (!selectedCake) {
+      setRecommendationText(
+        'Please choose a cake before saving.'
+      );
+      return false;
+    }
+
+    const result = updateEstimatedPrice();
+    const currentSelectedServices =
+      typeof bbGetSelectedServices === 'function'
+        ? bbGetSelectedServices()
+        : [];
+
+    const payload = {
+      serviceId: 'cake',
+      backendServiceId,
+      title: backendServiceName,
+      estimatedTotal: result.total,
+      selectedCake: {
+        id: selectedCake.id,
+        name: selectedCake.name,
+        image: selectedCake.image,
+        tiers: selectedCake.tiers,
+        servings: selectedCake.servings,
+        price: selectedCake.price
+      },
+      options: result.items
+    };
+
+    if (typeof bbSetServiceData === 'function') {
+      bbSetServiceData('cake', payload);
+    }
+
+    const withoutCake = currentSelectedServices.filter(
+      (item) => item.id !== 'cake'
+    );
+
+    withoutCake.push({
+      id: 'cake',
+      title: backendServiceName,
+      estimatedTotal: result.total
+    });
+
+    if (typeof bbSetSelectedServices === 'function') {
+      bbSetSelectedServices(withoutCake);
+    }
+
+    cakeIsSaved = true;
+    setRecommendationText(defaultRecommendationText);
+    syncSaveButtonState();
+    return true;
+  }
+
+  /* =============================================
+     MONEY
+  ============================================= */
+
+  function formatMMK(value) {
+
+    return Number(value || 0)
+      .toLocaleString('en-US') +
+      ' MMK';
+
+  }
+
+
+  /* =============================================
+     UPDATE ESTIMATED PRICE
+  ============================================= */
+
+  function updateEstimatedPrice() {
+
+    let total = 0;
+    const items = [];
+
+    document
+      .querySelectorAll('[data-price-input]')
+      .forEach((input) => {
+
+        if (
+          (input.type === 'radio' || input.type === 'checkbox') &&
+          input.checked
+        ) {
+          total += Number(input.dataset.price || 0);
+          items.push(
+            input.dataset.label ||
+            input.value ||
+            input.name
+          );
+        }
+
+      });
+
+    if (estimateEl) {
+      estimateEl.textContent = formatMMK(total);
+    }
+
+    return {
+      total,
+      items
+    };
+
+  }
+
+
+  /* =============================================
+     EVENT RECOMMENDATION
+  ============================================= */
+
+  const displayEvent =
+    eventContext.eventType ||
+    'Wedding';
+
+  recommendationTitle.textContent =
+    `Recommended for your ${displayEvent}`;
+
+  recommendationText.textContent =
+    `Based on your ${displayEvent.toLowerCase()} and approximately ${guests.toLocaleString()} guests, we prioritize cake styles and sizes that better fit your event. Smaller 1-tier cakes remain available to explore for intimate celebrations.`;
+
+
+  /* =============================================
+     RECOMMENDED?
+  ============================================= */
+
+  function isRecommended(cake) {
+
+    const matchesEvent =
+      cake.eventTypes.includes(eventType);
+
+    if (!matchesEvent) {
+      return false;
+    }
+
+    if (
+      cake.tags.includes('one-tier') &&
+      guests > 50
+    ) {
+      return false;
+    }
+
+    return true;
+
+  }
+
+
+  /* =============================================
+     FILTERING
+  ============================================= */
+
+  function cakeMatchesFilter(
+    cake,
+    filter
+  ) {
+
+    if (filter === 'all') {
+      return true;
+    }
+
+    if (filter === 'recommended') {
+      return isRecommended(cake);
+    }
+
+    if (
+      cake.eventTypes.includes(filter)
+    ) {
+      return true;
+    }
+
+    if (
+      cake.tags.includes(filter)
+    ) {
+      return true;
+    }
+
+    return false;
+
+  }
+
+
+  /* =============================================
+     CREATE HIDDEN PRICE INPUTS
+  ============================================= */
+
+  function buildCakeInputs() {
+
+    choiceInputs.innerHTML =
+      cakes.map((cake) => `
+
+        <input
+          class="hidden-cake-choice"
+          type="radio"
+          name="selectedCake"
+          id="cake-choice-${cake.id}"
+          data-price-input
+          data-price="${cake.price}"
+          data-label="${cake.name}"
+          value="${cake.id}">
+
+      `).join('');
+
+  }
+
+
+  /* =============================================
+     RENDER CAKE GALLERY
+  ============================================= */
+
+  function renderGallery() {
+
+    const filtered =
+      cakes.filter(
+        cake =>
+          cakeMatchesFilter(
+            cake,
+            activeFilter
+          )
+      );
+
+
+    galleryTitle.textContent =
+      activeFilter === 'recommended'
+        ? `Recommended for your ${displayEvent}`
+        : activeFilter === 'all'
+          ? 'All Cake Designs'
+          : `${activeFilter.charAt(0).toUpperCase() + activeFilter.slice(1)} Cake Designs`;
+
+
+    gallery.innerHTML =
+      filtered.map((cake) => {
+
+        const recommended =
+          isRecommended(cake);
+
+        const selected =
+          selectedCake &&
+          selectedCake.id === cake.id;
+
+        return `
+
+          <div class="col-md-6">
+
+            <article
+              class="cake-card ${selected ? 'selected' : ''}"
+              data-cake-card="${cake.id}">
+
+              <button
+                type="button"
+                class="cake-card-select ${selected ? 'is-selected' : ''}"
+                data-select-cake="${cake.id}"
+                aria-label="Choose ${cake.name}">
+              </button>
+
+              <div class="cake-card-image">
+
+                <img
+                  src="${cake.image}"
+                  alt="${cake.name}"
+                  loading="lazy">
+
+                ${
+                  recommended
+                    ? `
+                      <span class="cake-badge">
+                        <i class="bi bi-stars me-1"></i>
+                        Recommended
+                      </span>
+                    `
+                    : ''
+                }
+
+              </div>
+
+
+              <div class="cake-card-body">
+
+                <h5 class="mb-2">
+                  ${cake.name}
+                </h5>
+
+
+                <div class="cake-meta mb-3">
+
+                  <span>
+                    ${cake.tiers}
+                  </span>
+
+                  <span>
+                    ${cake.servings}
+                  </span>
+
+                </div>
+
+
+                <div class="cake-price">
+                  ${formatMMK(cake.price)}
+                </div>
+
+
+                <button
+                  type="button"
+                  class="btn btn-outline-forest btn-sm w-100"
+                  data-explore-cake="${cake.id}">
+
+                  Explore Cake
+
+                  <i class="bi bi-arrow-right ms-1"></i>
+
+                </button>
+
+              </div>
+
+            </article>
+
+          </div>
+
+        `;
+
+      }).join('');
+
+
+    gallery
+      .querySelectorAll(
+        '[data-explore-cake]'
+      )
+      .forEach((button) => {
+
+        button.addEventListener(
+          'click',
+          () => {
+
+            openCakeDetails(
+              button.dataset.exploreCake
+            );
+
+          }
+        );
+
+      });
+
+    gallery
+      .querySelectorAll(
+        '[data-select-cake]'
+      )
+      .forEach((button) => {
+
+        button.addEventListener(
+          'click',
+          () => {
+
+            const cake =
+              cakes.find(
+                item =>
+                  item.id === button.dataset.selectCake
+              );
+
+            if (!cake) return;
+
+            chooseCake(cake);
+
+          }
+        );
+
+      });
+
+    syncCakeActionState();
+
+  }
+
+
+  /* =============================================
+     OPEN DETAILS
+  ============================================= */
+
+  function openCakeDetails(cakeId) {
+
+    const cake =
+      cakes.find(
+        item =>
+          item.id === cakeId
+      );
+
+    if (!cake) return;
+
+
+    exploredCake = cake;
+
+
+    modalCakeName.textContent =
+      cake.name;
+
+    modalCakeImage.src =
+      cake.image;
+
+    modalCakeImage.alt =
+      cake.name;
+
+    modalCakeDescription.textContent =
+      cake.description;
+
+    modalCakeTiers.textContent =
+      cake.tiers;
+
+    modalCakeServings.textContent =
+      cake.servings;
+
+    modalCakeStyle.textContent =
+      cake.tags
+        .map(
+          tag =>
+            tag.charAt(0).toUpperCase() +
+            tag.slice(1)
+        )
+        .join(' • ');
+
+    modalCakePrice.textContent =
+      `From ${formatMMK(cake.price)}`;
+
+
+    if (isRecommended(cake)) {
+
+      modalRecommendedBadge.innerHTML = `
+
+        <span class="bb-badge gold">
+          <i class="bi bi-stars me-1"></i>
+          Recommended for your ${displayEvent}
+        </span>
+
+      `;
+
+    } else {
+
+      modalRecommendedBadge.innerHTML =
+        '';
+
+    }
+
+
+    cakeModal.show();
+
+  }
+
+
+  /* =============================================
+     CHOOSE CAKE
+  ============================================= */
+
+  function chooseCake(cake) {
+
+    if (!backendServiceAvailable) {
+      setRecommendationText(
+        'Cake & Desserts is currently unavailable.'
+      );
+      return;
+    }
+
+    selectedCake = cake;
+
+
+    const input =
+      document.getElementById(
+        `cake-choice-${cake.id}`
+      );
+
+    if (input) {
+
+      input.checked = true;
+
+    }
+
+    updateEstimatedPrice();
+
+
+    applySelectedCakeToUi(cake);
+    cakeIsSaved = false;
+    setRecommendationText(defaultRecommendationText);
+    syncSaveButtonState();
+
+
+    selectedCakeMeta.innerHTML = `
+
+      <span>
+        ${cake.tiers}
+      </span>
+
+      <span>
+        ${cake.servings}
+      </span>
+
+      ${cake.tags.map(
+        tag =>
+          `<span>${tag}</span>`
+      ).join('')}
+
+    `;
+
+
+    selectedCakeBox
+      .classList
+      .remove('d-none');
+
+
+    summaryCakeVisual
+      .classList
+      .remove('d-none');
+
+    summaryCakeImage.src =
+      cake.image;
+
+    summaryCakeImage.alt =
+      cake.name;
+
+    summaryCakeName.textContent =
+      cake.name;
+
+    summaryCakeMeta.textContent =
+      `${cake.tiers} · ${cake.servings}`;
+
+
+    renderGallery();
+
+
+    cakeModal.hide();
+
+
+    selectedCakeBox
+      .scrollIntoView({
+        behavior: 'smooth',
+        block: 'center'
+      });
+
+  }
+
+
+  chooseCakeBtn.addEventListener(
+    'click',
+    () => {
+
+      if (!exploredCake) return;
+
+      chooseCake(
+        exploredCake
+      );
+
+    }
+  );
+
+
+  /* =============================================
+     CHANGE CAKE
+  ============================================= */
+
+  changeCakeBtn.addEventListener(
+    'click',
+    () => {
+
+      document
+        .getElementById('cakeGallery')
+        .scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+
+    }
+  );
+
+
+  /* =============================================
+     FILTER BUTTONS
+  ============================================= */
+
+  filterButtons.forEach((button) => {
+
+    button.addEventListener(
+      'click',
+      () => {
+
+        filterButtons.forEach(
+          item =>
+            item.classList.remove(
+              'active'
+            )
+        );
+
+        button.classList.add(
+          'active'
+        );
+
+        activeFilter =
+          button.dataset.cakeFilter;
+
+        renderGallery();
+
+      }
+    );
+
+  });
+
+
+  /* =============================================
+     SAVE BUTTON
+  ============================================= */
+
+  if (false && saveBtn) {
+
+    saveBtn.addEventListener(
+      'click',
+      () => {
+
+        setTimeout(() => {
+
+          saveBtn.textContent =
+            '✓ Saved';
+
+          saveBtn.disabled =
+            true;
+
+        }, 1100);
+
+      }
+    );
+
+  }
+
+
+  if (saveBtn) {
+
+    saveBtn.addEventListener(
+      'click',
+      () => {
+
+        const saved = persistCakeSelection();
+        if (!saved) return;
+
+        setTimeout(() => {
+          cakeIsSaved = true;
+          syncSaveButtonState();
+        }, 1100);
+
+      }
+    );
+
+  }
+
+
+  /* =============================================
+     UNSAVED CHANGES
+  ============================================= */
+
+  document.addEventListener(
+    'change',
+    (event) => {
+
+      if (
+        !event.target.matches(
+          '[data-price-input]'
+        )
+      ) {
+        return;
+      }
+
+      updateEstimatedPrice();
+      cakeIsSaved = false;
+      syncSaveButtonState();
+
+    }
+  );
+
+
+  /* =============================================
+     INITIALIZE
+  ============================================= */
+
+  buildCakeInputs();
+
+  /*
+     START WITH NO PRE-SELECTION
+     Do not automatically restore a previously saved cake, flavor,
+     personalization option or dessert add-on when this page opens.
+     The estimate remains 0 MMK until the customer actively chooses.
+  */
+
+  selectedCake = null;
+  exploredCake = null;
+  cakeIsSaved = false;
+
+  document
+    .querySelectorAll('[data-price-input]')
+    .forEach((input) => {
+      input.checked = false;
+    });
+
+  selectedCakeBox.classList.add('d-none');
+  summaryCakeVisual.classList.add('d-none');
+
+  selectedCakeImage.src = '';
+  selectedCakeName.textContent = '';
+  selectedCakeDescription.textContent = '';
+  selectedCakeMeta.innerHTML = '';
+  selectedCakePrice.textContent = '';
+
+  summaryCakeImage.src = '';
+  summaryCakeName.textContent = '';
+  summaryCakeMeta.textContent = '';
+
+  if (estimateEl) {
+    estimateEl.textContent = '0 MMK';
+  }
+
+  updateEstimatedPrice();
+  renderGallery();
+
+  syncCakeActionState();
+  syncSaveButtonState();
+
+  setRecommendationText(
+    backendServiceAvailable
+      ? defaultRecommendationText
+      : 'Cake & Desserts is currently unavailable.'
+  );
+
+  (async () => {
+    try {
+      const response = await fetch(backendServiceUrl, {
+        headers: {
+          Accept: 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const service = await response.json();
+
+      if (
+        Number(service?.id) !== backendServiceId ||
+        service?.name !== backendServiceName
+      ) {
+        throw new Error('Unexpected cake service');
+      }
+
+      backendServiceAvailable = service.available !== false;
+      syncCakeActionState();
+
+      if (!backendServiceAvailable) {
+        setRecommendationText(
+          'Cake & Desserts is currently unavailable.'
+        );
+      } else if (selectedCake) {
+        setRecommendationText(defaultRecommendationText);
+      }
+    } catch (error) {
+      console.error(
+        'Cake service catalog unavailable; using the existing page fallback.'
+      );
+      backendServiceAvailable = true;
+      syncCakeActionState();
+    }
+  })();
+
+});
+</script>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const page = document.querySelector('main.container');
+  if (!page) return;
+
+  const estimateEl = page.querySelector('[data-service-estimate]');
+  const summaryEl = page.querySelector('[data-service-summary]');
+  const emptyEl = document.getElementById('cakeSummaryEmpty');
+  const summaryVisual = document.getElementById('summaryCakeVisual');
+
+  if (!estimateEl || !summaryEl) return;
+
+  const money = (value) =>
+    Number(value || 0).toLocaleString('en-US') + ' MMK';
+
+  function checked(selector) {
+    return [...page.querySelectorAll(selector)].filter(input => input.checked);
+  }
+
+  function itemHtml(input, plus = false) {
+    const price = Number(input.dataset.price || 0);
+    const label = input.dataset.label || '';
+    return `
+      <div class="cake-summary-item">
+        <span class="cake-summary-item__name">${label}</span>
+        <span class="cake-summary-item__price">${plus ? '+' : ''}${money(price)}</span>
+      </div>
+    `;
+  }
+
+  function renderCakeSummary() {
+    const cakeInput = page.querySelector('input[name="selectedCake"]:checked');
+    const flavorInput = page.querySelector('input[name="cakeFlavor"]:checked');
+
+    const finishInput = page.querySelector('input[name="cakeFinish"]:checked');
+
+    const decorativePanel = document.getElementById('decorativeAddonsPanel');
+
+    const dessertPanel = [...page.querySelectorAll('.panel')]
+      .find(panel => panel.querySelector('.panel__head h5')?.textContent.trim() === 'Add Something Sweet');
+
+    const decorativeAddons = decorativePanel
+      ? [...decorativePanel.querySelectorAll('input[type="checkbox"][data-price-input]:checked')]
+      : [];
+
+    const desserts = dessertPanel
+      ? [...dessertPanel.querySelectorAll('input[type="checkbox"][data-price-input]:checked')]
+      : [];
+
+    const hasCake = !!cakeInput;
+
+    /* Before a cake is chosen, show the same empty-state behavior as Lighting & AV. */
+    if (!hasCake) {
+      estimateEl.textContent = '0 MMK';
+      summaryEl.innerHTML = '';
+      if (emptyEl) emptyEl.style.display = 'block';
+      if (summaryVisual) summaryVisual.classList.add('d-none');
+      return;
+    }
+
+    if (emptyEl) emptyEl.style.display = 'none';
+
+    let total = Number(cakeInput.dataset.price || 0);
+    if (flavorInput) total += Number(flavorInput.dataset.price || 0);
+    if (finishInput) total += Number(finishInput.dataset.price || 0);
+    decorativeAddons.forEach(input => total += Number(input.dataset.price || 0));
+    desserts.forEach(input => total += Number(input.dataset.price || 0));
+
+    estimateEl.textContent = money(total);
+
+    let output = `
+      <li class="cake-summary-group">
+        <div class="cake-summary-group__title">Cake</div>
+        ${itemHtml(cakeInput)}
+      </li>
+    `;
+
+    if (flavorInput) {
+      output += `
+        <li class="cake-summary-group">
+          <div class="cake-summary-group__title">Flavor</div>
+          ${itemHtml(flavorInput)}
+        </li>
+      `;
+    }
+
+    if (finishInput) {
+      output += `
+        <li class="cake-summary-group">
+          <div class="cake-summary-group__title">Finish</div>
+          ${itemHtml(finishInput, true)}
+        </li>
+      `;
+    }
+
+    if (decorativeAddons.length) {
+      output += `
+        <li class="cake-summary-group">
+          <div class="cake-summary-group__title">Decorative Add-ons</div>
+          ${decorativeAddons.map(input => itemHtml(input, true)).join('')}
+        </li>
+      `;
+    }
+
+    if (desserts.length) {
+      output += `
+        <li class="cake-summary-group">
+          <div class="cake-summary-group__title">Dessert Add-ons</div>
+          ${desserts.map(input => itemHtml(input, true)).join('')}
+        </li>
+      `;
+    }
+
+    summaryEl.innerHTML = output;
+  }
+
+  page.addEventListener('change', function () {
+    setTimeout(renderCakeSummary, 0);
+  });
+
+  page.addEventListener('input', function () {
+    setTimeout(renderCakeSummary, 0);
+  });
+
+  document.getElementById('chooseCakeBtn')?.addEventListener('click', function () {
+    setTimeout(renderCakeSummary, 30);
+    setTimeout(renderCakeSummary, 150);
+  });
+
+  page.querySelector('[data-service-save]')?.addEventListener('click', function () {
+    setTimeout(renderCakeSummary, 0);
+    setTimeout(renderCakeSummary, 100);
+  });
+
+  setTimeout(renderCakeSummary, 120);
+});
+</script>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const page = document.querySelector('main.container');
+  if (!page) return;
+
+  const estimate = page.querySelector('[data-service-estimate]');
+  const summary = page.querySelector('[data-service-summary]');
+  const empty = document.getElementById('cakeSummaryEmpty');
+  const visual = document.getElementById('summaryCakeVisual');
+  const selectedBox = document.getElementById('selectedCakeBox');
+  const saveBtn = page.querySelector('[data-service-save]');
+
+  function hasCakeChoice() {
+    return !!page.querySelector('input[name="selectedCake"]:checked');
+  }
+
+  function enforceInitialEmptyState() {
+    if (hasCakeChoice()) return;
+
+    if (estimate) estimate.textContent = '0 MMK';
+
+    if (summary) summary.innerHTML = '';
+
+    if (empty) {
+      empty.style.display = 'block';
+      empty.textContent = 'Choose a cake to begin.';
+    }
+
+    if (visual) visual.classList.add('d-none');
+    if (selectedBox) selectedBox.classList.add('d-none');
+
+    if (saveBtn) {
+      saveBtn.textContent = 'Save Cake & Desserts';
+      saveBtn.disabled = false;
+    }
+  }
+
+  /* Run after shared page helpers finish their own startup work. */
+  setTimeout(enforceInitialEmptyState, 180);
+});
+</script>
+
+</body>
+</html>

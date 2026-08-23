@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Create Account | Bliss &amp; Beyond</title>
+<meta name="description" content="Create a Bliss & Beyond account to plan and book your event.">
+<link rel="icon" href="/prototype/../favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Karla:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="/prototype/assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="auth-wrap">
+  <div class="auth-visual" style="background-image:url('/prototype/assets/img/venue-1.jpg')"></div>
+  <div class="auth-form"><div class="w-100" style="max-width:420px">
+    <a class="d-inline-block mb-4 small" href="/prototype/index.html"><i class="bi bi-arrow-left me-1"></i>Back to site</a>
+    <h1 class="h2 mb-1">Create your account</h1>
+    <p class="text-ink-soft small mb-4">Save packages, request quotations and track your event in one place.</p>
+
+    <form class="row g-3" data-auth-form="register" data-auth-success="/prototype/customer/dashboard.html">
+      <div class="col-md-6">
+        <label class="form-label" for="registerFirstName">First name</label>
+        <input id="registerFirstName" name="firstName" class="form-control" autocomplete="given-name" required>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label" for="registerLastName">Last name</label>
+        <input id="registerLastName" name="lastName" class="form-control" autocomplete="family-name" required>
+      </div>
+      <div class="col-12">
+        <label class="form-label" for="registerEmail">Email</label>
+        <input id="registerEmail" name="email" class="form-control" type="email" autocomplete="email" required>
+      </div>
+      <div class="col-12">
+        <label class="form-label" for="registerPhone">Phone</label>
+        <input id="registerPhone" name="phone" class="form-control" type="tel" autocomplete="tel" placeholder="Optional">
+      </div>
+      <div class="col-12">
+        <label class="form-label" for="registerPassword">Password</label>
+        <input id="registerPassword" name="password" class="form-control" type="password" autocomplete="new-password" required>
+        <div class="mt-2 small text-ink-soft" data-password-help>
+          <div class="fw-semibold mb-1">Password must contain:</div>
+          <ul class="list-unstyled mb-0" data-password-rules>
+            <li data-rule="length">○ At least 8 characters</li>
+            <li data-rule="upper">○ One uppercase letter</li>
+            <li data-rule="lower">○ One lowercase letter</li>
+            <li data-rule="number">○ One number</li>
+            <li data-rule="special">○ One special character</li>
+          </ul>
+          <div class="mt-2 fw-semibold" data-password-strength>Password strength: Weak</div>
+        </div>
+      </div>
+      <div class="col-12">
+        <label class="form-label" for="registerConfirmPassword">Confirm password</label>
+        <input id="registerConfirmPassword" name="confirmPassword" class="form-control" type="password" autocomplete="new-password" required>
+      </div>
+      <div class="col-12 d-flex justify-content-between align-items-center">
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="registerTerms" name="terms" required>
+          <label class="form-check-label small" for="registerTerms">I agree to the terms of service</label>
+        </div>
+      </div>
+      <div class="col-12">
+        <button class="btn btn-gold w-100" type="submit" data-auth-submit>Create account</button>
+      </div>
+      <div class="col-12 alert d-none" data-auth-status role="alert" aria-live="polite"></div>
+    </form>
+    <div class="d-flex align-items-center gap-2 my-4"><hr class="flex-grow-1"><span class="small text-ink-soft">or</span><hr class="flex-grow-1"></div>
+    <div class="d-grid gap-2">
+      <button class="btn btn-outline-forest" type="button"><i class="bi bi-google me-2"></i>Continue with Google</button>
+      <a class="btn btn-outline-forest" href="/prototype/admin/dashboard.html"><i class="bi bi-shield-lock me-2"></i>Demo: enter admin console</a>
+    </div>
+    <p class="small text-center mt-4 mb-0">Already have an account? <a href="/prototype/login.html">Sign in</a></p>
+  </div></div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/prototype/assets/js/main.js"></script>
+
+</body>
+</html>

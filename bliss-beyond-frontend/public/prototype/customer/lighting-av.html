@@ -1,0 +1,3272 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Customize Sound, Lighting &amp; AV | Bliss &amp; Beyond</title>
+
+<link rel="icon" href="/prototype/../favicon.ico">
+
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Karla:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
+<link href="/prototype/assets/css/style.css" rel="stylesheet">
+
+<style>
+
+.av-package {
+  border: 1px solid rgba(0,0,0,.12);
+  border-radius: 16px;
+  padding: 20px;
+  height: 100%;
+  cursor: pointer;
+  transition: .2s ease;
+  background: #fff;
+}
+
+.av-package:hover {
+  transform: translateY(-3px);
+  border-color: #b18a42;
+}
+
+.av-package.selected {
+  border: 2px solid #b18a42;
+  background: #fffaf0;
+}
+
+.av-package input {
+  margin-right: 8px;
+}
+
+.package-price {
+  font-weight: 700;
+  color: #b18a42;
+  font-size: 18px;
+}
+
+.option-card {
+  border: 1px solid rgba(0,0,0,.08);
+  border-radius: 12px;
+  padding: 16px;
+  height: 100%;
+  background: #fff;
+}
+
+.option-price {
+  color: #b18a42;
+  font-weight: 600;
+}
+
+.venue-includes {
+  background: #f5f1e8;
+  border-left: 4px solid #b18a42;
+  border-radius: 10px;
+  padding: 18px;
+}
+
+.venue-includes ul {
+  margin-bottom: 0;
+}
+
+.summary-list {
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 0;
+}
+
+.summary-list li {
+  padding: 7px 0;
+  border-bottom: 1px solid rgba(0,0,0,.06);
+}
+
+.workflow-summary {
+  position: sticky;
+  top: 95px;
+}
+
+.bb-price {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: 0.01em;
+}
+
+</style>
+
+<style>
+/* =========================================================
+   SOUND, LIGHTING & AV — ROYAL PHOTOGRAPHY / ENTERTAINMENT STYLE
+   Visual-only redesign. Existing names, prices, IDs,
+   save logic, backend integration and calculations remain.
+   ========================================================= */
+
+:root{
+  --av-green:#123f33;
+  --av-green-soft:#244f43;
+  --av-gold:#c89235;
+  --av-gold-deep:#a96d18;
+  --av-ivory:#fbf8f1;
+  --av-panel:#eee7da;
+  --av-border:#ddcfbc;
+  --av-text:#3f514a;
+  --av-muted:#69766f;
+}
+
+body{
+  background:#f4eee4 !important;
+  font-family:"Karla",sans-serif !important;
+  color:#263b33 !important;
+}
+
+[data-simple-service-page]{
+  max-width:1440px !important;
+}
+
+/* =========================================================
+   PANEL STRUCTURE
+   ========================================================= */
+[data-simple-service-page] .panel{
+  background:var(--av-panel) !important;
+  border:1px solid var(--av-border) !important;
+  border-radius:22px !important;
+  overflow:hidden !important;
+  box-shadow:0 10px 28px rgba(48,39,28,.055) !important;
+}
+
+[data-simple-service-page] .panel__head{
+  background:#fff !important;
+  padding:20px 24px !important;
+  border-bottom:1px solid #e7dccd !important;
+}
+
+[data-simple-service-page] .panel__head h5{
+  margin:0 !important;
+  color:#173f34 !important;
+  font-family:"Cormorant Garamond",serif !important;
+  font-size:1.8rem !important;
+  font-weight:700 !important;
+}
+
+[data-simple-service-page] .panel__head p{
+  margin-top:4px !important;
+  font-size:.92rem !important;
+  color:#6c7872 !important;
+}
+
+[data-simple-service-page] .panel__body{
+  background:var(--av-panel) !important;
+  padding:22px !important;
+}
+
+/* =========================================================
+   VENUE INCLUDED CARD
+   ========================================================= */
+[data-simple-service-page] .venue-includes{
+  position:relative;
+  overflow:hidden;
+  background:
+    linear-gradient(135deg,rgba(255,255,255,.96),rgba(248,243,234,.92)) !important;
+  border:1px solid var(--av-border) !important;
+  border-left:4px solid var(--av-gold) !important;
+  border-radius:18px !important;
+  padding:20px 22px !important;
+  box-shadow:0 8px 22px rgba(43,35,25,.055) !important;
+}
+
+[data-simple-service-page] .venue-includes strong{
+  color:var(--av-green) !important;
+  font-size:1.05rem !important;
+}
+
+[data-simple-service-page] .venue-includes li{
+  color:#4b5d55 !important;
+  margin-bottom:3px;
+}
+
+/* =========================================================
+   MAIN AV PACKAGE CARDS — PHOTOGRAPHY STYLE
+   ========================================================= */
+[data-simple-service-page] .av-package{
+  position:relative !important;
+  overflow:hidden !important;
+  isolation:isolate !important;
+
+  display:flex !important;
+  flex-direction:column !important;
+
+  height:360px !important;
+  min-height:360px !important;
+  max-height:360px !important;
+
+  padding:0 !important;
+
+  background:
+    linear-gradient(145deg,
+      rgba(255,255,255,.97),
+      rgba(249,245,236,.91)) !important;
+
+  border:1px solid rgba(190,164,119,.50) !important;
+  border-radius:22px !important;
+
+  box-shadow:
+    0 12px 28px rgba(38,31,22,.075),
+    inset 0 1px 0 rgba(255,255,255,.98) !important;
+
+  transition:
+    transform .24s ease,
+    border-color .24s ease,
+    box-shadow .24s ease,
+    background .24s ease !important;
+}
+
+/* gold left rail */
+[data-simple-service-page] .av-package::before{
+  content:"";
+  position:absolute;
+  top:18px;
+  bottom:18px;
+  left:0;
+  width:3px;
+  border-radius:999px;
+  background:linear-gradient(180deg,transparent,#e1bd70 15%,#b77a20 50%,#e1bd70 84%,transparent);
+  z-index:3;
+}
+
+/* soft glow */
+[data-simple-service-page] .av-package::after{
+  content:"";
+  position:absolute;
+  width:190px;
+  height:190px;
+  top:-95px;
+  right:-70px;
+  border-radius:50%;
+  pointer-events:none;
+  background:radial-gradient(circle,rgba(207,165,79,.15),rgba(207,165,79,.04) 45%,transparent 74%);
+  z-index:0;
+}
+
+/* top header band */
+[data-simple-service-page] .av-package .form-check{
+  position:relative !important;
+  z-index:2 !important;
+
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+
+  min-height:82px !important;
+  height:82px !important;
+
+  margin:0 !important;
+  padding:20px 22px 18px 28px !important;
+
+  background:
+    linear-gradient(110deg,
+      rgba(15,70,54,.17),
+      rgba(31,91,69,.09) 58%,
+      rgba(205,164,80,.03)) !important;
+
+  border-bottom:1px solid rgba(181,145,75,.33) !important;
+}
+
+/* gold underline */
+[data-simple-service-page] .av-package .form-check::after{
+  content:"";
+  position:absolute;
+  left:28px;
+  bottom:-1px;
+  width:66px;
+  height:2px;
+  border-radius:999px;
+  background:linear-gradient(90deg,#a96e18,#e3bf72,#a96e18);
+}
+
+/* title */
+[data-simple-service-page] .av-package .form-check-label{
+  order:1 !important;
+  color:var(--av-green) !important;
+  font-family:"Cormorant Garamond",serif !important;
+  font-size:1.42rem !important;
+  font-weight:700 !important;
+  line-height:1.12 !important;
+}
+
+/* radio to top-right */
+[data-simple-service-page] .av-package .package-radio{
+  order:2 !important;
+  appearance:none !important;
+  -webkit-appearance:none !important;
+
+  width:29px !important;
+  height:29px !important;
+  min-width:29px !important;
+  margin:0 !important;
+
+  display:grid !important;
+  place-content:center !important;
+
+  background:#fffdf8 !important;
+  border:2px solid #17483a !important;
+  border-radius:50% !important;
+
+  box-shadow:0 3px 9px rgba(23,72,58,.09) !important;
+}
+
+[data-simple-service-page] .av-package .package-radio::before{
+  content:"";
+  width:11px;
+  height:11px;
+  border-radius:50%;
+  background:var(--av-gold);
+  transform:scale(0);
+  transition:transform .15s ease;
+}
+
+[data-simple-service-page] .av-package .package-radio:checked{
+  border-color:#b77a20 !important;
+  box-shadow:0 0 0 5px rgba(191,139,47,.11),0 4px 10px rgba(45,35,20,.10) !important;
+}
+
+[data-simple-service-page] .av-package .package-radio:checked::before{
+  transform:scale(1);
+}
+
+/* description */
+[data-simple-service-page] .av-package > p{
+  position:relative;
+  z-index:2;
+  margin:0 !important;
+  padding:20px 28px 10px 28px !important;
+  color:#617068 !important;
+  font-size:.96rem !important;
+  line-height:1.5 !important;
+}
+
+/* list */
+[data-simple-service-page] .av-package > ul{
+  position:relative;
+  z-index:2;
+  margin:0 !important;
+  padding:0 28px 6px 46px !important;
+  color:#40544b !important;
+  font-size:.96rem !important;
+  line-height:1.48 !important;
+}
+
+[data-simple-service-page] .av-package > ul li{
+  margin-bottom:3px !important;
+}
+
+[data-simple-service-page] .av-package > ul li::marker{
+  color:#b48636 !important;
+}
+
+/* price pinned bottom */
+[data-simple-service-page] .av-package .package-price{
+  position:relative;
+  z-index:2;
+
+  margin:auto 28px 22px 28px !important;
+  padding-top:14px !important;
+
+  color:var(--av-gold-deep) !important;
+  font-family:"Cormorant Garamond",serif !important;
+  font-size:1.48rem !important;
+  font-weight:700 !important;
+  line-height:1.1 !important;
+
+  border-top:1px solid rgba(181,145,75,.25) !important;
+}
+
+/* hover */
+[data-simple-service-page] .av-package:hover{
+  transform:translateY(-5px) !important;
+  border-color:rgba(183,122,32,.72) !important;
+  box-shadow:
+    0 19px 38px rgba(38,31,20,.11),
+    inset 0 1px 0 rgba(255,255,255,1) !important;
+}
+
+/* selected */
+[data-simple-service-page] .av-package.selected,
+[data-simple-service-page] .av-package:has(.package-radio:checked){
+  border:1.5px solid var(--av-gold) !important;
+  background:linear-gradient(145deg,rgba(255,255,255,.99),rgba(255,248,232,.94)) !important;
+  box-shadow:
+    0 0 0 3px rgba(200,146,53,.08),
+    0 17px 34px rgba(45,35,20,.10) !important;
+}
+
+/* =========================================================
+   UPGRADE OPTION CARDS — CLEAN ROYAL STYLE
+   ========================================================= */
+[data-simple-service-page] .option-card{
+  position:relative !important;
+  overflow:hidden !important;
+
+  height:205px !important;
+  min-height:205px !important;
+  max-height:205px !important;
+
+  padding:0 !important;
+
+  background:linear-gradient(145deg,rgba(255,255,255,.97),rgba(250,247,240,.91)) !important;
+  border:1px solid rgba(193,176,145,.58) !important;
+  border-radius:20px !important;
+
+  box-shadow:
+    0 9px 20px rgba(35,31,24,.06),
+    inset 0 1px 0 rgba(255,255,255,.96) !important;
+
+  transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease !important;
+}
+
+/* slim gold rail */
+[data-simple-service-page] .option-card::before{
+  content:"";
+  position:absolute;
+  top:18px;
+  bottom:18px;
+  left:0;
+  width:3px;
+  border-radius:999px;
+  background:linear-gradient(180deg,transparent,#e1bd70 15%,#b77a20 50%,#e1bd70 84%,transparent);
+}
+
+/* make whole inner label layout fill card */
+[data-simple-service-page] .option-card .form-check{
+  position:relative !important;
+  display:flex !important;
+  align-items:flex-start !important;
+  height:100% !important;
+  margin:0 !important;
+  padding:20px 22px 18px 24px !important;
+}
+
+/* checkbox circle top-right */
+[data-simple-service-page] .option-card .form-check-input{
+  position:absolute !important;
+  top:20px !important;
+  right:20px !important;
+
+  appearance:none !important;
+  -webkit-appearance:none !important;
+
+  width:27px !important;
+  height:27px !important;
+  min-width:27px !important;
+
+  margin:0 !important;
+  display:grid !important;
+  place-content:center !important;
+
+  background:#fff !important;
+  border:2px solid #17483a !important;
+  border-radius:50% !important;
+  box-shadow:0 3px 8px rgba(23,72,58,.08) !important;
+}
+
+[data-simple-service-page] .option-card .form-check-input::before{
+  content:"";
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:var(--av-gold);
+  transform:scale(0);
+  transition:transform .14s ease;
+}
+
+[data-simple-service-page] .option-card .form-check-input:checked{
+  border-color:#b77a20 !important;
+  box-shadow:0 0 0 5px rgba(191,139,47,.10),0 4px 10px rgba(45,35,20,.08) !important;
+}
+
+[data-simple-service-page] .option-card .form-check-input:checked::before{
+  transform:scale(1);
+}
+
+/* option content */
+[data-simple-service-page] .option-card .form-check-label{
+  display:flex !important;
+  flex-direction:column !important;
+  width:100% !important;
+  height:100% !important;
+  padding-right:42px !important;
+}
+
+[data-simple-service-page] .option-card strong{
+  display:block !important;
+  min-height:48px !important;
+  margin:0 0 9px !important;
+
+  color:var(--av-green) !important;
+  font-family:"Karla",sans-serif !important;
+  font-size:1.02rem !important;
+  font-weight:700 !important;
+  line-height:1.32 !important;
+}
+
+[data-simple-service-page] .option-card .small.text-ink-soft{
+  margin:0 !important;
+  color:#68756f !important;
+  font-size:.92rem !important;
+  line-height:1.46 !important;
+}
+
+[data-simple-service-page] .option-card .option-price{
+  margin:auto 0 0 !important;
+  padding-top:12px !important;
+
+  color:var(--av-gold-deep) !important;
+  font-family:"Cormorant Garamond",serif !important;
+  font-size:1.28rem !important;
+  font-weight:700 !important;
+  line-height:1.1 !important;
+
+  border-top:1px solid rgba(181,145,75,.24) !important;
+}
+
+[data-simple-service-page] .option-card:hover{
+  transform:translateY(-4px) !important;
+  border-color:rgba(183,122,32,.72) !important;
+  box-shadow:0 15px 30px rgba(42,34,22,.10),inset 0 1px 0 rgba(255,255,255,1) !important;
+}
+
+[data-simple-service-page] .option-card:has(.form-check-input:checked){
+  border:1.5px solid var(--av-gold) !important;
+  background:linear-gradient(145deg,rgba(255,255,255,.99),rgba(255,248,232,.94)) !important;
+  box-shadow:0 0 0 3px rgba(200,146,53,.08),0 15px 30px rgba(45,35,20,.09) !important;
+}
+
+/* =========================================================
+   SUMMARY — MATCH PHOTOGRAPHY / ENTERTAINMENT
+   ========================================================= */
+[data-simple-service-page] .workflow-summary{
+  background:#fff !important;
+  border:1px solid var(--av-border) !important;
+  border-radius:22px !important;
+  overflow:hidden !important;
+  box-shadow:0 10px 26px rgba(47,39,29,.05) !important;
+}
+
+[data-simple-service-page] .workflow-summary .panel__head{
+  background:#fff !important;
+  padding:24px 26px !important;
+}
+
+[data-simple-service-page] .workflow-summary .panel__head h5{
+  color:#15251e !important;
+  font-size:2rem !important;
+}
+
+[data-simple-service-page] .workflow-summary .panel__body{
+  background:#fff !important;
+  padding:30px 26px 24px !important;
+}
+
+[data-simple-service-page] .workflow-summary .bb-price{
+  color:#174c3b !important;
+  font-family:"Cormorant Garamond",serif !important;
+  font-size:2.65rem !important;
+  font-weight:600 !important;
+  line-height:1 !important;
+}
+
+[data-simple-service-page] .workflow-summary .summary-list{
+  margin:24px 0 0 !important;
+  padding:0 !important;
+}
+
+[data-simple-service-page] .workflow-summary .summary-list li{
+  padding:12px 0 !important;
+  border-bottom:1px solid #ece3d7 !important;
+  color:#344a41 !important;
+  font-size:.92rem !important;
+  line-height:1.4 !important;
+}
+
+[data-simple-service-page] .workflow-summary hr{
+  border-color:#e7ddd0 !important;
+  opacity:1 !important;
+}
+
+[data-simple-service-page] .workflow-summary .btn{
+  min-height:54px !important;
+  border-radius:999px !important;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+@media(max-width:991.98px){
+  [data-simple-service-page] .workflow-summary{
+    position:static !important;
+  }
+}
+
+@media(max-width:767.98px){
+  [data-simple-service-page] .av-package{
+    height:auto !important;
+    min-height:340px !important;
+    max-height:none !important;
+  }
+
+  [data-simple-service-page] .option-card{
+    height:auto !important;
+    min-height:190px !important;
+    max-height:none !important;
+  }
+
+  [data-simple-service-page] .panel__body{
+    padding:16px !important;
+  }
+}
+</style>
+
+
+<style>
+/* =========================================================
+   UPGRADE CARDS — MATCH MAIN AV PACKAGE DESIGN
+   Applies to Audio, Lighting, and Visual option cards.
+   ========================================================= */
+
+[data-simple-service-page] .option-card{
+  position:relative !important;
+  overflow:hidden !important;
+  isolation:isolate !important;
+
+  display:flex !important;
+  flex-direction:column !important;
+
+  height:280px !important;
+  min-height:280px !important;
+  max-height:280px !important;
+
+  padding:0 !important;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,.97),
+      rgba(249,245,236,.91)
+    ) !important;
+
+  border:1px solid rgba(190,164,119,.50) !important;
+  border-radius:22px !important;
+
+  box-shadow:
+    0 12px 28px rgba(38,31,22,.075),
+    inset 0 1px 0 rgba(255,255,255,.98) !important;
+
+  transition:
+    transform .24s ease,
+    border-color .24s ease,
+    box-shadow .24s ease,
+    background .24s ease !important;
+}
+
+/* Gold left rail */
+[data-simple-service-page] .option-card::before{
+  content:"";
+  position:absolute;
+  top:18px;
+  bottom:18px;
+  left:0;
+
+  width:3px;
+  border-radius:999px;
+
+  background:
+    linear-gradient(
+      180deg,
+      transparent,
+      #e1bd70 15%,
+      #b77a20 50%,
+      #e1bd70 84%,
+      transparent
+    );
+
+  z-index:3;
+}
+
+/* Soft upper-right glow */
+[data-simple-service-page] .option-card::after{
+  content:"";
+  position:absolute;
+  width:180px;
+  height:180px;
+  top:-90px;
+  right:-70px;
+  border-radius:50%;
+  pointer-events:none;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(207,165,79,.15),
+      rgba(207,165,79,.04) 45%,
+      transparent 74%
+    );
+
+  z-index:0;
+}
+
+/* Make inner form fill the card */
+[data-simple-service-page] .option-card .form-check{
+  position:relative !important;
+  z-index:2 !important;
+
+  display:flex !important;
+  flex-direction:column !important;
+
+  width:100% !important;
+  height:100% !important;
+
+  margin:0 !important;
+  padding:0 !important;
+}
+
+/* Header band like AV package cards */
+[data-simple-service-page] .option-card .form-check-label{
+  position:relative !important;
+
+  display:flex !important;
+  flex-direction:column !important;
+
+  width:100% !important;
+  height:100% !important;
+
+  padding:0 !important;
+}
+
+/* Title header */
+[data-simple-service-page] .option-card strong{
+  position:relative !important;
+  z-index:2 !important;
+
+  display:flex !important;
+  align-items:center !important;
+
+  min-height:78px !important;
+  height:78px !important;
+  max-height:78px !important;
+
+  margin:0 !important;
+  padding:18px 62px 17px 30px !important;
+
+  color:#123f33 !important;
+
+  font-family:"Cormorant Garamond",serif !important;
+  font-size:1.34rem !important;
+  font-weight:700 !important;
+  line-height:1.14 !important;
+
+  background:
+    linear-gradient(
+      110deg,
+      rgba(15,70,54,.17),
+      rgba(31,91,69,.09) 58%,
+      rgba(205,164,80,.03)
+    ) !important;
+
+  border-bottom:1px solid rgba(181,145,75,.33) !important;
+}
+
+/* Gold underline under title */
+[data-simple-service-page] .option-card strong::after{
+  content:"";
+  position:absolute;
+  left:30px;
+  bottom:-1px;
+
+  width:62px;
+  height:2px;
+  border-radius:999px;
+
+  background:
+    linear-gradient(90deg,#a96e18,#e3bf72,#a96e18);
+}
+
+/* Selection circle in top-right */
+[data-simple-service-page] .option-card .form-check-input{
+  position:absolute !important;
+  top:24px !important;
+  right:22px !important;
+
+  appearance:none !important;
+  -webkit-appearance:none !important;
+
+  width:29px !important;
+  height:29px !important;
+  min-width:29px !important;
+
+  margin:0 !important;
+
+  display:grid !important;
+  place-content:center !important;
+
+  background:#fffdf8 !important;
+  border:2px solid #17483a !important;
+  border-radius:50% !important;
+
+  box-shadow:0 3px 9px rgba(23,72,58,.09) !important;
+
+  z-index:5 !important;
+}
+
+[data-simple-service-page] .option-card .form-check-input::before{
+  content:"";
+  width:11px;
+  height:11px;
+  border-radius:50%;
+  background:#c89235;
+
+  transform:scale(0);
+  transition:transform .15s ease;
+}
+
+[data-simple-service-page] .option-card .form-check-input:checked{
+  border-color:#b77a20 !important;
+
+  box-shadow:
+    0 0 0 5px rgba(191,139,47,.11),
+    0 4px 10px rgba(45,35,20,.10) !important;
+}
+
+[data-simple-service-page] .option-card .form-check-input:checked::before{
+  transform:scale(1);
+}
+
+/* Description in middle */
+[data-simple-service-page] .option-card .small.text-ink-soft{
+  position:relative !important;
+  z-index:2 !important;
+
+  flex:1 1 auto !important;
+
+  display:flex !important;
+  align-items:flex-start !important;
+
+  margin:0 !important;
+  padding:22px 30px 12px 30px !important;
+
+  color:#617068 !important;
+
+  font-size:.96rem !important;
+  line-height:1.5 !important;
+}
+
+/* Price aligned at bottom like AV packages */
+[data-simple-service-page] .option-card .option-price{
+  position:relative !important;
+  z-index:2 !important;
+
+  flex:0 0 auto !important;
+
+  margin:0 30px 22px 30px !important;
+  padding-top:14px !important;
+
+  color:#a96d18 !important;
+
+  font-family:"Cormorant Garamond",serif !important;
+  font-size:1.42rem !important;
+  font-weight:700 !important;
+  line-height:1.1 !important;
+
+  border-top:1px solid rgba(181,145,75,.25) !important;
+}
+
+/* Hover */
+[data-simple-service-page] .option-card:hover{
+  transform:translateY(-5px) !important;
+
+  border-color:rgba(183,122,32,.72) !important;
+
+  box-shadow:
+    0 19px 38px rgba(38,31,20,.11),
+    inset 0 1px 0 rgba(255,255,255,1) !important;
+}
+
+/* Selected */
+[data-simple-service-page] .option-card:has(.form-check-input:checked){
+  border:1.5px solid #c89235 !important;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,.99),
+      rgba(255,248,232,.94)
+    ) !important;
+
+  box-shadow:
+    0 0 0 3px rgba(200,146,53,.08),
+    0 17px 34px rgba(45,35,20,.10) !important;
+}
+
+/* Selected header slightly richer */
+[data-simple-service-page]
+.option-card:has(.form-check-input:checked) strong{
+  background:
+    linear-gradient(
+      110deg,
+      rgba(12,62,47,.23),
+      rgba(24,75,57,.14) 58%,
+      rgba(205,160,69,.07)
+    ) !important;
+}
+
+/* Screens & Visual 3-column cards still align correctly */
+[data-simple-service-page] .col-md-4 .option-card{
+  height:280px !important;
+  min-height:280px !important;
+  max-height:280px !important;
+}
+
+/* Responsive */
+@media(max-width:767.98px){
+  [data-simple-service-page] .option-card,
+  [data-simple-service-page] .col-md-4 .option-card{
+    height:auto !important;
+    min-height:260px !important;
+    max-height:none !important;
+  }
+
+  [data-simple-service-page] .option-card strong{
+    height:auto !important;
+    min-height:74px !important;
+    max-height:none !important;
+  }
+}
+</style>
+
+
+<style>
+/* =========================================================
+   FINAL UPGRADE CARD COMPACTION
+   Reduce empty space while keeping every upgrade card
+   exactly the same size. AV package cards are untouched.
+   ========================================================= */
+
+/* Audio, Lighting and Visual upgrade cards only */
+[data-simple-service-page] .option-card{
+  height:220px !important;
+  min-height:220px !important;
+  max-height:220px !important;
+}
+
+/* Slightly shorter header */
+[data-simple-service-page] .option-card strong{
+  min-height:66px !important;
+  height:66px !important;
+  max-height:66px !important;
+
+  padding:16px 60px 14px 30px !important;
+
+  font-size:1.25rem !important;
+  line-height:1.12 !important;
+}
+
+/* Keep selector vertically centered in the shorter header */
+[data-simple-service-page] .option-card .form-check-input{
+  top:18px !important;
+  right:22px !important;
+}
+
+/* Use the middle area more efficiently */
+[data-simple-service-page] .option-card .small.text-ink-soft{
+  flex:1 1 auto !important;
+
+  margin:0 !important;
+  padding:16px 30px 8px 30px !important;
+
+  font-size:.94rem !important;
+  line-height:1.42 !important;
+}
+
+/* Pull price upward and keep all prices aligned */
+[data-simple-service-page] .option-card .option-price{
+  flex:0 0 auto !important;
+
+  margin:0 30px 18px 30px !important;
+  padding-top:11px !important;
+
+  font-size:1.32rem !important;
+  line-height:1.05 !important;
+}
+
+/* Keep visual-equipment cards same size too */
+[data-simple-service-page] .col-md-4 .option-card{
+  height:220px !important;
+  min-height:220px !important;
+  max-height:220px !important;
+}
+
+/* Mobile */
+@media(max-width:767.98px){
+  [data-simple-service-page] .option-card,
+  [data-simple-service-page] .col-md-4 .option-card{
+    height:auto !important;
+    min-height:205px !important;
+    max-height:none !important;
+  }
+
+  [data-simple-service-page] .option-card strong{
+    height:auto !important;
+    min-height:64px !important;
+    max-height:none !important;
+  }
+}
+</style>
+
+
+<style>
+/* =========================================================
+   FINAL AV PACKAGE SIZE + PRICE ALIGNMENT
+   Main AV package cards only.
+   Upgrade cards are NOT changed here.
+   ========================================================= */
+
+/* Make every AV package card larger and exactly equal height */
+[data-simple-service-page] .av-package{
+  height:430px !important;
+  min-height:430px !important;
+  max-height:430px !important;
+
+  display:flex !important;
+  flex-direction:column !important;
+}
+
+/* Keep package header identical on every card */
+[data-simple-service-page] .av-package .form-check{
+  flex:0 0 88px !important;
+
+  min-height:88px !important;
+  height:88px !important;
+  max-height:88px !important;
+
+  padding:21px 24px 19px 30px !important;
+}
+
+[data-simple-service-page] .av-package .form-check-label{
+  font-size:1.52rem !important;
+  line-height:1.12 !important;
+}
+
+/* Description gets a consistent area */
+[data-simple-service-page] .av-package > p{
+  flex:0 0 auto !important;
+
+  min-height:88px !important;
+
+  margin:0 !important;
+  padding:24px 30px 12px 30px !important;
+
+  font-size:1rem !important;
+  line-height:1.5 !important;
+}
+
+/* Feature list fills the middle space */
+[data-simple-service-page] .av-package > ul{
+  flex:1 1 auto !important;
+
+  margin:0 !important;
+  padding:0 30px 14px 50px !important;
+
+  font-size:1rem !important;
+  line-height:1.48 !important;
+}
+
+/* Price is pinned to exactly the same bottom position */
+[data-simple-service-page] .av-package .package-price{
+  flex:0 0 64px !important;
+
+  display:flex !important;
+  align-items:center !important;
+
+  min-height:64px !important;
+  height:64px !important;
+
+  margin:0 30px 22px 30px !important;
+  padding:12px 0 0 0 !important;
+
+  border-top:1px solid rgba(181,145,75,.28) !important;
+
+  color:#a96d18 !important;
+  font-family:"Cormorant Garamond",serif !important;
+  font-size:1.62rem !important;
+  font-weight:700 !important;
+  line-height:1 !important;
+}
+
+/* Make the two-column Bootstrap rows stretch equally */
+[data-simple-service-page] .row.g-3 > [class*="col-md-"]{
+  display:flex;
+}
+
+[data-simple-service-page] .row.g-3 > [class*="col-md-"] > .av-package{
+  width:100% !important;
+}
+
+/* Mobile: allow natural height so text never clips */
+@media(max-width:767.98px){
+  [data-simple-service-page] .av-package{
+    height:auto !important;
+    min-height:410px !important;
+    max-height:none !important;
+  }
+
+  [data-simple-service-page] .av-package .form-check{
+    height:auto !important;
+    min-height:82px !important;
+    max-height:none !important;
+    flex-basis:auto !important;
+  }
+
+  [data-simple-service-page] .av-package > p{
+    min-height:0 !important;
+  }
+}
+</style>
+
+
+<style>
+/* =========================================================
+   FINAL AV PACKAGE PRICE ALIGNMENT
+   Keeps all AV package cards the same size and pins every
+   package price to the same bottom position.
+   ========================================================= */
+
+[data-simple-service-page] .av-package{
+  height:430px !important;
+  min-height:430px !important;
+  max-height:430px !important;
+
+  display:flex !important;
+  flex-direction:column !important;
+}
+
+/* Keep the content above the price flexible */
+[data-simple-service-page] .av-package > ul{
+  flex:1 1 auto !important;
+}
+
+/* Pin every package price to exactly the same baseline */
+[data-simple-service-page] .av-package .package-price{
+  flex:0 0 auto !important;
+
+  margin-top:auto !important;
+  margin-left:30px !important;
+  margin-right:30px !important;
+  margin-bottom:24px !important;
+
+  padding-top:16px !important;
+
+  min-height:62px !important;
+
+  display:flex !important;
+  align-items:flex-start !important;
+
+  border-top:1px solid rgba(181,145,75,.28) !important;
+
+  color:#a96d18 !important;
+  font-family:"Cormorant Garamond",serif !important;
+  font-size:1.62rem !important;
+  font-weight:700 !important;
+  line-height:1 !important;
+}
+
+/* Ensure every Bootstrap column stretches its package card equally */
+[data-simple-service-page] .row.g-3 > [class*="col-md-"]{
+  align-items:stretch !important;
+}
+
+[data-simple-service-page] .row.g-3 > [class*="col-md-"] > .av-package{
+  width:100% !important;
+}
+
+/* Mobile */
+@media(max-width:767.98px){
+  [data-simple-service-page] .av-package{
+    height:auto !important;
+    min-height:410px !important;
+    max-height:none !important;
+  }
+
+  [data-simple-service-page] .av-package .package-price{
+    margin-left:28px !important;
+    margin-right:28px !important;
+    margin-bottom:22px !important;
+  }
+}
+/* Bigger description text for AV upgrade cards */
+[data-simple-service-page] .option-card .small.text-ink-soft {
+  font-size: 1.05rem !important;
+  line-height: 1.55 !important;
+  font-weight: 400 !important;
+  color: #53665e !important;
+}
+</style>
+
+
+<style>
+/* =========================================================
+   LIGHTING & AV — GROUPED ESTIMATED PRICE SUMMARY
+   Shows selected items under their related category,
+   matching Photography / Catering / Entertainment.
+   ========================================================= */
+
+[data-simple-service-page] .workflow-summary .summary-list{
+  list-style:none !important;
+  margin:24px 0 0 !important;
+  padding:0 !important;
+}
+
+[data-simple-service-page] .av-summary-group{
+  padding:18px 0 !important;
+  border-top:1px solid #ece3d7 !important;
+}
+
+[data-simple-service-page] .av-summary-group__title{
+  margin-bottom:10px !important;
+
+  color:#746456 !important;
+  font-family:"Karla",sans-serif !important;
+  font-size:.72rem !important;
+  font-weight:700 !important;
+  letter-spacing:.14em !important;
+  text-transform:uppercase !important;
+}
+
+[data-simple-service-page] .av-summary-item{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) auto !important;
+  gap:12px !important;
+  align-items:start !important;
+
+  padding:6px 0 !important;
+}
+
+[data-simple-service-page] .av-summary-item__name{
+  position:relative !important;
+  padding-left:14px !important;
+
+  color:#20312a !important;
+  font-size:.95rem !important;
+  line-height:1.4 !important;
+}
+
+[data-simple-service-page] .av-summary-item__name::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:.58em;
+
+  width:5px;
+  height:5px;
+
+  border-radius:50%;
+  background:#c89235;
+}
+
+[data-simple-service-page] .av-summary-item__price{
+  color:#b7791f !important;
+  font-size:.92rem !important;
+  font-weight:600 !important;
+  white-space:nowrap !important;
+  text-align:right !important;
+}
+
+/* Do not draw another divider on each generated item */
+[data-simple-service-page] .workflow-summary .summary-list .av-summary-group{
+  border-bottom:0 !important;
+}
+
+@media(max-width:420px){
+  [data-simple-service-page] .av-summary-item{
+    grid-template-columns:1fr !important;
+    gap:2px !important;
+  }
+
+  [data-simple-service-page] .av-summary-item__price{
+    padding-left:14px !important;
+    text-align:left !important;
+  }
+}
+</style>
+
+
+<style>
+/* =========================================================
+   FINAL LIGHTING & AV SUMMARY REFINEMENT
+   - Put the selected package price directly under its name
+   - Match saved button styling with Catering / Entertainment
+   ========================================================= */
+
+/* Summary group spacing */
+[data-simple-service-page] .av-summary-group{
+  padding:18px 0 !important;
+  border-top:1px solid #ece3d7 !important;
+}
+
+/* Category heading */
+[data-simple-service-page] .av-summary-group__title{
+  margin-bottom:12px !important;
+
+  color:#746456 !important;
+  font-family:"Karla",sans-serif !important;
+  font-size:.72rem !important;
+  font-weight:700 !important;
+  letter-spacing:.14em !important;
+  text-transform:uppercase !important;
+}
+
+/* Selected item becomes stacked like the other service pages */
+[data-simple-service-page] .av-summary-item{
+  display:block !important;
+  padding:2px 0 4px !important;
+}
+
+/* Selected package / option name */
+[data-simple-service-page] .av-summary-item__name{
+  position:relative !important;
+  display:block !important;
+
+  padding-left:16px !important;
+
+  color:#20312a !important;
+  font-family:"Karla",sans-serif !important;
+  font-size:1rem !important;
+  font-weight:500 !important;
+  line-height:1.45 !important;
+}
+
+[data-simple-service-page] .av-summary-item__name::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:.62em;
+
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:#c89235;
+}
+
+/* Price goes directly below the related selected name */
+[data-simple-service-page] .av-summary-item__price{
+  display:block !important;
+
+  margin-top:6px !important;
+  padding-left:16px !important;
+
+  color:#b7791f !important;
+  font-family:"Karla",sans-serif !important;
+  font-size:.92rem !important;
+  font-weight:600 !important;
+  line-height:1.35 !important;
+
+  text-align:left !important;
+  white-space:normal !important;
+}
+
+/* Save button — same filled gold visual language as Catering/Entertainment */
+[data-simple-service-page] [data-service-save]{
+  min-height:54px !important;
+
+  background:#c89235 !important;
+  border:1px solid #c89235 !important;
+  border-radius:999px !important;
+
+  color:#ffffff !important;
+
+  font-family:"Karla",sans-serif !important;
+  font-size:.95rem !important;
+  font-weight:600 !important;
+  letter-spacing:.02em !important;
+
+  opacity:1 !important;
+  box-shadow:none !important;
+}
+
+/* Keep Saved state gold instead of turning grey */
+[data-simple-service-page] [data-service-save]:disabled,
+[data-simple-service-page] [data-service-save][disabled]{
+  background:#c89235 !important;
+  border-color:#c89235 !important;
+  color:#ffffff !important;
+
+  opacity:1 !important;
+  cursor:default !important;
+}
+
+/* Hover only while active */
+[data-simple-service-page] [data-service-save]:not(:disabled):hover{
+  background:#b88027 !important;
+  border-color:#b88027 !important;
+  color:#fff !important;
+}
+
+/* Continue button stays clean and consistent */
+[data-simple-service-page] [data-service-continue]{
+  min-height:54px !important;
+  border-radius:999px !important;
+
+  font-family:"Karla",sans-serif !important;
+  font-size:.95rem !important;
+  font-weight:500 !important;
+  letter-spacing:.08em !important;
+}
+</style>
+
+
+<style>
+/* =========================================================
+   FINAL LIGHTING & AV SUMMARY — MATCH PHOTOGRAPHY
+   ========================================================= */
+
+/* Summary heading */
+[data-simple-service-page] .workflow-summary .panel__head{
+  padding:24px 26px !important;
+}
+
+[data-simple-service-page] .workflow-summary .panel__head h5{
+  color:#153f33 !important;
+  font-family:"Cormorant Garamond",serif !important;
+  font-size:2rem !important;
+  font-weight:700 !important;
+}
+
+/* Total */
+[data-simple-service-page] .workflow-summary .bb-price{
+  color:#174c3b !important;
+  font-family:"Cormorant Garamond",serif !important;
+  font-size:2.75rem !important;
+  font-weight:600 !important;
+  line-height:1 !important;
+  letter-spacing:.005em !important;
+}
+
+/* Categories */
+[data-simple-service-page] .workflow-summary .summary-list{
+  margin:30px 0 0 !important;
+  padding:0 !important;
+}
+
+[data-simple-service-page] .workflow-summary .av-summary-group{
+  margin:0 !important;
+  padding:22px 0 !important;
+  border-top:1px solid #e8ded1 !important;
+  border-bottom:0 !important;
+}
+
+[data-simple-service-page] .workflow-summary .av-summary-group__title{
+  margin:0 0 12px !important;
+
+  color:#7a6252 !important;
+  font-family:"Karla",sans-serif !important;
+  font-size:.72rem !important;
+  font-weight:700 !important;
+  letter-spacing:.15em !important;
+  text-transform:uppercase !important;
+}
+
+/* Selected items: same horizontal layout as Photography */
+[data-simple-service-page] .workflow-summary .av-summary-item{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) auto !important;
+  gap:14px !important;
+  align-items:center !important;
+
+  padding:7px 0 !important;
+}
+
+/* Add dotted separator only between multiple items in the same section */
+[data-simple-service-page] .workflow-summary
+.av-summary-item + .av-summary-item{
+  border-top:1px dashed #e9dfd2 !important;
+}
+
+/* Item name */
+[data-simple-service-page] .workflow-summary .av-summary-item__name{
+  position:relative !important;
+
+  display:block !important;
+  padding-left:16px !important;
+
+  color:#1f342b !important;
+  font-family:"Karla",sans-serif !important;
+  font-size:.92rem !important;
+  font-weight:600 !important;
+  line-height:1.4 !important;
+  letter-spacing:.045em !important;
+  text-transform:uppercase !important;
+}
+
+[data-simple-service-page] .workflow-summary .av-summary-item__name::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:.58em;
+
+  width:6px !important;
+  height:6px !important;
+
+  border-radius:50%;
+  background:#c89235 !important;
+}
+
+/* Price returns to the right side, like Photography */
+[data-simple-service-page] .workflow-summary .av-summary-item__price{
+  display:block !important;
+
+  margin:0 !important;
+  padding:0 !important;
+
+  color:#b7791f !important;
+  font-family:"Karla",sans-serif !important;
+  font-size:.91rem !important;
+  font-weight:600 !important;
+  line-height:1.4 !important;
+
+  white-space:nowrap !important;
+  text-align:right !important;
+}
+
+/* Final pricing note */
+[data-simple-service-page] .workflow-summary hr{
+  display:none !important;
+}
+
+[data-simple-service-page] .workflow-summary .summary-list + hr + .small,
+[data-simple-service-page] .workflow-summary .summary-list ~ .small.text-ink-soft{
+  margin:0 0 22px !important;
+  padding-top:26px !important;
+
+  border-top:1px solid #e8ded1 !important;
+
+  color:#617069 !important;
+  font-size:.94rem !important;
+  line-height:1.55 !important;
+}
+
+/* Gold save / saved button */
+[data-simple-service-page] [data-service-save]{
+  min-height:56px !important;
+
+  background:#d29a2e !important;
+  border:1px solid #d29a2e !important;
+  border-radius:999px !important;
+
+  color:#fff !important;
+
+  font-family:"Karla",sans-serif !important;
+  font-size:.96rem !important;
+  font-weight:600 !important;
+
+  opacity:1 !important;
+}
+
+[data-simple-service-page] [data-service-save]:disabled{
+  background:#d29a2e !important;
+  border-color:#d29a2e !important;
+  color:#fff !important;
+  opacity:1 !important;
+}
+
+/* Continue button */
+[data-simple-service-page] [data-service-continue]{
+  min-height:56px !important;
+
+  background:#fff !important;
+  border:1px solid #174c3b !important;
+  border-radius:999px !important;
+
+  color:#174c3b !important;
+
+  font-family:"Karla",sans-serif !important;
+  font-size:.96rem !important;
+  font-weight:500 !important;
+  letter-spacing:.08em !important;
+}
+
+@media(max-width:480px){
+  [data-simple-service-page] .workflow-summary .av-summary-item{
+    grid-template-columns:1fr !important;
+    gap:3px !important;
+  }
+
+  [data-simple-service-page] .workflow-summary .av-summary-item__price{
+    padding-left:16px !important;
+    text-align:left !important;
+  }
+}
+</style>
+
+
+<style>
+/* =========================================================
+   FINAL SUMMARY STACKING
+   Category title -> selected package/item -> price directly below
+   ========================================================= */
+
+[data-simple-service-page] .workflow-summary .av-summary-group{
+  display:block !important;
+  padding:20px 0 !important;
+  border-top:1px solid #e8ded1 !important;
+}
+
+[data-simple-service-page] .workflow-summary .av-summary-group__title{
+  display:block !important;
+  margin:0 0 12px !important;
+
+  color:#7a6252 !important;
+  font-family:"Karla",sans-serif !important;
+  font-size:.72rem !important;
+  font-weight:700 !important;
+  letter-spacing:.15em !important;
+  text-transform:uppercase !important;
+}
+
+/* Each selected option is stacked vertically */
+[data-simple-service-page] .workflow-summary .av-summary-item{
+  display:block !important;
+  width:100% !important;
+
+  margin:0 !important;
+  padding:4px 0 8px !important;
+}
+
+/* Add a soft divider between multiple selected items in one group */
+[data-simple-service-page] .workflow-summary .av-summary-item + .av-summary-item{
+  margin-top:8px !important;
+  padding-top:12px !important;
+  border-top:1px dashed #e9dfd2 !important;
+}
+
+/* Selected package/item name directly below category title */
+[data-simple-service-page] .workflow-summary .av-summary-item__name{
+  position:relative !important;
+
+  display:block !important;
+  width:100% !important;
+
+  margin:0 !important;
+  padding-left:16px !important;
+
+  color:#1f342b !important;
+  font-family:"Karla",sans-serif !important;
+  font-size:.98rem !important;
+  font-weight:600 !important;
+  line-height:1.45 !important;
+  letter-spacing:.015em !important;
+  text-transform:none !important;
+}
+
+[data-simple-service-page] .workflow-summary .av-summary-item__name::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:.62em;
+
+  width:6px !important;
+  height:6px !important;
+
+  border-radius:50%;
+  background:#c89235 !important;
+}
+
+/* Price directly below the related selected name */
+[data-simple-service-page] .workflow-summary .av-summary-item__price{
+  display:block !important;
+  width:100% !important;
+
+  margin:5px 0 0 !important;
+  padding-left:16px !important;
+
+  color:#b7791f !important;
+  font-family:"Karla",sans-serif !important;
+  font-size:.92rem !important;
+  font-weight:600 !important;
+  line-height:1.35 !important;
+
+  text-align:left !important;
+  white-space:normal !important;
+}
+</style>
+
+
+<style>
+/* =========================================================
+   LIGHTING & AV — TRUE EMPTY INITIAL SUMMARY
+   No package/add-on appears until the customer selects it.
+   ========================================================= */
+
+[data-simple-service-page] .workflow-summary.is-empty [data-service-summary]{
+  display:none !important;
+}
+
+[data-simple-service-page] .workflow-summary.is-empty .av-empty-message{
+  display:block !important;
+}
+
+[data-simple-service-page] .av-empty-message{
+  display:none;
+  margin:30px 0 24px;
+
+  color:#617069;
+  font-family:"Karla",sans-serif;
+  font-size:.96rem;
+  line-height:1.55;
+}
+
+[data-simple-service-page] .workflow-summary.is-empty .bb-price{
+  color:#174c3b !important;
+}
+
+[data-simple-service-page] .workflow-summary.is-empty [data-service-save]{
+  background:#d29a2e !important;
+  border-color:#d29a2e !important;
+  color:#fff !important;
+  opacity:1 !important;
+}
+</style>
+
+
+<style>
+/* =========================================================
+   LIGHTING & AV SUMMARY SPACING — MATCH CATERING
+   Compact category spacing and selected-item rows.
+   ========================================================= */
+
+/* Keep sections close together like the Catering summary */
+[data-simple-service-page] .workflow-summary .av-summary-group{
+  margin:0 !important;
+  padding:17px 0 16px !important;
+  border-top:1px solid #e8ded1 !important;
+}
+
+/* Category heading */
+[data-simple-service-page] .workflow-summary .av-summary-group__title{
+  margin:0 0 9px !important;
+
+  color:#7a6252 !important;
+  font-family:"Karla",sans-serif !important;
+  font-size:.70rem !important;
+  font-weight:700 !important;
+  line-height:1.2 !important;
+  letter-spacing:.15em !important;
+  text-transform:uppercase !important;
+}
+
+/* Each selected option uses a compact two-column row */
+[data-simple-service-page] .workflow-summary .av-summary-item{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) auto !important;
+  gap:14px !important;
+  align-items:center !important;
+
+  width:100% !important;
+
+  margin:0 !important;
+  padding:5px 0 !important;
+}
+
+/* Multiple items inside one category */
+[data-simple-service-page] .workflow-summary .av-summary-item + .av-summary-item{
+  margin-top:2px !important;
+  padding-top:8px !important;
+  border-top:1px dashed #e9dfd2 !important;
+}
+
+/* Item name */
+[data-simple-service-page] .workflow-summary .av-summary-item__name{
+  position:relative !important;
+
+  display:block !important;
+  width:auto !important;
+
+  margin:0 !important;
+  padding-left:16px !important;
+
+  color:#1f342b !important;
+  font-family:"Karla",sans-serif !important;
+  font-size:.94rem !important;
+  font-weight:500 !important;
+  line-height:1.38 !important;
+  letter-spacing:0 !important;
+  text-transform:none !important;
+}
+
+[data-simple-service-page] .workflow-summary .av-summary-item__name::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:.58em;
+
+  width:6px !important;
+  height:6px !important;
+
+  border-radius:50%;
+  background:#c89235 !important;
+}
+
+/* Price to the right, like Catering add-ons */
+[data-simple-service-page] .workflow-summary .av-summary-item__price{
+  display:block !important;
+
+  width:auto !important;
+  margin:0 !important;
+  padding:0 !important;
+
+  color:#b7791f !important;
+  font-family:"Karla",sans-serif !important;
+  font-size:.91rem !important;
+  font-weight:600 !important;
+  line-height:1.35 !important;
+
+  white-space:nowrap !important;
+  text-align:right !important;
+}
+
+/* Reduce blank space before the final pricing message */
+[data-simple-service-page] .workflow-summary .summary-list{
+  margin:24px 0 0 !important;
+}
+
+[data-simple-service-page] .workflow-summary .summary-list ~ .small.text-ink-soft{
+  margin-top:0 !important;
+  padding-top:22px !important;
+}
+
+/* Keep the total area compact */
+[data-simple-service-page] .workflow-summary .bb-price{
+  margin-bottom:4px !important;
+}
+
+[data-simple-service-page] .workflow-summary .bb-price + p{
+  margin-bottom:18px !important;
+}
+
+/* Mobile: stack only when there is not enough width */
+@media(max-width:430px){
+  [data-simple-service-page] .workflow-summary .av-summary-item{
+    grid-template-columns:1fr !important;
+    gap:3px !important;
+  }
+
+  [data-simple-service-page] .workflow-summary .av-summary-item__price{
+    padding-left:16px !important;
+    text-align:left !important;
+  }
+}
+</style>
+
+</head>
+
+<body>
+
+<main class="container py-5" data-simple-service-page>
+
+  <!-- HEADER -->
+  <div class="d-flex justify-content-between align-items-end mb-4">
+
+    <div>
+      <span class="eyebrow">
+        Customer Portal
+      </span>
+
+      <h1 class="h2 mt-1 mb-1" data-service-title>
+        Customize Sound, Lighting &amp; AV
+      </h1>
+
+      <p class="small text-ink-soft mb-0" data-service-context>
+        Select an AV package and add only the equipment your event needs.
+      </p>
+    </div>
+
+    <div class="d-flex gap-2">
+
+      <a class="btn btn-outline-forest btn-sm"
+         data-service-back
+         href="/prototype/customer/services.html">
+         Back to Services
+      </a>
+
+      <a class="btn btn-gold btn-sm"
+         data-service-continue
+         href="/prototype/customer/review.html">
+         Continue
+      </a>
+
+    </div>
+
+  </div>
+
+
+  <div class="row g-4">
+
+    <!-- LEFT -->
+    <div class="col-lg-8">
+
+      <!-- PACKAGE -->
+      <div class="panel mb-4">
+
+        <div class="panel__head">
+          <div>
+            <h5 class="mb-1">
+              Choose Your AV Package
+            </h5>
+
+            <p class="small text-ink-soft mb-0">
+              Select one main technical package.
+            </p>
+          </div>
+        </div>
+
+
+        <div class="panel__body">
+
+          <div class="row g-3">
+
+            <!-- NO UPGRADE -->
+            <div class="col-md-6">
+
+              <label class="av-package d-block">
+
+                <div class="form-check mb-3">
+
+                  <input
+                    class="form-check-input package-radio"
+                    type="radio"
+                    id="venue-basic"
+                    name="avPackage"
+                    value="0"
+                    data-price-input
+                    data-price="0"
+                    data-label="Venue Basic AV">
+
+                  <span class="form-check-label fw-semibold">
+                    Venue Basic AV
+                  </span>
+
+                </div>
+
+                <p class="small text-ink-soft">
+                  Use the basic AV equipment already included with your venue.
+                </p>
+
+                <ul class="small mb-3">
+                  <li>Basic PA system</li>
+                  <li>2 wireless microphones</li>
+                  <li>Standard venue setup</li>
+                </ul>
+
+                <div class="package-price">
+                  Included
+                </div>
+
+              </label>
+
+            </div>
+
+
+            <!-- BASIC -->
+            <div class="col-md-6">
+
+              <label class="av-package d-block">
+
+                <div class="form-check mb-3">
+
+                  <input
+                    class="form-check-input package-radio"
+                    type="radio"
+                    id="basic-av"
+                    name="avPackage"
+                    value="300000"
+                    data-price-input
+                    data-price="300000"
+                    data-label="Basic AV Package">
+
+                  <span class="form-check-label fw-semibold">
+                    Basic AV Package
+                  </span>
+
+                </div>
+
+                <p class="small text-ink-soft">
+                  Suitable for birthdays, small weddings and simple ceremonies.
+                </p>
+
+                <ul class="small mb-3">
+                  <li>2 additional speakers</li>
+                  <li>2 wireless microphones</li>
+                  <li>Audio mixer</li>
+                  <li>Setup technician</li>
+                </ul>
+
+                <div class="package-price">
+                  300,000 MMK
+                </div>
+
+              </label>
+
+            </div>
+
+
+            <!-- STANDARD -->
+            <div class="col-md-6">
+
+              <label class="av-package d-block">
+
+                <div class="form-check mb-3">
+
+                  <input
+                    class="form-check-input package-radio"
+                    type="radio"
+                    id="standard-av"
+                    name="avPackage"
+                    value="650000"
+                    data-price-input
+                    data-price="650000"
+                    data-label="Standard AV Package">
+
+                  <span class="form-check-label fw-semibold">
+                    Standard AV Package
+                  </span>
+
+                </div>
+
+                <p class="small text-ink-soft">
+                  Recommended for medium weddings,
+                  corporate events and stage programs.
+                </p>
+
+                <ul class="small mb-3">
+                  <li>4 professional speakers</li>
+                  <li>4 wireless microphones</li>
+                  <li>Audio mixer</li>
+                  <li>Basic stage lighting</li>
+                  <li>AV technician</li>
+                </ul>
+
+                <div class="package-price">
+                  650,000 MMK
+                </div>
+
+              </label>
+
+            </div>
+
+
+            <!-- PREMIUM -->
+            <div class="col-md-6">
+
+              <label class="av-package d-block">
+
+                <div class="form-check mb-3">
+
+                  <input
+                    class="form-check-input package-radio"
+                    type="radio"
+                    id="premium-av"
+                    name="avPackage"
+                    value="1200000"
+                    data-price-input
+                    data-price="1200000"
+                    data-label="Premium AV Package">
+
+                  <span class="form-check-label fw-semibold">
+                    Premium AV Package
+                  </span>
+
+                </div>
+
+                <p class="small text-ink-soft">
+                  Designed for large weddings,
+                  concerts and premium corporate events.
+                </p>
+
+                <ul class="small mb-3">
+                  <li>Professional PA system</li>
+                  <li>6 wireless microphones</li>
+                  <li>Stage lighting</li>
+                  <li>Moving lights</li>
+                  <li>Lighting controller</li>
+                  <li>Dedicated AV technician</li>
+                </ul>
+
+                <div class="package-price">
+                  1,200,000 MMK
+                </div>
+
+              </label>
+
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+
+      <!-- AUDIO UPGRADES -->
+      <div class="panel mb-4">
+
+        <div class="panel__head">
+
+          <div>
+            <h5 class="mb-1">
+              Audio Upgrades
+            </h5>
+
+            <p class="small text-ink-soft mb-0">
+              Add extra sound equipment if needed.
+            </p>
+          </div>
+
+        </div>
+
+
+        <div class="panel__body">
+
+          <div class="row g-3">
+
+            <div class="col-md-6">
+
+              <div class="option-card">
+
+                <div class="form-check">
+
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="extra-wireless-microphone"
+                    data-price-input
+                    data-price="50000"
+                    data-label="Extra Wireless Microphone">
+
+                  <label class="form-check-label">
+
+                    <strong>
+                      Extra Wireless Microphone
+                    </strong>
+
+                    <div class="small text-ink-soft">
+                      Additional wireless microphone for speeches,
+                      hosts or performers.
+                    </div>
+
+                    <div class="option-price mt-2">
+                      50,000 MMK
+                    </div>
+
+                  </label>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <div class="col-md-6">
+
+              <div class="option-card">
+
+                <div class="form-check">
+
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="additional-speaker-pair"
+                    data-price-input
+                    data-price="120000"
+                    data-label="Additional Speaker Pair">
+
+                  <label class="form-check-label">
+
+                    <strong>
+                      Additional Speaker Pair
+                    </strong>
+
+                    <div class="small text-ink-soft">
+                      Extra speakers for larger venues
+                      or outdoor spaces.
+                    </div>
+
+                    <div class="option-price mt-2">
+                      120,000 MMK
+                    </div>
+
+                  </label>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <div class="col-md-6">
+
+              <div class="option-card">
+
+                <div class="form-check">
+
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="dj-equipment-setup"
+                    data-price-input
+                    data-price="150000"
+                    data-label="DJ Equipment Setup">
+
+                  <label class="form-check-label">
+
+                    <strong>
+                      DJ Equipment Setup
+                    </strong>
+
+                    <div class="small text-ink-soft">
+                      DJ controller, mixer connection and technical setup.
+                    </div>
+
+                    <div class="option-price mt-2">
+                      150,000 MMK
+                    </div>
+
+                  </label>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <div class="col-md-6">
+
+              <div class="option-card">
+
+                <div class="form-check">
+
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="audio-recording"
+                    data-price-input
+                    data-price="100000"
+                    data-label="Audio Recording">
+
+                  <label class="form-check-label">
+
+                    <strong>
+                      Audio Recording
+                    </strong>
+
+                    <div class="small text-ink-soft">
+                      Record speeches, performances or presentations.
+                    </div>
+
+                    <div class="option-price mt-2">
+                      100,000 MMK
+                    </div>
+
+                  </label>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+
+      <!-- LIGHTING -->
+      <div class="panel mb-4">
+
+        <div class="panel__head">
+
+          <div>
+            <h5 class="mb-1">
+              Lighting Upgrades
+            </h5>
+
+            <p class="small text-ink-soft mb-0">
+              Enhance the stage and atmosphere of your event.
+            </p>
+          </div>
+
+        </div>
+
+
+        <div class="panel__body">
+
+          <div class="row g-3">
+
+            <div class="col-md-6">
+
+              <div class="option-card">
+
+                <div class="form-check">
+
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="additional-stage-lighting"
+                    data-price-input
+                    data-price="200000"
+                    data-label="Additional Stage Lighting">
+
+                  <label class="form-check-label">
+
+                    <strong>
+                      Additional Stage Lighting
+                    </strong>
+
+                    <div class="small text-ink-soft">
+                      Extra lighting for stage,
+                      speeches and performances.
+                    </div>
+
+                    <div class="option-price mt-2">
+                      200,000 MMK
+                    </div>
+
+                  </label>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <div class="col-md-6">
+
+              <div class="option-card">
+
+                <div class="form-check">
+
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="ambient-lighting"
+                    data-price-input
+                    data-price="150000"
+                    data-label="Ambient Lighting">
+
+                  <label class="form-check-label">
+
+                    <strong>
+                      Ambient Lighting
+                    </strong>
+
+                    <div class="small text-ink-soft">
+                      Warm decorative lighting for walls,
+                      tables and venue atmosphere.
+                    </div>
+
+                    <div class="option-price mt-2">
+                      150,000 MMK
+                    </div>
+
+                  </label>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <div class="col-md-6">
+
+              <div class="option-card">
+
+                <div class="form-check">
+
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="spotlight"
+                    data-price-input
+                    data-price="100000"
+                    data-label="Spotlight">
+
+                  <label class="form-check-label">
+
+                    <strong>
+                      Spotlight
+                    </strong>
+
+                    <div class="small text-ink-soft">
+                      Focused spotlight for entrance,
+                      stage or special moments.
+                    </div>
+
+                    <div class="option-price mt-2">
+                      100,000 MMK
+                    </div>
+
+                  </label>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <div class="col-md-6">
+
+              <div class="option-card">
+
+                <div class="form-check">
+
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="moving-lights"
+                    data-price-input
+                    data-price="180000"
+                    data-label="Moving Lights">
+
+                  <label class="form-check-label">
+
+                    <strong>
+                      Moving Lights
+                    </strong>
+
+                    <div class="small text-ink-soft">
+                      Dynamic lighting for dance floors
+                      and live performances.
+                    </div>
+
+                    <div class="option-price mt-2">
+                      180,000 MMK
+                    </div>
+
+                  </label>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+
+      <!-- VISUAL -->
+      <div class="panel">
+
+        <div class="panel__head">
+
+          <div>
+            <h5 class="mb-1">
+              Screens &amp; Visual Equipment
+            </h5>
+
+            <p class="small text-ink-soft mb-0">
+              Useful for presentations,
+              wedding videos and corporate content.
+            </p>
+          </div>
+
+        </div>
+
+
+        <div class="panel__body">
+
+          <div class="row g-3">
+
+            <div class="col-md-4">
+
+              <div class="option-card">
+
+                <div class="form-check">
+
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="projector-screen"
+                    data-price-input
+                    data-price="150000"
+                    data-label="Projector & Screen">
+
+                  <label class="form-check-label">
+
+                    <strong>
+                      Projector &amp; Screen
+                    </strong>
+
+                    <div class="small text-ink-soft">
+                      Suitable for slideshows and presentations.
+                    </div>
+
+                    <div class="option-price mt-2">
+                      150,000 MMK
+                    </div>
+
+                  </label>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <div class="col-md-4">
+
+              <div class="option-card">
+
+                <div class="form-check">
+
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="led-screen"
+                    data-price-input
+                    data-price="400000"
+                    data-label="LED Screen">
+
+                  <label class="form-check-label">
+
+                    <strong>
+                      LED Screen
+                    </strong>
+
+                    <div class="small text-ink-soft">
+                      Bright LED display for stage visuals
+                      and event content.
+                    </div>
+
+                    <div class="option-price mt-2">
+                      400,000 MMK
+                    </div>
+
+                  </label>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <div class="col-md-4">
+
+              <div class="option-card">
+
+                <div class="form-check">
+
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="video-wall"
+                    data-price-input
+                    data-price="750000"
+                    data-label="Video Wall">
+
+                  <label class="form-check-label">
+
+                    <strong>
+                      Video Wall
+                    </strong>
+
+                    <div class="small text-ink-soft">
+                      Large-format display for premium
+                      or corporate events.
+                    </div>
+
+                    <div class="option-price mt-2">
+                      750,000 MMK
+                    </div>
+
+                  </label>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+
+    <!-- RIGHT SUMMARY -->
+    <div class="col-lg-4">
+
+      <div class="panel workflow-summary">
+
+        <div class="panel__head">
+
+          <div>
+            <h5 class="mb-0">
+              Your Sound, Lighting &amp; AV
+            </h5>
+          </div>
+
+        </div>
+
+
+        <div class="panel__body">
+
+          <div class="bb-price mb-1"
+               data-service-estimate>
+            0 MMK
+          </div>
+
+          <p class="small text-ink-soft mb-3">
+            Estimated Sound, Lighting &amp; AV total
+          </p>
+
+          <div class="small text-danger mb-2"
+               data-service-availability-status
+               aria-live="polite"></div>
+
+          <p class="av-empty-message">
+            Choose an AV package or upgrade to begin.
+          </p>
+
+          <ul class="summary-list"
+              data-service-summary>
+
+            <li class="text-ink-soft">
+              No upgrades selected.
+            </li>
+
+          </ul>
+
+
+          <hr>
+
+
+          <div class="small text-ink-soft mb-3">
+
+            Final pricing will appear after you choose your Sound, Lighting &amp; AV services.
+
+          </div>
+
+
+          <div class="d-grid gap-2">
+
+            <button
+              class="btn btn-gold"
+              type="button"
+              data-service-save>
+
+              Save Sound, Lighting &amp; AV
+
+            </button>
+
+            <a
+              class="btn btn-outline-forest"
+              data-service-continue
+              href="/prototype/customer/review.html">
+
+              Continue to Review
+
+            </a>
+
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script src="/prototype/assets/js/main.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+  const SERVICE_ID = 'lighting-av';
+  const BACKEND_SERVICE_ID = 5;
+  const SERVICE_TITLE = 'Lighting & AV';
+  const SAVE_TEXT = 'Save Sound, Lighting & AV';
+  const SAVED_TEXT = '\u2713 Saved';
+  const STORAGE_KEY = 'lighting-av';
+
+  if (typeof bbInitSimpleServicePage === 'function') {
+    bbInitSimpleServicePage({
+      serviceId: SERVICE_ID,
+      title: 'Customize Sound, Lighting & AV',
+      shortTitle: 'Sound, Lighting & AV'
+    });
+  }
+
+  const packageRadios = [...document.querySelectorAll('.package-radio')];
+  const packageCards = [...document.querySelectorAll('.av-package')];
+  const priceInputs = [...document.querySelectorAll('[data-price-input]')];
+  const saveBtn = document.querySelector('[data-service-save]');
+  const continueBtn = document.querySelector('[data-service-continue]');
+  const availabilityStatusEl = document.querySelector('[data-service-availability-status]');
+  const defaultPackage = document.getElementById('venue-basic')
+    || document.querySelector('.package-radio[data-label="Venue Basic AV"]');
+
+  let isRestoring = false;
+  let isSaved = false;
+  let isCatalogAvailable = true;
+
+  function getInputLabel(input) {
+    return input?.dataset?.label
+      || input?.closest('label')?.querySelector('.option-title')?.textContent?.trim()
+      || input?.closest('label')?.textContent?.trim()
+      || input?.name
+      || input?.value
+      || '';
+  }
+
+  function getControlPrice(input) {
+    return Number(input?.dataset?.price || input?.value || 0);
+  }
+
+  function getCheckedPackage() {
+    return packageRadios.find((radio) => radio.checked) || null;
+  }
+
+  function getCheckedAddOns() {
+    return [...document.querySelectorAll('[data-price-input]:checked')]
+      .filter((input) => input.type === 'checkbox');
+  }
+
+  function getSelectedOptionLabelList() {
+    const selectedPackage = getCheckedPackage();
+    const addOns = getCheckedAddOns();
+    const labels = [];
+
+    if (selectedPackage) {
+      labels.push(getInputLabel(selectedPackage));
+    }
+
+    addOns.forEach((input) => {
+      labels.push(getInputLabel(input));
+    });
+
+    return labels;
+  }
+
+  function buildLightingState() {
+    const selectedPackage = getCheckedPackage();
+    const addOns = getCheckedAddOns();
+    const options = getSelectedOptionLabelList();
+
+    const packageSelection = selectedPackage ? {
+      id: selectedPackage.id || '',
+      label: getInputLabel(selectedPackage),
+      price: getControlPrice(selectedPackage)
+    } : null;
+
+    const addOnSelections = addOns.map((input) => ({
+      id: input.id || '',
+      label: getInputLabel(input),
+      price: getControlPrice(input)
+    }));
+
+    const estimatedTotal = [selectedPackage, ...addOns]
+      .filter(Boolean)
+      .reduce((total, input) => total + getControlPrice(input), 0);
+
+    return {
+      serviceId: SERVICE_ID,
+      backendServiceId: BACKEND_SERVICE_ID,
+      title: SERVICE_TITLE,
+      estimatedTotal,
+      options,
+      selections: {
+        package: packageSelection,
+        addOns: addOnSelections
+      }
+    };
+  }
+
+  function setSaveState(saved) {
+    if (!saveBtn) return;
+
+    isSaved = Boolean(saved);
+    saveBtn.textContent = saved ? SAVED_TEXT : SAVE_TEXT;
+    syncActionButtons();
+  }
+
+  function setAvailabilityMessage(message) {
+    if (!availabilityStatusEl) return;
+    availabilityStatusEl.textContent = message || '';
+  }
+
+  function syncActionButtons() {
+    packageRadios.forEach((radio) => {
+      radio.disabled = !isCatalogAvailable;
+    });
+
+    priceInputs.forEach((input) => {
+      input.disabled = !isCatalogAvailable;
+    });
+
+    if (saveBtn) {
+      saveBtn.disabled = !isCatalogAvailable || isSaved;
+    }
+
+    if (continueBtn) {
+      const locked = !isCatalogAvailable;
+      continueBtn.classList.toggle('disabled', locked);
+      continueBtn.setAttribute('aria-disabled', locked ? 'true' : 'false');
+      continueBtn.tabIndex = locked ? -1 : 0;
+      continueBtn.style.pointerEvents = locked ? 'none' : '';
+    }
+  }
+
+  function applyAvailabilityState(available) {
+    isCatalogAvailable = Boolean(available);
+
+    if (isCatalogAvailable) {
+      setAvailabilityMessage('');
+    } else {
+      setAvailabilityMessage('Lighting & AV is currently unavailable.');
+    }
+
+    syncActionButtons();
+  }
+
+  function upsertSelectedService(total) {
+    const current = bbGetSelectedServices().filter((item) => item.id !== SERVICE_ID);
+    current.push({
+      id: SERVICE_ID,
+      title: SERVICE_TITLE,
+      estimatedTotal: total
+    });
+    bbSetSelectedServices(current);
+  }
+
+  function persistLightingState() {
+    if (!isCatalogAvailable) {
+      return null;
+    }
+
+    const state = buildLightingState();
+    bbSetServiceData(STORAGE_KEY, state);
+    upsertSelectedService(state.estimatedTotal);
+    setSaveState(true);
+    return state;
+  }
+
+  function findRadioById(id) {
+    return id ? document.getElementById(id) : null;
+  }
+
+  function findCheckboxById(id) {
+    return id ? document.getElementById(id) : null;
+  }
+
+  function findRadioByLabel(label) {
+    const normalized = String(label || '').trim();
+    return packageRadios.find((radio) => getInputLabel(radio) === normalized) || null;
+  }
+
+  function findCheckboxByLabel(label) {
+    const normalized = String(label || '').trim();
+    return priceInputs.find((input) => input.type === 'checkbox' && getInputLabel(input) === normalized) || null;
+  }
+
+  function syncPackageCardSelection() {
+    packageCards.forEach((card) => {
+      card.classList.toggle(
+        'selected',
+        Boolean(card.querySelector('.package-radio:checked'))
+      );
+    });
+  }
+
+  function handleUserChange() {
+    if (isRestoring || !isCatalogAvailable) return;
+    syncPackageCardSelection();
+    if (isSaved) {
+      setSaveState(false);
+    }
+  }
+
+  function applySavedLightingState(saved) {
+    isRestoring = true;
+
+    packageRadios.forEach((radio) => {
+      radio.checked = false;
+    });
+
+    document.querySelectorAll('[data-price-input]').forEach((input) => {
+      if (input.type === 'checkbox') {
+        input.checked = false;
+      }
+    });
+
+    const savedPackage = findRadioById(saved?.selections?.package?.id)
+      || findRadioByLabel(saved?.selections?.package?.label)
+      || findRadioByLabel(saved?.packageLabel)
+      || findRadioByLabel(saved?.options?.[0]);
+
+    if (savedPackage) {
+      savedPackage.checked = true;
+    }
+
+    const savedAddOns = Array.isArray(saved?.selections?.addOns)
+      ? saved.selections.addOns
+      : [];
+
+    savedAddOns.forEach((item) => {
+      const checkbox = findCheckboxById(item.id) || findCheckboxByLabel(item.label);
+      if (checkbox) {
+        checkbox.checked = true;
+      }
+    });
+
+    syncPackageCardSelection();
+
+    [...packageRadios, ...document.querySelectorAll('[data-price-input]:checked')].forEach((input) => {
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+
+    isRestoring = false;
+  }
+
+  function preventHelperSave(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    if (typeof event.stopImmediatePropagation === 'function') {
+      event.stopImmediatePropagation();
+    }
+  }
+
+  async function checkBackendAvailability() {
+    try {
+      const response = await fetch('http://localhost:8081/api/services/5', {
+        cache: 'no-store'
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const data = await response.json();
+      const serviceName = String(data?.name || data?.title || '').toLowerCase();
+      const serviceId = Number(data?.id);
+
+      if (
+        serviceId !== BACKEND_SERVICE_ID
+        || !serviceName.includes('lighting')
+        || !serviceName.includes('av')
+      ) {
+        throw new Error('Unexpected service payload');
+      }
+
+      applyAvailabilityState(data?.available !== false);
+    } catch (error) {
+      console.log('Lighting & AV catalog unavailable; using frontend fallback.');
+      applyAvailabilityState(true);
+    }
+  }
+
+  const savedState = bbGetServiceData()?.[STORAGE_KEY];
+
+  packageRadios.forEach((radio) => {
+    radio.addEventListener('change', handleUserChange);
+  });
+
+  priceInputs.forEach((input) => {
+    input.addEventListener('change', handleUserChange);
+    input.addEventListener('input', handleUserChange);
+  });
+
+  packageCards.forEach((card) => {
+    card.addEventListener('click', (event) => {
+      if (!isCatalogAvailable) {
+        return;
+      }
+
+      if (event.target.classList.contains('package-radio')) {
+        return;
+      }
+
+      const radio = card.querySelector('.package-radio');
+      if (!radio) return;
+
+      radio.checked = true;
+      radio.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+  });
+
+  saveBtn?.addEventListener('click', (event) => {
+    if (!isCatalogAvailable) {
+      preventHelperSave(event);
+      return;
+    }
+
+    preventHelperSave(event);
+    persistLightingState();
+  }, true);
+
+  continueBtn?.addEventListener('click', (event) => {
+    if (!isCatalogAvailable) {
+      preventHelperSave(event);
+      return;
+    }
+
+    preventHelperSave(event);
+    persistLightingState();
+    window.location.href = continueBtn.getAttribute('href') || '/prototype/customer/review.html';
+  }, true);
+
+  /*
+    Start the page visually empty.
+    Saved data is preserved in storage, but it is not auto-selected
+    when this page opens. The estimate appears only after the user
+    actively chooses a package or upgrade.
+  */
+  packageRadios.forEach((radio) => {
+    radio.checked = false;
+  });
+
+  document.querySelectorAll('input[type="checkbox"][data-price-input]').forEach((input) => {
+    input.checked = false;
+  });
+
+  syncPackageCardSelection();
+  setSaveState(false);
+
+  syncActionButtons();
+  checkBackendAvailability();
+
+});
+</script>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const page = document.querySelector('[data-simple-service-page]');
+  if (!page) return;
+
+  const summary = page.querySelector('[data-service-summary]');
+  if (!summary) return;
+
+  const money = (value) =>
+    Number(value || 0).toLocaleString('en-US') + ' MMK';
+
+  function buildItem(input, showPlus = false) {
+    const price = Number(input.dataset.price || input.value || 0);
+    const label = input.dataset.label || '';
+
+    return `
+      <div class="av-summary-item">
+        <span class="av-summary-item__name">${label}</span>
+        <span class="av-summary-item__price">
+          ${price === 0 ? 'Included' : `${showPlus ? '+' : ''}${money(price)}`}
+        </span>
+      </div>
+    `;
+  }
+
+  function getSelectedByPanelTitle(keyword) {
+    return [...page.querySelectorAll('input[type="checkbox"][data-price-input]:checked')]
+      .filter((input) => {
+        const panel = input.closest('.panel');
+        const title = panel?.querySelector('.panel__head h5')?.textContent?.trim() || '';
+        return title.includes(keyword);
+      });
+  }
+
+  function renderGroupedSummary() {
+    const selectedPackage = page.querySelector('.package-radio:checked');
+
+    const audio = getSelectedByPanelTitle('Audio Upgrades');
+    const lighting = getSelectedByPanelTitle('Lighting Upgrades');
+    const visual = getSelectedByPanelTitle('Screens & Visual Equipment');
+
+    let output = '';
+
+    if (selectedPackage) {
+      output += `
+        <li class="av-summary-group">
+          <div class="av-summary-group__title">AV Package</div>
+          ${buildItem(selectedPackage)}
+        </li>
+      `;
+    }
+
+    if (audio.length) {
+      output += `
+        <li class="av-summary-group">
+          <div class="av-summary-group__title">Audio Upgrades</div>
+          ${audio.map((input) => buildItem(input, true)).join('')}
+        </li>
+      `;
+    }
+
+    if (lighting.length) {
+      output += `
+        <li class="av-summary-group">
+          <div class="av-summary-group__title">Lighting Upgrades</div>
+          ${lighting.map((input) => buildItem(input, true)).join('')}
+        </li>
+      `;
+    }
+
+    if (visual.length) {
+      output += `
+        <li class="av-summary-group">
+          <div class="av-summary-group__title">Screens & Visual Equipment</div>
+          ${visual.map((input) => buildItem(input, true)).join('')}
+        </li>
+      `;
+    }
+
+    summary.innerHTML = output || `
+      <li class="text-ink-soft">
+        Choose an AV package or upgrade to begin.
+      </li>
+    `;
+  }
+
+  /* Re-render after the existing helper updates the total/summary. */
+  page.addEventListener('change', function () {
+    setTimeout(renderGroupedSummary, 0);
+  });
+
+  page.addEventListener('input', function () {
+    setTimeout(renderGroupedSummary, 0);
+  });
+
+  page.querySelector('[data-service-save]')?.addEventListener('click', function () {
+    setTimeout(renderGroupedSummary, 0);
+    setTimeout(renderGroupedSummary, 100);
+  });
+
+  page.querySelector('[data-service-continue]')?.addEventListener('click', function () {
+    setTimeout(renderGroupedSummary, 0);
+  });
+
+  setTimeout(renderGroupedSummary, 60);
+});
+</script>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const page = document.querySelector('[data-simple-service-page]');
+  if (!page) return;
+
+  const estimate = page.querySelector('[data-service-estimate]');
+  if (!estimate) return;
+
+  function normalizeEstimate(){
+    const text = (estimate.textContent || '').trim();
+
+    /* Converts helper output such as MMK700,000 to 700,000 MMK */
+    const prefixMatch = text.match(/^MMK\s*([\d,]+)$/i);
+    if (prefixMatch) {
+      estimate.textContent = prefixMatch[1] + ' MMK';
+      return;
+    }
+
+    const plainNumber = text.match(/^([\d,]+)$/);
+    if (plainNumber) {
+      estimate.textContent = plainNumber[1] + ' MMK';
+    }
+  }
+
+  page.addEventListener('change', function(){
+    setTimeout(normalizeEstimate, 0);
+    setTimeout(normalizeEstimate, 60);
+  });
+
+  page.addEventListener('input', function(){
+    setTimeout(normalizeEstimate, 0);
+  });
+
+  page.querySelector('[data-service-save]')?.addEventListener('click', function(){
+    setTimeout(normalizeEstimate, 0);
+    setTimeout(normalizeEstimate, 80);
+  });
+
+  setTimeout(normalizeEstimate, 80);
+
+  const observer = new MutationObserver(normalizeEstimate);
+  observer.observe(estimate, {
+    childList:true,
+    characterData:true,
+    subtree:true
+  });
+});
+</script>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const page = document.querySelector('[data-simple-service-page]');
+  if (!page) return;
+
+  const summaryPanel = page.querySelector('.workflow-summary');
+  const estimate = page.querySelector('[data-service-estimate]');
+  const saveBtn = page.querySelector('[data-service-save]');
+
+  if (!summaryPanel || !estimate) return;
+
+  function hasUserChoice() {
+    return !!page.querySelector(
+      '.package-radio:checked, input[type="checkbox"][data-price-input]:checked'
+    );
+  }
+
+  function syncEmptyState() {
+    const empty = !hasUserChoice();
+
+    summaryPanel.classList.toggle('is-empty', empty);
+
+    if (empty) {
+      estimate.textContent = '0 MMK';
+
+      if (saveBtn) {
+        saveBtn.textContent = 'Save Sound, Lighting & AV';
+        saveBtn.disabled = false;
+      }
+    }
+  }
+
+  page.addEventListener('change', function () {
+    setTimeout(syncEmptyState, 0);
+  });
+
+  page.addEventListener('input', function () {
+    setTimeout(syncEmptyState, 0);
+  });
+
+  /* Run after the page's existing helper initialization. */
+  setTimeout(syncEmptyState, 100);
+});
+</script>
+
+</body>
+</html>

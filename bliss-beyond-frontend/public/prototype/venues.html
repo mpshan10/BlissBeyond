@@ -1,0 +1,1935 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Venues | Bliss &amp; Beyond</title>
+<meta name="description" content="Explore event venues in Yangon, Mandalay and other locations in Myanmar for weddings, celebrations and corporate events.">
+<link rel="icon" href="/prototype/../favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Karla:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="/prototype/assets/css/style.css" rel="stylesheet">
+<style>
+  #venueStartTime,
+  #venueEndTime {
+    letter-spacing: 0.08em;
+  }
+
+  #venueStartTime::placeholder,
+  #venueEndTime::placeholder {
+    color: #8a968f;
+  }
+</style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg bb-nav sticky-top">
+  <div class="container">
+    <a class="navbar-brand me-4" href="/prototype/index.html">
+      Bliss &amp; Beyond<small>Events &amp; Catering</small>
+    </a>
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse"
+            data-bs-target="#bbNav" aria-label="Menu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="bbNav">
+      <ul class="navbar-nav ms-auto align-items-lg-center">
+        <li class="nav-item"><a class="nav-link" href="/prototype/index.html">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="/prototype/about.html">About</a></li>
+        <li class="nav-item"><a class="nav-link" href="/prototype/services.html">Services</a></li>
+        <li class="nav-item"><a class="nav-link" href="/prototype/packages.html">Packages</a></li>
+        <li class="nav-item"><a class="nav-link active" href="/prototype/venues.html">Venues</a></li>
+        
+        
+        <li class="nav-item"><a class="nav-link" href="/prototype/faq.html">FAQ</a></li>
+        <li class="nav-item"><a class="nav-link" href="/prototype/contact.html">Contact</a></li>
+      </ul>
+      <div class="d-flex gap-2 mt-3 mt-lg-0 ms-lg-3">
+        <a class="btn btn-outline-forest btn-sm" href="/prototype/login.html">Login</a>
+        <a class="btn btn-gold btn-sm" href="/prototype/register.html">Get Started</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<header class="page-head">
+  <div class="container">
+    <h1 class="mb-2">Our Venues</h1>
+    <p class="mb-0 col-lg-7">
+      Explore indoor halls, outdoor spaces, flexible venues and poolside settings
+      for weddings, celebrations and corporate events.
+    </p>
+  </div>
+</header>
+
+<style>
+  .venue-availability-section{padding-top:2rem!important;padding-bottom:0!important}
+  .venue-filter-section{padding-top:2rem!important}
+  .venue-availability-panel{background:#fffdf9;border:1px solid #e8dfd0;border-radius:18px;box-shadow:0 12px 30px rgba(45,54,46,.08);padding:1.35rem 1.5rem}
+  .venue-availability-panel h2{color:#214c3b;font-family:"Cormorant Garamond",serif;font-size:clamp(1.8rem,3vw,2.45rem);margin:0}
+  .venue-availability-label{color:#8e6726;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+  .venue-availability-field{border:1px solid #e1d6c5;border-radius:10px;min-height:2.75rem;background:#fdfbf7;color:#214c3b}
+  .venue-availability-field:focus{border-color:#b58a3a;box-shadow:0 0 0 .2rem rgba(181,138,58,.15)}
+  .venue-time-field{position:relative}
+  .venue-time-placeholder{color:#68746c;left:.8rem;pointer-events:none;position:absolute;top:50%;transform:translateY(-50%);z-index:1}
+  .venue-time-field.is-empty input{color:transparent}
+  .venue-time-field.is-empty input::-webkit-datetime-edit{color:transparent}
+  .venue-time-field:not(.is-empty) .venue-time-placeholder{display:none}
+  #venueAvailabilityStatus{color:#214c3b;min-height:1.45rem;white-space:pre-line}
+  #venueAvailabilityStatus.is-error{background:#fff0ee;border-radius:10px;color:#8b3d35;padding:.7rem .8rem}
+  .venue-availability-hidden{display:none!important}
+  @media (max-width:575.98px){.venue-availability-panel{padding:1.1rem}.venue-availability-panel .btn{width:100%}}
+</style>
+
+<section class="section venue-availability-section" aria-labelledby="venueAvailabilityHeading">
+  <div class="container">
+    <div class="venue-availability-panel">
+      <div class="row g-3 align-items-end">
+        <div class="col-lg-4"><span class="venue-availability-label">Plan your event</span><h2 id="venueAvailabilityHeading" class="mt-1">Find Available Venues for Your Event</h2></div>
+        <div class="col-lg-8">
+          <div class="row g-2">
+            <div class="col-sm-6 col-lg-3"><label class="venue-availability-label mb-1" for="venueEventDate">Event date</label><input id="venueEventDate" class="form-control venue-availability-field" type="date"></div>
+            <div class="col-sm-6 col-lg-3"><label class="venue-availability-label mb-1" for="venueStartTime">Start time</label><div class="venue-time-field is-empty"><span class="venue-time-placeholder" aria-hidden="true">Select start time</span><input id="venueStartTime" class="form-control venue-availability-field venue-time-input" type="time" name="startTime"></div></div>
+            <div class="col-sm-6 col-lg-3"><label class="venue-availability-label mb-1" for="venueEndTime">End time</label><div class="venue-time-field is-empty"><span class="venue-time-placeholder" aria-hidden="true">Select end time</span><input id="venueEndTime" class="form-control venue-availability-field venue-time-input" type="time" name="endTime"></div></div>
+            <div class="col-sm-6 col-lg-3"><label class="venue-availability-label mb-1" for="venueGuestCount">Guests</label><input id="venueGuestCount" class="form-control venue-availability-field" type="number" min="1" step="1" placeholder="300"></div>
+          </div>
+          <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2 mt-3"><div id="venueAvailabilityStatus" role="status" aria-live="polite"></div><button id="venueCheckAvailability" class="btn btn-gold flex-shrink-0" type="button">Check Availability</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section venue-filter-section">
+  <div class="container">
+    <div class="row g-2 align-items-center mb-4">
+
+      <div class="col-lg-5 col-md-6">
+        <div class="input-group">
+          <span class="input-group-text bg-white border-end-0">
+            <i class="bi bi-search"></i>
+          </span>
+          <input id="venueSearch"
+                 class="form-control border-start-0"
+                 type="search"
+                 placeholder="Search venue by name or location">
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-3">
+        <select id="spaceFilter" class="form-select">
+
+          <option value="all">All Venue Types</option>
+          <option value="indoor">Indoor</option>
+          <option value="outdoor">Outdoor</option>
+          <option value="indoor-outdoor">Indoor + Outdoor</option>
+          <option value="poolside">Poolside</option>
+        </select>
+      </div>
+
+      <div class="col-lg-2 col-md-3">
+        <select id="cityFilter" class="form-select">
+          <option value="all">All Locations</option>
+          <option value="yangon">Yangon</option>
+          <option value="mandalay">Mandalay</option>
+        </select>
+      </div>
+
+    </div>
+
+
+   
+
+    
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <p class="mb-0 text-ink-soft">
+        Showing <strong id="venueCount">44</strong> venues
+      </p>
+    </div>
+    <p class="small text-ink-soft mb-3">Venue hire is an estimate. Final pricing may vary by event date, duration, guest count and venue package.</p>
+<div class="row g-4" id="venueGrid">
+
+    <div class="col-md-6 col-lg-4 venue-item" data-tags="indoor" data-venue-id="3"
+         data-city="yangon"
+         data-order="0"
+         data-searchable>
+      <article class="bb-card reveal h-100">
+        <div class="bb-card__media" style="background-image:url('/prototype/assets/img/venue-1.jpg')"></div>
+        <div class="bb-card__body d-flex flex-column h-100">
+          <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+            <span class="bb-badge">Indoor Space</span>
+            <span class="bb-badge gold">Yangon</span>
+          </div>
+          <h4 class="mb-1">Hotel Yangon â€“ Royal Ballroom</h4>
+          <p class="small text-ink-soft mb-2"><i class="bi bi-geo-alt me-1"></i>No. 91/93, Corner of Pyay Road & Kaba Aye Pagoda Road, 8 Mile Junction, Mayangone Township, Yangon</p>
+          <p class="small text-ink-soft">Event ballroom; exact current public details should be confirmed with the venue.</p>
+          <div class="d-flex justify-content-between align-items-center mt-auto">
+            <strong class="text-gold">Request Quotation</strong>
+            <a class="btn btn-outline-forest btn-sm"
+               href="/prototype/customer/services.html">View Details</a>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="col-md-6 col-lg-4 venue-item" data-tags="indoor-outdoor" data-venue-id="4"
+         data-city="yangon"
+         data-order="1"
+         data-searchable>
+      <article class="bb-card reveal h-100">
+        <div class="bb-card__media" style="background-image:url('/prototype/assets/img/venue-2.jpg')"></div>
+        <div class="bb-card__body d-flex flex-column h-100">
+          <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+            <span class="bb-badge">Indoor + Outdoor</span>
+            <span class="bb-badge gold">Yangon</span>
+          </div>
+          <h4 class="mb-1">Inya Lake Hotel â€“ Mingalar Hall</h4>
+          <p class="small text-ink-soft mb-2"><i class="bi bi-geo-alt me-1"></i>No. 37, Kaba Aye Pagoda Road, Mayangone Township, Yangon</p>
+          <p class="small text-ink-soft">Mingalar Hall ballroom at Inya Lake Hotel; suitable for weddings and functions.</p>
+          <div class="d-flex justify-content-between align-items-center mt-auto">
+            <strong class="text-gold">Request Quotation</strong>
+            <a class="btn btn-outline-forest btn-sm"
+               href="/prototype/customer/services.html">View Details</a>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="col-md-6 col-lg-4 venue-item" data-tags="indoor" data-venue-id="5"
+         data-city="yangon"
+         data-order="2"
+         data-searchable>
+      <article class="bb-card reveal h-100">
+        <div class="bb-card__media" style="background-image:url('/prototype/assets/img/venue-3.jpg')"></div>
+        <div class="bb-card__body d-flex flex-column h-100">
+          <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+            <span class="bb-badge">Indoor Space</span>
+            <span class="bb-badge gold">Yangon</span>
+          </div>
+          <h4 class="mb-1">Novotel Yangon Max â€“ Pathein Ballroom</h4>
+          <p class="small text-ink-soft mb-2"><i class="bi bi-geo-alt me-1"></i>No. 459, Pyay Road, Kamayut Township, Yangon</p>
+          <p class="small text-ink-soft">Pathein Ballroom is 277 mÂ² with banquet capacity up to 180 guests.</p>
+          <div class="d-flex justify-content-between align-items-center mt-auto">
+            <strong class="text-gold">Request Quotation</strong>
+            <a class="btn btn-outline-forest btn-sm"
+               href="/prototype/customer/services.html">View Details</a>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="col-md-6 col-lg-4 venue-item" data-tags="indoor-outdoor" data-venue-id="2"
+         data-city="yangon"
+         data-order="3"
+         data-searchable>
+      <article class="bb-card reveal h-100">
+        <div class="bb-card__media" style="background-image:url('/prototype/assets/img/venue-1.jpg')"></div>
+        <div class="bb-card__body d-flex flex-column h-100">
+          <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+            <span class="bb-badge">Indoor + Outdoor</span>
+            <span class="bb-badge gold">Yangon</span>
+          </div>
+          <h4 class="mb-1">Rose Garden Hotel â€“ Swe Daw Banquet Hall</h4>
+          <p class="small text-ink-soft mb-2"><i class="bi bi-geo-alt me-1"></i>No. 171, Upper Pansodan Road, Mingalar Taung Nyunt Township, Yangon</p>
+          <p class="small text-ink-soft">The hotel lists the event space as Swe Daw & Kattha Room; suitable for private events and weddings.</p>
+          <div class="d-flex justify-content-between align-items-center mt-auto">
+            <strong class="text-gold">Request Quotation</strong>
+            <a class="btn btn-outline-forest btn-sm"
+               href="/prototype/customer/services.html">View Details</a>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="col-md-6 col-lg-4 venue-item" data-tags="indoor" data-venue-id="6"
+         data-city="yangon"
+         data-order="4"
+         data-searchable>
+      <article class="bb-card reveal h-100">
+        <div class="bb-card__media" style="background-image:url('/prototype/assets/img/venue-2.jpg')"></div>
+        <div class="bb-card__body d-flex flex-column h-100">
+          <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+            <span class="bb-badge">Indoor Space</span>
+            <span class="bb-badge gold">Yangon</span>
+          </div>
+          <h4 class="mb-1">Hotel Sidney Myanmar â€“ Sidney Wedding Hall</h4>
+          <p class="small text-ink-soft mb-2"><i class="bi bi-geo-alt me-1"></i>No. 8L, Mindhama Road, between Parami Road & Kyaik Waing Pagoda Road, Mayangone Township, Yangon</p>
+          <p class="small text-ink-soft">Indoor venue suitable for weddings, celebrations and formal events.</p>
+          <div class="d-flex justify-content-between align-items-center mt-auto">
+            <strong class="text-gold">Request Quotation</strong>
+            <a class="btn btn-outline-forest btn-sm"
+               href="/prototype/customer/services.html">View Details</a>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="col-md-6 col-lg-4 venue-item" data-tags="indoor" data-venue-id="7"
+         data-city="myanmar"
+         data-order="5"
+         data-searchable>
+      <article class="bb-card reveal h-100">
+        <div class="bb-card__media" style="background-image:url('/prototype/assets/img/venue-3.jpg')"></div>
+        <div class="bb-card__body d-flex flex-column h-100">
+          <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+            <span class="bb-badge">Indoor Space</span>
+            <span class="bb-badge gold">Myanmar</span>
+          </div>
+          <h4 class="mb-1">Excel Hotel â€“ Wedding Function Hall</h4>
+          <p class="small text-ink-soft mb-2"><i class="bi bi-geo-alt me-1"></i>Excel Treasure Hotel, No. 520, Kaba Aye Pagoda Road, Shwe Gone Dine, Bahan Township, Yangon</p>
+          <p class="small text-ink-soft">Indoor venue suitable for weddings, celebrations and formal events.</p>
+          <div class="d-flex justify-content-between align-items-center mt-auto">
+            <strong class="text-gold">Request Quotation</strong>
+            <a class="btn btn-outline-forest btn-sm"
+               href="/prototype/customer/services.html">View Details</a>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="col-md-6 col-lg-4 venue-item" data-tags="indoor" data-venue-id="8"
+         data-city="myanmar"
+         data-order="6"
+         data-searchable>
+      <article class="bb-card reveal h-100">
+        <div class="bb-card__media" style="background-image:url('/prototype/assets/img/venue-1.jpg')"></div>
+        <div class="bb-card__body d-flex flex-column h-100">
+          <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+            <span class="bb-badge">Indoor Space</span>
+            <span class="bb-badge gold">Myanmar</span>
+          </div>
+          <h4 class="mb-1">Perfect Hotel â€“ Function Hall</h4>
+          <p class="small text-ink-soft mb-2"><i class="bi bi-geo-alt me-1"></i>Theikpan Road, between 59th & 60th Street, Maha Aung Myay Township, Mandalay</p>
+          <p class="small text-ink-soft">Indoor venue suitable for weddings, celebrations and formal events.</p>
+          <div class="d-flex justify-content-between align-items-center mt-auto">
+            <strong class="text-gold">Request Quotation</strong>
+            <a class="btn btn-outline-forest btn-sm"
+               href="/prototype/customer/services.html">View Details</a>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="col-md-6 col-lg-4 venue-item" data-tags="indoor" data-venue-id="9"
+         data-city="myanmar"
+         data-order="7"
+         data-searchable>
+      <article class="bb-card reveal h-100">
+        <div class="bb-card__media" style="background-image:url('/prototype/assets/img/venue-2.jpg')"></div>
+        <div class="bb-card__body d-flex flex-column h-100">
+          <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+            <span class="bb-badge">Indoor Space</span>
+            <span class="bb-badge gold">Myanmar</span>
+          </div>
+          <h4 class="mb-1">Wilson Hotel â€“ Wedding Hall</h4>
+          <p class="small text-ink-soft mb-2"><i class="bi bi-geo-alt me-1"></i>No. 31(E), 78th Street (Yangonâ€“Mandalay Main Road), Maha Aung Myay Township, Mandalay</p>
+          <p class="small text-ink-soft">Indoor venue suitable for weddings, celebrations and formal events.</p>
+          <div class="d-flex justify-content-between align-items-center mt-auto">
+            <strong class="text-gold">Request Quotation</strong>
+            <a class="btn btn-outline-forest btn-sm"
+               href="/prototype/customer/services.html">View Details</a>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="col-md-6 col-lg-4 venue-item" data-tags="indoor" data-venue-id="10"
+         data-city="mandalay"
+         data-order="8"
+         data-searchable>
+      <article class="bb-card reveal h-100">
+        <div class="bb-card__media" style="background-image:url('/prototype/assets/img/venue-3.jpg')"></div>
+        <div class="bb-card__body d-flex flex-column h-100">
+          <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+            <span class="bb-badge">Indoor Space</span>
+            <span class="bb-badge gold">Mandalay</span>
+          </div>
+          <h4 class="mb-1">Mandalay Hotel â€“ Wedding Hall</h4>
+          <p class="small text-ink-soft mb-2"><i class="bi bi-geo-alt me-1"></i>No. 562, 78th Street, between 37th & 38th Street, Maha Aung Myay Township, Mandalay</p>
+          <p class="small text-ink-soft">Indoor venue suitable for weddings, celebrations and formal events.</p>
+          <div class="d-flex justify-content-between align-items-center mt-auto">
+            <strong class="text-gold">Request Quotation</strong>
+            <a class="btn btn-outline-forest btn-sm"
+               href="/prototype/customer/services.html">View Details</a>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="col-md-6 col-lg-4 venue-item" data-tags="indoor" data-venue-id="11"
+         data-city="yangon"
+         data-order="9"
+         data-searchable>
+      <article class="bb-card reveal h-100">
+        <div class="bb-card__media" style="background-image:url('/prototype/assets/img/venue-1.jpg')"></div>
+        <div class="bb-card__body d-flex flex-column h-100">
+          <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+            <span class="bb-badge">Indoor Space</span>
+            <span class="bb-badge gold">Yangon</span>
+          </div>
+          <h4 class="mb-1">Lotte Hotel Yangon â€“ Sapphire Ballroom</h4>
+          <p class="small text-ink-soft mb-2"><i class="bi bi-geo-alt me-1"></i>No. 82, Sin Phyu Shin Avenue, Pyay Road, Hlaing Township, Yangon</p>
+          <p class="small text-ink-soft">Sapphire Ballroom is 831.2 mÂ² with stated capacity of 350â€“800 guests.</p>
+          <div class="d-flex justify-content-between align-items-center mt-auto">
+            <strong class="text-gold">Request Quotation</strong>
+            <a class="btn btn-outline-forest btn-sm"
+               href="/prototype/customer/services.html">View Details</a>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="col-md-6 col-lg-4 venue-item" data-tags="poolside" data-venue-id="12"
+         data-city="yangon"
+         data-order="10"
+         data-searchable>
+      <article class="bb-card reveal h-100">
+        <div class="bb-card__media" style="background-image:url('/prototype/assets/img/venue-2.jpg')"></div>
+        <div class="bb-card__body d-flex flex-column h-100">
+          <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+            <span class="bb-badge">Poolside</span>
+            <span class="bb-badge gold">Yangon</span>
+          </div>
+          <h4 class="mb-1">Sky Star Hotel â€“ Sky Pool</h4>
+          <p class="small text-ink-soft mb-2"><i class="bi bi-geo-alt me-1"></i>No. 51/B/1, East Horse Race Course Road, Tamwe Township, Yangon</p>
+          <p class="small text-ink-soft">Poolside setting for receptions, parties and relaxed celebrations.</p>
+          <div class="d-flex justify-content-between align-items-center mt-auto">
+            <strong class="text-gold">Request Quotation</strong>
+            <a class="btn btn-outline-forest btn-sm"
+               href="/prototype/customer/services.html">View Details</a>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="col-md-6 col-lg-4 venue-item" data-tags="indoor" data-venue-id="13"
+         data-city="mandalay"
+         data-order="11"
+         data-searchable>
+      <article class="bb-card reveal h-100">
+        <div class="bb-card__media" style="background-image:url('/prototype/assets/img/venue-3.jpg')"></div>
+        <div class="bb-card__body d-flex flex-column h-100">
+          <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+            <span class="bb-badge">Indoor Space</span>
+            <span class="bb-badge gold">Mandalay</span>
+          </div>
+          <h4 class="mb-1">Perfect Hotel â€“ Mandalay</h4>
+          <p class="small text-ink-soft mb-2"><i class="bi bi-geo-alt me-1"></i>Theikpan Road, between 59th & 60th Street, Maha Aung Myay Township, Mandalay</p>
+          <p class="small text-ink-soft">Indoor venue suitable for weddings, celebrations and formal events.</p>
+          <div class="d-flex justify-content-between align-items-center mt-auto">
+            <strong class="text-gold">Request Quotation</strong>
+            <a class="btn btn-outline-forest btn-sm"
+               href="/prototype/customer/services.html">View Details</a>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="col-md-6 col-lg-4 venue-item" data-tags="indoor-outdoor" data-venue-id="14"
+         data-city="mandalay"
+         data-order="12"
+         data-searchable>
+      <article class="bb-card reveal h-100">
+        <div class="bb-card__media" style="background-image:url('/prototype/assets/img/venue-1.jpg')"></div>
+        <div class="bb-card__body d-flex flex-column h-100">
+          <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+            <span class="bb-badge">Indoor + Outdoor</span>
+            <span class="bb-badge gold">Mandalay</span>
+          </div>
+          <h4 class="mb-1">Mingalar Mandalay Hotel</h4>
+          <p class="small text-ink-soft mb-2"><i class="bi bi-geo-alt me-1"></i>73rd Street, between Tha Zin & Ngu Shwe Wah Streets, Chanmyathazi Township, Mandalay</p>
+          <p class="small text-ink-soft">Flexible indoor and outdoor spaces for a variety of events.</p>
+          <div class="d-flex justify-content-between align-items-center mt-auto">
+            <strong class="text-gold">Request Quotation</strong>
+            <a class="btn btn-outline-forest btn-sm"
+               href="/prototype/customer/services.html">View Details</a>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="col-md-6 col-lg-4 venue-item" data-tags="indoor-outdoor" data-venue-id="15"
+         data-city="mandalay"
+         data-order="13"
+         data-searchable>
+      <article class="bb-card reveal h-100">
+        <div class="bb-card__media" style="background-image:url('/prototype/assets/img/venue-2.jpg')"></div>
+        <div class="bb-card__body d-flex flex-column h-100">
+          <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+            <span class="bb-badge">Indoor + Outdoor</span>
+            <span class="bb-badge gold">Mandalay</span>
+          </div>
+          <h4 class="mb-1">Mandalay Hill Resort</h4>
+          <p class="small text-ink-soft mb-2"><i class="bi bi-geo-alt me-1"></i>No. 416-B, 10th Street, at the Foot of Mandalay Hill, Aungmyaythazan Township, Mandalay</p>
+          <p class="small text-ink-soft">Flexible indoor and outdoor spaces for a variety of events.</p>
+          <div class="d-flex justify-content-between align-items-center mt-auto">
+            <strong class="text-gold">Request Quotation</strong>
+            <a class="btn btn-outline-forest btn-sm"
+               href="/prototype/customer/services.html">View Details</a>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="col-md-6 col-lg-4 venue-item" data-tags="indoor-outdoor" data-venue-id="16"
+         data-city="yangon"
+         data-order="14"
+         data-searchable>
+      <article class="bb-card reveal h-100">
+        <div class="bb-card__media" style="background-image:url('/prototype/assets/img/venue-3.jpg')"></div>
+        <div class="bb-card__body d-flex flex-column h-100">
+          <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+            <span class="bb-badge">Indoor + Outdoor</span>
+            <span class="bb-badge gold">Yangon</span>
+          </div>
+          <h4 class="mb-1">Chatrium Hotel Royal Lake Yangon</h4>
+          <p class="small text-ink-soft mb-2"><i class="bi bi-geo-alt me-1"></i>No. 40, Natmauk Road, Tamwe Township, Yangon 11211</p>
+          <p class="small text-ink-soft">Hotel event venue with indoor ballroom and outdoor pool-garden settings.</p>
+          <div class="d-flex justify-content-between align-items-center mt-auto">
+            <strong class="text-gold">Request Quotation</strong>
+            <a class="btn btn-outline-forest btn-sm"
+               href="/prototype/customer/services.html">View Details</a>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="col-md-6 col-lg-4 venue-item" data-tags="indoor-outdoor" data-venue-id="17"
+         data-city="myanmar"
+         data-order="15"
+         data-searchable>
+      <article class="bb-card reveal h-100">
+        <div class="bb-card__media" style="background-image:url('/prototype/assets/img/venue-1.jpg')"></div>
+        <div class="bb-card__body d-flex flex-column h-100">
+          <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+            <span class="bb-badge">Indoor + Outdoor</span>
+            <span class="bb-badge gold">Myanmar</span>
+          </div>
+          <h4 class="mb-1">Ceremon Grand</h4>
+          <p class="small text-ink-soft mb-2"><i class="bi bi-geo-alt me-1"></i>Corner of 53rd Street & 32nd Street, Chan Aye Thar San Township, Mandalay</p>
+          <p class="small text-ink-soft">Flexible indoor and outdoor spaces for a variety of events.</p>
+          <div class="d-flex justify-content-between align-items-center mt-auto">
+            <strong class="text-gold">Request Quotation</strong>
+            <a class="btn btn-outline-forest btn-sm"
+               href="/prototype/customer/services.html">View Details</a>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="col-md-6 col-lg-4 venue-item" data-tags="indoor" data-venue-id="18"
+         data-city="yangon"
+         data-order="16"
+         data-searchable>
+      <article class="bb-card reveal h-100">
+        <div class="bb-card__media" style="background-image:url('/prototype/assets/img/venue-2.jpg')"></div>
+        <div class="bb-card__body d-flex flex-column h-100">
+          <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+            <span class="bb-badge">Indoor Space</span>
+            <span class="bb-badge gold">Yangon</span>
+          </div>
+          <h4 class="mb-1">Yangon Thanlwin Hotel</h4>
+          <p class="small text-ink-soft mb-2"><i class="bi bi-geo-alt me-1"></i>Shed D, Theingyi Market, Shwedagon Pagoda Road, Latha Township, Yangon 11131</p>
+          <p class="small text-ink-soft">Indoor venue suitable for weddings, celebrations and formal events.</p>
+          <div class="d-flex justify-content-between align-items-center mt-auto">
+            <strong class="text-gold">Request Quotation</strong>
+            <a class="btn btn-outline-forest btn-sm"
+               href="/prototype/customer/services.html">View Details</a>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="col-md-6 col-lg-4 venue-item" data-tags="outdoor" data-venue-id="19"
+         data-city="myanmar"
+         data-order="17"
+         data-searchable>
+      <article class="bb-card reveal h-100">
+        <div class="bb-card__media" style="background-image:url('/prototype/assets/img/venue-3.jpg')"></div>
+        <div class="bb-card__body d-flex flex-column h-100">
+          <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+            <span class="bb-badge">Outdoor Space</span>
+            <span class="bb-badge gold">Myanmar</span>
+          </div>
+          <h4 class="mb-1">Hotel Parami</h4>
+          <p class="small text-ink-soft mb-2"><i class="bi bi-geo-alt me-1"></i>No. 2, Parami Road, Mayangone Township, Yangon 11221</p>
+          <p class="small text-ink-soft">Outdoor venue suitable for open-air celebrations and special occasions.</p>
+          <div class="d-flex justify-content-between align-items-center mt-auto">
+            <strong class="text-gold">Request Quotation</strong>
+            <a class="btn btn-outline-forest btn-sm"
+               href="/prototype/customer/services.html">View Details</a>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="col-md-6 col-lg-4 venue-item" data-tags="indoor" data-venue-id="20"
+         data-city="yangon"
+         data-order="18"
+         data-searchable>
+      <article class="bb-card reveal h-100">
+        <div class="bb-card__media" style="background-image:url('/prototype/assets/img/venue-1.jpg')"></div>
+        <div class="bb-card__body d-flex flex-column h-100">
+          <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+            <span class="bb-badge">Indoor Space</span>
+            <span class="bb-badge gold">Yangon</span>
+          </div>
+          <h4 class="mb-1">Sedona Hotel Yangon</h4>
+          <p class="small text-ink-soft mb-2"><i class="bi bi-geo-alt me-1"></i>No. 1, Kaba Aye Pagoda Road, Yankin Township, Yangon</p>
+          <p class="small text-ink-soft">Indoor venue suitable for weddings, celebrations and formal events.</p>
+          <div class="d-flex justify-content-between align-items-center mt-auto">
+            <strong class="text-gold">Request Quotation</strong>
+            <a class="btn btn-outline-forest btn-sm"
+               href="/prototype/customer/services.html">View Details</a>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="col-md-6 col-lg-4 venue-item" data-tags="indoor" data-venue-id="21"
+         data-city="yangon"
+         data-order="19"
+         data-searchable>
+      <article class="bb-card reveal h-100">
+        <div class="bb-card__media" style="background-image:url('/prototype/assets/img/venue-2.jpg')"></div>
+        <div class="bb-card__body d-flex flex-column h-100">
+          <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+            <span class="bb-badge">Indoor Space</span>
+            <span class="bb-badge gold">Yangon</span>
+          </div>
+          <h4 class="mb-1">PARKROYAL Yangon</h4>
+          <p class="small text-ink-soft mb-2"><i class="bi bi-geo-alt me-1"></i>No. 33, Alan Pya Phaya Road, Dagon Township, Yangon</p>
+          <p class="small text-ink-soft">Hotel event venue with ballroom and function spaces for celebrations and corporate events.</p>
+          <div class="d-flex justify-content-between align-items-center mt-auto">
+            <strong class="text-gold">Request Quotation</strong>
+            <a class="btn btn-outline-forest btn-sm"
+               href="/prototype/customer/services.html">View Details</a>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="col-md-6 col-lg-4 venue-item" data-tags="indoor" data-venue-id="22"
+         data-city="myanmar"
+         data-order="20"
+         data-searchable>
+      <article class="bb-card reveal h-100">
+        <div class="bb-card__media" style="background-image:url('/prototype/assets/img/venue-3.jpg')"></div>
+        <div class="bb-card__body d-flex flex-column h-100">
+          <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+            <span class="bb-badge">Indoor Space</span>
+            <span class="bb-badge gold">Myanmar</span>
+          </div>
+          <h4 class="mb-1">Golden Hill Tower Hotel</h4>
+          <p class="small text-ink-soft mb-2"><i class="bi bi-geo-alt me-1"></i>No. 24â€“26, Kaba Aye Pagoda Road, Bahan Township, Yangon</p>
+          <p class="small text-ink-soft">Indoor venue suitable for weddings, celebrations and formal events.</p>
+          <div class="d-flex justify-content-between align-items-center mt-auto">
+            <strong class="text-gold">Request Quotation</strong>
+            <a class="btn btn-outline-forest btn-sm"
+               href="/prototype/customer/services.html">View Details</a>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="col-md-6 col-lg-4 venue-item" data-tags="indoor" data-venue-id="23"
+         data-city="mandalay"
+         data-order="21"
+         data-searchable>
+      <article class="bb-card reveal h-100">
+        <div class="bb-card__media" style="background-image:url('/prototype/assets/img/venue-1.jpg')"></div>
+        <div class="bb-card__body d-flex flex-column h-100">
+          <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+            <span class="bb-badge">Indoor Space</span>
+            <span class="bb-badge gold">Mandalay</span>
+          </div>
+          <h4 class="mb-1">Y Mandalay Hotel</h4>
+          <p class="small text-ink-soft mb-2"><i class="bi bi-geo-alt me-1"></i>No. MA-64, Corner of 53rd & 37(B) Street, Ye Mon Taung Quarter, Maha Aung Myay Township, Mandalay</p>
+          <p class="small text-ink-soft">Indoor venue suitable for weddings, celebrations and formal events.</p>
+          <div class="d-flex justify-content-between align-items-center mt-auto">
+            <strong class="text-gold">Request Quotation</strong>
+            <a class="btn btn-outline-forest btn-sm"
+               href="/prototype/customer/services.html">View Details</a>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="col-md-6 col-lg-4 venue-item" data-tags="indoor-outdoor" data-venue-id="24"
+         data-city="mandalay"
+         data-order="22"
+         data-searchable>
+      <article class="bb-card reveal h-100">
+        <div class="bb-card__media" style="background-image:url('/prototype/assets/img/venue-2.jpg')"></div>
+        <div class="bb-card__body d-flex flex-column h-100">
+          <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+            <span class="bb-badge">Indoor + Outdoor</span>
+            <span class="bb-badge gold">Mandalay</span>
+          </div>
+          <h4 class="mb-1">Unique Mandalay Brewery</h4>
+          <p class="small text-ink-soft mb-2"><i class="bi bi-geo-alt me-1"></i>Exact current address could not be reliably verified</p>
+          <p class="small text-ink-soft">Flexible indoor and outdoor spaces for a variety of events.</p>
+          <div class="d-flex justify-content-between align-items-center mt-auto">
+            <strong class="text-gold">Request Quotation</strong>
+            <a class="btn btn-outline-forest btn-sm"
+               href="/prototype/customer/services.html">View Details</a>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="col-md-6 col-lg-4 venue-item" data-tags="indoor" data-venue-id="25"
+         data-city="myanmar"
+         data-order="23"
+         data-searchable>
+      <article class="bb-card reveal h-100">
+        <div class="bb-card__media" style="background-image:url('/prototype/assets/img/venue-3.jpg')"></div>
+        <div class="bb-card__body d-flex flex-column h-100">
+          <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+            <span class="bb-badge">Indoor Space</span>
+            <span class="bb-badge gold">Myanmar</span>
+          </div>
+          <h4 class="mb-1">The Palace by Golden Duck</h4>
+          <p class="small text-ink-soft mb-2"><i class="bi bi-geo-alt me-1"></i>Corner of 35th Street & 52nd Street, Chan Aye Thar Zan Township, Mandalay</p>
+          <p class="small text-ink-soft">Indoor venue suitable for weddings, celebrations and formal events.</p>
+          <div class="d-flex justify-content-between align-items-center mt-auto">
+            <strong class="text-gold">Request Quotation</strong>
+            <a class="btn btn-outline-forest btn-sm"
+               href="/prototype/customer/services.html">View Details</a>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="col-md-6 col-lg-4 venue-item" data-tags="indoor" data-venue-id="26"
+         data-city="myanmar"
+         data-order="24"
+         data-searchable>
+      <article class="bb-card reveal h-100">
+        <div class="bb-card__media" style="background-image:url('/prototype/assets/img/venue-1.jpg')"></div>
+        <div class="bb-card__body d-flex flex-column h-100">
+          <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+            <span class="bb-badge">Indoor Space</span>
+            <span class="bb-badge gold">Myanmar</span>
+          </div>
+          <h4 class="mb-1">Orchid Grand Ballroom</h4>
+          <p class="small text-ink-soft mb-2"><i class="bi bi-geo-alt me-1"></i>Rupar Mandalar Resort, No. A-15, Corner of 53rd & 30th Street, Chan Aye Thar Zan Township, Mandalay</p>
+          <p class="small text-ink-soft">Indoor venue suitable for weddings, celebrations and formal events.</p>
+          <div class="d-flex justify-content-between align-items-center mt-auto">
+            <strong class="text-gold">Request Quotation</strong>
+            <a class="btn btn-outline-forest btn-sm"
+               href="/prototype/customer/services.html">View Details</a>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="col-md-6 col-lg-4 venue-item" data-tags="indoor-outdoor" data-venue-id="27"
+         data-city="myanmar"
+         data-order="25"
+         data-searchable>
+      <article class="bb-card reveal h-100">
+        <div class="bb-card__media" style="background-image:url('/prototype/assets/img/venue-2.jpg')"></div>
+        <div class="bb-card__body d-flex flex-column h-100">
+          <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+            <span class="bb-badge">Indoor + Outdoor</span>
+            <span class="bb-badge gold">Myanmar</span>
+          </div>
+          <h4 class="mb-1">The Brunch Society</h4>
+          <p class="small text-ink-soft mb-2"><i class="bi bi-geo-alt me-1"></i>No. 33B, Pyidaungzu Yeiktha Street, Dagon Township, Yangon</p>
+          <p class="small text-ink-soft">Flexible indoor and outdoor spaces for a variety of events.</p>
+          <div class="d-flex justify-content-between align-items-center mt-auto">
+            <strong class="text-gold">Request Quotation</strong>
+            <a class="btn btn-outline-forest btn-sm"
+               href="/prototype/customer/services.html">View Details</a>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="col-md-6 col-lg-4 venue-item" data-tags="indoor-outdoor" data-venue-id="28"
+         data-city="myanmar"
+         data-order="26"
+         data-searchable>
+      <article class="bb-card reveal h-100">
+        <div class="bb-card__media" style="background-image:url('/prototype/assets/img/venue-3.jpg')"></div>
+        <div class="bb-card__body d-flex flex-column h-100">
+          <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+            <span class="bb-badge">Indoor + Outdoor</span>
+            <span class="bb-badge gold">Myanmar</span>
+          </div>
+          <h4 class="mb-1">White Swan</h4>
+          <p class="small text-ink-soft mb-2"><i class="bi bi-geo-alt me-1"></i>No. 5, U Tun Nyein Street, Ward 10, Mayangone Township, Yangon</p>
+          <p class="small text-ink-soft">Flexible indoor and outdoor spaces for a variety of events.</p>
+          <div class="d-flex justify-content-between align-items-center mt-auto">
+            <strong class="text-gold">Request Quotation</strong>
+            <a class="btn btn-outline-forest btn-sm"
+               href="/prototype/customer/services.html">View Details</a>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="col-md-6 col-lg-4 venue-item" data-tags="outdoor" data-venue-id="29"
+         data-city="myanmar"
+         data-order="27"
+         data-searchable>
+      <article class="bb-card reveal h-100">
+        <div class="bb-card__media" style="background-image:url('/prototype/assets/img/venue-1.jpg')"></div>
+        <div class="bb-card__body d-flex flex-column h-100">
+          <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+            <span class="bb-badge">Outdoor Space</span>
+            <span class="bb-badge gold">Myanmar</span>
+          </div>
+          <h4 class="mb-1">Zephyr</h4>
+          <p class="small text-ink-soft mb-2"><i class="bi bi-geo-alt me-1"></i>No. 28, Inya Road, Sein Lan So Pyay Garden, Kamayut Township, Yangon</p>
+          <p class="small text-ink-soft">Outdoor venue suitable for open-air celebrations and special occasions.</p>
+          <div class="d-flex justify-content-between align-items-center mt-auto">
+            <strong class="text-gold">Request Quotation</strong>
+            <a class="btn btn-outline-forest btn-sm"
+               href="/prototype/customer/services.html">View Details</a>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="col-md-6 col-lg-4 venue-item" data-tags="indoor" data-venue-id="30"
+         data-city="myanmar"
+         data-order="28"
+         data-searchable>
+      <article class="bb-card reveal h-100">
+        <div class="bb-card__media" style="background-image:url('/prototype/assets/img/venue-2.jpg')"></div>
+        <div class="bb-card__body d-flex flex-column h-100">
+          <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+            <span class="bb-badge">Indoor Space</span>
+            <span class="bb-badge gold">Myanmar</span>
+          </div>
+          <h4 class="mb-1">Jasmine Palace Hotel</h4>
+          <p class="small text-ink-soft mb-2"><i class="bi bi-geo-alt me-1"></i>No. 341, Pyay Road, Sanchaung Township, Yangon</p>
+          <p class="small text-ink-soft">Indoor venue suitable for weddings, celebrations and formal events.</p>
+          <div class="d-flex justify-content-between align-items-center mt-auto">
+            <strong class="text-gold">Request Quotation</strong>
+            <a class="btn btn-outline-forest btn-sm"
+               href="/prototype/customer/services.html">View Details</a>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="col-md-6 col-lg-4 venue-item" data-tags="indoor-outdoor" data-venue-id="31"
+         data-city="myanmar"
+         data-order="29"
+         data-searchable>
+      <article class="bb-card reveal h-100">
+        <div class="bb-card__media" style="background-image:url('/prototype/assets/img/venue-3.jpg')"></div>
+        <div class="bb-card__body d-flex flex-column h-100">
+          <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+            <span class="bb-badge">Indoor + Outdoor</span>
+            <span class="bb-badge gold">Myanmar</span>
+          </div>
+          <h4 class="mb-1">Western Park Royal</h4>
+          <p class="small text-ink-soft mb-2"><i class="bi bi-geo-alt me-1"></i>Kaba Aye Pagoda Road, Kandawgyi Nature Park, Bo Cho Ward (1), Bahan Township, Yangon</p>
+          <p class="small text-ink-soft">Flexible indoor and outdoor spaces for a variety of events.</p>
+          <div class="d-flex justify-content-between align-items-center mt-auto">
+            <strong class="text-gold">Request Quotation</strong>
+            <a class="btn btn-outline-forest btn-sm"
+               href="/prototype/customer/services.html">View Details</a>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="col-md-6 col-lg-4 venue-item" data-tags="indoor" data-venue-id="32"
+         data-city="myanmar"
+         data-order="30"
+         data-searchable>
+      <article class="bb-card reveal h-100">
+        <div class="bb-card__media" style="background-image:url('/prototype/assets/img/venue-1.jpg')"></div>
+        <div class="bb-card__body d-flex flex-column h-100">
+          <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+            <span class="bb-badge">Indoor Space</span>
+            <span class="bb-badge gold">Myanmar</span>
+          </div>
+          <h4 class="mb-1">Summit Parkview Hotel</h4>
+          <p class="small text-ink-soft mb-2"><i class="bi bi-geo-alt me-1"></i>No. 350, Ahlone Road, Dagon Township, Yangon</p>
+          <p class="small text-ink-soft">Indoor venue suitable for weddings, celebrations and formal events.</p>
+          <div class="d-flex justify-content-between align-items-center mt-auto">
+            <strong class="text-gold">Request Quotation</strong>
+            <a class="btn btn-outline-forest btn-sm"
+               href="/prototype/customer/services.html">View Details</a>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="col-md-6 col-lg-4 venue-item" data-tags="indoor" data-venue-id="33"
+         data-city="yangon"
+         data-order="31"
+         data-searchable>
+      <article class="bb-card reveal h-100">
+        <div class="bb-card__media" style="background-image:url('/prototype/assets/img/venue-2.jpg')"></div>
+        <div class="bb-card__body d-flex flex-column h-100">
+          <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+            <span class="bb-badge">Indoor Space</span>
+            <span class="bb-badge gold">Yangon</span>
+          </div>
+          <h4 class="mb-1">MeliÃ¡ Yangon</h4>
+          <p class="small text-ink-soft mb-2"><i class="bi bi-geo-alt me-1"></i>No. 192, Kaba Aye Pagoda Road, Bahan Township, Yangon</p>
+          <p class="small text-ink-soft">Indoor venue suitable for weddings, celebrations and formal events.</p>
+          <div class="d-flex justify-content-between align-items-center mt-auto">
+            <strong class="text-gold">Request Quotation</strong>
+            <a class="btn btn-outline-forest btn-sm"
+               href="/prototype/customer/services.html">View Details</a>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="col-md-6 col-lg-4 venue-item" data-tags="indoor-outdoor" data-venue-id="34"
+         data-city="yangon"
+         data-order="32"
+         data-searchable>
+      <article class="bb-card reveal h-100">
+        <div class="bb-card__media" style="background-image:url('/prototype/assets/img/venue-3.jpg')"></div>
+        <div class="bb-card__body d-flex flex-column h-100">
+          <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+            <span class="bb-badge">Indoor + Outdoor</span>
+            <span class="bb-badge gold">Yangon</span>
+          </div>
+          <h4 class="mb-1">Wyndham Grand Yangon</h4>
+          <p class="small text-ink-soft mb-2"><i class="bi bi-geo-alt me-1"></i>No. 11, Corner of Kan Yeik Thar Road & U Aung Myat Road, Mingalar Taung Nyunt Township, Yangon</p>
+          <p class="small text-ink-soft">Flexible indoor and outdoor spaces for a variety of events.</p>
+          <div class="d-flex justify-content-between align-items-center mt-auto">
+            <strong class="text-gold">Request Quotation</strong>
+            <a class="btn btn-outline-forest btn-sm"
+               href="/prototype/customer/services.html">View Details</a>
+          </div>
+        </div>
+      </article>
+    </div>
+    </div>
+
+    <div id="noResults" class="text-center py-5 d-none">
+      <i class="bi bi-search fs-1 d-block mb-3"></i>
+      <h4>No venues found</h4>
+      <p class="text-ink-soft">Try another venue name, space type or location.</p>
+    </div>
+
+  </div>
+</section>
+
+<footer class="bb-footer">
+  <div class="container">
+    <div class="row g-4">
+
+      <div class="col-lg-4">
+        <a class="navbar-brand d-block h4 mb-2" href="/prototype/index.html">
+          Bliss &amp; Beyond
+        </a>
+        <p class="small mb-3">
+          Event planning and catering management for weddings, celebrations
+          and corporate gatherings in Myanmar.
+        </p>
+        <div class="d-flex gap-3 fs-5">
+          <a href="#"><i class="bi bi-instagram"></i></a>
+          <a href="#"><i class="bi bi-facebook"></i></a>
+          <a href="#"><i class="bi bi-pinterest"></i></a>
+          <a href="#"><i class="bi bi-linkedin"></i></a>
+        </div>
+      </div>
+
+      <div class="col-6 col-lg-2">
+        <h5 class="h6 mb-3">Explore</h5>
+        <ul class="list-unstyled d-grid gap-2">
+          <li><a href="/prototype/about.html">About Us</a></li>
+          <li><a href="/prototype/services.html">Services</a></li>
+          <li><a href="/prototype/packages.html">Packages</a></li>
+          <li><a href="/prototype/venues.html">Venues</a></li>
+          
+        </ul>
+      </div>
+
+      <div class="col-6 col-lg-2">
+        <h5 class="h6 mb-3">Account</h5>
+        <ul class="list-unstyled d-grid gap-2">
+          <li><a href="/prototype/login.html">Login</a></li>
+          <li><a href="/prototype/register.html">Register</a></li>
+          <li><a href="/prototype/customer/dashboard.html">Customer Portal</a></li>
+          <li><a href="/prototype/admin/dashboard.html">Admin Panel</a></li>
+          <li><a href="/prototype/faq.html">FAQ</a></li>
+        </ul>
+      </div>
+
+      <div class="col-lg-4">
+        <h5 class="h6 mb-3">Stay in touch</h5>
+        <p class="small mb-2">
+          Myanmar Â· Contact details can be added here.
+        </p>
+        <form class="d-flex flex-column flex-sm-row gap-2 align-items-stretch" data-demo="note">
+          <input class="form-control form-control-sm"
+                 type="email"
+                 placeholder="Email address"
+                 required>
+          <button class="btn btn-gold btn-sm" type="submit">Subscribe</button>
+          <span class="d-none" data-demo-note></span>
+        </form>
+        <p class="small mt-2 mb-0 text-white-50">
+          Student frontend prototype â€” no data is stored.
+        </p>
+      </div>
+
+    </div>
+
+    <div class="foot-bottom mt-4 d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2">
+      <span>&copy; 2026 Bliss &amp; Beyond. Frontend prototype.</span>
+      <span>Privacy Policy Â· Terms of Service</span>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/prototype/assets/js/main.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", async function () {
+  const eventDateInput = document.getElementById("venueEventDate");
+  const startTimeInput = document.getElementById("venueStartTime");
+  const endTimeInput = document.getElementById("venueEndTime");
+  const guestCountInput = document.getElementById("venueGuestCount");
+
+  const checkButton = document.getElementById("venueCheckAvailability");
+  const statusEl = document.getElementById("venueAvailabilityStatus");
+
+  const searchInput = document.getElementById("venueSearch");
+  const spaceFilter = document.getElementById("spaceFilter");
+  const cityFilter = document.getElementById("cityFilter");
+
+  let venueItems = Array.from(
+    document.querySelectorAll(".venue-item")
+  );
+
+  function setVenuePricePlaceholders() {
+    venueItems.forEach((item) => {
+      const priceElement = item.querySelector("strong.text-gold");
+
+      if (priceElement) {
+        priceElement.textContent = "Price on request";
+      }
+    });
+  }
+
+  function applyBackendVenuePrices(venues) {
+    const venuesById = new Map(
+      venues
+        .filter((venue) => venue && venue.id !== undefined && venue.id !== null)
+        .map((venue) => [String(venue.id), venue])
+    );
+
+    venueItems.forEach((item) => {
+      const venue = venuesById.get(String(item.dataset.venueId));
+      const card = item.querySelector("[data-venue-card]") || item.querySelector(".bb-card");
+      const priceElement = item.querySelector("strong.text-gold");
+
+      if (!venue || !priceElement) {
+        return;
+      }
+
+      const numericPrice = Number(venue.price);
+      const hasPrice = Number.isFinite(numericPrice) && numericPrice > 0;
+      priceElement.textContent = hasPrice
+        ? `Estimated from MMK ${numericPrice.toLocaleString()}`
+        : "Price on request";
+
+      if (card) {
+        card.dataset.venuePrice = hasPrice ? String(numericPrice) : "";
+      }
+
+      item.dataset.venuePrice = hasPrice ? String(numericPrice) : "";
+    });
+  }
+
+  function escapeVenueHtml(value) {
+    return String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  function venueRegion(location) {
+    const normalized = String(location || "").toLowerCase();
+    if (normalized.includes("mandalay")) return "mandalay";
+    if (normalized.includes("yangon")) return "yangon";
+    return "myanmar";
+  }
+
+  function venueTag(type) {
+    const normalized = String(type || "").toLowerCase();
+    if (normalized.includes("pool")) return "poolside";
+    if (normalized.includes("indoor") && normalized.includes("outdoor")) return "indoor-outdoor";
+    if (normalized.includes("outdoor") || normalized.includes("terrace")) return "outdoor";
+    return "indoor";
+  }
+
+  function renderBackendVenueCatalog(venues) {
+    const grid = document.getElementById("venueGrid");
+    if (!grid || !Array.isArray(venues) || !venues.length) return;
+    grid.innerHTML = venues.map((venue, index) => {
+      const region = venueRegion(venue.location);
+      const tag = venueTag(venue.type);
+      const capacity = venue.capacity == null
+        ? "Capacity on request"
+        : `Capacity: ${Number(venue.capacity).toLocaleString()} guests`;
+      const numericPrice = Number(venue.price);
+      const price = Number.isFinite(numericPrice) && numericPrice > 0
+        ? `Estimated from MMK ${numericPrice.toLocaleString()}`
+        : "Price on request";
+      const image = venue.image || "/prototype/assets/img/venue-1.jpg";
+      return `<div class="col-md-6 col-lg-4 venue-item" data-tags="${escapeVenueHtml(tag)}" data-venue-id="${escapeVenueHtml(venue.id)}" data-city="${escapeVenueHtml(region)}" data-order="${index}" data-searchable data-venue-price="${Number.isFinite(numericPrice) && numericPrice > 0 ? numericPrice : ""}">
+        <article class="bb-card reveal h-100" data-venue-card data-venue-id="${escapeVenueHtml(venue.id)}" data-venue-name="${escapeVenueHtml(venue.name)}" data-venue-type="${escapeVenueHtml(venue.type)}" data-venue-location="${escapeVenueHtml(venue.location)}" data-venue-capacity="${venue.capacity ?? ""}" data-venue-price="${Number.isFinite(numericPrice) && numericPrice > 0 ? numericPrice : ""}">
+          <div class="bb-card__media" style="background-image:url('${escapeVenueHtml(image)}')"></div>
+          <div class="bb-card__body d-flex flex-column h-100">
+            <div class="d-flex justify-content-between align-items-start gap-2 mb-2"><span class="bb-badge">${escapeVenueHtml(venue.type)}</span><span class="bb-badge gold">${escapeVenueHtml(region === "myanmar" ? "Myanmar" : region.charAt(0).toUpperCase() + region.slice(1))}</span></div>
+            <h4 class="mb-1">${escapeVenueHtml(venue.name)}</h4>
+            <p class="small text-ink-soft mb-2"><i class="bi bi-geo-alt me-1"></i>${escapeVenueHtml(venue.location)}</p>
+            <p class="small text-ink-soft">${escapeVenueHtml(venue.description || "Venue details available on request.")}</p>
+            <p class="small text-ink-soft mb-3">${escapeVenueHtml(capacity)}</p>
+            <div class="d-flex justify-content-between align-items-center mt-auto"><strong class="text-gold">${escapeVenueHtml(price)}</strong><a class="btn btn-outline-forest btn-sm" href="/prototype/customer/services.html">View Details</a></div>
+          </div>
+        </article>
+      </div>`;
+    }).join("");
+    venueItems = Array.from(grid.querySelectorAll(".venue-item"));
+  }
+
+  async function loadBackendVenueCatalog() {
+    try {
+      const response = await fetch("http://localhost:8081/api/venues");
+      if (!response.ok) throw new Error(`Venue catalog request failed: ${response.status}`);
+      const venues = await response.json();
+      renderBackendVenueCatalog(venues);
+    } catch (error) {
+      console.warn("Backend venue catalog unavailable; using the existing venue cards.");
+    }
+  }
+
+  setVenuePricePlaceholders();
+
+  const venueCount = document.getElementById("venueCount");
+  const noResults = document.getElementById("noResults");
+
+  const availableVenueIds = new Set();
+
+  let availabilityChecked = false;
+
+  // Use the customer's local date without a UTC conversion.
+  function getMinimumBookingDate() {
+    const today = new Date();
+    return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+  }
+
+  if (eventDateInput) {
+    eventDateInput.min = getMinimumBookingDate();
+  }
+
+  // Normalize manual time entry to HH:MM
+  function normalizeTimeValue(value) {
+    const raw = String(value || "")
+      .trim()
+      .replace(/\./g, ":");
+
+    if (!raw) {
+      return "";
+    }
+
+    const compactMatch = raw.match(/^(\d{1,2})(\d{2})$/);
+    if (compactMatch) {
+      const hours = Number(compactMatch[1]);
+      const minutes = Number(compactMatch[2]);
+
+      if (hours > 23 || minutes > 59) {
+        return "";
+      }
+
+      return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+    }
+
+    const match = raw.match(/^(\d{1,2}):(\d{1,2})$/);
+    if (!match) {
+      return "";
+    }
+
+    const hours = Number(match[1]);
+    const minutes = Number(match[2]);
+
+    if (hours > 23 || minutes > 59) {
+      return "";
+    }
+
+    return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+  }
+
+  function syncTimeField(input) {
+    if (!input) return "";
+
+    const normalized = normalizeTimeValue(input.value);
+
+    if (normalized) {
+      input.value = normalized;
+    }
+
+    input.closest(".venue-time-field")?.classList.toggle("is-empty", !normalized);
+
+    return normalized;
+  }
+
+  function syncTimePlaceholder(input) {
+    if (!input) return;
+    input.closest(".venue-time-field")?.classList.toggle("is-empty", !input.value);
+  }
+
+  function getCardVenueId(card) {
+    const item = card?.closest(".venue-item");
+
+    return String(
+      item?.dataset.venueId ||
+      card?.dataset.venueId ||
+      ""
+    );
+  }
+
+  function formatAvailabilityDate(value) {
+    const parts = String(value || "").split("-");
+
+    if (parts.length !== 3) {
+      return String(value || "");
+    }
+
+    const year = parts[0];
+    const month = Number(parts[1]) - 1;
+    const day = Number(parts[2]);
+    const monthNames = [
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
+    ];
+
+    if (month < 0 || month > 11 || !day || !year) {
+      return String(value || "");
+    }
+
+    return `${monthNames[month]} ${day}, ${year}`;
+  }
+
+  function formatAvailabilityTime(value) {
+    const parts = String(value || "").split(":");
+
+    if (parts.length !== 2) {
+      return String(value || "");
+    }
+
+    const hours = Number(parts[0]);
+    const minutes = Number(parts[1]);
+
+    if (Number.isNaN(hours) || Number.isNaN(minutes)) {
+      return String(value || "");
+    }
+
+    const suffix = hours >= 12 ? "PM" : "AM";
+    const displayHours = hours % 12 || 12;
+
+    return `${displayHours}:${String(minutes).padStart(2, "0")} ${suffix}`;
+  }
+
+  // Normalize venue name for comparison
+  function normalizeVenueName(value) {
+    return String(value || "")
+      .toLowerCase()
+      .replace(/[â€“â€”]/g, "-")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
+  // Get venue name from card
+  function getCardVenueName(card) {
+    const heading = card.querySelector("h4");
+
+    if (!heading) {
+      return "";
+    }
+
+    return heading.textContent.trim();
+  }
+
+  // Get button inside venue card
+  function getButton(card) {
+    return card.querySelector("a.btn");
+  }
+
+  // Lock venue button before availability checking
+  function lockButton(button) {
+    if (!button) return;
+
+    if (!button.dataset.defaultLabel) {
+      button.dataset.defaultLabel =
+        button.textContent.trim();
+    }
+
+    if (!button.dataset.defaultHref) {
+      button.dataset.defaultHref =
+        button.getAttribute("href") ||
+        "/prototype/customer/services.html";
+    }
+
+    button.textContent = "Check availability first";
+    button.classList.add("disabled");
+
+    button.setAttribute(
+      "aria-disabled",
+      "true"
+    );
+
+    button.setAttribute(
+      "tabindex",
+      "-1"
+    );
+
+    button.setAttribute(
+      "href",
+      "#"
+    );
+
+    button.dataset.state = "locked";
+  }
+
+  function restoreButton(button) {
+    if (!button) return;
+    button.textContent = button.dataset.defaultLabel || "View Details";
+    button.classList.remove("disabled");
+    button.removeAttribute("aria-disabled");
+    button.removeAttribute("tabindex");
+    button.setAttribute("href", button.dataset.defaultHref || "/prototype/customer/services.html");
+    button.dataset.state = "browse";
+  }
+
+  // Mark venue as available
+  function markAvailable(card) {
+    const button = getButton(card);
+
+    if (!button) return;
+
+    const item = card.closest(".venue-item");
+
+    card.dataset.venueId =
+      item?.dataset.venueId ||
+      card.dataset.venueId ||
+      "";
+
+    card.dataset.venueName =
+      getCardVenueName(card);
+
+    card.dataset.venueType =
+      item?.dataset.tags ||
+      card.dataset.venueType ||
+      "";
+
+    card.dataset.venueLocation =
+      card.dataset.venueLocation ||
+      card
+        .querySelector("p.small.text-ink-soft.mb-2")
+        ?.textContent
+        ?.trim() ||
+      "";
+
+    card.dataset.venueCapacity =
+      card.dataset.venueCapacity || "";
+
+    card.dataset.venuePrice =
+      card.dataset.venuePrice || "";
+
+    button.textContent = "Select venue";
+
+    button.classList.remove(
+      "disabled"
+    );
+
+    button.removeAttribute(
+      "aria-disabled"
+    );
+
+    button.removeAttribute(
+      "tabindex"
+    );
+
+    button.setAttribute(
+      "href",
+      button.dataset.defaultHref ||
+      "/prototype/customer/services.html"
+    );
+
+    button.dataset.state = "available";
+  }
+
+  // Mark venue as unavailable
+  function markUnavailable(card) {
+    const button = getButton(card);
+
+    if (!button) return;
+
+    button.textContent =
+      "Unavailable for selected time";
+
+    button.classList.add(
+      "disabled"
+    );
+
+    button.setAttribute(
+      "aria-disabled",
+      "true"
+    );
+
+    button.setAttribute(
+      "tabindex",
+      "-1"
+    );
+
+    button.setAttribute(
+      "href",
+      "#"
+    );
+
+    button.dataset.state =
+      "unavailable";
+  }
+
+  // Show status message
+  function setAvailabilityStatus(message, isError = false) {
+    if (statusEl) {
+      statusEl.textContent = message;
+      statusEl.classList.toggle("is-error", isError);
+    }
+  }
+
+  // Apply venue availability state
+  function applyAvailabilityState() {
+    venueItems.forEach(function (item) {
+      const card =
+        item.querySelector(".bb-card");
+
+      if (!card) return;
+
+      const button =
+        getButton(card);
+
+      if (!button) return;
+
+      if (!availabilityChecked) {
+        item.classList.remove("venue-availability-hidden");
+        restoreButton(button);
+        return;
+      }
+
+      const venueId =
+        String(item.dataset.venueId || card.dataset.venueId || "");
+
+      const isAvailable = Boolean(venueId && availableVenueIds.has(venueId));
+
+      if (isAvailable) {
+        markAvailable(card);
+      } else {
+        restoreButton(button);
+      }
+
+      item.classList.toggle(
+        "venue-availability-hidden",
+        !isAvailable
+      );
+    });
+  }
+
+  // Search and filter venues
+  function filterVenues() {
+    const searchValue =
+      searchInput
+        ? searchInput.value
+            .trim()
+            .toLowerCase()
+        : "";
+
+    const selectedSpace =
+      spaceFilter
+        ? spaceFilter.value
+        : "all";
+
+    const selectedCity =
+      cityFilter
+        ? cityFilter.value
+        : "all";
+
+    let visibleCount = 0;
+
+    venueItems.forEach(function (item) {
+      const searchableText =
+        item.innerText.toLowerCase();
+
+      const tags =
+        item.dataset.tags || "";
+
+      const city =
+        item.dataset.city || "";
+
+      const venueId =
+        String(item.dataset.venueId || "");
+
+      const matchesSearch =
+        searchValue === "" ||
+        searchableText.includes(
+          searchValue
+        );
+
+      const matchesSpace =
+        selectedSpace === "all" ||
+        tags === selectedSpace;
+
+      const matchesCity =
+        selectedCity === "all" ||
+        city === selectedCity;
+
+      const matchesAvailability =
+        !availabilityChecked ||
+        (venueId !== "" && availableVenueIds.has(venueId));
+
+      const shouldShow =
+        matchesSearch &&
+        matchesSpace &&
+        matchesCity &&
+        matchesAvailability;
+
+      item.classList.toggle(
+        "d-none",
+        !shouldShow
+      );
+
+      if (shouldShow) {
+        visibleCount++;
+      }
+    });
+
+    if (venueCount) {
+      venueCount.textContent =
+        visibleCount;
+    }
+
+    if (noResults) {
+      noResults.classList.toggle(
+        "d-none",
+        visibleCount !== 0
+      );
+    }
+  }
+
+  // Reset availability whenever date/time changes
+  function resetAvailability() {
+    availabilityChecked = false;
+
+    availableVenueIds.clear();
+
+    venueItems.forEach((item) => item.classList.remove("venue-availability-hidden"));
+
+    applyAvailabilityState();
+
+    setAvailabilityStatus("");
+  }
+
+  // Validate time
+  function validateEventTime() {
+    const eventDate =
+      eventDateInput?.value || "";
+
+    const startTime =
+      syncTimeField(startTimeInput);
+
+    const endTime =
+      syncTimeField(endTimeInput);
+
+    if (!eventDate) {
+      setAvailabilityStatus(
+        "Please select the event date."
+      );
+
+      return false;
+    }
+
+    if (eventDate < getMinimumBookingDate()) {
+      setAvailabilityStatus(
+        "Bookings must be made at least one month in advance. Please choose a later event date."
+      );
+
+      return false;
+    }
+
+    if (!startTime) {
+      setAvailabilityStatus("Please select the start time.", true);
+
+      return false;
+    }
+
+    if (!endTime) {
+      setAvailabilityStatus("Please select the end time.", true);
+
+      return false;
+    }
+
+    const guests =
+      Number(guestCountInput?.value || 0);
+
+    if (!guestCountInput?.value) {
+      setAvailabilityStatus(
+        "Please enter the guest count."
+      );
+
+      return false;
+    }
+
+    if (!Number.isInteger(guests) || guests <= 0) {
+      setAvailabilityStatus("Guest count must be a whole number greater than 0.", true);
+
+      return false;
+    }
+
+    if (startTime >= endTime) {
+      setAvailabilityStatus("Start time must be earlier than end time.", true);
+
+      return false;
+    }
+
+    const startMinutes = Number(startTime.slice(0, 2)) * 60 + Number(startTime.slice(3));
+    const endMinutes = Number(endTime.slice(0, 2)) * 60 + Number(endTime.slice(3));
+    if (startMinutes < 480) {
+      setAvailabilityStatus("Start time must be 8:00 AM or later.", true);
+      return false;
+    }
+    if (endMinutes > 1410) {
+      setAvailabilityStatus("End time must be 11:30 PM or earlier.", true);
+      return false;
+    }
+    const duration = endMinutes - startMinutes;
+    if (duration < 120) {
+      setAvailabilityStatus("Your event must be at least 2 hours long.", true);
+      return false;
+    }
+    if (duration > 720) {
+      setAvailabilityStatus("Your event cannot be longer than 12 hours.", true);
+      return false;
+    }
+
+    return true;
+  }
+
+  // Check availability from backend
+  async function checkAvailability() {
+    if (!validateEventTime()) {
+      return;
+    }
+
+    const eventDate =
+      eventDateInput.value;
+
+    const startTime =
+      syncTimeField(startTimeInput);
+
+    const endTime =
+      syncTimeField(endTimeInput);
+
+    const guestCount =
+      Number(guestCountInput?.value || 0);
+
+    const params =
+      new URLSearchParams({
+        date: eventDate,
+        startTime: startTime,
+        endTime: endTime,
+        guests: String(guestCount)
+      });
+
+    if (checkButton) {
+      checkButton.disabled = true;
+
+      checkButton.textContent =
+        "Checking Availability...";
+    }
+
+    setAvailabilityStatus(
+      "Checking Availability..."
+    );
+
+    try {
+      const response =
+        await fetch(
+          `http://localhost:8081/api/venues/available?${params.toString()}`
+        );
+
+      if (!response.ok) {
+        throw new Error(
+          `Request failed: ${response.status}`
+        );
+      }
+
+      const venues =
+        await response.json();
+
+      if (!Array.isArray(venues)) {
+        throw new Error("Invalid venue response");
+      }
+
+      applyBackendVenuePrices(venues);
+
+      availableVenueIds.clear();
+
+      venues.forEach(function (venue) {
+        if (venue && venue.id !== undefined && venue.id !== null) {
+          availableVenueIds.add(String(venue.id));
+        }
+      });
+
+      availabilityChecked = true;
+
+      applyAvailabilityState();
+
+      filterVenues();
+
+      const visibleVenueCount = venueItems.filter((item) => !item.classList.contains("venue-availability-hidden") && !item.classList.contains("d-none")).length;
+      if (visibleVenueCount === 0) {
+        setAvailabilityStatus("No venues are available for your selected event.\nTry changing your date, time, or guest count.");
+      } else {
+        setAvailabilityStatus(`${visibleVenueCount} Venues Available\nBased on ${formatAvailabilityDate(eventDate)} \u00b7 ${formatAvailabilityTime(startTime)}\u2013${formatAvailabilityTime(endTime)} \u00b7 ${guestCount.toLocaleString()} guests`);
+      }
+
+      // Save event information
+      if (window.bbSetEventContext) {
+        window.bbSetEventContext({
+          eventDate: eventDate,
+          startTime: startTime,
+          endTime: endTime,
+          eventTime:
+            startTime +
+            " - " +
+            endTime,
+          guests: guestCount
+        });
+      }
+
+    } catch (error) {
+
+      console.error(
+        "Venue availability error:",
+        error
+      );
+
+      availabilityChecked = false;
+
+      availableVenueIds.clear();
+
+      applyAvailabilityState();
+
+      filterVenues();
+
+      setAvailabilityStatus("We couldn't check venue availability right now. Please try again.", true);
+
+    } finally {
+
+      if (checkButton) {
+        checkButton.disabled = false;
+
+        checkButton.textContent =
+          "Check Availability";
+      }
+    }
+  }
+
+  await loadBackendVenueCatalog();
+
+  // Venue selection
+  venueItems.forEach(function (item) {
+    const card =
+      item.querySelector(".bb-card");
+
+    if (!card) return;
+
+    const button =
+      getButton(card);
+
+    if (!button) return;
+
+    if (!button.dataset.defaultLabel) {
+      button.dataset.defaultLabel =
+        button.textContent.trim();
+    }
+
+    if (!button.dataset.defaultHref) {
+      button.dataset.defaultHref =
+        button.getAttribute("href") ||
+        "/prototype/customer/services.html";
+    }
+
+    button.addEventListener(
+      "click",
+      function (event) {
+
+        if (
+          button.dataset.state !==
+          "available"
+        ) {
+          event.preventDefault();
+
+          setAvailabilityStatus(
+            "Please check availability before selecting a venue."
+          );
+
+          return;
+        }
+
+        event.preventDefault();
+
+        const venueName =
+          getCardVenueName(card);
+
+        const venue = {
+          id:
+            card.dataset.venueId
+              ? Number(
+                  card.dataset.venueId
+                )
+              : null,
+
+          name:
+            card.dataset.venueName ||
+            venueName,
+
+          type:
+            card.dataset.venueType ||
+            item.dataset.tags ||
+            "",
+
+          location:
+            card.dataset.venueLocation ||
+            card
+              .querySelector(
+                "p.small.text-ink-soft.mb-2"
+              )
+              ?.textContent
+              ?.trim() ||
+            "",
+
+          capacity:
+            Number(
+              card.dataset
+                .venueCapacity || 0
+            ),
+
+          price:
+            card.dataset.venuePrice ||
+            "",
+
+          services:
+            window.bbVenueServices
+              ? window.bbVenueServices(
+                  venueName
+                )
+              : []
+        };
+
+        if (window.bbSetVenue) {
+          window.bbSetVenue(
+            venue
+          );
+        }
+
+        const next =
+          button.dataset
+            .defaultHref ||
+          "/prototype/customer/services.html";
+
+        window.location.href =
+          next;
+      }
+    );
+  });
+
+  // Availability button
+  checkButton?.addEventListener(
+    "click",
+    checkAvailability
+  );
+
+  // Reset when date/time changes
+  eventDateInput?.addEventListener(
+    "change",
+    resetAvailability
+  );
+
+  startTimeInput?.addEventListener(
+    "change",
+    function () {
+      syncTimeField(startTimeInput);
+      resetAvailability();
+    }
+  );
+
+  startTimeInput?.addEventListener(
+    "blur",
+    function () {
+      syncTimeField(startTimeInput);
+    }
+  );
+
+  endTimeInput?.addEventListener(
+    "change",
+    function () {
+      syncTimeField(endTimeInput);
+      resetAvailability();
+    }
+  );
+
+  endTimeInput?.addEventListener(
+    "blur",
+    function () {
+      syncTimeField(endTimeInput);
+    }
+  );
+
+  guestCountInput?.addEventListener(
+    "input",
+    resetAvailability
+  );
+
+  // Search filters
+  searchInput?.addEventListener(
+    "input",
+    filterVenues
+  );
+
+  spaceFilter?.addEventListener(
+    "change",
+    filterVenues
+  );
+
+  cityFilter?.addEventListener(
+    "change",
+    filterVenues
+  );
+
+  // Initial page state
+  availabilityChecked = false;
+
+  applyAvailabilityState();
+
+  filterVenues();
+
+  setAvailabilityStatus("");
+});
+</script>
+
+</body>
+</html>

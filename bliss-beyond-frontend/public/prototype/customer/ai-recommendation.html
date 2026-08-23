@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Recommendation | Bliss &amp; Beyond</title>
+<meta name="description" content="AI Recommendation — Bliss & Beyond customer portal prototype.">
+<link rel="icon" href="/prototype/../favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Karla:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="/prototype/assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+
+<nav class="navbar bb-nav sticky-top">
+  <div class="container-fluid px-3 px-lg-4">
+    <a class="navbar-brand" href="/prototype/index.html">Bliss &amp; Beyond<small>Customer Portal</small></a>
+    <div class="d-flex align-items-center gap-3">
+      <a class="d-none d-md-inline small" href="/prototype/index.html"><i class="bi bi-house-door me-1"></i>Public site</a>
+      <button class="btn btn-outline-forest btn-sm" data-bs-toggle="modal" data-bs-target="#notifyModal"><i class="bi bi-bell"></i></button>
+      <div class="dropdown">
+        <button class="btn btn-forest btn-sm dropdown-toggle" data-bs-toggle="dropdown" data-auth-display>Account</button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><a class="dropdown-item" href="/prototype/customer/profile.html">Profile</a></li>
+          <li><a class="dropdown-item" href="/prototype/login.html">Sign out</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</nav>
+<div class="modal fade" id="notifyModal" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content">
+  <div class="modal-header"><h5 class="modal-title">Notifications</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body">
+    <ul class="list-unstyled d-grid gap-3 mb-0 small" data-notification-list></ul>
+  </div>
+</div></div></div>
+<div class="bb-shell"><aside class="bb-side"><h6>Overview</h6><a class="" href="/prototype/customer/dashboard.html">Dashboard</a><a class="" href="/prototype/customer/profile.html">My Profile</a><h6>Plan your event</h6><a class="" href="/prototype/customer/browse-packages.html">Browse Packages</a><a class="" href="/prototype/customer/venue-selection.html">Venue Selection</a><a class="active" href="/prototype/customer/ai-recommendation.html">AI Recommendation</a><a class="" href="/prototype/customer/booking.html">New Booking</a><h6>My bookings</h6><a class="" href="/prototype/customer/consultation.html">Consultation</a><a class="" href="/prototype/customer/booking-history.html">Booking History</a><a class="" href="/prototype/customer/quotation.html">Quotations</a><h6>Account</h6><a href="/prototype/login.html">Sign out</a></aside><main class="bb-main"><div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
+      <div><span class="eyebrow">Customer portal</span><h1 class="h2 mt-1 mb-1">AI Recommendations</h1>
+      <p class="small text-ink-soft mb-0">Generated from your saved brief — regenerate any time.</p></div><div class="d-flex gap-2"></div></div>
+<div class="row g-4">
+  <div class="col-lg-5"><div class="ai-panel">
+    <span class="eyebrow">Your saved brief</span><h3 class="mt-2 mb-3">Refine and regenerate</h3>
+    <form id="aiForm" class="row g-3">
+      <div class="col-12"><label class="form-label">Event type</label><select class="form-select" name="type">
+        <option value="wedding">Wedding</option><option value="engagement">Engagement</option><option value="birthday">Birthday</option>
+        <option value="corporate">Corporate event</option><option value="graduation">Graduation</option><option value="anniversary">Anniversary</option></select></div>
+      <div class="col-6"><label class="form-label">Guests</label><input class="form-control" type="number" name="guests" value="240"></div>
+      <div class="col-6"><label class="form-label">Budget (USD)</label><input class="form-control" type="number" name="budget" value="14000" step="500"></div>
+      <div class="col-12"><label class="form-label">Style</label><select class="form-select" name="style">
+        <option value="classic">Classic &amp; formal</option><option value="rustic">Rustic &amp; garden</option>
+        <option value="modern">Modern &amp; vibrant</option><option value="minimal">Minimal &amp; corporate</option></select></div>
+      <div class="col-12"><button class="btn btn-gold w-100" type="submit">Regenerate recommendations</button></div>
+    </form>
+  </div></div>
+  <div class="col-lg-7">
+    <div id="aiLoading" class="ai-result d-none text-center py-5"><div class="spinner-border text-secondary mb-3"></div>
+      <p class="mb-0 text-ink-soft">Scoring packages and venues…</p></div>
+    <div id="aiResult" class="ai-result d-none"></div>
+    <div class="panel mt-3"><div class="panel__head"><h5 class="mb-0">Previous recommendations</h5></div><div class="panel__body">
+      <div class="table-responsive"><table class="table align-middle "><thead><tr><th>Generated</th><th>Brief</th><th>Top match</th><th>Estimate</th></tr></thead><tbody><tr data-searchable><td>04 Jul 2026</td><td>Wedding · 240 · classic</td><td>Eternal Vows</td><td>$14,250</td></tr><tr data-searchable><td>28 Jun 2026</td><td>Wedding · 180 · rustic</td><td>Garden Whisper</td><td>$9,400</td></tr></tbody></table></div>
+    </div></div>
+  </div>
+</div></main></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/prototype/assets/js/main.js"></script>
+<script type="module" src="/prototype/assets/js/ai-planner.js"></script>
+</body>
+</html>

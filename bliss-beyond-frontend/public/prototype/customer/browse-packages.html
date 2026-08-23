@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Browse Packages | Bliss &amp; Beyond</title>
+<meta name="description" content="Browse Packages — Bliss & Beyond customer portal prototype.">
+<link rel="icon" href="/prototype/../favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Karla:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="/prototype/assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+
+<nav class="navbar bb-nav sticky-top">
+  <div class="container-fluid px-3 px-lg-4">
+    <a class="navbar-brand" href="/prototype/index.html">Bliss &amp; Beyond<small>Customer Portal</small></a>
+    <div class="d-flex align-items-center gap-3">
+      <a class="d-none d-md-inline small" href="/prototype/index.html"><i class="bi bi-house-door me-1"></i>Public site</a>
+      <button class="btn btn-outline-forest btn-sm" data-bs-toggle="modal" data-bs-target="#notifyModal"><i class="bi bi-bell"></i></button>
+      <div class="dropdown">
+        <button class="btn btn-forest btn-sm dropdown-toggle" data-bs-toggle="dropdown" data-auth-display>Account</button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><a class="dropdown-item" href="/prototype/customer/profile.html">Profile</a></li>
+          <li><a class="dropdown-item" href="/prototype/login.html">Sign out</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</nav>
+<div class="modal fade" id="notifyModal" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content">
+  <div class="modal-header"><h5 class="modal-title">Notifications</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body">
+    <ul class="list-unstyled d-grid gap-3 mb-0 small" data-notification-list></ul>
+  </div>
+</div></div></div>
+<div class="bb-shell"><aside class="bb-side"><h6>Overview</h6><a class="" href="/prototype/customer/dashboard.html">Dashboard</a><a class="" href="/prototype/customer/profile.html">My Profile</a><h6>Plan your event</h6><a class="active" href="/prototype/customer/browse-packages.html">Browse Packages</a><a class="" href="/prototype/customer/venue-selection.html">Venue Selection</a><a class="" href="/prototype/customer/ai-recommendation.html">AI Recommendation</a><a class="" href="/prototype/customer/booking.html">New Booking</a><h6>My bookings</h6><a class="" href="/prototype/customer/consultation.html">Consultation</a><a class="" href="/prototype/customer/booking-history.html">Booking History</a><a class="" href="/prototype/customer/quotation.html">Quotations</a><h6>Account</h6><a href="/prototype/login.html">Sign out</a></aside><main class="bb-main" data-package-workflow><div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
+      <div><span class="eyebrow">Customer portal</span><h1 class="h2 mt-1 mb-1">Browse Packages</h1>
+      <p class="small text-ink-soft mb-0">Choose a date and time first, then unlock the available packages for your event.</p></div><div class="d-flex gap-2"><span class="bb-badge" data-package-status>Pick a date and time to unlock packages</span></div></div>
+<div class="panel mb-4">
+  <div class="panel__head"><h5 class="mb-0">Package Availability</h5><span class="bb-badge gold">Step 1</span></div>
+  <div class="panel__body">
+    <div class="row g-3 align-items-end">
+      <div class="col-md-4">
+        <label class="form-label" for="pkgDate">Select Date</label>
+        <input class="form-control" id="pkgDate" type="date" data-package-date>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label" for="pkgTime">Select Time</label>
+        <input class="form-control" id="pkgTime" type="time" data-package-time>
+      </div>
+      <div class="col-md-4">
+        <button class="btn btn-gold w-100" type="button" data-package-check>Check Availability</button>
+      </div>
+    </div>
+    <div class="row g-3 mt-3">
+      <div class="col-md-6"><div class="pricing-box"><div class="pricing-row"><span>Selected Date</span><strong data-package-selected-date>Select a date</strong></div></div></div>
+      <div class="col-md-6"><div class="pricing-box"><div class="pricing-row"><span>Selected Time</span><strong data-package-selected-time>Select a time</strong></div></div></div>
+    </div>
+  </div>
+</div>
+<div class="row g-2 align-items-center mb-4">
+  <div class="col-md-6"><div class="input-group">
+    <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
+    <input class="form-control border-start-0" type="search" placeholder="Search packages" data-search-target="#cpkgGrid">
+  </div></div>
+  <div class="col-md-3"><select class="form-select" data-filter-target="#cpkgGrid"><option value="all">All event types</option><option value="wedding">Weddings</option><option value="engagement">Engagements</option><option value="birthday">Birthdays</option><option value="corporate">Corporate</option><option value="graduation">Graduations</option><option value="anniversary">Anniversaries</option></select></div>
+  <div class="col-md-3"><select class="form-select"><option>Sort: Recommended</option><option>Price: low to high</option><option>Price: high to low</option><option>Capacity</option></select></div>
+</div>
+<div class="row g-4" id="cpkgGrid"><div class="col-md-6 col-xl-3" data-tags="wedding" data-searchable>
+  <article class="bb-card reveal">
+    <div class="bb-card__media" style="background-image:url('/prototype/assets/img/venue-2.jpg')"></div>
+    <div class="bb-card__body d-flex flex-column h-100">
+      <div class="d-flex justify-content-between align-items-start mb-2">
+        <span class="bb-badge">Wedding</span><span class="bb-badge gold">Up to 250</span>
+      </div>
+      <h4 class="mb-1">Eternal Vows</h4>
+      <p class="small text-ink-soft">Classic ballroom wedding with plated 4-course dinner.</p>
+      <ul class="list-check mb-3"><li>Full-day planning &amp; coordination</li><li>Bridal floral suite</li><li>Plated 4-course dinner</li><li>Live band &amp; MC</li></ul>
+      <div class="mt-auto d-flex align-items-end justify-content-between">
+        <div><div class="stat-label">From</div><div class="bb-price">$12,000</div></div>
+        <a class="btn btn-outline-forest btn-sm" href="/prototype/customer/booking.html" data-package-book>Book now</a>
+      </div>
+    </div>
+  </article></div><div class="col-md-6 col-xl-3" data-tags="wedding" data-searchable>
+  <article class="bb-card reveal">
+    <div class="bb-card__media" style="background-image:url('/prototype/assets/img/venue-1.jpg')"></div>
+    <div class="bb-card__body d-flex flex-column h-100">
+      <div class="d-flex justify-content-between align-items-start mb-2">
+        <span class="bb-badge">Wedding</span><span class="bb-badge gold">Up to 150</span>
+      </div>
+      <h4 class="mb-1">Garden Whisper</h4>
+      <p class="small text-ink-soft">Rustic outdoor wedding under festoon lights.</p>
+      <ul class="list-check mb-3"><li>Marquee &amp; garden styling</li><li>Farm-table buffet</li><li>Acoustic duo</li><li>Photo corner</li></ul>
+      <div class="mt-auto d-flex align-items-end justify-content-between">
+        <div><div class="stat-label">From</div><div class="bb-price">$8,500</div></div>
+        <a class="btn btn-outline-forest btn-sm" href="/prototype/customer/booking.html" data-package-book>Book now</a>
+      </div>
+    </div>
+  </article></div><div class="col-md-6 col-xl-3" data-tags="engagement" data-searchable>
+  <article class="bb-card reveal">
+    <div class="bb-card__media" style="background-image:url('/prototype/assets/img/venue-3.jpg')"></div>
+    <div class="bb-card__body d-flex flex-column h-100">
+      <div class="d-flex justify-content-between align-items-start mb-2">
+        <span class="bb-badge">Engagement</span><span class="bb-badge gold">Up to 80</span>
+      </div>
+      <h4 class="mb-1">Golden Hour</h4>
+      <p class="small text-ink-soft">Rooftop engagement soirée at sunset.</p>
+      <ul class="list-check mb-3"><li>Rooftop styling</li><li>Canapé &amp; cocktail service</li><li>Ring-moment lighting</li><li>Photographer (4 hrs)</li></ul>
+      <div class="mt-auto d-flex align-items-end justify-content-between">
+        <div><div class="stat-label">From</div><div class="bb-price">$4,200</div></div>
+        <a class="btn btn-outline-forest btn-sm" href="/prototype/customer/booking.html" data-package-book>Book now</a>
+      </div>
+    </div>
+  </article></div><div class="col-md-6 col-xl-3" data-tags="birthday" data-searchable>
+  <article class="bb-card reveal">
+    <div class="bb-card__media" style="background-image:url('/prototype/assets/img/venue-3.jpg')"></div>
+    <div class="bb-card__body d-flex flex-column h-100">
+      <div class="d-flex justify-content-between align-items-start mb-2">
+        <span class="bb-badge">Birthday</span><span class="bb-badge gold">Up to 60</span>
+      </div>
+      <h4 class="mb-1">Confetti Bash</h4>
+      <p class="small text-ink-soft">Playful birthday celebration with live stations.</p>
+      <ul class="list-check mb-3"><li>Theme décor &amp; balloons</li><li>Live food stations</li><li>Custom cake</li><li>DJ (3 hrs)</li></ul>
+      <div class="mt-auto d-flex align-items-end justify-content-between">
+        <div><div class="stat-label">From</div><div class="bb-price">$2,400</div></div>
+        <a class="btn btn-outline-forest btn-sm" href="/prototype/customer/booking.html" data-package-book>Book now</a>
+      </div>
+    </div>
+  </article></div><div class="col-md-6 col-xl-3" data-tags="corporate" data-searchable>
+  <article class="bb-card reveal">
+    <div class="bb-card__media" style="background-image:url('/prototype/assets/img/venue-2.jpg')"></div>
+    <div class="bb-card__body d-flex flex-column h-100">
+      <div class="d-flex justify-content-between align-items-start mb-2">
+        <span class="bb-badge">Corporate</span><span class="bb-badge gold">Up to 200</span>
+      </div>
+      <h4 class="mb-1">Boardroom Prestige</h4>
+      <p class="small text-ink-soft">Corporate gala and conference catering.</p>
+      <ul class="list-check mb-3"><li>Stage &amp; AV package</li><li>Working lunch + dinner</li><li>Branded signage</li><li>Registration desk</li></ul>
+      <div class="mt-auto d-flex align-items-end justify-content-between">
+        <div><div class="stat-label">From</div><div class="bb-price">$6,800</div></div>
+        <a class="btn btn-outline-forest btn-sm" href="/prototype/customer/booking.html" data-package-book>Book now</a>
+      </div>
+    </div>
+  </article></div><div class="col-md-6 col-xl-3" data-tags="graduation" data-searchable>
+  <article class="bb-card reveal">
+    <div class="bb-card__media" style="background-image:url('/prototype/assets/img/venue-1.jpg')"></div>
+    <div class="bb-card__body d-flex flex-column h-100">
+      <div class="d-flex justify-content-between align-items-start mb-2">
+        <span class="bb-badge">Graduation</span><span class="bb-badge gold">Up to 120</span>
+      </div>
+      <h4 class="mb-1">Cap &amp; Gown</h4>
+      <p class="small text-ink-soft">Graduation party with buffet and photo wall.</p>
+      <ul class="list-check mb-3"><li>Garden setup</li><li>Buffet dinner</li><li>Photo wall</li><li>Sound system</li></ul>
+      <div class="mt-auto d-flex align-items-end justify-content-between">
+        <div><div class="stat-label">From</div><div class="bb-price">$3,100</div></div>
+        <a class="btn btn-outline-forest btn-sm" href="/prototype/customer/booking.html" data-package-book>Book now</a>
+      </div>
+    </div>
+  </article></div><div class="col-md-6 col-xl-3" data-tags="anniversary" data-searchable>
+  <article class="bb-card reveal">
+    <div class="bb-card__media" style="background-image:url('/prototype/assets/img/venue-2.jpg')"></div>
+    <div class="bb-card__body d-flex flex-column h-100">
+      <div class="d-flex justify-content-between align-items-start mb-2">
+        <span class="bb-badge">Anniversary</span><span class="bb-badge gold">Up to 100</span>
+      </div>
+      <h4 class="mb-1">Silver Soirée</h4>
+      <p class="small text-ink-soft">Elegant anniversary dinner with live jazz.</p>
+      <ul class="list-check mb-3"><li>Candlelit ballroom</li><li>Plated dinner</li><li>Live jazz trio</li><li>Vow renewal setup</li></ul>
+      <div class="mt-auto d-flex align-items-end justify-content-between">
+        <div><div class="stat-label">From</div><div class="bb-price">$5,400</div></div>
+        <a class="btn btn-outline-forest btn-sm" href="/prototype/customer/booking.html" data-package-book>Book now</a>
+      </div>
+    </div>
+  </article></div><div class="col-md-6 col-xl-3" data-tags="birthday" data-searchable>
+  <article class="bb-card reveal">
+    <div class="bb-card__media" style="background-image:url('/prototype/assets/img/venue-3.jpg')"></div>
+    <div class="bb-card__body d-flex flex-column h-100">
+      <div class="d-flex justify-content-between align-items-start mb-2">
+        <span class="bb-badge">Birthday</span><span class="bb-badge gold">Up to 30</span>
+      </div>
+      <h4 class="mb-1">Petite Celebration</h4>
+      <p class="small text-ink-soft">Intimate gathering package for small groups.</p>
+      <ul class="list-check mb-3"><li>Private dining room</li><li>Set menu</li><li>Floral centrepieces</li></ul>
+      <div class="mt-auto d-flex align-items-end justify-content-between">
+        <div><div class="stat-label">From</div><div class="bb-price">$1,500</div></div>
+        <a class="btn btn-outline-forest btn-sm" href="/prototype/customer/booking.html" data-package-book>Book now</a>
+      </div>
+    </div>
+  </article></div></div></main></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/prototype/assets/js/main.js"></script>
+
+</body>
+</html>

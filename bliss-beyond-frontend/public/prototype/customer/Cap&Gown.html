@@ -1,0 +1,1652 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Cap & Gown Celebration | Bliss & Beyond</title>
+
+    <!-- =========================================================
+         GOOGLE FONTS
+    ========================================================== -->
+
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
+
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Montserrat:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+
+    <!-- =========================================================
+         FONT AWESOME
+    ========================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+
+    <!-- =========================================================
+         CSS
+    ========================================================== -->
+
+    <style>
+
+        /* =====================================================
+           VARIABLES
+        ===================================================== */
+
+        :root {
+
+            --ink: #12211c;
+            --ink-soft: #4b5751;
+
+            --cream: #faf7f1;
+            --cream-2: #f3ede2;
+
+            --white: #ffffff;
+
+            --green: #0f3d31;
+            --green-light: #e8f0eb;
+
+            --gold: #b98c3f;
+            --gold-dark: #96702e;
+            --gold-light: #ead9b8;
+
+            --line: #e5ded2;
+
+            --serif: "DM Serif Display", Georgia, serif;
+            --sans: "Montserrat", Arial, sans-serif;
+
+            --shadow:
+                0 18px 50px rgba(18, 33, 28, 0.08);
+        }
+
+
+        /* =====================================================
+           RESET
+        ===================================================== */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+
+        body {
+            background: var(--cream);
+            color: var(--ink);
+
+            font-family: var(--sans);
+
+            line-height: 1.6;
+        }
+
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+
+        /* =====================================================
+           NAVIGATION
+        ===================================================== */
+
+        .navbar {
+
+            height: 74px;
+
+            background: rgba(250, 247, 241, 0.96);
+
+            border-bottom: 1px solid var(--line);
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            padding: 0 7%;
+
+            position: sticky;
+
+            top: 0;
+
+            z-index: 1000;
+
+            backdrop-filter: blur(12px);
+        }
+
+
+        .brand {
+
+            font-family: var(--serif);
+
+            font-size: 27px;
+
+            color: var(--green);
+
+            letter-spacing: 0.3px;
+        }
+
+
+        .nav-links {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 34px;
+        }
+
+
+        .nav-links a {
+
+            position: relative;
+
+            padding: 8px 0;
+
+            color: var(--ink-soft);
+
+            font-size: 12px;
+
+            font-weight: 600;
+
+            letter-spacing: 1.2px;
+
+            text-transform: uppercase;
+        }
+
+
+        .nav-links a::after {
+
+            content: "";
+
+            position: absolute;
+
+            left: 0;
+
+            bottom: 0;
+
+            width: 0;
+
+            height: 1px;
+
+            background: var(--gold);
+
+            transition: width 0.3s ease;
+        }
+
+
+        .nav-links a:hover::after,
+        .nav-links a.active::after {
+
+            width: 100%;
+        }
+
+
+        .nav-links a.active {
+
+            color: var(--green);
+        }
+
+
+        /* =====================================================
+           HERO
+        ===================================================== */
+
+        .hero {
+
+            max-width: 1180px;
+
+            margin: 0 auto;
+
+            padding: 90px 30px 65px;
+
+            text-align: center;
+        }
+
+
+        .eyebrow {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 12px;
+
+            color: var(--gold);
+
+            font-size: 11px;
+
+            font-weight: 700;
+
+            letter-spacing: 2.5px;
+
+            text-transform: uppercase;
+
+            margin-bottom: 18px;
+        }
+
+
+        .eyebrow::before,
+        .eyebrow::after {
+
+            content: "";
+
+            width: 28px;
+
+            height: 1px;
+
+            background: var(--gold);
+        }
+
+
+        .hero h1 {
+
+            font-family: var(--serif);
+
+            font-size: clamp(52px, 7vw, 88px);
+
+            font-weight: 400;
+
+            line-height: 0.95;
+
+            color: var(--green);
+
+            margin-bottom: 20px;
+        }
+
+
+        .hero-subtitle {
+
+            font-size: 13px;
+
+            font-weight: 600;
+
+            letter-spacing: 2px;
+
+            text-transform: uppercase;
+
+            color: var(--ink-soft);
+
+            margin-bottom: 28px;
+        }
+
+
+        .hero-location {
+
+            font-family: var(--serif);
+
+            font-size: 21px;
+
+            color: var(--ink-soft);
+        }
+
+
+        .hero-location i {
+
+            color: var(--gold);
+
+            margin-right: 8px;
+
+            font-size: 15px;
+        }
+
+
+        /* =====================================================
+           VENUE LINK
+        ===================================================== */
+
+        .venue-link {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            margin-top: 14px;
+
+            color: var(--gold-dark);
+
+            font-size: 11px;
+
+            font-weight: 700;
+
+            letter-spacing: 1.2px;
+
+            text-transform: uppercase;
+
+            border-bottom: 1px solid var(--gold-light);
+
+            padding-bottom: 3px;
+
+            transition:
+                color 0.3s ease,
+                border-color 0.3s ease;
+        }
+
+
+        .venue-link:hover {
+
+            color: var(--green);
+
+            border-color: var(--green);
+        }
+
+
+        /* =====================================================
+           PACKAGE SUMMARY
+        ===================================================== */
+
+        .package-summary {
+
+            max-width: 1040px;
+
+            margin: 0 auto 75px;
+
+            padding: 0 30px;
+        }
+
+
+        .summary-card {
+
+            background: var(--white);
+
+            border: 1px solid var(--line);
+
+            box-shadow: var(--shadow);
+
+            display: grid;
+
+            grid-template-columns: 1.5fr 1fr;
+
+            min-height: 230px;
+        }
+
+
+        .summary-content {
+
+            padding: 45px;
+        }
+
+
+        .small-label {
+
+            color: var(--gold);
+
+            font-size: 10px;
+
+            font-weight: 700;
+
+            letter-spacing: 2px;
+
+            text-transform: uppercase;
+
+            margin-bottom: 13px;
+        }
+
+
+        .summary-content h2 {
+
+            font-family: var(--serif);
+
+            font-size: 34px;
+
+            font-weight: 400;
+
+            color: var(--green);
+
+            margin-bottom: 15px;
+        }
+
+
+        .summary-content p {
+
+            color: var(--ink-soft);
+
+            font-size: 14px;
+
+            line-height: 1.9;
+
+            max-width: 650px;
+        }
+
+
+        .grand-highlight {
+
+            margin-top: 20px;
+
+            padding: 14px 18px;
+
+            background: #f8f0df;
+
+            border-left: 2px solid var(--gold);
+
+            color: var(--gold-dark);
+
+            font-size: 11px;
+
+            font-weight: 600;
+
+            letter-spacing: 0.5px;
+        }
+
+
+        /* =====================================================
+           PRICE BOX
+        ===================================================== */
+
+        .summary-price {
+
+            background: var(--green);
+
+            color: white;
+
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: center;
+
+            justify-content: center;
+
+            padding: 35px;
+
+            text-align: center;
+        }
+
+
+        .summary-price span {
+
+            font-size: 10px;
+
+            text-transform: uppercase;
+
+            letter-spacing: 2px;
+
+            opacity: 0.75;
+
+            margin-bottom: 8px;
+        }
+
+
+        .price {
+
+            font-family: var(--serif);
+
+            font-size: 40px;
+
+            line-height: 1.2;
+        }
+
+
+        .guest-count {
+
+            font-size: 11px;
+
+            letter-spacing: 1px;
+
+            margin-top: 10px;
+
+            opacity: 0.85;
+        }
+
+
+        /* =====================================================
+           DETAILS
+        ===================================================== */
+
+        .details {
+
+            max-width: 1040px;
+
+            margin: 0 auto;
+
+            padding: 0 30px 80px;
+        }
+
+
+        .section-heading {
+
+            text-align: center;
+
+            margin-bottom: 42px;
+        }
+
+
+        .section-heading span {
+
+            color: var(--gold);
+
+            font-size: 10px;
+
+            font-weight: 700;
+
+            letter-spacing: 2.5px;
+
+            text-transform: uppercase;
+        }
+
+
+        .section-heading h2 {
+
+            font-family: var(--serif);
+
+            font-size: 38px;
+
+            font-weight: 400;
+
+            color: var(--green);
+
+            margin-top: 8px;
+        }
+
+
+        .details-grid {
+
+            display: grid;
+
+            grid-template-columns: repeat(2, 1fr);
+
+            gap: 20px;
+        }
+
+
+        /* =====================================================
+           DETAIL CARD
+        ===================================================== */
+
+        .detail-card {
+
+            background: var(--white);
+
+            border: 1px solid var(--line);
+
+            padding: 30px;
+
+            transition:
+                transform 0.3s ease,
+                box-shadow 0.3s ease,
+                border-color 0.3s ease;
+        }
+
+
+        .detail-card:hover {
+
+            transform: translateY(-3px);
+
+            border-color: var(--gold-light);
+
+            box-shadow:
+                0 15px 35px rgba(18, 33, 28, 0.07);
+        }
+
+
+        /* =====================================================
+           DETAIL HEADER
+        ===================================================== */
+
+        .detail-header {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 15px;
+
+            padding-bottom: 19px;
+
+            margin-bottom: 18px;
+
+            border-bottom: 1px solid var(--line);
+        }
+
+
+        .detail-icon {
+
+            width: 44px;
+
+            height: 44px;
+
+            min-width: 44px;
+
+            flex: 0 0 44px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            background: var(--green-light);
+
+            color: var(--gold);
+
+            border-radius: 50%;
+
+            font-size: 16px;
+        }
+
+
+        .detail-title {
+
+            font-family: var(--serif);
+
+            font-size: 23px;
+
+            font-weight: 400;
+
+            color: var(--green);
+        }
+
+
+        /* =====================================================
+           LIST
+        ===================================================== */
+
+        .detail-card ul {
+
+            list-style: none;
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 11px;
+        }
+
+
+        .detail-card li {
+
+            display: grid;
+
+            grid-template-columns: 18px 1fr;
+
+            align-items: start;
+
+            font-size: 12px;
+
+            line-height: 1.65;
+
+            color: var(--ink-soft);
+        }
+
+
+        .detail-card li::before {
+
+            content: "âœ“";
+
+            color: var(--gold);
+
+            font-weight: 700;
+
+            font-size: 11px;
+
+            margin-top: 2px;
+        }
+
+
+        /* =====================================================
+           VENUE CARD
+        ===================================================== */
+
+        .venue-card {
+
+            grid-column: span 2;
+        }
+
+
+        .venue-list {
+
+            display: grid;
+
+            grid-template-columns: repeat(2, 1fr);
+
+            column-gap: 40px;
+        }
+
+
+        /* =====================================================
+           CTA
+        ===================================================== */
+
+        .cta-section {
+
+            background: var(--green);
+
+            color: white;
+
+            max-width: 1040px;
+
+            margin: 0 auto 80px;
+
+            padding: 65px 45px;
+
+            text-align: center;
+        }
+
+
+        .cta-section .small-label {
+
+            color: var(--gold-light);
+        }
+
+
+        .cta-section h2 {
+
+            font-family: var(--serif);
+
+            font-size: 44px;
+
+            font-weight: 400;
+
+            margin-bottom: 10px;
+        }
+
+
+        .cta-price {
+
+            font-family: var(--serif);
+
+            font-size: 36px;
+
+            color: white;
+
+            margin-bottom: 7px;
+        }
+
+
+        .cta-info {
+
+            font-size: 11px;
+
+            letter-spacing: 1px;
+
+            opacity: 0.75;
+
+            margin-bottom: 30px;
+        }
+
+
+        .book-btn {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 12px;
+
+            min-width: 220px;
+
+            padding: 15px 28px;
+
+            background: var(--gold);
+
+            color: white;
+
+            border: 1px solid var(--gold);
+
+            font-family: var(--sans);
+
+            font-size: 11px;
+
+            font-weight: 700;
+
+            letter-spacing: 1.8px;
+
+            text-transform: uppercase;
+
+            cursor: pointer;
+
+            transition:
+                background 0.3s ease,
+                color 0.3s ease,
+                transform 0.3s ease;
+        }
+
+
+        .book-btn:hover {
+
+            background: transparent;
+
+            color: white;
+
+            transform: translateY(-2px);
+        }
+
+
+        /* =====================================================
+           FOOTER
+        ===================================================== */
+
+        footer {
+
+            border-top: 1px solid var(--line);
+
+            padding: 28px 7%;
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            font-size: 10px;
+
+            color: #7b837e;
+
+            letter-spacing: 0.8px;
+        }
+
+
+        footer strong {
+
+            color: var(--green);
+        }
+
+
+        /* =====================================================
+           RESPONSIVE
+        ===================================================== */
+
+        @media (max-width: 800px) {
+
+            .navbar {
+
+                padding: 0 25px;
+            }
+
+
+            .nav-links {
+
+                display: none;
+            }
+
+
+            .hero {
+
+                padding-top: 65px;
+            }
+
+
+            .hero h1 {
+
+                font-size: 58px;
+            }
+
+
+            .summary-card {
+
+                grid-template-columns: 1fr;
+            }
+
+
+            .summary-price {
+
+                min-height: 170px;
+            }
+
+
+            .details-grid {
+
+                grid-template-columns: 1fr;
+            }
+
+
+            .venue-card {
+
+                grid-column: span 1;
+            }
+
+
+            .venue-list {
+
+                grid-template-columns: 1fr;
+            }
+
+
+            .cta-section {
+
+                margin-left: 20px;
+
+                margin-right: 20px;
+
+                padding: 50px 25px;
+            }
+        }
+
+
+        @media (max-width: 500px) {
+
+            .hero {
+
+                padding-left: 20px;
+
+                padding-right: 20px;
+            }
+
+
+            .hero h1 {
+
+                font-size: 48px;
+            }
+
+
+            .hero-location {
+
+                font-size: 17px;
+            }
+
+
+            .package-summary,
+            .details {
+
+                padding-left: 18px;
+
+                padding-right: 18px;
+            }
+
+
+            .summary-content {
+
+                padding: 30px 25px;
+            }
+
+
+            .detail-card {
+
+                padding: 25px 20px;
+            }
+
+
+            .detail-header {
+
+                gap: 12px;
+            }
+
+
+            .detail-title {
+
+                font-size: 21px;
+            }
+
+
+            .cta-section h2 {
+
+                font-size: 36px;
+            }
+
+
+            footer {
+
+                flex-direction: column;
+
+                gap: 8px;
+
+                text-align: center;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================================
+     NAVIGATION
+========================================================= -->
+
+<nav class="navbar">
+
+    <a href="#" class="brand">
+        Bliss & Beyond
+    </a>
+
+
+    <div class="nav-links">
+
+        <a href="index.html">
+            Home
+        </a>
+
+
+        <a href="about.html">
+            Packages
+        </a>
+
+
+        <a href="#" class="active">
+            Graduation
+        </a>
+
+
+        
+
+
+        <a href="contact.html">
+            Contact
+        </a>
+
+    </div>
+
+</nav>
+
+
+
+<!-- =========================================================
+     HERO
+========================================================= -->
+
+<header class="hero">
+
+    <div class="eyebrow">
+        Western Park Royal Yangon Graduation
+    </div>
+
+
+    <h1>
+        Cap &amp; Gown Celebration
+    </h1>
+
+
+    <div class="hero-subtitle">
+        Graduation Party
+    </div>
+
+
+    <div class="hero-location">
+
+        <i class="fa-solid fa-location-dot"></i>
+
+        Western Park Royal â€” Yangon
+
+    </div>
+
+
+    <!-- Venue Information Link -->
+
+    <a
+        href="#"
+        class="venue-link">
+
+        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+
+        View Venue
+
+    </a>
+
+</header>
+
+
+
+<!-- =========================================================
+     PACKAGE SUMMARY
+========================================================= -->
+
+<section class="package-summary">
+
+    <div class="summary-card">
+
+
+        <div class="summary-content">
+
+            <div class="small-label">
+                Package Overview
+            </div>
+
+
+            <h2>
+                A Lively Graduation Celebration
+            </h2>
+
+
+            <p>
+                A lively graduation party designed for graduates,
+                classmates, friends and family, featuring comfortable
+                indoor dining, graduation setup, entertainment,
+                elegant decoration and professional photography.
+            </p>
+
+
+            <div class="grand-highlight">
+
+                âœ¦ Celebrate your academic achievement with
+                classmates, family and friends in a memorable
+                graduation party
+
+            </div>
+
+        </div>
+
+
+
+        <div class="summary-price">
+
+            <span>
+                Package Price
+            </span>
+
+
+            <div class="price">
+                MMK 2,500,000
+            </div>
+
+
+            <div class="guest-count">
+                Up to 120 Guests
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================================================
+     PACKAGE DETAILS
+========================================================= -->
+
+<main class="details">
+
+
+    <div class="section-heading">
+
+        <span>
+            Everything Included
+        </span>
+
+
+        <h2>
+            The Details
+        </h2>
+
+    </div>
+
+
+
+    <div class="details-grid">
+
+
+        <!-- =================================================
+             VENUE
+        ================================================= -->
+
+        <article class="detail-card venue-card">
+
+            <div class="detail-header">
+
+                <div class="detail-icon">
+
+                    <i class="fa-solid fa-building"></i>
+
+                </div>
+
+
+                <h3 class="detail-title">
+                    Venue
+                </h3>
+
+            </div>
+
+
+            <ul class="venue-list">
+
+                <li>
+                    Western Park Royal â€” Yangon
+                </li>
+
+                <li>
+                    Capacity: up to 120 guests
+                </li>
+
+                <li>
+                    5-hour venue use
+                </li>
+
+                <li>
+                    Indoor event area
+                </li>
+
+                <li>
+                    Guest tables and chairs
+                </li>
+
+                <li>
+                    Sound system
+                </li>
+
+                <li>
+                    Registration area
+                </li>
+
+            </ul>
+
+        </article>
+
+
+
+        <!-- =================================================
+             FOOD & DRINKS
+        ================================================= -->
+
+        <article class="detail-card">
+
+            <div class="detail-header">
+
+                <div class="detail-icon">
+
+                    <i class="fa-solid fa-utensils"></i>
+
+                </div>
+
+
+                <h3 class="detail-title">
+                    Food &amp; Drinks
+                </h3>
+
+            </div>
+
+
+            <ul>
+
+                <li>
+                    Buffet dinner
+                </li>
+
+                <li>
+                    Myanmar dishes
+                </li>
+
+                <li>
+                    Asian dishes
+                </li>
+
+                <li>
+                    Fried appetizers
+                </li>
+
+                <li>
+                    Salad
+                </li>
+
+                <li>
+                    Soup
+                </li>
+
+                <li>
+                    Dessert
+                </li>
+
+                <li>
+                    Coffee &amp; tea
+                </li>
+
+                <li>
+                    Soft drinks
+                </li>
+
+                <li>
+                    Drinking water
+                </li>
+
+            </ul>
+
+        </article>
+
+
+
+        <!-- =================================================
+             GRADUATION SETUP
+        ================================================= -->
+
+        <article class="detail-card">
+
+            <div class="detail-header">
+
+                <div class="detail-icon">
+
+                    <i class="fa-solid fa-graduation-cap"></i>
+
+                </div>
+
+
+                <h3 class="detail-title">
+                    Graduation Setup
+                </h3>
+
+            </div>
+
+
+            <ul>
+
+                <li>
+                    Graduation stage
+                </li>
+
+                <li>
+                    LED / printed backdrop
+                </li>
+
+                <li>
+                    Certificate table
+                </li>
+
+                <li>
+                    Podium
+                </li>
+
+                <li>
+                    Graduate-name display
+                </li>
+
+            </ul>
+
+        </article>
+
+
+
+        <!-- =================================================
+             ENTERTAINMENT
+        ================================================= -->
+
+        <article class="detail-card">
+
+            <div class="detail-header">
+
+                <div class="detail-icon">
+
+                    <i class="fa-solid fa-music"></i>
+
+                </div>
+
+
+                <h3 class="detail-title">
+                    Entertainment
+                </h3>
+
+            </div>
+
+
+            <ul>
+
+                <li>
+                    Background music
+                </li>
+
+                <li>
+                    DJ playlist
+                </li>
+
+                <li>
+                    Wireless microphones
+                </li>
+
+                <li>
+                    Basic stage lighting
+                </li>
+
+            </ul>
+
+        </article>
+
+
+
+        <!-- =================================================
+             DECORATION
+        ================================================= -->
+
+        <article class="detail-card">
+
+            <div class="detail-header">
+
+                <div class="detail-icon">
+
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+
+                </div>
+
+
+                <h3 class="detail-title">
+                    Decoration
+                </h3>
+
+            </div>
+
+
+            <ul>
+
+                <li>
+                    Balloon garland
+                </li>
+
+                <li>
+                    Academic-themed backdrop
+                </li>
+
+                <li>
+                    Floral centerpieces
+                </li>
+
+                <li>
+                    Photo zone
+                </li>
+
+                <li>
+                    Welcome signage
+                </li>
+
+            </ul>
+
+        </article>
+
+
+
+        <!-- =================================================
+             PHOTOGRAPHY
+        ================================================= -->
+
+        <article class="detail-card">
+
+            <div class="detail-header">
+
+                <div class="detail-icon">
+
+                    <i class="fa-solid fa-camera"></i>
+
+                </div>
+
+
+                <h3 class="detail-title">
+                    Photography
+                </h3>
+
+            </div>
+
+
+            <ul>
+
+                <li>
+                    3-hour photography
+                </li>
+
+                <li>
+                    Graduate portraits
+                </li>
+
+                <li>
+                    Group photos
+                </li>
+
+                <li>
+                    Family photos
+                </li>
+
+                <li>
+                    Cap toss photos
+                </li>
+
+            </ul>
+
+        </article>
+
+
+
+        <!-- =================================================
+             EXTRAS
+        ================================================= -->
+
+        <article class="detail-card">
+
+            <div class="detail-header">
+
+                <div class="detail-icon">
+
+                    <i class="fa-solid fa-gift"></i>
+
+                </div>
+
+
+                <h3 class="detail-title">
+                    Extras
+                </h3>
+
+            </div>
+
+
+            <ul>
+
+                <li>
+                    Graduation cake
+                </li>
+
+                <li>
+                    Guest book
+                </li>
+
+                <li>
+                    Photo props
+                </li>
+
+                <li>
+                    Cake stand
+                </li>
+
+                <li>
+                    Cake knife
+                </li>
+
+            </ul>
+
+        </article>
+
+
+    </div>
+
+</main>
+
+
+
+<!-- =========================================================
+     BOOKING CTA
+========================================================= -->
+
+<section class="cta-section">
+
+
+    <div class="small-label">
+        Celebrate Your Achievement
+    </div>
+
+
+    <h2>
+        Make Your Graduation Memorable
+    </h2>
+
+
+    <div class="cta-price">
+        MMK 2,500,000
+    </div>
+
+
+    <div class="cta-info">
+
+        120 GUESTS INCLUDED
+
+        &nbsp; â€¢ &nbsp;
+
+        ADDITIONAL GUEST: MMK 18,000 / PERSON
+
+    </div>
+
+
+    <a
+        href="booking.html"
+        class="book-btn">
+
+        Book This Package
+
+        <i class="fa-solid fa-arrow-right"></i>
+
+    </a>
+
+
+</section>
+
+
+
+<!-- =========================================================
+     FOOTER
+========================================================= -->
+
+<footer>
+
+    <div>
+
+        Â© 2026
+
+        <strong>
+            Bliss & Beyond
+        </strong>
+
+    </div>
+
+
+    <div>
+
+        Celebrate every chapter of your journey.
+
+    </div>
+
+</footer>
+
+
+</body>
+
+</html>
+

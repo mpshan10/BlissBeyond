@@ -1,0 +1,429 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inya Sunset Engagement | Bliss &amp; Beyond</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&amp;family=Karla:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+<style>
+:root{--forest:#123f32;--forest-deep:#0b2e25;--forest-soft:#e9f1eb;--cream:#faf7f0;--paper:#fffdf9;--gold:#b58a3a;--gold-soft:#e8d6ad;--line:#e5dccd;--ink:#213028;--muted:#68746c;--serif:"Cormorant Garamond",Georgia,serif;--sans:Karla,Arial,sans-serif}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--cream);color:var(--ink);font-family:var(--sans);line-height:1.55}
+a{color:inherit}
+.navbar{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:19px clamp(20px,5vw,72px);background:rgba(250,247,240,.96);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+.brand{color:var(--forest);font:700 1.7rem var(--serif);text-decoration:none;white-space:nowrap}
+.nav-links{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:24px}
+.nav-links a{color:var(--forest);font-size:.9rem;text-decoration:none;transition:color .2s ease}
+.nav-links a:hover,.nav-links a:focus-visible,.nav-links .active{color:var(--gold)}
+.hero{padding:clamp(68px,9vw,112px) clamp(20px,8vw,120px) 86px;background:linear-gradient(135deg,var(--forest-deep),var(--forest));color:#fff}
+.hero-inner{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1.35fr) minmax(300px,.65fr);gap:clamp(38px,7vw,92px);align-items:end}
+.eyebrow,.kicker{letter-spacing:.16em;text-transform:uppercase;font-size:.72rem;font-weight:700;color:var(--gold)}
+.hero .eyebrow{display:flex;flex-wrap:wrap;gap:9px;align-items:center}
+.hero-badge{display:inline-flex;align-items:center;padding:7px 12px;border:1px solid rgba(232,214,173,.5);border-radius:999px;color:#f8eed7;font-size:.7rem;letter-spacing:.12em}
+.hero h1{max-width:760px;margin:22px 0 18px;font:600 clamp(3.3rem,7vw,6.5rem)/.92 var(--serif);letter-spacing:-.02em}
+.hero-copy{max-width:640px;margin:0;color:#dfeae3;font-size:1.08rem}
+.hero-details{display:flex;flex-wrap:wrap;gap:10px;margin-top:30px}
+.hero-detail{display:inline-flex;align-items:center;gap:8px;padding:9px 13px;border:1px solid rgba(255,255,255,.2);border-radius:999px;color:#f2f5ef;font-size:.9rem}
+.hero-detail i{color:var(--gold-soft)}
+.price-card{padding:30px;background:var(--paper);color:var(--ink);border:1px solid rgba(232,214,173,.7);border-top:4px solid var(--gold);border-radius:22px;box-shadow:0 20px 48px rgba(4,28,21,.22)}
+.price-label{color:var(--muted);font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;font-weight:700}
+.price{margin:10px 0 4px;color:var(--gold);font:700 clamp(2rem,3.2vw,3rem)/1.05 var(--serif);letter-spacing:-.02em;white-space:nowrap}
+.price-card small{color:var(--muted)}
+.hero-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}.price-card .btn{flex:1 1 150px}
+.btn{display:inline-flex;justify-content:center;align-items:center;gap:9px;border-radius:999px;padding:12px 19px;text-decoration:none;font-weight:700;font-size:.9rem;transition:transform .2s ease,background-color .2s ease,border-color .2s ease,color .2s ease}
+.btn:hover{transform:translateY(-2px)}
+.btn:focus-visible,.nav-links a:focus-visible{outline:3px solid var(--gold-soft);outline-offset:3px}
+.btn-gold{background:var(--gold);border:1px solid var(--gold);color:#fff}
+.btn-gold:hover{background:#96702e;border-color:#96702e;color:#fff}
+.btn-outline{border:1px solid var(--forest);color:var(--forest)}
+.btn-outline:hover{background:var(--forest);color:#fff}
+.layout{max-width:1180px;margin:-34px auto 0;padding:0 20px 76px;position:relative}
+.venue-strip{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:22px 26px;background:var(--forest-soft);border:1px solid #d5e2d7;border-radius:18px;box-shadow:0 12px 30px rgba(34,48,40,.06)}
+.venue-content{display:flex;align-items:center;gap:15px;min-width:0}
+.venue-icon{display:grid;place-items:center;flex:0 0 42px;width:42px;height:42px;border-radius:50%;background:#fff;color:var(--gold);font-size:1.15rem}
+.venue-strip h2{margin:3px 0;color:var(--forest);font:600 clamp(1.5rem,3vw,2.1rem)/1 var(--serif)}
+.venue-strip p{margin:5px 0 0;color:var(--muted);font-size:.94rem}
+.benefit-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;margin:24px 0 70px;background:var(--line);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.benefit{padding:17px 18px;background:var(--paper)}
+.benefit strong{display:block;color:var(--forest);font:600 1.45rem/1 var(--serif)}
+.benefit span{display:block;margin-top:5px;color:var(--muted);font-size:.76rem;letter-spacing:.08em;text-transform:uppercase}
+.section-heading{margin-bottom:24px}
+.section-heading h2{margin:6px 0 0;color:var(--forest);font:600 clamp(2.5rem,5vw,4rem)/.95 var(--serif)}
+.section-heading p{margin:12px 0 0;color:var(--muted);font-size:1rem}
+.service-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.service-card{padding:26px;background:var(--paper);border:1px solid var(--line);border-radius:18px;box-shadow:0 10px 28px rgba(34,48,40,.055);transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease}
+.service-card:hover{transform:translateY(-4px);border-color:var(--gold-soft);box-shadow:0 16px 34px rgba(34,48,40,.1)}
+.service-card:last-child{grid-column:1 / -1}
+.service-head{display:flex;align-items:center;gap:13px;margin-bottom:17px}
+.service-icon{display:grid;place-items:center;flex:0 0 42px;width:42px;height:42px;border-radius:50%;background:var(--forest-soft);color:var(--gold);font-size:1.1rem}
+.service-card h3{margin:0;color:var(--forest);font:600 clamp(1.65rem,2.5vw,2rem)/1 var(--serif)}
+.package-inclusions{display:flex;flex-direction:column;gap:10px;list-style:none;padding:0;margin:0}
+.package-inclusions li{display:flex;align-items:flex-start;gap:10px;color:var(--muted);font-size:.96rem;line-height:1.55}
+.package-inclusions li i{flex:0 0 auto;margin-top:3px;color:var(--gold);font-size:.95rem}
+.final-cta{display:flex;align-items:center;justify-content:space-between;gap:28px;margin-top:70px;padding:30px 32px;background:var(--forest);border-radius:20px;color:#fff;box-shadow:0 16px 38px rgba(18,63,50,.16)}
+.final-cta h2{margin:6px 0;color:#fff;font:600 clamp(2rem,4vw,3.1rem)/.95 var(--serif)}
+ .final-cta p{margin:0;color:#dfeae3}
+ .final-cta .kicker{color:var(--gold-soft)}
+ .final-price{color:var(--gold-soft);font-weight:700;white-space:nowrap}
+ .package-modal .modal-content{border:1px solid var(--line);border-radius:22px;background:var(--paper);box-shadow:0 24px 60px rgba(18,63,50,.2);overflow:hidden}
+ .package-modal .modal-header{border-bottom:1px solid var(--line);padding:24px 26px 18px}
+ .package-modal .modal-title{color:var(--forest);font:600 2rem/1 var(--serif)}
+ .package-modal .modal-body{padding:24px 26px}
+ .package-modal .modal-footer{border-top:1px solid var(--line);padding:17px 26px}
+ .package-modal__label{display:block;margin-bottom:6px;color:var(--gold);font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase}
+ .package-modal__field{min-height:2.8rem;border:1px solid var(--line);border-radius:10px;background:#fdfbf7;color:var(--forest)}
+ .package-modal__field:focus{border-color:var(--gold);box-shadow:0 0 0 .2rem rgba(181,138,58,.15)}
+ .package-modal__summary{display:flex;flex-wrap:wrap;gap:10px 20px;margin-bottom:20px;padding:15px 17px;border:1px solid #d5e2d7;border-radius:14px;background:var(--forest-soft);color:var(--forest)}
+ .package-modal__summary strong{display:block;font-family:var(--serif);font-size:1.35rem;line-height:1.05}
+ .package-modal__summary span{display:block;margin-top:3px;color:var(--muted);font-size:.78rem}
+ .package-modal__note,.package-modal__status{min-height:1.45rem;border-radius:10px;padding:11px 13px;background:#f3eee4;color:var(--muted);font-size:.9rem}
+ .package-modal__status.is-error{background:#fff0ee;color:#8b3d35}
+ .package-modal__result{padding:18px;border:1px solid #d5e2d7;border-radius:14px;background:var(--forest-soft)}
+ .package-modal__result h3{margin:0;color:var(--forest);font:600 2rem/1 var(--serif)}
+ .package-modal__result p{margin:8px 0 0;color:var(--muted)}
+ .package-modal__result .bi{color:#287052;font-size:1.35rem}
+ .package-modal__actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+ .package-modal__actions .btn{flex:1 1 180px}
+ .package-modal .btn:disabled{cursor:not-allowed;opacity:.58;transform:none}
+footer{padding:28px 20px;text-align:center;color:var(--muted);border-top:1px solid var(--line);font-size:.88rem}
+footer strong{color:var(--forest)}
+@media(max-width:820px){.hero-inner{grid-template-columns:1fr}.price-card{max-width:560px}.benefit-strip{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.navbar{align-items:flex-start;flex-direction:column}.nav-links{justify-content:flex-start;gap:12px 17px}.hero{padding:64px 20px 76px}.price{white-space:normal}.hero h1{font-size:clamp(3rem,16vw,5rem)}.layout{padding-inline:14px}.venue-strip,.final-cta{align-items:flex-start;flex-direction:column}.venue-strip .btn,.final-cta .btn{width:100%}.benefit-strip{grid-template-columns:1fr 1fr;margin-bottom:52px}.benefit{padding:15px 13px}.benefit strong{font-size:1.25rem}.service-card:last-child{grid-column:auto}.final-cta{padding:25px 22px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.btn,.service-card{transition:none}.btn:hover,.service-card:hover{transform:none}}
+</style>
+</head>
+<body>
+<nav class="navbar" aria-label="Primary navigation">
+  <a class="brand" href="/prototype/index.html">Bliss &amp; Beyond</a>
+  <div class="nav-links">
+    <a href="/prototype/index.html">Home</a>
+    <a href="/prototype/packages.html" class="active">Packages</a>
+    <a href="/prototype/packages.html#engagement">Engagement</a>
+    <a href="/prototype/gallery.html">Gallery</a>
+    <a href="/prototype/contact.html">Contact</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="eyebrow"><span class="hero-badge">Engagement</span><span class="hero-badge">Yangon</span></div>
+      <h1>Inya Sunset Engagement</h1>
+      <p class="hero-copy">A romantic lakeside engagement experience with relaxed dining, garden styling and warm evening atmosphere.</p>
+      <div class="hero-details">
+        <span class="hero-detail" data-package-venue-display><i class="bi bi-geo-alt" aria-hidden="true"></i> Inya Lake Hotel &ndash; Sunset Terrace</span>
+        <span class="hero-detail" data-package-capacity-display><i class="bi bi-people" aria-hidden="true"></i> Up to 100 Guests</span>
+      </div>
+    </div>
+    <aside class="price-card" aria-label="Package price">
+      <span class="price-label">Package Price</span>
+       <div class="price" data-package-price>MMK 8,500,000</div>
+       <small data-package-capacity-display>Up to 100 Guests</small>
+      <div class="hero-actions">
+        <a class="btn btn-gold" href="#packageAvailabilityModal" data-package-availability-open>Book This Package <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
+        <a class="btn btn-outline" href="https://www.inyalakehotel.com/" target="_blank" rel="noopener">View Venue</a>
+      </div>
+    </aside>
+  </div>
+</header>
+
+<main class="layout">
+  <section class="venue-strip" aria-labelledby="venue-title">
+    <div class="venue-content">
+      <span class="venue-icon"><i class="bi bi-geo-alt" aria-hidden="true"></i></span>
+      <div>
+        <div class="kicker">Associated Venue</div>
+       <h2 id="venue-title" data-package-venue-display>Inya Lake Hotel &ndash; Sunset Terrace</h2>
+       <p data-package-capacity-display>Yangon &middot; Up to 100 Guests</p>
+      </div>
+    </div>
+    <a class="btn btn-outline" href="https://www.inyalakehotel.com/" target="_blank" rel="noopener">View Venue <i class="bi bi-arrow-up-right" aria-hidden="true"></i></a>
+  </section>
+
+  <section class="benefit-strip" aria-label="Package benefits">
+    <div class="benefit"><strong>7</strong><span>Services Included</span></div>
+    <div class="benefit"><strong>100</strong><span>Maximum Guests</span></div>
+    <div class="benefit"><strong>Yangon</strong><span>Celebration Location</span></div>
+    <div class="benefit"><strong>Ready-Made</strong><span>Curated Package</span></div>
+  </section>
+
+  <section aria-labelledby="included-title">
+    <div class="section-heading">
+      <div class="kicker">What's Included</div>
+      <h2 id="included-title">Every essential detail is thoughtfully selected for you.</h2>
+    </div>
+    <div class="service-grid">
+      <article class="service-card">
+        <div class="service-head"><span class="service-icon"><i class="bi bi-cup-hot" aria-hidden="true"></i></span><h3>Catering</h3></div>
+        <ul class="package-inclusions"><li><i class="bi bi-check2" aria-hidden="true"></i><span>Cocktail / Finger Food</span></li><li><i class="bi bi-check2" aria-hidden="true"></i><span>Fresh Juice Package</span></li><li><i class="bi bi-check2" aria-hidden="true"></i><span>Mini Pastries</span></li></ul>
+      </article>
+      <article class="service-card">
+        <div class="service-head"><span class="service-icon"><i class="bi bi-stars" aria-hidden="true"></i></span><h3>Decoration &amp; Styling</h3></div>
+        <ul class="package-inclusions"><li><i class="bi bi-check2" aria-hidden="true"></i><span>Garden Theme</span></li><li><i class="bi bi-check2" aria-hidden="true"></i><span>Backdrop</span></li><li><i class="bi bi-check2" aria-hidden="true"></i><span>Entrance Decoration</span></li><li><i class="bi bi-check2" aria-hidden="true"></i><span>Photo Area Decoration</span></li><li><i class="bi bi-check2" aria-hidden="true"></i><span>Fairy Lights</span></li></ul>
+      </article>
+      <article class="service-card">
+        <div class="service-head"><span class="service-icon"><i class="bi bi-camera" aria-hidden="true"></i></span><h3>Photography &amp; Videography</h3></div>
+        <ul class="package-inclusions"><li><i class="bi bi-check2" aria-hidden="true"></i><span>Event Photography</span></li><li><i class="bi bi-check2" aria-hidden="true"></i><span>Couple Session</span></li><li><i class="bi bi-check2" aria-hidden="true"></i><span>Highlight Video</span></li></ul>
+      </article>
+      <article class="service-card">
+        <div class="service-head"><span class="service-icon"><i class="bi bi-music-note-beamed" aria-hidden="true"></i></span><h3>Entertainment</h3></div>
+        <ul class="package-inclusions"><li><i class="bi bi-check2" aria-hidden="true"></i><span>Acoustic Singer</span></li><li><i class="bi bi-check2" aria-hidden="true"></i><span>4-Hour Entertainment</span></li></ul>
+      </article>
+      <article class="service-card">
+        <div class="service-head"><span class="service-icon"><i class="bi bi-speaker" aria-hidden="true"></i></span><h3>Sound, Lighting &amp; AV</h3></div>
+        <ul class="package-inclusions"><li><i class="bi bi-check2" aria-hidden="true"></i><span>Standard AV Package</span></li><li><i class="bi bi-check2" aria-hidden="true"></i><span>Ambient Lighting</span></li></ul>
+      </article>
+      <article class="service-card">
+        <div class="service-head"><span class="service-icon"><i class="bi bi-cake2" aria-hidden="true"></i></span><h3>Cake &amp; Desserts</h3></div>
+        <ul class="package-inclusions"><li><i class="bi bi-check2" aria-hidden="true"></i><span>One-Tier Floral Celebration Cake</span></li><li><i class="bi bi-check2" aria-hidden="true"></i><span>Strawberry</span></li><li><i class="bi bi-check2" aria-hidden="true"></i><span>Fresh Flower Decoration</span></li></ul>
+      </article>
+      <article class="service-card">
+        <div class="service-head"><span class="service-icon"><i class="bi bi-flower1" aria-hidden="true"></i></span><h3>Floral Design</h3></div>
+        <ul class="package-inclusions"><li><i class="bi bi-check2" aria-hidden="true"></i><span>Bridal Bouquet</span></li><li><i class="bi bi-check2" aria-hidden="true"></i><span>Flower Arch</span></li><li><i class="bi bi-check2" aria-hidden="true"></i><span>Entrance Flowers</span></li><li><i class="bi bi-check2" aria-hidden="true"></i><span>Roses</span></li><li><i class="bi bi-check2" aria-hidden="true"></i><span>Hydrangeas</span></li><li><i class="bi bi-check2" aria-hidden="true"></i><span>Romantic Blush</span></li><li><i class="bi bi-check2" aria-hidden="true"></i><span>Garden &amp; Natural</span></li><li><i class="bi bi-check2" aria-hidden="true"></i><span>Balanced flowers &amp; greenery</span></li></ul>
+      </article>
+    </div>
+  </section>
+
+  <section class="final-cta" aria-labelledby="cta-title">
+    <div>
+      <div class="kicker">Ready when you are</div>
+      <h2 id="cta-title">Everything is already selected for your celebration.</h2>
+       <p>Inya Sunset Engagement <span class="final-price" data-package-final-price>&middot; MMK 8,500,000 &middot; Up to 100 Guests</span></p>
+    </div>
+    <a class="btn btn-gold" href="#packageAvailabilityModal" data-package-availability-open>Book This Package <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
+  </section>
+</main>
+
+<div class="modal fade package-modal" id="packageAvailabilityModal" tabindex="-1" aria-labelledby="packageAvailabilityModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div><div class="eyebrow">Package planning</div><h2 class="modal-title" id="packageAvailabilityModalLabel">Check Package Availability</h2></div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="package-modal__summary" aria-label="Package details">
+          <div><strong data-package-summary-name>Inya Sunset Engagement</strong><span>Package</span></div>
+          <div><strong data-package-summary-venue>Inya Lake Hotel &ndash; Sunset Terrace</strong><span>Associated venue</span></div>
+          <div><strong data-package-summary-guests>Up to 100 Guests</strong><span>Maximum capacity</span></div>
+        </div>
+        <form data-package-availability-form novalidate>
+          <div class="row g-3">
+            <div class="col-md-6"><label class="package-modal__label" for="packageEventDate">Event date</label><input class="form-control package-modal__field" id="packageEventDate" type="date" data-package-event-date required></div>
+            <div class="col-md-6"><label class="package-modal__label" for="packageGuestCount">Guests</label><input class="form-control package-modal__field" id="packageGuestCount" type="number" min="1" data-package-guest-count required></div>
+            <div class="col-md-6"><label class="package-modal__label" for="packageStartTime">Start time</label><input class="form-control package-modal__field" id="packageStartTime" type="time" data-package-start-time required></div>
+            <div class="col-md-6"><label class="package-modal__label" for="packageEndTime">End time</label><input class="form-control package-modal__field" id="packageEndTime" type="time" data-package-end-time required></div>
+          </div>
+          <div class="package-modal__note mt-3" data-package-helper role="status" aria-live="polite">Availability will be checked for this package.</div>
+          <div class="package-modal__status mt-3 d-none" data-package-form-status role="alert"></div>
+          <div class="package-modal__actions"><button class="btn btn-outline" type="button" data-bs-dismiss="modal">Cancel</button><button class="btn btn-gold" type="submit" data-package-check>Check Availability</button></div>
+        </form>
+        <section class="package-modal__result d-none" data-package-result aria-live="polite">
+          <div class="d-flex align-items-start gap-3"><i class="bi bi-check-circle" aria-hidden="true"></i><div><h3 data-package-result-title>Available</h3><p data-package-result-message></p><p class="mb-0" data-package-result-details></p></div></div>
+          <div class="package-modal__actions"><button class="btn btn-outline" type="button" data-package-change>Change Details</button><button class="btn btn-gold" type="button" data-package-continue>Continue Booking <i class="bi bi-arrow-right" aria-hidden="true"></i></button></div>
+        </section>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>&copy; 2026 <strong>Bliss &amp; Beyond</strong> - Celebrate every chapter of your love.</footer>
+<script src="/prototype/assets/js/main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+(() => {
+  const PACKAGE_API = 'http://localhost:8081/api/packages/inya-sunset-engagement';
+  const VENUE_API = 'http://localhost:8081/api/venues/available';
+  const FALLBACK = { id: 22, slug: 'inya-sunset-engagement', name: 'Inya Sunset Engagement', venueId: 36, venueName: 'Inya Lake Hotel – Sunset Terrace', maxGuests: 100, finalPrice: 8500000, active: true };
+  const modalElement = document.getElementById('packageAvailabilityModal');
+  const modal = window.bootstrap?.Modal.getOrCreateInstance(modalElement);
+  const form = document.querySelector('[data-package-availability-form]');
+  const dateInput = document.querySelector('[data-package-event-date]');
+  const guestInput = document.querySelector('[data-package-guest-count]');
+  const startInput = document.querySelector('[data-package-start-time]');
+  const endInput = document.querySelector('[data-package-end-time]');
+  const checkButton = document.querySelector('[data-package-check]');
+  const formStatus = document.querySelector('[data-package-form-status]');
+  const helper = document.querySelector('[data-package-helper]');
+  const result = document.querySelector('[data-package-result]');
+  const resultTitle = document.querySelector('[data-package-result-title]');
+  const resultIcon = result.querySelector('.bi');
+  const resultMessage = document.querySelector('[data-package-result-message]');
+  const resultDetails = document.querySelector('[data-package-result-details]');
+  const changeButton = document.querySelector('[data-package-change]');
+  const openButtons = [...document.querySelectorAll('[data-package-availability-open]')];
+  const packageNameEl = document.querySelector('[data-package-summary-name]');
+  const venueNameEl = document.querySelector('[data-package-summary-venue]');
+  const guestsEl = document.querySelector('[data-package-summary-guests]');
+  const priceEl = document.querySelector('[data-package-price]');
+  const finalPriceEl = document.querySelector('[data-package-final-price]');
+  const venueDisplayEls = [...document.querySelectorAll('[data-package-venue-display]')];
+  const capacityDisplayEls = [...document.querySelectorAll('[data-package-capacity-display]')];
+  let packageCatalog = null;
+  let catalogError = false;
+  let checkInProgress = false;
+  let confirmedAvailability = null;
+
+  const localDate = () => {
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+  };
+  const formatDate = value => new Intl.DateTimeFormat('en-US', { dateStyle: 'long' }).format(new Date(`${value}T00:00:00`));
+  const formatTime = value => {
+    const [hour, minute] = value.split(':').map(Number);
+    const suffix = hour >= 12 ? 'PM' : 'AM';
+    return `${hour % 12 || 12}:${String(minute).padStart(2, '0')} ${suffix}`;
+  };
+  const setStatus = (message, error = false) => {
+    formStatus.textContent = message;
+    formStatus.classList.toggle('d-none', !message);
+    formStatus.classList.toggle('is-error', error);
+  };
+  const currentPlan = () => typeof window.bbGetPackagePlan === 'function' ? window.bbGetPackagePlan() : {};
+  const setPackageSummary = () => {
+    if (!packageCatalog) return;
+    packageNameEl.textContent = packageCatalog.name;
+    venueNameEl.textContent = packageCatalog.venueName;
+    guestsEl.textContent = `Up to ${packageCatalog.maxGuests.toLocaleString()} Guests`;
+    priceEl.textContent = `MMK ${packageCatalog.finalPrice.toLocaleString()}`;
+    finalPriceEl.textContent = `· MMK ${packageCatalog.finalPrice.toLocaleString()} · Up to ${packageCatalog.maxGuests.toLocaleString()} Guests`;
+    venueDisplayEls.forEach(element => {
+      if (element.matches('h2')) element.textContent = packageCatalog.venueName;
+      else { const icon = element.querySelector('i'); element.replaceChildren(icon, document.createTextNode(` ${packageCatalog.venueName}`)); }
+    });
+    capacityDisplayEls.forEach(element => {
+      if (element.tagName === 'P') element.textContent = `Yangon · Up to ${packageCatalog.maxGuests.toLocaleString()} Guests`;
+      else if (element.tagName === 'SPAN') { const icon = element.querySelector('i'); element.replaceChildren(icon, document.createTextNode(` Up to ${packageCatalog.maxGuests.toLocaleString()} Guests`)); }
+      else element.textContent = `Up to ${packageCatalog.maxGuests.toLocaleString()} Guests`;
+    });
+    guestInput.max = String(packageCatalog.maxGuests);
+  };
+  const showForm = () => {
+    form.classList.remove('d-none');
+    result.classList.add('d-none');
+    changeButton.textContent = 'Change Details';
+    confirmedAvailability = null;
+  };
+  const invalidate = () => {
+    if (checkInProgress) return;
+    confirmedAvailability = null;
+    if (typeof window.bbSetPackagePlan === 'function') {
+      window.bbSetPackagePlan({ available:false, packageAvailable:false });
+    }
+    showForm();
+    helper.textContent = 'Availability will be checked for this package.';
+    setStatus('');
+  };
+  const restoreInputs = () => {
+    const saved = currentPlan();
+    if (saved.packageSlug !== FALLBACK.slug) return;
+    dateInput.value = saved.eventDate || '';
+    guestInput.value = saved.guestCount || '';
+    startInput.value = saved.startTime || '';
+    endInput.value = saved.endTime || '';
+  };
+  const validate = () => {
+    const date = dateInput.value;
+    const guests = Number(guestInput.value);
+    const start = startInput.value;
+    const end = endInput.value;
+    if (!date) return 'Please choose an event date.';
+    if (date < localDate()) return 'Please choose today or a future event date.';
+    if (!Number.isInteger(guests) || guests < 1) return 'Please enter a valid guest count.';
+    if (guests > packageCatalog.maxGuests) return `This package supports up to ${packageCatalog.maxGuests.toLocaleString()} guests.`;
+    if (!start || !end) return 'Please choose a start time and end time.';
+    const startMinutes = Number(start.slice(0, 2)) * 60 + Number(start.slice(3));
+    const endMinutes = Number(end.slice(0, 2)) * 60 + Number(end.slice(3));
+    if (startMinutes >= endMinutes) return 'Start time must be earlier than end time.';
+    if (startMinutes < 480) return 'Start time must be 8:00 AM or later.';
+    if (endMinutes > 1410) return 'End time must be 11:30 PM or earlier.';
+    const duration = endMinutes - startMinutes;
+    if (duration < 120) return 'Your event must be at least 2 hours long.';
+    if (duration > 720) return 'Your event cannot be longer than 12 hours.';
+    return null;
+  };
+  const savePlan = (details) => {
+    if (typeof window.bbSetPackagePlan !== 'function') return;
+    window.bbSetPackagePlan({ packageId:packageCatalog.id, packageSlug:packageCatalog.slug, packageName:packageCatalog.name, venueId:packageCatalog.venueId, venueName:packageCatalog.venueName, maxGuests:packageCatalog.maxGuests, eventDate:details.date, startTime:details.start, endTime:details.end, guestCount:details.guests, available:true, packageAvailable:true });
+  };
+  const checkAvailability = async () => {
+    if (checkInProgress || !packageCatalog || catalogError) return;
+    const validationError = validate();
+    if (validationError) { setStatus(validationError, true); return; }
+    const details = { date:dateInput.value, start:startInput.value, end:endInput.value, guests:Number(guestInput.value) };
+    const params = new URLSearchParams({ date:details.date, startTime:details.start, endTime:details.end, guests:String(details.guests) });
+    checkInProgress = true;
+    checkButton.disabled = true;
+    checkButton.textContent = 'Checking availability...';
+    helper.textContent = 'Checking availability...';
+    setStatus('');
+    try {
+      const response = await fetch(`${VENUE_API}?${params.toString()}`);
+      if (!response.ok) throw new Error(`Venue availability request failed: ${response.status}`);
+      const venues = await response.json();
+      if (!Array.isArray(venues)) throw new Error('Invalid venue availability response');
+      const availableIds = new Set(venues.map(venue => String(venue?.id)).filter(id => id !== 'undefined' && id !== 'null'));
+      const venueAvailable = availableIds.has(String(packageCatalog.venueId));
+      confirmedAvailability = venueAvailable ? details : null;
+      if (venueAvailable) {
+        savePlan(details);
+        form.classList.add('d-none');
+        result.classList.remove('d-none');
+        resultTitle.textContent = 'Available';
+        resultIcon.className = 'bi bi-check-circle';
+        resultMessage.textContent = `${packageCatalog.venueName} is available for your selected event.`;
+        resultDetails.textContent = `${formatDate(details.date)} · ${formatTime(details.start)} – ${formatTime(details.end)} · ${details.guests.toLocaleString()} guests`;
+      } else {
+        form.classList.add('d-none');
+        result.classList.remove('d-none');
+        result.querySelector('h3').textContent = 'Package Venue Unavailable';
+        resultIcon.className = 'bi bi-x-circle';
+        resultMessage.textContent = `${packageCatalog.venueName} is not available for your selected date and time. Please choose another date or time.`;
+        resultDetails.textContent = '';
+        result.querySelector('[data-package-change]').textContent = 'Change Date or Time';
+      }
+    } catch (error) {
+      console.error('Inya package availability error:', error);
+      confirmedAvailability = null;
+      setStatus("We couldn't check availability right now. Please try again.", true);
+    } finally {
+      checkInProgress = false;
+      checkButton.disabled = Boolean(catalogError);
+      checkButton.textContent = 'Check Availability';
+      if (!confirmedAvailability && result.classList.contains('d-none')) helper.textContent = 'Availability will be checked for this package.';
+    }
+  };
+  const loadPackage = async () => {
+    try {
+      const response = await fetch(PACKAGE_API);
+      if (!response.ok) throw new Error(`Package request failed: ${response.status}`);
+      const data = await response.json();
+      if (Number(data.id) !== FALLBACK.id || data.slug !== FALLBACK.slug || !String(data.name).toLowerCase().includes('inya sunset engagement')) throw new Error('Unexpected package response');
+      packageCatalog = { ...data, id:Number(data.id), venueId:Number(data.venue?.id), venueName:data.venue?.name, maxGuests:Number(data.maxGuests), finalPrice:Number(data.finalPrice) };
+      if (!packageCatalog.active || !Number.isInteger(packageCatalog.venueId) || !packageCatalog.maxGuests) throw new Error('Package is not active or has incomplete venue data');
+      setPackageSummary();
+      checkButton.disabled = false;
+    } catch (error) {
+      catalogError = true;
+      checkButton.disabled = true;
+      setStatus('We could not load package availability right now. Please try again later.', true);
+      console.error('Inya package catalog unavailable:', error);
+    }
+  };
+  openButtons.forEach(button => button.addEventListener('click', event => { event.preventDefault(); restoreInputs(); showForm(); setStatus(catalogError ? 'We could not load package availability right now. Please try again later.' : ''); modal?.show(); }));
+  [dateInput, guestInput, startInput, endInput].forEach(input => input.addEventListener('input', invalidate));
+  form.addEventListener('submit', event => { event.preventDefault(); checkAvailability(); });
+  changeButton.addEventListener('click', () => { showForm(); helper.textContent = 'Availability will be checked for this package.'; setStatus(''); });
+  document.querySelector('[data-package-continue]').addEventListener('click', () => { if (confirmedAvailability) window.location.href = 'booking.html'; });
+  dateInput.min = localDate();
+  restoreInputs();
+  loadPackage();
+})();
+</script>
+</body>
+</html>

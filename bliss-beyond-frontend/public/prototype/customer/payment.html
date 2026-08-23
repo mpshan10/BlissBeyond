@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Payment | Bliss &amp; Beyond</title>
+<meta name="description" content="Review payment requirements for your Bliss &amp; Beyond booking.">
+<link rel="icon" href="/prototype/../favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&amp;family=Karla:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="/prototype/assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+<nav class="navbar bb-nav sticky-top">
+  <div class="container-fluid px-3 px-lg-4">
+    <a class="navbar-brand" href="/prototype/index.html">Bliss &amp; Beyond<small>Customer Portal</small></a>
+    <div class="d-flex align-items-center gap-3">
+      <a class="d-none d-md-inline small" href="/prototype/customer/dashboard.html"><i class="bi bi-grid me-1"></i>Dashboard</a>
+      <div class="dropdown">
+        <button class="btn btn-forest btn-sm dropdown-toggle" data-bs-toggle="dropdown" data-auth-display>Account</button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><a class="dropdown-item" href="/prototype/customer/profile.html">Profile</a></li>
+          <li><a class="dropdown-item" href="/prototype/login.html">Sign out</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</nav>
+<div class="bb-shell">
+  <aside class="bb-side">
+    <h6>Overview</h6>
+    <a href="/prototype/customer/dashboard.html">Dashboard</a>
+    <a href="/prototype/customer/profile.html">My Profile</a>
+    <h6>Plan your event</h6>
+    <a href="/prototype/customer/venue-selection.html">Venue Selection</a>
+    <a href="/prototype/customer/booking.html">New Booking</a>
+    <h6>My bookings</h6>
+    <a href="/prototype/customer/booking-history.html">Booking History</a>
+    
+    <a class="active" href="/prototype/customer/quotation.html">Quotations</a>
+    <h6>Account</h6>
+    <a href="/prototype/login.html">Sign out</a>
+  </aside>
+  <main class="bb-main" data-payment-page>
+    <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
+      <div><span class="eyebrow">Customer portal</span><h1 class="h2 mt-1 mb-1">Payment</h1><p class="small text-ink-soft mb-0">Review your payment requirement and create a payment request.</p></div>
+      <a class="btn btn-outline-forest btn-sm" href="/prototype/customer/booking-status.html">Booking Status</a>
+    </div>
+    <div class="alert alert-danger d-none" data-payment-error></div>
+    <div class="alert alert-success d-none" data-payment-message></div>
+    <div class="panel d-none" data-payment-empty><div class="panel__body text-center py-5"><i class="bi bi-credit-card fs-1 text-forest"></i><h2 class="h4 mt-3">Payment information unavailable</h2><p class="text-ink-soft mb-0">We could not find payment information for this booking.</p></div></div>
+    <div class="row g-4" data-payment-content>
+      <div class="col-lg-7">
+        <div class="panel mb-4"><div class="panel__head"><h5 class="mb-0">Payment Summary</h5></div><div class="panel__body">
+          <div class="d-flex justify-content-between mb-2"><span class="text-ink-soft">Quotation total</span><strong data-payment-quotation-total>MMK 0</strong></div>
+          <div class="d-flex justify-content-between mb-2"><span class="text-ink-soft">Deposit required (30%)</span><strong data-payment-deposit-required>MMK 0</strong></div>
+          <div class="d-flex justify-content-between mb-2"><span class="text-ink-soft">Amount paid</span><strong data-payment-amount-paid>MMK 0</strong></div>
+          <div class="d-flex justify-content-between mb-3"><span class="text-ink-soft">Remaining balance</span><strong data-payment-remaining>MMK 0</strong></div>
+          <hr>
+          <div class="d-flex justify-content-between align-items-center"><span>Payment due now</span><span class="bb-price" data-payment-next-amount>MMK 0</span></div>
+          <div class="small text-ink-soft mt-1" data-payment-next-type></div>
+        </div></div>
+        <div class="panel"><div class="panel__head"><h5 class="mb-0">Payment Requests</h5></div><div class="panel__body" data-payment-records><p class="text-ink-soft mb-0">No payment requests yet.</p></div></div>
+      </div>
+      <div class="col-lg-5"><div class="panel"><div class="panel__head"><h5 class="mb-0">Next Step</h5></div><div class="panel__body">
+        <p class="text-ink-soft" data-payment-next-message>Payment requests remain pending until payment confirmation is available.</p>
+        <button class="btn btn-gold w-100 d-none" type="button" data-payment-create> Create Payment Request </button>
+        <div class="small text-ink-soft mt-3" data-payment-pending-message></div>
+      </div></div></div>
+    </div>
+  </main>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/prototype/assets/js/main.js"></script>
+</body>
+</html>

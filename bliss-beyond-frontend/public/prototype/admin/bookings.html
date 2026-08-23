@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Manage Bookings | Bliss &amp; Beyond</title>
+<meta name="description" content="Manage real Bliss & Beyond customer bookings.">
+<link rel="icon" href="/prototype/../favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Karla:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="/prototype/assets/css/style.css" rel="stylesheet">
+<style>
+html:not(.bb-admin-authorized) body { visibility: hidden; }
+
+/* Booking management needs a wider, denser workspace than other admin pages. */
+[data-admin-bookings-page] .bb-side {
+  width: 216px;
+  flex-basis: 216px;
+  padding-inline: .8rem;
+}
+
+[data-admin-bookings-page] .bb-side a {
+  white-space: nowrap;
+}
+
+[data-admin-bookings-page] .bb-main {
+  padding: 1.65rem clamp(.9rem, 1.8vw, 1.8rem) 2.5rem;
+}
+
+.admin-bookings-panel {
+  overflow: hidden;
+  border-color: rgba(26, 69, 56, .13);
+  border-radius: 18px;
+  box-shadow: 0 16px 44px rgba(24, 57, 47, .08);
+}
+
+.admin-bookings-toolbar {
+  padding: 1.15rem 1.25rem;
+  background: linear-gradient(135deg, #fff 0%, #fbf8f0 100%);
+}
+
+.admin-bookings-search {
+  width: min(100%, 430px);
+}
+
+.admin-bookings-search .input-group-text,
+.admin-bookings-search .form-control,
+.admin-bookings-filter {
+  min-height: 42px;
+  border-color: rgba(26, 69, 56, .16);
+  background-color: #fff;
+}
+
+.admin-bookings-search .input-group-text {
+  padding-left: .95rem;
+  color: var(--bb-green);
+  border-radius: 11px 0 0 11px;
+}
+
+.admin-bookings-search .form-control {
+  border-radius: 0 11px 11px 0;
+}
+
+.admin-bookings-filter {
+  width: 190px;
+  border-radius: 11px;
+  padding-inline: .85rem 2.25rem;
+}
+
+.admin-bookings-table-wrap {
+  overflow-x: auto;
+  padding: 0;
+}
+
+.admin-bookings-table {
+  min-width: 1320px;
+  margin: 0;
+  table-layout: fixed;
+}
+
+.admin-bookings-table > thead th {
+  padding: .9rem .75rem;
+  background: #f7f3e9;
+  color: #53675f;
+  border-bottom-color: rgba(26, 69, 56, .14);
+  white-space: nowrap;
+}
+
+.admin-bookings-table > tbody td {
+  padding: 1.05rem .75rem;
+  color: #263a33;
+  vertical-align: middle;
+}
+
+.admin-bookings-table > tbody tr {
+  transition: background-color .16s ease;
+}
+
+.admin-bookings-table > tbody tr:hover {
+  background: rgba(250, 247, 238, .72);
+}
+
+.admin-bookings-table th:nth-child(1) { width: 132px; }
+.admin-bookings-table th:nth-child(2) { width: 205px; }
+.admin-bookings-table th:nth-child(3) { width: 135px; }
+.admin-bookings-table th:nth-child(4) { width: 205px; }
+.admin-bookings-table th:nth-child(5) { width: 180px; }
+.admin-bookings-table th:nth-child(6) { width: 72px; text-align: center; }
+.admin-bookings-table th:nth-child(7) { width: 125px; }
+.admin-bookings-table th:nth-child(8) { width: 145px; }
+.admin-bookings-table th:nth-child(9) { width: 160px; }
+
+.admin-bookings-table td:nth-child(6) {
+  text-align: center;
+  font-weight: 700;
+}
+
+.booking-cell-primary {
+  display: block;
+  color: var(--bb-green);
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.booking-cell-secondary {
+  display: block;
+  margin-top: .28rem;
+  color: var(--bb-ink-soft);
+  font-size: .76rem;
+  line-height: 1.35;
+}
+
+.booking-customer-email {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.booking-quotation {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .35rem;
+  margin-top: .35rem;
+}
+
+.booking-quotation .status {
+  padding: .15rem .4rem;
+  font-size: .58rem;
+  letter-spacing: .06em;
+}
+
+.booking-venue {
+  display: -webkit-box;
+  overflow: hidden;
+  line-height: 1.42;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+.booking-date-time {
+  display: grid;
+  gap: .45rem;
+}
+
+.booking-date-line,
+.booking-time-line {
+  display: flex;
+  align-items: center;
+  gap: .45rem;
+  white-space: nowrap;
+}
+
+.booking-date-line i,
+.booking-time-line i {
+  width: 15px;
+  color: var(--bb-gold);
+  text-align: center;
+}
+
+.booking-time-line {
+  color: var(--bb-ink-soft);
+  font-size: .78rem;
+}
+
+.booking-total-currency {
+  display: block;
+  margin-bottom: .08rem;
+  color: var(--bb-gold);
+  font-size: .64rem;
+  font-weight: 700;
+  letter-spacing: .14em;
+}
+
+.booking-total-amount {
+  display: block;
+  color: var(--bb-green);
+  font-size: .98rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.admin-bookings-table .status {
+  display: inline-flex;
+  justify-content: center;
+  text-align: center;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.booking-actions {
+  display: grid;
+  width: 128px;
+  gap: .45rem;
+}
+
+.booking-actions .btn {
+  width: 128px;
+  min-height: 34px;
+  border-radius: 9px;
+  font-size: .76rem;
+  font-weight: 700;
+}
+
+.booking-actions-empty {
+  display: inline-block;
+  width: 128px;
+  color: var(--bb-ink-soft);
+  font-size: .76rem;
+  text-align: center;
+}
+
+@media (max-width: 991px) {
+  [data-admin-bookings-page] .bb-side {
+    width: 100%;
+    flex-basis: auto;
+  }
+
+  [data-admin-bookings-page] .bb-main {
+    width: 100%;
+  }
+}
+
+@media (max-width: 575px) {
+  .admin-bookings-toolbar {
+    align-items: stretch;
+  }
+
+  .admin-bookings-search,
+  .admin-bookings-filter {
+    width: 100%;
+  }
+}
+</style>
+</head>
+<body data-admin-page data-admin-bookings-page>
+
+<nav class="navbar bb-nav sticky-top">
+  <div class="container-fluid px-3 px-lg-4">
+    <a class="navbar-brand" href="/prototype/index.html">Bliss &amp; Beyond<small>Admin Console</small></a>
+    <div class="d-flex align-items-center gap-3">
+      <a class="d-none d-md-inline small" href="/prototype/index.html"><i class="bi bi-house-door me-1"></i>Public site</a>
+      <div class="dropdown">
+        <button class="btn btn-forest btn-sm dropdown-toggle" data-bs-toggle="dropdown" data-admin-display>Administrator</button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><a class="dropdown-item" href="/prototype/customer/profile.html">Profile</a></li>
+          <li><a class="dropdown-item" href="/prototype/login.html" data-admin-sign-out>Sign out</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="bb-shell">
+  <aside class="bb-side">
+    <h6>Overview</h6>
+    <a href="/prototype/admin/dashboard.html">Dashboard</a>
+    <h6>Catalogue</h6>
+    <a href="/prototype/admin/customers.html">Customers</a>
+    <a href="/prototype/admin/packages.html">Packages</a>
+    <a href="/prototype/admin/venues.html">Venues</a>
+    <a href="/prototype/admin/services.html">Services</a>
+    <h6>Operations</h6>
+    <a class="active" href="/prototype/admin/bookings.html">Bookings</a>
+    <a href="/prototype/admin/consultations.html">Consultations</a>
+    <a href="/prototype/admin/quotations.html">Quotations</a>
+    <a href="/prototype/admin/payments.html">Payments</a>
+    <a href="/prototype/admin/reports.html">Reports</a>
+    <h6>Account</h6>
+    <a href="#" aria-disabled="true">Settings</a>
+    <a href="/prototype/login.html" data-admin-sign-out>Sign out</a>
+  </aside>
+
+  <main class="bb-main">
+    <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
+      <div>
+        <span class="eyebrow">Admin console</span>
+        <h1 class="h2 mt-1 mb-1">Manage Bookings</h1>
+        <p class="small text-ink-soft mb-0" data-admin-booking-summary>Loading bookings...</p>
+      </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+      <div class="col-6 col-lg-3"><div class="stat-card reveal">
+        <div class="d-flex justify-content-between align-items-start">
+          <div><div class="stat-label">Active</div><div class="stat-value mt-1" data-admin-booking-count="active">-</div></div>
+          <span class="feature-icon"><i class="bi bi-journal-check"></i></span>
+        </div>
+      </div></div>
+      <div class="col-6 col-lg-3"><div class="stat-card reveal">
+        <div class="d-flex justify-content-between align-items-start">
+          <div><div class="stat-label">Pending</div><div class="stat-value mt-1" data-admin-booking-count="pending">-</div></div>
+          <span class="feature-icon"><i class="bi bi-hourglass"></i></span>
+        </div>
+      </div></div>
+      <div class="col-6 col-lg-3"><div class="stat-card reveal">
+        <div class="d-flex justify-content-between align-items-start">
+          <div><div class="stat-label">Completed</div><div class="stat-value mt-1" data-admin-booking-count="completed">-</div></div>
+          <span class="feature-icon"><i class="bi bi-check2-circle"></i></span>
+        </div>
+      </div></div>
+      <div class="col-6 col-lg-3"><div class="stat-card reveal">
+        <div class="d-flex justify-content-between align-items-start">
+          <div><div class="stat-label">Cancelled</div><div class="stat-value mt-1" data-admin-booking-count="cancelled">-</div></div>
+          <span class="feature-icon"><i class="bi bi-x-circle"></i></span>
+        </div>
+      </div></div>
+    </div>
+
+    <div class="alert alert-danger d-none" data-admin-booking-message role="alert" aria-live="polite"></div>
+
+    <div class="panel admin-bookings-panel">
+      <div class="panel__head admin-bookings-toolbar">
+        <div class="input-group admin-bookings-search">
+          <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
+          <input class="form-control border-start-0" type="search" placeholder="Search booking, customer, email, or venue" data-admin-booking-search>
+        </div>
+        <select class="form-select form-select-sm admin-bookings-filter" data-admin-booking-status-filter aria-label="Filter bookings by status">
+          <option value="ALL">All statuses</option>
+          <option value="PENDING">Pending</option>
+          <option value="AWAITING_DEPOSIT">Awaiting deposit</option>
+          <option value="CONFIRMED">Confirmed</option>
+          <option value="CANCELLED">Cancelled</option>
+          <option value="COMPLETED">Completed</option>
+        </select>
+      </div>
+      <div class="panel__body admin-bookings-table-wrap">
+        <div class="table-responsive">
+          <table class="table align-middle admin-bookings-table">
+            <thead><tr><th>Booking</th><th>Customer</th><th>Event</th><th>Venue</th><th>Date / Time</th><th>Guests</th><th>Total</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody data-admin-booking-rows>
+              <tr><td colspan="9" class="text-center py-5 text-ink-soft">Loading bookings...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="modal fade" id="bookingActionModal" tabindex="-1" aria-labelledby="bookingActionModalTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered"><div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title" id="bookingActionModalTitle" data-booking-action-title>Update booking?</h5>
+      <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body" data-booking-action-body></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline-secondary" type="button" data-bs-dismiss="modal">Keep Current Status</button>
+      <button class="btn btn-gold" type="button" data-booking-action-confirm>Continue</button>
+    </div>
+  </div></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/prototype/assets/js/main.js"></script>
+<script src="/prototype/assets/js/admin.js"></script>
+</body>
+</html>

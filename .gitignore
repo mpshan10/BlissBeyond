@@ -1,0 +1,35 @@
+# Frontend generated files
+**/node_modules/
+**/dist/
+**/.vite/
+
+# Backend generated files
+**/target/
+**/.m2/
+
+# Logs
+*.log
+*.err.log
+*.out.log
+error.txt
+run-backend.args
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local Maven repository
+.m2-repository/
+
+# Backup archives
+*.rar
+*.zip

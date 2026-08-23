@@ -1,0 +1,1562 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Customize Decoration | Bliss &amp; Beyond</title>
+<meta name="description" content="Customize decoration for your Bliss &amp; Beyond event.">
+<link rel="icon" href="/prototype/../favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Karla:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="/prototype/assets/css/style.css" rel="stylesheet">
+
+<style>
+.decoration-card {
+  min-height: 170px;
+  height: 170px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.decoration-card__title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+}
+
+.decoration-card__desc {
+  min-height: 3rem;
+  line-height: 1.5rem;
+  margin-top: .4rem;
+}
+
+.decoration-card__price {
+  margin-top: auto;
+}
+
+.decoration-select {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 19px;
+  height: 19px;
+  min-width: 19px;
+  border: 2.5px solid currentColor;
+  border-radius: 50%;
+  background: transparent;
+  display: inline-grid;
+  place-content: center;
+  cursor: pointer;
+}
+
+.decoration-select::before {
+  content: "";
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  transform: scale(0);
+  background: currentColor;
+}
+
+.decoration-select:checked::before {
+  transform: scale(1);
+}
+
+.workflow-summary .panel__body {
+  max-height: calc(100vh - 180px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+}
+
+.workflow-summary [data-decoration-total] {
+  font-size: 1.35rem !important;
+  line-height: 1.2;
+}
+
+.workflow-summary .pricing-row strong {
+  font-size: .84rem;
+  font-weight: 400;
+  line-height: 1.35;
+}
+
+.workflow-context {
+  padding: .85rem 1.25rem !important;
+  margin-bottom: 1rem !important;
+}
+</style>
+
+<style>
+/* Decoration customization: no green sidebar */
+.bb-shell {
+  display: block !important;
+}
+
+.bb-main {
+  width: 100% !important;
+  max-width: none !important;
+  margin-left: 0 !important;
+}
+
+/* Exactly two option cards per row */
+.choice-grid {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 1rem !important;
+}
+
+.decoration-card {
+  width: 100%;
+  min-height: 180px;
+  height: 180px;
+}
+
+.decoration-card__title {
+  min-height: 30px;
+}
+
+.decoration-card__desc {
+  min-height: 3rem;
+  max-height: 3rem;
+  line-height: 1.5rem;
+  overflow: hidden;
+}
+
+.decoration-card__price {
+  margin-top: auto;
+}
+
+@media (max-width: 767.98px) {
+  .choice-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+</style>
+
+
+<style>
+/* Decoration Theme Explore button only */
+.choice-card:has([data-group="theme"]) {
+  min-height: 225px;
+  height: 225px;
+}
+
+.choice-card:has([data-group="theme"]) .decoration-theme-explore {
+  margin-top: .7rem !important;
+  flex-shrink: 0;
+}
+
+.decoration-theme-photo {
+  width: 100%;
+  height: 320px;
+  object-fit: cover;
+  border-radius: 14px;
+  display: block;
+}
+
+.theme-detail-property {
+  padding: .85rem 0;
+  border-bottom: 1px solid rgba(0,0,0,.08);
+}
+
+.theme-detail-property:last-child {
+  border-bottom: 0;
+}
+</style>
+
+
+
+
+<style>
+.choice-card:has([data-group="theme"]) {
+  min-height: 235px !important;
+  height: 235px !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.choice-card:has([data-group="theme"]) .decoration-card__price {
+  margin-top: auto;
+  margin-bottom: .65rem;
+}
+
+.choice-card:has([data-group="theme"]) .decoration-theme-explore {
+  display: block !important;
+  margin-top: 0 !important;
+  flex-shrink: 0;
+}
+</style>
+
+
+<style>
+.decoration-list {
+  display: flex;
+  flex-direction: column;
+}
+.decoration-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: .9rem .15rem;
+  border-bottom: 1px solid rgba(0,0,0,.08);
+  cursor: pointer;
+}
+.decoration-list-item:last-child { border-bottom: 0; }
+</style>
+
+
+<style>
+/* Make the main decoration section titles clearer */
+.panel__head h5 {
+  font-size: 1.45rem !important;
+  font-weight: 700 !important;
+  line-height: 1.25;
+}
+</style>
+
+
+<style>
+/* =========================================================
+   Decoration page: match the Catering page visual structure
+   ========================================================= */
+
+/* Top area spacing */
+[data-decoration-page] > .d-flex.flex-wrap.justify-content-between.align-items-end {
+  margin-bottom: 1rem !important;
+}
+
+[data-decoration-page] .workflow-context {
+  padding: .85rem 1.25rem !important;
+  margin-bottom: 1rem !important;
+}
+
+/* Main panels: white heading + soft beige content area */
+[data-decoration-page] .panel {
+  background: #eee8dc !important;
+  border-color: #ded3c1 !important;
+}
+
+[data-decoration-page] .panel > .panel__head {
+  background: #ffffff !important;
+}
+
+[data-decoration-page] .panel > .panel__body {
+  background: #eee8dc !important;
+}
+
+/* Front Decoration Theme cards stay white */
+[data-decoration-page] .choice-card.decoration-card {
+  background: #ffffff !important;
+  border-color: #ded3c1 !important;
+}
+
+/* Keep two clean cards per row */
+[data-decoration-page] .choice-grid {
+  gap: 1rem !important;
+}
+
+/* Theme cards: similar proportions to Catering cards */
+[data-decoration-page] .choice-card:has([data-group="theme"]) {
+  min-height: 245px !important;
+  height: 245px !important;
+  padding: 1.15rem !important;
+}
+
+[data-decoration-page] .choice-card:has([data-group="theme"]) .decoration-card__desc {
+  color: #37413d !important;
+  min-height: 3rem;
+  max-height: 3rem;
+}
+
+[data-decoration-page] .choice-card:has([data-group="theme"]) .decoration-card__price {
+  margin-top: auto !important;
+  margin-bottom: .45rem !important;
+}
+
+/* Explore button close to the price, like Catering */
+[data-decoration-page] .choice-card:has([data-group="theme"]) .decoration-theme-explore {
+  margin-top: .35rem !important;
+}
+
+/* Elements / Add-ons list area */
+[data-decoration-page] .decoration-list {
+  background: #ffffff;
+  border: 1px solid #ded3c1;
+  border-radius: 14px;
+  padding: .15rem 1rem;
+}
+
+[data-decoration-page] .decoration-list-item {
+  background: #ffffff;
+}
+
+/* Notes input stays white */
+[data-decoration-page] #decorationNotes,
+[data-decoration-page] textarea.form-control {
+  background: #ffffff !important;
+}
+
+/* Selection Summary: same white-header / beige-body / white-inner-card pattern */
+[data-decoration-page] .workflow-summary {
+  background: #eee8dc !important;
+  border-color: #ded3c1 !important;
+}
+
+[data-decoration-page] .workflow-summary > .panel__head {
+  background: #ffffff !important;
+}
+
+[data-decoration-page] .workflow-summary > .panel__body {
+  background: #eee8dc !important;
+}
+
+[data-decoration-page] .workflow-summary .pricing-box {
+  background: #ffffff !important;
+  border: 1px solid #ded3c1 !important;
+  border-radius: 14px;
+}
+
+/* Match Catering total size */
+[data-decoration-page] .workflow-summary [data-decoration-total] {
+  font-size: 1.3rem !important;
+  line-height: 1.2;
+}
+
+/* Vertical lists in summary when several elements/add-ons are selected */
+[data-decoration-page] .summary-decoration-list {
+  margin: 0;
+  padding-left: 1.05rem;
+  list-style: disc;
+}
+
+[data-decoration-page] .summary-decoration-list li {
+  margin-bottom: .18rem;
+  line-height: 1.35;
+  font-weight: 400;
+}
+
+/* Long notes remain readable without breaking alignment */
+[data-decoration-page] .pricing-row:has([data-summary-notes]) {
+  display: block !important;
+}
+
+[data-decoration-page] .pricing-row:has([data-summary-notes]) > span {
+  display: block;
+  margin-bottom: .4rem;
+}
+
+[data-decoration-page] [data-summary-notes] {
+  display: block;
+  width: 100%;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  text-align: left !important;
+  font-weight: 400 !important;
+  max-height: 180px;
+  overflow-y: auto;
+}
+</style>
+
+
+<style>
+/* Decoration Theme cards: remove large blank space only */
+[data-decoration-page] .choice-card:has([data-group="theme"]) {
+  min-height: 0 !important;
+  height: auto !important;
+  padding: 1.15rem !important;
+}
+
+[data-decoration-page] .choice-card:has([data-group="theme"]) .decoration-card__desc {
+  min-height: 0 !important;
+  max-height: none !important;
+  margin-top: .5rem !important;
+  margin-bottom: .75rem !important;
+  line-height: 1.5rem;
+}
+
+[data-decoration-page] .choice-card:has([data-group="theme"]) .decoration-card__price {
+  margin-top: 0 !important;
+  margin-bottom: .55rem !important;
+}
+
+[data-decoration-page] .choice-card:has([data-group="theme"]) .decoration-theme-explore {
+  margin-top: 0 !important;
+}
+</style>
+
+</head>
+
+<body>
+
+<nav class="navbar navbar-expand-lg bb-nav sticky-top">
+  <div class="container-fluid px-3 px-lg-4">
+    <a class="navbar-brand" href="/prototype/index.html">
+      Bliss &amp; Beyond
+      <small>Customer Portal</small>
+    </a>
+
+    <div class="d-flex align-items-center gap-3">
+      <a class="d-none d-md-inline small" href="/prototype/index.html">
+        <i class="bi bi-house-door me-1"></i>Public site
+      </a>
+
+      <div class="dropdown">
+        <button class="btn btn-forest btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+          <span data-auth-display>Account</span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><a class="dropdown-item" href="/prototype/customer/profile.html">Profile</a></li>
+          <li><a class="dropdown-item" href="/prototype/login.html">Sign out</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="bb-shell">
+<main class="bb-main" data-decoration-page>
+
+    <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-3">
+      <div>
+        <span class="eyebrow">Customer portal</span>
+        <h1 class="h2 mt-1 mb-1">Customize Decoration</h1>
+        <p class="small text-ink-soft mb-0">
+          Choose your event theme, decoration elements and finishing details.
+        </p>
+      </div>
+
+      <div class="d-flex gap-2">
+        <a class="btn btn-outline-forest btn-sm" href="/prototype/customer/services.html">
+          Back to Services
+        </a>
+        <a class="btn btn-gold btn-sm" href="/prototype/customer/review.html">
+          Continue to Review
+        </a>
+      </div>
+    </div>
+
+    <div class="workflow-context">
+      <div class="workflow-meta">
+        <span class="bb-badge gold" data-decoration-event-type>Wedding</span>
+        <span class="bb-badge" data-decoration-event-guests>150 Guests</span>
+        <span class="bb-badge" data-decoration-event-date>20 December 2026</span>
+      </div>
+    </div>
+
+    <div class="row g-4">
+
+      <div class="col-lg-8">
+
+        <!-- THEME -->
+        <div class="panel mb-4">
+          <div class="panel__head">
+            <h5 class="mb-0">Decoration Theme</h5>
+          </div>
+
+          <div class="panel__body">
+            <div class="choice-grid">
+
+              <label class="choice-card decoration-card">
+                <div class="decoration-card__title">
+                  <strong>Luxury</strong>
+                  <input class="decoration-select"
+                         type="radio"
+                         name="theme"
+                         id="luxury"
+                         value="Luxury"
+                         data-decoration-option
+                         data-group="theme"
+                         data-price="350000"
+                         data-label="Luxury">
+                </div>
+                <div class="small text-ink-soft decoration-card__desc">
+                  Elegant premium styling with rich textures, statement dÃ©cor and polished details.
+                </div>
+                <div class="text-gold small decoration-card__price">350,000 MMK</div>
+              
+                <button class="btn btn-outline-forest btn-sm w-100 decoration-theme-explore"
+                        type="button"
+                        data-explore-theme="Luxury">
+                  Explore
+                </button>
+              </label>
+
+              <label class="choice-card decoration-card">
+                <div class="decoration-card__title">
+                  <strong>Romantic</strong>
+                  <input class="decoration-select"
+                         type="radio"
+                         name="theme"
+                         id="romantic"
+                         value="Romantic"
+                         data-decoration-option
+                         data-group="theme"
+                         data-price="300000"
+                         data-label="Romantic">
+                </div>
+                <div class="small text-ink-soft decoration-card__desc">
+                  Soft floral styling, warm tones and elegant accents for weddings and receptions.
+                </div>
+                <div class="text-gold small decoration-card__price">300,000 MMK</div>
+              
+                <button class="btn btn-outline-forest btn-sm w-100 decoration-theme-explore"
+                        type="button"
+                        data-explore-theme="Romantic">
+                  Explore
+                </button>
+              </label>
+
+              <label class="choice-card decoration-card">
+                <div class="decoration-card__title">
+                  <strong>Garden</strong>
+                  <input class="decoration-select"
+                         type="radio"
+                         name="theme"
+                         id="garden"
+                         value="Garden"
+                         data-decoration-option
+                         data-group="theme"
+                         data-price="280000"
+                         data-label="Garden">
+                </div>
+                <div class="small text-ink-soft decoration-card__desc">
+                  Fresh greenery, floral details and natural styling for indoor or outdoor events.
+                </div>
+                <div class="text-gold small decoration-card__price">280,000 MMK</div>
+              
+                <button class="btn btn-outline-forest btn-sm w-100 decoration-theme-explore"
+                        type="button"
+                        data-explore-theme="Garden">
+                  Explore
+                </button>
+              </label>
+
+              <label class="choice-card decoration-card">
+                <div class="decoration-card__title">
+                  <strong>Myanmar Traditional</strong>
+                  <input class="decoration-select"
+                         type="radio"
+                         name="theme"
+                         id="myanmar-traditional"
+                         value="Myanmar Traditional"
+                         data-decoration-option
+                         data-group="theme"
+                         data-price="320000"
+                         data-label="Myanmar Traditional">
+                </div>
+                <div class="small text-ink-soft decoration-card__desc">
+                  Traditional Myanmar-inspired colours, floral styling and ceremonial presentation.
+                </div>
+                <div class="text-gold small decoration-card__price">320,000 MMK</div>
+              
+                <button class="btn btn-outline-forest btn-sm w-100 decoration-theme-explore"
+                        type="button"
+                        data-explore-theme="Myanmar Traditional">
+                  Explore
+                </button>
+              </label>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- ELEMENTS -->
+        <div class="panel mb-4">
+          <div class="panel__head">
+            <h5 class="mb-0">Decoration Elements</h5>
+          </div>
+
+          <div class="panel__body">
+          <div class="decoration-list">
+
+              <label class="decoration-list-item">
+                <div class="d-flex align-items-center gap-3">
+                  <input class="decoration-select" type="checkbox"
+                         id="stage-decoration"
+                         data-decoration-option data-group="elements"
+                         data-price="250000" data-label="Stage Decoration">
+                  <span>Stage Decoration</span>
+                </div>
+                <span class="text-gold small">250,000 MMK</span>
+              </label>
+
+              <label class="decoration-list-item">
+                <div class="d-flex align-items-center gap-3">
+                  <input class="decoration-select" type="checkbox"
+                         id="backdrop"
+                         data-decoration-option data-group="elements"
+                         data-price="180000" data-label="Backdrop">
+                  <span>Backdrop</span>
+                </div>
+                <span class="text-gold small">180,000 MMK</span>
+              </label>
+
+              <label class="decoration-list-item">
+                <div class="d-flex align-items-center gap-3">
+                  <input class="decoration-select" type="checkbox"
+                         id="entrance-decoration"
+                         data-decoration-option data-group="elements"
+                         data-price="150000" data-label="Entrance Decoration">
+                  <span>Entrance Decoration</span>
+                </div>
+                <span class="text-gold small">150,000 MMK</span>
+              </label>
+
+              <label class="decoration-list-item">
+                <div class="d-flex align-items-center gap-3">
+                  <input class="decoration-select" type="checkbox"
+                         id="guest-tables"
+                         data-decoration-option data-group="elements"
+                         data-price="120000" data-label="Guest Tables">
+                  <span>Guest Tables</span>
+                </div>
+                <span class="text-gold small">120,000 MMK</span>
+              </label>
+
+              <label class="decoration-list-item">
+                <div class="d-flex align-items-center gap-3">
+                  <input class="decoration-select" type="checkbox"
+                         id="head-table"
+                         data-decoration-option data-group="elements"
+                         data-price="130000" data-label="Head Table">
+                  <span>Head Table</span>
+                </div>
+                <span class="text-gold small">130,000 MMK</span>
+              </label>
+
+              <label class="decoration-list-item">
+                <div class="d-flex align-items-center gap-3">
+                  <input class="decoration-select" type="checkbox"
+                         id="aisle-decoration"
+                         data-decoration-option data-group="elements"
+                         data-price="100000" data-label="Aisle Decoration">
+                  <span>Aisle Decoration</span>
+                </div>
+                <span class="text-gold small">100,000 MMK</span>
+              </label>
+              <label class="decoration-list-item">
+                <div class="d-flex align-items-center gap-3">
+                  <input class="decoration-select" type="checkbox"
+                         id="ceiling-decoration"
+                         data-decoration-option data-group="elements"
+                         data-price="170000" data-label="Ceiling Decoration">
+                  <span>Ceiling Decoration</span>
+                </div>
+                <span class="text-gold small">170,000 MMK</span>
+              </label>
+
+              <label class="decoration-list-item">
+                <div class="d-flex align-items-center gap-3">
+                  <input class="decoration-select" type="checkbox"
+                         id="photo-area-decoration"
+                         data-decoration-option data-group="elements"
+                         data-price="140000" data-label="Photo Area Decoration">
+                  <span>Photo Area Decoration</span>
+                </div>
+                <span class="text-gold small">140,000 MMK</span>
+              </label>
+
+              <label class="decoration-list-item">
+                <div class="d-flex align-items-center gap-3">
+                  <input class="decoration-select" type="checkbox"
+                         id="cake-table-decoration"
+                         data-decoration-option data-group="elements"
+                         data-price="110000" data-label="Cake Table Decoration">
+                  <span>Cake Table Decoration</span>
+                </div>
+                <span class="text-gold small">110,000 MMK</span>
+              </label>
+
+              <label class="decoration-list-item">
+                <div class="d-flex align-items-center gap-3">
+                  <input class="decoration-select" type="checkbox"
+                         id="gift-table-decoration"
+                         data-decoration-option data-group="elements"
+                         data-price="90000" data-label="Gift Table Decoration">
+                  <span>Gift Table Decoration</span>
+                </div>
+                <span class="text-gold small">90,000 MMK</span>
+              </label>
+
+              <label class="decoration-list-item">
+                <div class="d-flex align-items-center gap-3">
+                  <input class="decoration-select" type="checkbox"
+                         id="lounge-area-decoration"
+                         data-decoration-option data-group="elements"
+                         data-price="125000" data-label="Lounge Area Decoration">
+                  <span>Lounge Area Decoration</span>
+                </div>
+                <span class="text-gold small">125,000 MMK</span>
+              </label>
+          </div>
+        </div>
+        </div>
+
+        <!-- ADD-ONS -->
+        <div class="panel mb-4">
+          <div class="panel__head">
+            <h5 class="mb-0">Decoration Add-ons</h5>
+          </div>
+
+          <div class="panel__body">
+          <div class="decoration-list">
+
+              <label class="decoration-list-item">
+                <div class="d-flex align-items-center gap-3">
+                  <input class="decoration-select" type="checkbox"
+                         id="candles"
+                         data-decoration-option data-group="addons"
+                         data-price="60000" data-label="Candles">
+                  <span>Candles</span>
+                </div>
+                <span class="text-gold small">60,000 MMK</span>
+              </label>
+
+              <label class="decoration-list-item">
+                <div class="d-flex align-items-center gap-3">
+                  <input class="decoration-select" type="checkbox"
+                         id="welcome-sign"
+                         data-decoration-option data-group="addons"
+                         data-price="80000" data-label="Welcome Sign">
+                  <span>Welcome Sign</span>
+                </div>
+                <span class="text-gold small">80,000 MMK</span>
+              </label>
+
+              <label class="decoration-list-item">
+                <div class="d-flex align-items-center gap-3">
+                  <input class="decoration-select" type="checkbox"
+                         id="photo-backdrop"
+                         data-decoration-option data-group="addons"
+                         data-price="140000" data-label="Photo Backdrop">
+                  <span>Photo Backdrop</span>
+                </div>
+                <span class="text-gold small">140,000 MMK</span>
+              </label>
+
+              <label class="decoration-list-item">
+                <div class="d-flex align-items-center gap-3">
+                  <input class="decoration-select" type="checkbox"
+                         id="custom-signage"
+                         data-decoration-option data-group="addons"
+                         data-price="100000" data-label="Custom Signage">
+                  <span>Custom Signage</span>
+                </div>
+                <span class="text-gold small">100,000 MMK</span>
+              </label>
+
+              <label class="decoration-list-item">
+                <div class="d-flex align-items-center gap-3">
+                  <input class="decoration-select" type="checkbox"
+                         id="floral-centrepieces"
+                         data-decoration-option data-group="addons"
+                         data-price="160000" data-label="Floral Centrepieces">
+                  <span>Floral Centrepieces</span>
+                </div>
+                <span class="text-gold small">160,000 MMK</span>
+              </label>
+
+              <label class="decoration-list-item">
+                <div class="d-flex align-items-center gap-3">
+                  <input class="decoration-select" type="checkbox"
+                         id="fairy-lights"
+                         data-decoration-option data-group="addons"
+                         data-price="90000" data-label="Fairy Lights">
+                  <span>Fairy Lights</span>
+                </div>
+                <span class="text-gold small">90,000 MMK</span>
+              </label>
+              <label class="decoration-list-item">
+                <div class="d-flex align-items-center gap-3">
+                  <input class="decoration-select" type="checkbox"
+                         id="table-number-signs"
+                         data-decoration-option data-group="addons"
+                         data-price="70000" data-label="Table Number Signs">
+                  <span>Table Number Signs</span>
+                </div>
+                <span class="text-gold small">70,000 MMK</span>
+              </label>
+
+              <label class="decoration-list-item">
+                <div class="d-flex align-items-center gap-3">
+                  <input class="decoration-select" type="checkbox"
+                         id="chair-decorations"
+                         data-decoration-option data-group="addons"
+                         data-price="85000" data-label="Chair Decorations">
+                  <span>Chair Decorations</span>
+                </div>
+                <span class="text-gold small">85,000 MMK</span>
+              </label>
+
+              <label class="decoration-list-item">
+                <div class="d-flex align-items-center gap-3">
+                  <input class="decoration-select" type="checkbox"
+                         id="hanging-florals"
+                         data-decoration-option data-group="addons"
+                         data-price="95000" data-label="Hanging Florals">
+                  <span>Hanging Florals</span>
+                </div>
+                <span class="text-gold small">95,000 MMK</span>
+              </label>
+
+              <label class="decoration-list-item">
+                <div class="d-flex align-items-center gap-3">
+                  <input class="decoration-select" type="checkbox"
+                         id="lantern-decoration"
+                         data-decoration-option data-group="addons"
+                         data-price="75000" data-label="Lantern Decoration">
+                  <span>Lantern Decoration</span>
+                </div>
+                <span class="text-gold small">75,000 MMK</span>
+              </label>
+
+              <label class="decoration-list-item">
+                <div class="d-flex align-items-center gap-3">
+                  <input class="decoration-select" type="checkbox"
+                         id="flower-arch"
+                         data-decoration-option data-group="addons"
+                         data-price="120000" data-label="Flower Arch">
+                  <span>Flower Arch</span>
+                </div>
+                <span class="text-gold small">120,000 MMK</span>
+              </label>
+          </div>
+        </div>
+        </div>
+
+        <!-- NOTES -->
+        <div class="panel">
+          <div class="panel__head">
+            <h5 class="mb-0">Additional Decoration Notes</h5>
+          </div>
+          <div class="panel__body">
+            <label class="form-label" for="decorationNotes">
+              Tell us about preferred colours, flowers, cultural details, materials or special decoration requests.
+            </label>
+            <textarea class="form-control" id="decorationNotes" rows="4" data-decoration-notes></textarea>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- SUMMARY -->
+      <div class="col-lg-4">
+        <div class="panel workflow-summary position-sticky" style="top:90px">
+
+          <div class="panel__head">
+            <h5 class="mb-0">Selection Summary</h5>
+          </div>
+
+          <div class="panel__body">
+
+            <div class="mb-4">
+              <div class="bb-price" data-decoration-total>0 MMK</div>
+              <div class="small text-ink-soft mt-1">Estimated decoration total</div>
+            </div>
+
+            <div class="small text-danger mb-2"
+                 data-decoration-status
+                 aria-live="polite"></div>
+
+            <div class="pricing-box mb-3">
+
+              <div class="pricing-row">
+                <span>Theme</span>
+                <strong data-summary-theme>-</strong>
+              </div>
+              <div class="small text-ink-soft text-end mb-2" data-summary-theme-price>-</div>
+
+              <div class="pricing-row">
+                <span>Decoration Elements</span>
+                <strong data-summary-elements>-</strong>
+              </div>
+              <div class="small text-ink-soft text-end mb-2" data-summary-elements-price>-</div>
+
+              <div class="pricing-row">
+                <span>Add-ons</span>
+                <strong data-summary-addons>-</strong>
+              </div>
+              <div class="small text-ink-soft text-end mb-2" data-summary-addons-price>-</div>
+
+              <div class="pricing-row">
+                <span>Additional Notes</span>
+                <strong data-summary-notes>-</strong>
+              </div>
+
+            </div>
+
+            <p class="small text-ink-soft mb-3">
+              Estimated prices vary by selected decoration options.
+            </p>
+
+            <div class="d-grid gap-2">
+              <button class="btn btn-gold" type="button" id="saveDecorationPrice">
+                Save Price
+              </button>
+
+              <a class="btn btn-outline-forest" href="/prototype/customer/review.html">
+                Continue to Review
+              </a>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/prototype/assets/js/main.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+  const SERVICE_ID = 'decoration';
+  const BACKEND_SERVICE_ID = 2;
+  const SERVICE_TITLE = 'Decoration & Styling';
+  const SAVE_TEXT = 'Save Price';
+  const SAVED_TEXT = '\u2713 Saved';
+  const STATUS_TEXT = 'Please choose at least one decoration option before saving.';
+
+  const money = value =>
+    Number(value || 0).toLocaleString('en-US') + ' MMK';
+
+  const saveBtn = document.getElementById('saveDecorationPrice');
+  const statusEl = document.querySelector('[data-decoration-status]');
+  const notesInput = document.querySelector('[data-decoration-notes]');
+  const continueLinks = [...document.querySelectorAll('a[href="/prototype/customer/review.html"]')];
+
+  let isSaved = false;
+  let isRestoring = false;
+  let isCatalogAvailable = true;
+
+  function selectedByGroup(group) {
+    return [...document.querySelectorAll('[data-decoration-option]:checked')]
+      .filter(input => input.dataset.group === group);
+  }
+
+  function getInputLabel(input) {
+    return input?.dataset?.label
+      || input?.value
+      || input?.name
+      || input?.closest('label')?.innerText?.trim()
+      || '';
+  }
+
+  function getInputPrice(input) {
+    return Number(input?.dataset?.price || 0);
+  }
+
+  function getThemeInput() {
+    return selectedByGroup('theme')[0] || null;
+  }
+
+  function getElementsInputs() {
+    return selectedByGroup('elements');
+  }
+
+  function getAddOnInputs() {
+    return selectedByGroup('addons');
+  }
+
+  function buildState() {
+    const theme = getThemeInput();
+    const elements = getElementsInputs();
+    const addOns = getAddOnInputs();
+    const notes = notesInput?.value.trim() || '';
+
+    const themeLabel = theme ? getInputLabel(theme) : '';
+    const elementLabels = elements.map(getInputLabel);
+    const addOnLabels = addOns.map(getInputLabel);
+
+    const total = [...(theme ? [theme] : []), ...elements, ...addOns]
+      .reduce((sum, item) => sum + getInputPrice(item), 0);
+
+    return {
+      serviceId: SERVICE_ID,
+      backendServiceId: BACKEND_SERVICE_ID,
+      title: SERVICE_TITLE,
+      estimatedTotal: total,
+      options: [themeLabel, ...elementLabels, ...addOnLabels].filter(Boolean),
+      selections: {
+        theme: theme ? {
+          id: theme.id || '',
+          label: themeLabel,
+          price: getInputPrice(theme)
+        } : null,
+        elements: elements.map((item) => ({
+          id: item.id || '',
+          label: getInputLabel(item),
+          price: getInputPrice(item)
+        })),
+        addOns: addOns.map((item) => ({
+          id: item.id || '',
+          label: getInputLabel(item),
+          price: getInputPrice(item)
+        })),
+        notes
+      }
+    };
+  }
+
+  function setStatus(message = '') {
+    if (!statusEl) return;
+    statusEl.textContent = message;
+  }
+
+  function syncAvailabilityUI() {
+    document.querySelectorAll('[data-decoration-option]').forEach((input) => {
+      input.disabled = !isCatalogAvailable;
+    });
+
+    if (notesInput) {
+      notesInput.disabled = !isCatalogAvailable;
+    }
+
+    if (saveBtn) {
+      saveBtn.disabled = !isCatalogAvailable || isSaved;
+    }
+
+    continueLinks.forEach((link) => {
+      const locked = !isCatalogAvailable;
+      link.classList.toggle('disabled', locked);
+      link.setAttribute('aria-disabled', locked ? 'true' : 'false');
+      link.tabIndex = locked ? -1 : 0;
+      link.style.pointerEvents = locked ? 'none' : '';
+    });
+  }
+
+  function applyBackendAvailability(available) {
+    isCatalogAvailable = Boolean(available);
+
+    if (isCatalogAvailable) {
+      setStatus('');
+    } else {
+      setStatus('Decoration & Styling is currently unavailable.');
+    }
+
+    syncAvailabilityUI();
+  }
+
+  function setSaveState(saved) {
+    if (!saveBtn) return;
+    isSaved = Boolean(saved);
+    saveBtn.textContent = saved ? SAVED_TEXT : SAVE_TEXT;
+    syncAvailabilityUI();
+  }
+
+  function updateSelectedServices(total) {
+    const current = typeof bbGetSelectedServices === 'function'
+      ? bbGetSelectedServices().filter((item) => item.id !== SERVICE_ID)
+      : [];
+
+    if (total > 0) {
+      current.push({
+        id: SERVICE_ID,
+        title: SERVICE_TITLE,
+        estimatedTotal: total
+      });
+    }
+
+    if (typeof bbSetSelectedServices === 'function') {
+      bbSetSelectedServices(current);
+    }
+  }
+
+  function persistDecoration() {
+    if (!isCatalogAvailable) {
+      return null;
+    }
+
+    const state = buildState();
+
+    if (!state.options.length) {
+      setStatus(STATUS_TEXT);
+      setSaveState(false);
+      return null;
+    }
+
+    setStatus('');
+
+    if (typeof bbSetServiceData === 'function') {
+      bbSetServiceData(SERVICE_ID, state);
+    }
+
+    updateSelectedServices(state.estimatedTotal);
+    setSaveState(true);
+    return state;
+  }
+
+  function findThemeInputByLabel(label) {
+    const normalized = String(label || '').trim();
+    return [...document.querySelectorAll('[data-decoration-option][data-group="theme"]')]
+      .find((input) => getInputLabel(input) === normalized) || null;
+  }
+
+  function findOptionByLabel(group, label) {
+    const normalized = String(label || '').trim();
+    return [...document.querySelectorAll(`[data-decoration-option][data-group="${group}"]`)]
+      .find((input) => getInputLabel(input) === normalized) || null;
+  }
+
+  function clearControls() {
+    document.querySelectorAll('[data-decoration-option]').forEach((input) => {
+      if (input.type === 'radio' || input.type === 'checkbox') {
+        input.checked = false;
+      }
+    });
+
+    if (notesInput) {
+      notesInput.value = '';
+    }
+  }
+
+  function restoreDecoration(saved) {
+    if (!saved) {
+      updateDecorationSummary();
+      setSaveState(false);
+      return;
+    }
+
+    isRestoring = true;
+    clearControls();
+
+    const savedTheme = saved.selections?.theme;
+    const themeInput = (savedTheme?.id && document.getElementById(savedTheme.id))
+      || (savedTheme?.label && findThemeInputByLabel(savedTheme.label));
+
+    if (themeInput) {
+      themeInput.checked = true;
+    }
+
+    const restoreList = (items, group) => {
+      (Array.isArray(items) ? items : []).forEach((item) => {
+        const input = (item?.id && document.getElementById(item.id))
+          || (item?.label && findOptionByLabel(group, item.label));
+        if (input) {
+          input.checked = true;
+        }
+      });
+    };
+
+    restoreList(saved.selections?.elements, 'elements');
+    restoreList(saved.selections?.addOns, 'addons');
+
+    if (notesInput) {
+      notesInput.value = saved.selections?.notes || '';
+    }
+
+    updateDecorationSummary();
+    setSaveState(true);
+    isRestoring = false;
+  }
+
+  function updateDecorationSummary() {
+    const theme = selectedByGroup('theme');
+    const elements = selectedByGroup('elements');
+    const addons = selectedByGroup('addons');
+
+    const totalFor = items =>
+      items.reduce((sum, item) => sum + getInputPrice(item), 0);
+
+    const themeTotal = totalFor(theme);
+    const elementTotal = totalFor(elements);
+    const addonTotal = totalFor(addons);
+    const grandTotal = themeTotal + elementTotal + addonTotal;
+
+    const notes = notesInput?.value.trim() || '';
+
+    const totalEl = document.querySelector('[data-decoration-total]');
+    if (totalEl) totalEl.textContent = money(grandTotal);
+
+    const themeEl = document.querySelector('[data-summary-theme]');
+    if (themeEl) {
+      themeEl.textContent = theme.length ? theme.map(x => getInputLabel(x)).join(', ') : '-';
+    }
+
+    const themePriceEl = document.querySelector('[data-summary-theme-price]');
+    if (themePriceEl) themePriceEl.textContent = theme.length ? money(themeTotal) : '-';
+
+    const elementsSummary = document.querySelector('[data-summary-elements]');
+    if (elementsSummary) {
+      elementsSummary.innerHTML = elements.length
+        ? `<ul class="summary-decoration-list mb-0">${elements.map(x => `<li>${getInputLabel(x)}</li>`).join('')}</ul>`
+        : '-';
+    }
+
+    const elementsPriceEl = document.querySelector('[data-summary-elements-price]');
+    if (elementsPriceEl) elementsPriceEl.textContent = elements.length ? money(elementTotal) : '-';
+
+    const addonsSummary = document.querySelector('[data-summary-addons]');
+    if (addonsSummary) {
+      addonsSummary.innerHTML = addons.length
+        ? `<ul class="summary-decoration-list mb-0">${addons.map(x => `<li>${getInputLabel(x)}</li>`).join('')}</ul>`
+        : '-';
+    }
+
+    const addonsPriceEl = document.querySelector('[data-summary-addons-price]');
+    if (addonsPriceEl) addonsPriceEl.textContent = addons.length ? money(addonTotal) : '-';
+
+    const notesEl = document.querySelector('[data-summary-notes]');
+    if (notesEl) notesEl.textContent = notes || '-';
+
+    if (!isSaved) {
+      if (!theme.length && !elements.length && !addons.length && !notes) {
+        setStatus('');
+      } else {
+        setStatus('');
+      }
+    }
+  }
+
+  document.addEventListener('change', function (event) {
+    if (!event.target.matches('[data-decoration-option]')) {
+      return;
+    }
+
+    if (!isCatalogAvailable) {
+      return;
+    }
+
+    if (!isRestoring && isSaved) {
+      setSaveState(false);
+    }
+
+    setStatus('');
+    updateDecorationSummary();
+  });
+
+  notesInput?.addEventListener('input', function () {
+    if (!isCatalogAvailable) {
+      return;
+    }
+
+    if (!isRestoring && isSaved) {
+      setSaveState(false);
+    }
+
+    setStatus('');
+    updateDecorationSummary();
+  });
+
+  saveBtn?.addEventListener('click', function (event) {
+    event.preventDefault();
+    event.stopPropagation();
+    const state = persistDecoration();
+    if (!state) return;
+  });
+
+  continueLinks.forEach((link) => {
+    link.addEventListener('click', function () {
+      if (!isCatalogAvailable) {
+        return;
+      }
+
+      if (buildState().options.length) {
+        persistDecoration();
+      }
+    });
+  });
+
+  async function checkBackendAvailability() {
+    try {
+      const response = await fetch('http://localhost:65535/api/services/2', {
+        cache: 'no-store'
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const data = await response.json();
+      const serviceName = String(data?.name || data?.title || '').toLowerCase();
+
+      if (Number(data?.id) !== BACKEND_SERVICE_ID || !serviceName.includes('decoration')) {
+        throw new Error('Unexpected service payload');
+      }
+
+      applyBackendAvailability(data?.available !== false);
+    } catch (error) {
+      console.log('Decoration catalog unavailable; using frontend fallback.');
+      applyBackendAvailability(true);
+    }
+  }
+
+  const savedState = typeof bbGetServiceData === 'function'
+    ? bbGetServiceData()?.[SERVICE_ID]
+    : null;
+
+  restoreDecoration(savedState);
+  syncAvailabilityUI();
+  checkBackendAvailability();
+  updateDecorationSummary();
+});
+</script>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+  const themeDetails = {
+    "Luxury": {
+      title: "Luxury Decoration",
+      price: "350,000 MMK",
+      image: "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1400&q=85",
+      intro: "Elegant premium styling designed for formal weddings, receptions and sophisticated celebrations.",
+      properties: [
+        "Rich fabrics and polished decorative finishes",
+        "Statement floral arrangements",
+        "Premium stage and backdrop styling",
+        "Gold, ivory, champagne or deep-tone accents",
+        "Elegant table and entrance presentation"
+      ]
+    },
+
+    "Romantic": {
+      title: "Romantic Decoration",
+      price: "300,000 MMK",
+      image: "https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=1400&q=85",
+      intro: "Soft and graceful styling with florals, warm colours and intimate decorative details.",
+      properties: [
+        "Soft pink, blush, ivory and warm neutral tones",
+        "Fresh or artificial floral accents",
+        "Warm candle and fairy-light details",
+        "Elegant couple or head-table styling",
+        "Photo-friendly reception atmosphere"
+      ]
+    },
+
+    "Garden": {
+      title: "Garden Decoration",
+      price: "280,000 MMK",
+      image: "https://peragarden.netlify.app/wedding-venue-evening-lights-romantic-atmosphere.jpg",
+      intro: "Fresh natural styling using greenery, flowers and airy details for indoor or outdoor celebrations.",
+      properties: [
+        "Greenery and natural floral styling",
+        "Fresh, light and open presentation",
+        "Suitable for outdoor or garden-inspired venues",
+        "Wood, white and natural decorative accents",
+        "Simple elegant table and aisle dÃ©cor"
+      ]
+    },
+
+    "Myanmar Traditional": {
+      title: "Myanmar Traditional Decoration",
+      price: "320,000 MMK",
+      image: "https://cattleyawedding.com/wp-content/uploads/2024/03/MY-Wedding-13.jpg",
+      intro: "Myanmar-inspired styling that combines traditional colours, ceremonial presentation and elegant floral details.",
+      properties: [
+        "Traditional Myanmar-inspired colour palette",
+        "Ceremonial floral and stage presentation",
+        "Gold and warm decorative accents",
+        "Suitable for Myanmar wedding traditions",
+        "Traditional details blended with modern event styling"
+      ]
+    }
+  };
+
+  document.querySelectorAll('[data-explore-theme]').forEach(function(button) {
+    button.addEventListener('click', function(event) {
+      event.preventDefault();
+      event.stopPropagation();
+
+      const url = new URL(window.location.href);
+      url.searchParams.set('theme', this.dataset.exploreTheme);
+      window.location.href = url.toString();
+    });
+  });
+
+  const themeName = new URLSearchParams(window.location.search).get('theme');
+  if (!themeName || !themeDetails[themeName]) return;
+
+  const detail = themeDetails[themeName];
+  const main = document.querySelector('[data-decoration-page]');
+  if (!main) return;
+
+  main.innerHTML = `
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+      <div>
+        <span class="eyebrow">Decoration Theme Details</span>
+        <h1 class="h2 mt-1 mb-1">${detail.title}</h1>
+        <p class="text-ink-soft mb-0">${detail.intro}</p>
+      </div>
+
+      <button class="btn btn-outline-forest" type="button" id="backToDecoration">
+        <i class="bi bi-arrow-left me-1"></i> Back to Decoration
+      </button>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-lg-7">
+        <div class="panel h-100">
+          <div class="panel__body">
+            <img
+              src="${detail.image}"
+              alt="${detail.title}"
+              class="decoration-theme-photo mb-4"
+            >
+
+            <h5 class="mb-3">Theme Properties</h5>
+
+            ${detail.properties.map(item => `
+              <div class="theme-detail-property d-flex align-items-start gap-2">
+                <i class="bi bi-check-circle text-gold mt-1"></i>
+                <span>${item}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-5">
+        <div class="panel h-100">
+          <div class="panel__head">
+            <h5 class="mb-0">Theme Information</h5>
+          </div>
+
+          <div class="panel__body">
+            <div class="mb-4">
+              <div class="small text-ink-soft mb-1">Theme</div>
+              <strong>${themeName}</strong>
+            </div>
+
+            <div class="mb-4">
+              <div class="small text-ink-soft mb-1">Price</div>
+              <div class="text-gold fw-semibold">${detail.price}</div>
+            </div>
+
+            <p class="small text-ink-soft mb-4">
+              This theme can be combined with your selected decoration elements and add-ons.
+            </p>
+
+            <button class="btn btn-gold w-100" type="button" id="chooseThemeFromDetails">
+              Choose ${themeName}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  function goBack() {
+    const url = new URL(window.location.href);
+    url.searchParams.delete('theme');
+    window.location.href = url.toString();
+  }
+
+  document.getElementById('backToDecoration')
+    ?.addEventListener('click', goBack);
+
+  document.getElementById('chooseThemeFromDetails')
+    ?.addEventListener('click', function () {
+      sessionStorage.setItem('bbPendingDecorationTheme', themeName);
+      goBack();
+    });
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+  const pendingTheme = sessionStorage.getItem('bbPendingDecorationTheme');
+  if (!pendingTheme) return;
+
+  sessionStorage.removeItem('bbPendingDecorationTheme');
+
+  const input = [...document.querySelectorAll('[data-decoration-option][data-group="theme"]')]
+    .find(item => item.value === pendingTheme);
+
+  if (input && !input.checked) {
+    input.click();
+  }
+});
+</script>
+
+
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+  function readSelectedEventContext() {
+    if (typeof window.bbGetEventContext === 'function') {
+      const context = window.bbGetEventContext();
+      if (context) return context;
+    }
+
+    try {
+      const raw = sessionStorage.getItem('bb_event_context');
+      if (raw) return JSON.parse(raw);
+    } catch (error) {}
+
+    return {
+      eventType: sessionStorage.getItem('bbEventType') || 'Wedding',
+      eventDate: sessionStorage.getItem('bbEventDate') || '2026-12-20',
+      guests: Number(sessionStorage.getItem('bbEventGuests') || 150)
+    };
+  }
+
+  function formatEventDate(value) {
+    if (!value) return '20 December 2026';
+
+    if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+      const parts = value.split('-');
+      const date = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+
+      return date.toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric'
+      });
+    }
+
+    return value;
+  }
+
+  window.bbReadSelectedEventForServicePage = function () {
+    const context = readSelectedEventContext();
+
+    return {
+      eventType: context.eventType || context.type || 'Wedding',
+      eventDate: context.eventDate || context.date || '2026-12-20',
+      guests: Number(context.guests || context.guestCount || 150)
+    };
+  };
+
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  setTimeout(function () {
+    const getEvent = window.bbReadSelectedEventForServicePage;
+    if (typeof getEvent !== 'function') return;
+
+    const event = getEvent();
+
+    const typeEl = document.querySelector('[data-decoration-event-type]');
+    const guestEl = document.querySelector('[data-decoration-event-guests]');
+    const dateEl = document.querySelector('[data-decoration-event-date]');
+
+    if (typeEl) typeEl.textContent = event.eventType;
+    if (guestEl) guestEl.textContent = event.guests + ' Guests';
+
+    if (dateEl) {
+      if (/^\d{4}-\d{2}-\d{2}$/.test(event.eventDate)) {
+        const [y,m,d] = event.eventDate.split('-').map(Number);
+        dateEl.textContent = new Date(y,m-1,d).toLocaleDateString('en-GB', {
+          day:'2-digit', month:'long', year:'numeric'
+        });
+      } else {
+        dateEl.textContent = event.eventDate;
+      }
+    }
+  }, 0);
+});
+</script>
+
+</body>
+</html>
+

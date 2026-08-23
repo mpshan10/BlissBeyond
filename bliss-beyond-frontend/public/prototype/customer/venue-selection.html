@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Venue Selection | Bliss &amp; Beyond</title>
+<meta name="description" content="Manage the venue for your Bliss & Beyond event.">
+<link rel="icon" href="/prototype/../favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Karla:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="/prototype/assets/css/style.css" rel="stylesheet">
+<style>
+  .venue-context-card { background:#f3eee4; border:1px solid #e1d6c5; border-radius:16px; padding:1.15rem 1.25rem; }
+  .venue-context-card__label,.venue-modal__label { color:#8e6726; font-size:.72rem; font-weight:700; letter-spacing:.09em; text-transform:uppercase; }
+  .venue-context-card__value { color:#214c3b; font-family:"Cormorant Garamond",serif; font-size:1.35rem; font-weight:600; line-height:1.1; }
+  .venue-context-card__message,.venue-status { min-height:1.4rem; }
+  .venue-filter-bar { background:#fffdf9; border:1px solid #e8dfd0; border-radius:14px; padding:.8rem; }
+  .portal-venue-card { height:100%; overflow:hidden; border:1px solid rgba(33,76,59,.12); border-radius:18px; background:#fffdf9; box-shadow:0 10px 26px rgba(45,54,46,.08); transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease; }
+  .portal-venue-card:hover { transform:translateY(-3px); box-shadow:0 16px 32px rgba(45,54,46,.13); }
+  .portal-venue-card.is-current { border-color:#c99c42; box-shadow:0 0 0 3px rgba(201,156,66,.16),0 14px 30px rgba(45,54,46,.12); }
+  .portal-venue-card__media { min-height:190px; background-position:center; background-size:cover; }
+  [data-venue-grid] { align-items:stretch; }
+  [data-venue-grid] > .venue-item { display:flex; }
+  [data-venue-grid] > .venue-item > .portal-venue-card { display:flex; flex-direction:column; width:100%; }
+  .portal-venue-card__body { display:flex; flex-direction:column; min-height:236px; padding:1.15rem; }
+  .portal-venue-card__body h4 { min-height:2.2em; }
+  .venue-card-description { min-height:72px; }
+  .venue-card-price { margin-top:auto; }
+  .venue-card-actions { margin-top:18px; }
+  .portal-venue-card__body .venue-action .btn { min-height:2.35rem; border-radius:999px; }
+  .venue-modal__field { min-height:2.7rem; padding:.65rem .8rem; border:1px solid #e1d6c5; border-radius:10px; background:#fdfbf7; color:#214c3b; }
+  .venue-modal__note { border-radius:10px; background:#f3eee4; color:#52645b; padding:.75rem .85rem; }
+  @media (max-width:575.98px) { .portal-venue-card__media { min-height:170px; } }
+</style>
+</head>
+<body>
+<nav class="navbar bb-nav sticky-top"><div class="container-fluid px-3 px-lg-4">
+  <a class="navbar-brand" href="/prototype/index.html">Bliss &amp; Beyond<small>Customer Portal</small></a>
+  <div class="d-flex align-items-center gap-3"><a class="d-none d-md-inline small" href="/prototype/index.html"><i class="bi bi-house-door me-1"></i>Public site</a><div class="dropdown"><button class="btn btn-forest btn-sm dropdown-toggle" data-bs-toggle="dropdown" data-auth-display>Account</button><ul class="dropdown-menu dropdown-menu-end"><li><a class="dropdown-item" href="/prototype/customer/profile.html">Profile</a></li><li><a class="dropdown-item" href="/prototype/login.html">Sign out</a></li></ul></div></div>
+</div></nav>
+<div class="bb-shell"><aside class="bb-side">
+  <h6>Overview</h6><a href="/prototype/customer/dashboard.html">Dashboard</a><a href="/prototype/customer/profile.html">My Profile</a>
+  <h6>Plan your event</h6><a href="/prototype/customer/browse-packages.html">Browse Packages</a><a class="active" href="/prototype/customer/venue-selection.html">Venue Selection</a><a href="/prototype/customer/ai-recommendation.html">AI Recommendation</a><a href="/prototype/customer/booking.html">New Booking</a>
+  <h6>My bookings</h6><a href="/prototype/customer/consultation.html">Consultation</a><a href="/prototype/customer/booking-history.html">Booking History</a><a href="/prototype/customer/quotation.html">Quotations</a>
+  <h6>Account</h6><a href="/prototype/login.html">Sign out</a>
+</aside><main class="bb-main">
+  <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4"><div><span class="eyebrow">Customer portal</span><h1 class="h2 mt-1 mb-1">Venue Selection</h1><p class="small text-ink-soft mb-0">Review or change the venue for your current event.</p></div><div class="d-flex gap-2"><a class="btn btn-outline-forest btn-sm" href="/prototype/customer/dashboard.html">Back to Dashboard</a><a class="btn btn-gold btn-sm" data-continue-services href="/prototype/customer/services.html">Continue to Services</a><a class="btn btn-gold btn-sm d-none" data-view-booking-status href="/prototype/customer/booking-status.html">View Booking Status</a></div></div>
+  <section class="venue-context-card mb-4" aria-labelledby="venueContextTitle"><div class="d-flex flex-wrap justify-content-between align-items-end gap-3"><div><div id="venueContextTitle" class="venue-context-card__label mb-2">Your event</div><div class="row g-3"><div class="col-sm-auto"><div class="venue-context-card__label">Event date</div><div class="venue-context-card__value" data-event-date>Unavailable</div></div><div class="col-sm-auto"><div class="venue-context-card__label">Time</div><div class="venue-context-card__value" data-event-time>Unavailable</div></div><div class="col-sm-auto"><div class="venue-context-card__label">Guests</div><div class="venue-context-card__value" data-event-guests>Unavailable</div></div></div></div><button class="btn btn-outline-forest btn-sm" type="button" data-open-availability>Edit date &amp; time</button></div><div class="venue-context-card__message small text-ink-soft mt-3" data-context-message></div><a class="d-none small" data-start-event href="/prototype/venues.html">Start New Booking</a></section>
+  <div class="venue-status small mb-3" data-availability-status role="status" aria-live="polite">Loading venue catalog...</div>
+  <h2 class="h5 mb-3">Available venues for your event</h2>
+  <div class="venue-filter-bar row g-2 align-items-center mb-4"><div class="col-lg-5"><div class="input-group"><span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span><input class="form-control border-start-0" type="search" data-venue-search placeholder="Search by venue, location, or type" aria-label="Search venues"></div></div><div class="col-sm-6 col-lg-3"><select class="form-select" data-venue-type-filter aria-label="Filter by venue type"><option value="all">All venue types</option></select></div><div class="col-sm-6 col-lg-3"><select class="form-select" data-venue-location-filter aria-label="Filter by location"><option value="all">All locations</option></select></div><div class="col-lg-1 text-lg-end"><span class="small text-ink-soft"><strong data-venue-count>0</strong> shown</span></div></div>
+  <div class="row g-4" data-venue-grid><div class="col-12"><div class="panel"><div class="panel__body text-center text-ink-soft">Loading real venues...</div></div></div></div><div class="d-none panel mt-4" data-no-results><div class="panel__body text-center text-ink-soft">No venues match the current availability and filters.</div></div>
+</main></div>
+
+<div class="modal fade" id="availabilityModal" tabindex="-1" aria-labelledby="availabilityModalLabel" aria-hidden="true"><div class="modal-dialog modal-dialog-centered"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="availabilityModalLabel">Edit Event Details</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div><form data-availability-form><div class="modal-body"><div class="row g-3"><div class="col-md-6"><label class="venue-modal__label mb-1" for="venueModalDate">Event date</label><input class="form-control venue-modal__field" id="venueModalDate" type="date" data-modal-date required></div><div class="col-md-6"><label class="venue-modal__label mb-1" for="venueModalGuests">Guests</label><input class="form-control venue-modal__field" id="venueModalGuests" type="number" min="1" data-modal-guests required></div><div class="col-md-6"><label class="venue-modal__label mb-1" for="venueModalStart">Start time</label><input class="form-control venue-modal__field" id="venueModalStart" type="time" data-modal-start required></div><div class="col-md-6"><label class="venue-modal__label mb-1" for="venueModalEnd">End time</label><input class="form-control venue-modal__field" id="venueModalEnd" type="time" data-modal-end required></div></div><div class="venue-modal__note small mt-3">Availability will be checked using your updated event details.</div><div class="small text-ink-soft mt-3" data-modal-status role="status" aria-live="polite"></div></div><div class="modal-footer"><button class="btn btn-outline-forest" type="button" data-bs-dismiss="modal">Cancel</button><button class="btn btn-gold" type="submit" data-modal-submit>Update &amp; Check Availability</button></div></form></div></div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/prototype/assets/js/main.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  if (window.bbRequireAuth && window.bbRequireAuth()) return;
+  const grid = document.querySelector('[data-venue-grid]');
+  const search = document.querySelector('[data-venue-search]');
+  const typeFilter = document.querySelector('[data-venue-type-filter]');
+  const locationFilter = document.querySelector('[data-venue-location-filter]');
+  const count = document.querySelector('[data-venue-count]');
+  const noResults = document.querySelector('[data-no-results]');
+  const status = document.querySelector('[data-availability-status]');
+  const contextMessage = document.querySelector('[data-context-message]');
+  const startEvent = document.querySelector('[data-start-event]');
+  const openAvailability = document.querySelector('[data-open-availability]');
+  const form = document.querySelector('[data-availability-form]');
+  const modalSubmit = document.querySelector('[data-modal-submit]');
+  const modalStatus = document.querySelector('[data-modal-status]');
+  const modalElement = document.getElementById('availabilityModal');
+  const availabilityModal = window.bootstrap ? bootstrap.Modal.getOrCreateInstance(modalElement) : null;
+  const availableVenueIds = new Set();
+  let venues = [];
+  let availabilityChecked = false;
+  let selectedVenue = typeof window.bbGetVenue === 'function' ? window.bbGetVenue() : null;
+
+  function readContext() { try { const raw = window.sessionStorage.getItem('bb_event_context'); return raw ? JSON.parse(raw) : null; } catch (error) { return null; } }
+  function normalizeContext(source) {
+    const value = source || {}; const eventDate = String(value.eventDate || '').trim(); const startTime = String(value.startTime || '').trim(); const endTime = String(value.endTime || '').trim(); const guestCount = Number(value.guestCount ?? value.guests ?? 0);
+    return { eventDate: /^\d{4}-\d{2}-\d{2}$/.test(eventDate) ? eventDate : '', startTime: /^\d{2}:\d{2}$/.test(startTime) ? startTime : '', endTime: /^\d{2}:\d{2}$/.test(endTime) ? endTime : '', guestCount: Number.isFinite(guestCount) && guestCount > 0 ? guestCount : 0, persisted: Boolean(value.bookingId || value.bookingID || value.eventId) };
+  }
+  const storedContext = readContext();
+  const eventContext = normalizeContext(storedContext);
+  const latestEvent = readStored('bbLatestEvent');
+  const latestBooking = readStored('bbLatestBooking');
+  const persistedBooking = Boolean(latestEvent?.id && latestBooking?.id && (!latestBooking.eventId || Number(latestBooking.eventId) === Number(latestEvent.id)) && latestEvent.eventDate === eventContext.eventDate && Number(latestEvent.guestCount || 0) === eventContext.guestCount);
+  let readOnly = persistedBooking;
+  function readStored(key) { try { const raw = window.sessionStorage.getItem(key); return raw ? JSON.parse(raw) : null; } catch (error) { return null; } }
+  function escapeHtml(value) { return String(value ?? '').replace(/[&<>"']/g, character => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[character])); }
+  function formatDate(value) { const date = new Date(`${value}T00:00:00`); return Number.isNaN(date.getTime()) ? value : date.toLocaleDateString(undefined, { day:'2-digit', month:'short', year:'numeric' }); }
+  function formatTime(value) { const parts = value.split(':').map(Number); if (parts.length !== 2 || parts.some(Number.isNaN)) return value; const suffix = parts[0] >= 12 ? 'PM' : 'AM'; return `${parts[0] % 12 || 12}:${String(parts[1]).padStart(2, '0')} ${suffix}`; }
+  function setStatus(message, isError) { status.textContent = message; status.classList.toggle('text-danger', Boolean(isError)); status.classList.toggle('text-success', !isError && Boolean(message && message.includes('available'))); }
+  function validContext() { return Boolean(eventContext.eventDate && eventContext.startTime && eventContext.endTime && eventContext.guestCount > 0 && eventContext.startTime < eventContext.endTime); }
+  function setContextDisplay() {
+    const valid = validContext(); const date = document.querySelector('[data-event-date]'); const time = document.querySelector('[data-event-time]'); const guests = document.querySelector('[data-event-guests]');
+    date.textContent = valid ? formatDate(eventContext.eventDate) : 'Unavailable'; time.textContent = valid ? `${formatTime(eventContext.startTime)} - ${formatTime(eventContext.endTime)}` : 'Unavailable'; guests.textContent = valid ? `${eventContext.guestCount.toLocaleString()} guests` : 'Unavailable';
+    document.querySelector('[data-modal-date]').value = valid ? eventContext.eventDate : ''; document.querySelector('[data-modal-start]').value = valid ? eventContext.startTime : ''; document.querySelector('[data-modal-end]').value = valid ? eventContext.endTime : ''; document.querySelector('[data-modal-guests]').value = valid ? eventContext.guestCount : '';
+    openAvailability.disabled = !valid || readOnly;
+    if (readOnly) { contextMessage.textContent = 'This booking has already been submitted. Event and venue changes are no longer available from this page.'; startEvent.classList.add('d-none'); } else if (!valid) { contextMessage.textContent = 'Your event details could not be found. Please start or edit your booking first.'; startEvent.classList.remove('d-none'); setStatus('Event details are required before venue availability can be checked.', true); } else { contextMessage.textContent = 'Availability will be checked using your current event details.'; }
+    document.querySelector('[data-continue-services]').classList.toggle('d-none', readOnly); document.querySelector('[data-view-booking-status]').classList.toggle('d-none', !readOnly);
+  }
+  function sourceVenue(item) {
+    const media = item.querySelector('.bb-card__media'); const heading = item.querySelector('h4'); const location = item.querySelector('.bi-geo-alt')?.parentElement; const paragraphs = Array.from(item.querySelectorAll('.bb-card__body p')); const imageMatch = media?.getAttribute('style')?.match(/url\(['"]?([^'")]+)['"]?\)/i);
+    return { id:Number(item.dataset.venueId), name:heading?.textContent.trim() || '', type:item.querySelector('.bb-badge')?.textContent.trim() || item.dataset.tags || '', location:location?.textContent.replace(/\s+/g, ' ').trim() || '', description:paragraphs[paragraphs.length - 1]?.textContent.trim() || '', image:imageMatch?.[1] || '/prototype/assets/img/venue-1.jpg', capacity:item.dataset.venueCapacity ? Number(item.dataset.venueCapacity) : null, price:item.dataset.venuePrice || item.dataset.venueRate || null, city:item.dataset.city || '' };
+  }
+  async function loadCatalog() {
+    try {
+      const backendResponse = await fetch('http://localhost:8081/api/venues');
+      if (!backendResponse.ok) throw new Error(`Venue catalog request failed: ${backendResponse.status}`);
+      const backendCatalog = await backendResponse.json();
+      if (!Array.isArray(backendCatalog)) throw new Error('Invalid venue catalog response');
+      return backendCatalog.map(venue => ({
+        ...venue,
+        city: String(venue.location || '').toLowerCase().includes('mandalay') ? 'Mandalay'
+          : String(venue.location || '').toLowerCase().includes('yangon') ? 'Yangon' : venue.location
+      }));
+    } catch (error) {
+      console.warn('Backend venue catalog unavailable; using the public venue fallback.');
+      const sourceResponse = await fetch('/prototype/venues.html', { cache:'no-store' });
+      if (!sourceResponse.ok) throw new Error(`Venue fallback request failed: ${sourceResponse.status}`);
+      const source = new DOMParser().parseFromString(await sourceResponse.text(), 'text/html');
+      return Array.from(source.querySelectorAll('.venue-item[data-venue-id]'))
+        .map(sourceVenue)
+        .filter(venue => Number.isInteger(venue.id) && venue.name);
+    }
+  }
+  function populateFilters() { const types = [...new Set(venues.map(venue => venue.type).filter(Boolean))].sort(); const locations = [...new Set(venues.map(venue => venue.city || venue.location).filter(Boolean))].sort(); typeFilter.innerHTML = '<option value="all">All venue types</option>' + types.map(value => `<option value="${escapeHtml(value)}">${escapeHtml(value)}</option>`).join(''); locationFilter.innerHTML = '<option value="all">All locations</option>' + locations.map(value => `<option value="${escapeHtml(value)}">${escapeHtml(value)}</option>`).join(''); }
+  function cardMarkup(venue) {
+    const id = String(venue.id); const current = selectedVenue && String(selectedVenue.id) === id; const available = availabilityChecked && availableVenueIds.has(id); const disabled = !available || current || readOnly; const action = current ? 'Current venue' : readOnly ? 'View booking status' : available ? 'Change to this venue' : 'Unavailable'; const capacity = venue.capacity !== null && venue.capacity !== undefined && venue.capacity !== '' ? `<span class="bb-badge gold">${Number(venue.capacity).toLocaleString()} guests</span>` : ''; const priceValue = Number(venue.price); const hasPrice = Number.isFinite(priceValue) && priceValue > 0; const price = hasPrice ? `<span class="small text-gold fw-semibold">Estimated from MMK ${priceValue.toLocaleString()}</span>` : '<span class="small text-ink-soft">Price on request</span>';
+    return `<div class="col-md-6 col-lg-4 venue-item" data-venue-id="${id}" data-type="${escapeHtml(venue.type)}" data-location="${escapeHtml(venue.city || venue.location)}"><article class="portal-venue-card${current ? ' is-current' : ''}"><div class="portal-venue-card__media" style="background-image:url('${escapeHtml(venue.image)}')"></div><div class="portal-venue-card__body"><div class="d-flex justify-content-between align-items-start gap-2 mb-2"><span class="bb-badge">${escapeHtml(venue.type)}</span>${capacity}</div>${current ? '<div class="small text-gold fw-semibold mb-1"><i class="bi bi-check-circle me-1"></i>Current venue</div>' : ''}<h4 class="mb-1">${escapeHtml(venue.name)}</h4><p class="small text-ink-soft mb-2"><i class="bi bi-geo-alt me-1"></i>${escapeHtml(venue.location)}</p><p class="small text-ink-soft mb-2 venue-card-description">${escapeHtml(venue.description)}</p><div class="mb-3 venue-card-price">${price}</div><div class="venue-action venue-card-actions"><button class="btn ${current ? 'btn-outline-gold' : 'btn-outline-forest'} btn-sm w-100" type="button" data-select-venue="${id}" ${disabled ? 'disabled' : ''}>${action}</button></div></div></article></div>`;
+  }
+  function syncContinueAction() { const link = document.querySelector('[data-continue-services]'); const enabled = !readOnly && Boolean(selectedVenue?.id) && validContext(); link.classList.toggle('disabled', !enabled); link.setAttribute('aria-disabled', String(!enabled)); link.tabIndex = enabled ? 0 : -1; }
+  function renderCards() { grid.innerHTML = venues.map(cardMarkup).join(''); grid.querySelectorAll('[data-select-venue]').forEach(button => button.addEventListener('click', () => changeVenue(Number(button.dataset.selectVenue)))); applyFilters(); syncContinueAction(); }
+  function applyFilters() { const query = search.value.trim().toLowerCase(); const type = typeFilter.value; const location = locationFilter.value; let visible = 0; grid.querySelectorAll('.venue-item').forEach(item => { const venue = venues.find(candidate => String(candidate.id) === item.dataset.venueId); const matchesAvailability = readOnly ? String(item.dataset.venueId) === String(selectedVenue?.id || '') : (!availabilityChecked || availableVenueIds.has(item.dataset.venueId)); const text = `${venue.name} ${venue.location} ${venue.type}`.toLowerCase(); const matches = matchesAvailability && (!query || text.includes(query)) && (type === 'all' || venue.type === type) && (location === 'all' || (venue.city || venue.location) === location); item.classList.toggle('d-none', !matches); if (matches) visible += 1; }); count.textContent = String(visible); noResults.classList.toggle('d-none', visible !== 0); }
+  function setAvailabilityState(records) { availableVenueIds.clear(); const backendById = new Map(records.map(record => [String(record.id), record])); records.forEach(record => availableVenueIds.add(String(record.id))); venues = venues.map(venue => { const backend = backendById.get(String(venue.id)); if (!backend) return venue; return { ...venue, name:backend.name || venue.name, type:backend.type || venue.type, location:backend.location || venue.location, description:backend.description || venue.description, image:backend.image || venue.image, capacity:backend.capacity ?? venue.capacity, price:backend.price ?? venue.price }; }); if (!readOnly && selectedVenue?.id) { const fresh = venues.find(venue => String(venue.id) === String(selectedVenue.id)); if (fresh) { selectedVenue = { ...selectedVenue, ...fresh }; bbSetVenue(selectedVenue); } } availabilityChecked = true; renderCards(); }
+  function minimumBookingDate() { const today = new Date(); const targetYear = today.getFullYear() + (today.getMonth() === 11 ? 1 : 0); const targetMonth = (today.getMonth() + 1) % 12; const lastDay = new Date(targetYear, targetMonth + 1, 0).getDate(); const day = Math.min(today.getDate(), lastDay); return `${targetYear}-${String(targetMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`; }
+  async function checkAvailability() {
+    if (readOnly) return;
+    const next = normalizeContext({ eventDate:document.querySelector('[data-modal-date]').value, startTime:document.querySelector('[data-modal-start]').value, endTime:document.querySelector('[data-modal-end]').value, guestCount:document.querySelector('[data-modal-guests]').value });
+    if (!next.eventDate || next.eventDate < minimumBookingDate()) { modalStatus.textContent = 'Bookings must be made at least one month in advance. Please choose a later event date.'; return; }
+    if (!next.startTime || !next.endTime || next.startTime >= next.endTime) { modalStatus.textContent = 'Start time must be earlier than end time.'; return; }
+    if (!next.guestCount || next.guestCount <= 0) { modalStatus.textContent = 'Guest count must be greater than 0.'; return; }
+    Object.assign(eventContext, next); bbSetEventContext({ eventDate:next.eventDate, startTime:next.startTime, endTime:next.endTime, eventTime:next.startTime, guests:next.guestCount, guestCount:next.guestCount }); setContextDisplay();
+    modalSubmit.disabled = true; modalSubmit.textContent = 'Checking...'; modalStatus.textContent = 'Checking available venues...'; setStatus('Checking available venues...'); const params = new URLSearchParams({ date:eventContext.eventDate, startTime:eventContext.startTime, endTime:eventContext.endTime, guests:String(eventContext.guestCount) });
+    try { const response = await fetch(`http://localhost:8081/api/venues/available?${params.toString()}`); if (!response.ok) throw new Error(`Availability request failed: ${response.status}`); const data = await response.json(); if (!Array.isArray(data) || data.some(venue => venue?.id === undefined || venue?.id === null)) throw new Error('Invalid availability response'); const currentId = selectedVenue?.id ? String(selectedVenue.id) : ''; setAvailabilityState(data); const eventSummary = `${formatDate(eventContext.eventDate)} - ${formatTime(eventContext.startTime)} - ${formatTime(eventContext.endTime)} - ${eventContext.guestCount.toLocaleString()} guests`; if (currentId && !availableVenueIds.has(currentId)) { selectedVenue = null; bbSetVenue(null); renderCards(); setStatus('Your previously selected venue is no longer available for the updated date and time. Please choose another venue.', true); } else { setStatus(data.length ? `${data.length} venue${data.length === 1 ? '' : 's'} available - ${eventSummary}.` : `No venues are available - ${eventSummary}.`); } modalStatus.textContent = data.length ? `${data.length} available venue${data.length === 1 ? '' : 's'} found.` : 'No venues are available for this event.'; availabilityModal?.hide(); } catch (error) { console.error('Venue availability error:', error); availabilityChecked = false; availableVenueIds.clear(); renderCards(); setStatus('Unable to check venue availability. Please try again.', true); modalStatus.textContent = 'Unable to check venue availability. Please try again.'; } finally { modalSubmit.disabled = false; modalSubmit.textContent = 'Update & Check Availability'; }
+  }
+  function changeVenue(id) { if (readOnly || !availabilityChecked || !availableVenueIds.has(String(id))) return; const venue = venues.find(candidate => candidate.id === id); if (!venue || !window.bbSetVenue) return; const nextVenue = { ...venue, services:typeof window.bbVenueServices === 'function' ? window.bbVenueServices(venue.name) : [] }; window.bbSetVenue(nextVenue); selectedVenue = nextVenue; renderCards(); setStatus('Venue updated successfully.'); }
+  document.querySelector('[data-modal-date]').min = minimumBookingDate();
+  setContextDisplay(); openAvailability.addEventListener('click', () => { if (!readOnly) availabilityModal?.show(); }); form.addEventListener('submit', event => { event.preventDefault(); checkAvailability(); }); document.querySelector('[data-continue-services]').addEventListener('click', event => { if (readOnly || !selectedVenue?.id || !validContext()) { event.preventDefault(); return; } if (typeof window.bbSetBookingMode === 'function') window.bbSetBookingMode('CUSTOM'); }); search.addEventListener('input', applyFilters); typeFilter.addEventListener('change', applyFilters); locationFilter.addEventListener('change', applyFilters);
+  loadCatalog().then(catalog => { venues = catalog; populateFilters(); if (readOnly) { renderCards(); setStatus('This booking has already been submitted. Event and venue changes are no longer available from this page.'); } else if (validContext()) { checkAvailability(); } else { renderCards(); setStatus('Your event details could not be found. Please start or edit your booking first.', true); } }).catch(error => { console.error('Venue catalog unavailable:', error); grid.innerHTML = '<div class="col-12"><div class="panel"><div class="panel__body text-center text-danger">Unable to load the real venue catalog.</div></div></div>'; setStatus('Unable to load venues. Please try again.', true); });
+});
+</script>
+</body>
+</html>
