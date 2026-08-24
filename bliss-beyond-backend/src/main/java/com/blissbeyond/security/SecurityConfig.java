@@ -121,6 +121,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         configuration.setAllowedOrigins(Arrays.asList(
+            "https://bliss-beyond.vercel.app",
             "http://localhost:8081",
             "http://127.0.0.1:8081",
             "http://localhost:3000",
@@ -140,12 +141,7 @@ public class SecurityConfig {
             "OPTIONS"
         ));
 
-        configuration.setAllowedHeaders(Arrays.asList(
-            "Authorization",
-            "Content-Type",
-            "Accept",
-            "Origin"
-        ));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
 
         configuration.setAllowCredentials(true);
 
