@@ -1,0 +1,2 @@
+ALTER TABLE venues
+ADD COLUMN website_url VARCHAR(500) NULL;

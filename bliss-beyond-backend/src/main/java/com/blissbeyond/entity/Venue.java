@@ -23,6 +23,8 @@ public class Venue extends BaseEntity {
     private BigDecimal price;
     @Column(length = 255)
     private String image;
+    @Column(name = "website_url", length = 500)
+    private String websiteUrl;
     @Column(nullable = false)
     private boolean available = true;
 
@@ -40,6 +42,8 @@ public class Venue extends BaseEntity {
     public void setPrice(BigDecimal price) { this.price = price; }
     public String getImage() { return image; }
     public void setImage(String image) { this.image = image; }
+    public String getWebsiteUrl() { return websiteUrl; }
+    public void setWebsiteUrl(String websiteUrl) { this.websiteUrl = websiteUrl; }
     public boolean isAvailable() { return available; }
     public void setAvailable(boolean available) { this.available = available; }
 }

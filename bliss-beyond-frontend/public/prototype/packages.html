@@ -190,6 +190,7 @@ document.addEventListener('DOMContentLoaded', function () {
     </div>
 
     <div class="row g-4" id="pkgGrid">
+      <template id="legacy-package-markup" aria-hidden="true">
       
       <!-- ================= ENGAGEMENTS & WEDDINGS & ANNIVERSARIES (From Previous File) ================= -->
       
@@ -1119,7 +1120,8 @@ document.addEventListener('DOMContentLoaded', function () {
         </article>
       </div>
 
-</div>
+      </template>
+    </div>
 
     <p class="small text-ink-soft mt-4 mb-0">Prices are per event. Package guest limits are maximum capacities.</p>
   </div>
@@ -1212,8 +1214,14 @@ document.addEventListener('DOMContentLoaded', function () {
 <script src="/prototype/assets/js/main.js"></script>
 <script>
 (() => {
-  const PACKAGE_API = window.bbApiUrl('/api/packages');
-  const VENUE_API = window.bbApiUrl('/api/venues/available');
+  const apiUrl = path => {
+    if (typeof window.bbApiUrl === 'function') return window.bbApiUrl(path);
+    const host = window.location.hostname;
+    const base = host === 'localhost' || host === '127.0.0.1'
+      ? `http://${host}:8081`
+      : 'https://blissbeyond.onrender.com';
+    return `${base}${path}`;
+  };
   const form = document.querySelector('[data-package-availability-form]');
   const dateInput = document.querySelector('[data-package-catalog-date]');
   const guestsInput = document.querySelector('[data-package-catalog-guests]');
@@ -1222,16 +1230,8 @@ document.addEventListener('DOMContentLoaded', function () {
   const checkButton = document.querySelector('[data-package-catalog-check]');
   const statusEl = document.querySelector('[data-package-availability-status]');
   const summaryEl = document.querySelector('[data-package-availability-summary]');
-  const cards = [...document.querySelectorAll('#pkgGrid [data-searchable]')];
-  const timeInputs = [startInput, endInput];
-  const savedPlan = typeof window.bbGetPackagePlan === 'function' ? window.bbGetPackagePlan() : {};
-  let catalog = [];
-  let catalogBySlug = new Map();
-  let packageDetailsLoaded = false;
-  let availabilityChecked = false;
-  let checking = false;
-  let availableVenueIds = new Set();
-
+  const packageGrid = document.querySelector('#pkgGrid');
+  const legacyPackageTemplate = document.querySelector('#legacy-package-markup');
   const legacySlugs = {
     yangontimelesslove:'yangon-timeless-love', inyagardenromance:'inya-garden-romance', theyangoneverfter:'the-yangon-ever-after',
     mandalayf4:'mandalay-forever', mandalaygolden:'mandalay-golden-promise', rosegarden:'rose-garden-elegance',
@@ -1244,6 +1244,26 @@ document.addEventListener('DOMContentLoaded', function () {
     futureleader:'future-leaders', yangongraduationgala:'yangon-graduate-gala', graduationcelebration:'graduation-celebration',
     graduationgrandceremonies:'graduation-grand-ceremony', graduationexcellence:'graduation-excellence'
   };
+  const legacyImageBySlug = new Map();
+  legacyPackageTemplate?.content.querySelectorAll('[data-searchable]').forEach(card => {
+    const link = card.querySelector('.explore-btn');
+    const media = card.querySelector('.bb-card__media');
+    const href = link?.getAttribute('href') || '';
+    const stem = href.split('/').pop().replace(/\.html$/i, '').toLowerCase();
+    const slug = legacySlugs[stem] || stem;
+    const image = media?.getAttribute('style')?.match(/url\(['"]?([^'")]+)['"]?\)/i)?.[1];
+    if (slug && image) legacyImageBySlug.set(slug, image);
+  });
+  packageGrid.replaceChildren();
+  let cards = [];
+  const timeInputs = [startInput, endInput];
+  const savedPlan = typeof window.bbGetPackagePlan === 'function' ? window.bbGetPackagePlan() : {};
+  let catalog = [];
+  let catalogBySlug = new Map();
+  let packageDetailsLoaded = false;
+  let availabilityChecked = false;
+  let checking = false;
+  let availableVenueIds = new Set();
 
   const localDate = () => {
     const now = new Date();
@@ -1251,18 +1271,12 @@ document.addEventListener('DOMContentLoaded', function () {
   };
   const formatDate = value => new Intl.DateTimeFormat('en-US', { dateStyle:'long' }).format(new Date(`${value}T00:00:00`));
   const formatTime = value => { const [hour, minute] = value.split(':').map(Number); return `${hour % 12 || 12}:${String(minute).padStart(2, '0')} ${hour >= 12 ? 'PM' : 'AM'}`; };
-  const normalize = value => String(value || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
   const setStatus = (message, error = false) => { statusEl.textContent = message; statusEl.classList.toggle('is-error', error); };
   const syncTimePlaceholder = input => { const wrapper = input.closest('.package-time-field'); wrapper.classList.toggle('is-empty', !input.value); };
   const setSummary = (count, details) => {
     if (count === null) { summaryEl.innerHTML = ''; return; }
     if (count === 0) { summaryEl.innerHTML = '<strong>No packages are available for your selected event.</strong><br><small>Try changing your date, time, or guest count.</small>'; return; }
     summaryEl.innerHTML = `<strong>${count.toLocaleString()} Package${count === 1 ? '' : 's'} Available</strong><br><small>Based on ${details}</small>`;
-  };
-  const cardSlugFromLink = card => {
-    const link = card.querySelector('.explore-btn');
-    const stem = link ? link.getAttribute('href').split('/').pop().replace(/\.html$/i, '').toLowerCase() : '';
-    return legacySlugs[stem] || stem;
   };
   const statusNode = card => card.querySelector('.package-card-availability');
   const clearCardStatuses = () => cards.forEach(card => statusNode(card)?.remove());
@@ -1286,20 +1300,85 @@ document.addEventListener('DOMContentLoaded', function () {
     const description = card.querySelector('.bb-card__body > p');
     const capacity = [...card.querySelectorAll('.bb-badge')].find(el => /guest/i.test(el.textContent));
     const price = card.querySelector('.bb-price');
+    const category = card.querySelector('.bb-card__body .bb-badge:not(.gold)');
     if (title) title.textContent = item.name;
     if (description) description.textContent = item.description;
+    if (category) category.textContent = String(item.category || '').toLowerCase().replace(/^./, letter => letter.toUpperCase());
     if (capacity) capacity.textContent = `Up to ${Number(item.maxGuests).toLocaleString()} guests`;
     if (price) price.textContent = `MMK ${Number(item.finalPrice).toLocaleString()}`;
   };
-  const mapCards = () => {
-    const byName = new Map(catalog.map(item => [normalize(item.name), item]));
-    cards.forEach(card => {
-      const slug = cardSlugFromLink(card);
-      const item = catalogBySlug.get(slug) || byName.get(normalize(card.querySelector('h4')?.textContent));
-      if (!item) throw new Error(`Package card could not be mapped: ${slug}`);
-      card.dataset.packageSlug = item.slug;
-      updateCardCatalogFields(card, item);
+  const resolvePackageImage = value => {
+    const raw = String(value || '').trim();
+    if (!raw) return '';
+    if (/^https?:\/\//i.test(raw) || raw.startsWith('/')) return raw;
+    const normalized = raw.replace(/^\.\//, '').replace(/^\/+/, '');
+    if (normalized.startsWith('prototype/')) return `/${normalized}`;
+    if (normalized.startsWith('assets/')) return `/prototype/${normalized}`;
+    return `/prototype/assets/img/${normalized}`;
+  };
+  const applyPackageImage = (media, item) => {
+    const fallback = resolvePackageImage(legacyImageBySlug.get(item.slug)) || '/prototype/assets/img/hero.jpg';
+    const candidate = resolvePackageImage(item.image || item.imageUrl || item.imagePath) || fallback;
+    const setBackground = url => {
+      media.style.backgroundImage = `url("${url.replace(/"/g, '%22')}")`;
+    };
+    setBackground(candidate);
+    if (candidate === fallback) return;
+    const probe = new Image();
+    probe.onerror = () => setBackground(fallback);
+    probe.src = candidate;
+  };
+  const createPackageCard = item => {
+    const card = document.createElement('div');
+    card.className = 'col-md-6 col-xl-3';
+    card.dataset.tags = String(item.category || '').toLowerCase();
+    card.dataset.searchable = '';
+    card.dataset.packageSlug = item.slug;
+    card.dataset.catalogActive = 'true';
+    card.innerHTML = `
+      <article class="bb-card reveal">
+        <div class="bb-card__media"></div>
+        <div class="bb-card__body d-flex flex-column">
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <span class="bb-badge package-category"></span>
+            <span class="bb-badge gold package-capacity"></span>
+          </div>
+          <h4 class="mb-2"></h4>
+          <p class="small text-ink-soft mb-3"></p>
+          <ul class="list-check mb-3"></ul>
+          <div class="package-footer">
+            <div class="package-price"><div class="bb-price"></div></div>
+            <a class="explore-btn">Explore Package <i class="bi bi-arrow-right"></i></a>
+          </div>
+        </div>
+      </article>`;
+    const media = card.querySelector('.bb-card__media');
+    applyPackageImage(media, item);
+    const category = card.querySelector('.package-category');
+    const capacity = card.querySelector('.package-capacity');
+    category.textContent = String(item.category || '').toLowerCase().replace(/^./, letter => letter.toUpperCase());
+    capacity.textContent = `Up to ${Number(item.maxGuests).toLocaleString()} guests`;
+    card.querySelector('h4').textContent = item.name || '';
+    card.querySelector('p').textContent = item.description || '';
+    const inclusionList = card.querySelector('.list-check');
+    const inclusions = (item.services || [])
+      .slice()
+      .sort((a, b) => Number(a.displayOrder || 0) - Number(b.displayOrder || 0))
+      .flatMap(service => (service.inclusions || []).map(inclusion => String(inclusion).trim()))
+      .filter(Boolean);
+    inclusions.slice(0, 5).forEach(inclusion => {
+      const li = document.createElement('li');
+      li.textContent = inclusion;
+      inclusionList.appendChild(li);
     });
+    card.querySelector('.bb-price').textContent = `MMK ${Number(item.finalPrice || 0).toLocaleString()}`;
+    card.querySelector('.explore-btn').href = `customer/package-detail.html?slug=${encodeURIComponent(item.slug)}`;
+    return card;
+  };
+  const renderCatalog = () => {
+    packageGrid.replaceChildren();
+    cards = catalog.map(item => createPackageCard(item));
+    cards.forEach(card => packageGrid.appendChild(card));
   };
   const invalidate = () => {
     if (checking) return;
@@ -1368,7 +1447,7 @@ document.addEventListener('DOMContentLoaded', function () {
     setStatus('Checking package availability...');
     try {
       const params = new URLSearchParams({ date:dateInput.value, startTime:startInput.value, endTime:endInput.value, guests:String(Number(guestsInput.value)) });
-      const response = await fetch(`${VENUE_API}?${params.toString()}`);
+      const response = await fetch(`${apiUrl('/api/venues/available')}?${params.toString()}`);
       if (!response.ok) throw new Error(`Venue availability request failed: ${response.status}`);
       const venues = await response.json();
       if (!Array.isArray(venues)) throw new Error('Invalid venue availability response');
@@ -1396,20 +1475,25 @@ document.addEventListener('DOMContentLoaded', function () {
   };
   const loadCatalog = async () => {
     try {
-      const response = await fetch(PACKAGE_API);
+      const response = await fetch(apiUrl('/api/packages'));
       if (!response.ok) throw new Error(`Package catalog request failed: ${response.status}`);
       const data = await response.json();
-      if (!Array.isArray(data) || data.length !== 35) throw new Error('Expected 35 active packages');
-      catalog = data.filter(item => item.active);
-      if (catalog.length !== 35) throw new Error('Package catalog contains inactive records');
+      if (!Array.isArray(data)) throw new Error('Invalid package catalog response');
+      catalog = data.filter(item => item && item.active === true);
       catalogBySlug = new Map(catalog.map(item => [item.slug, item]));
-      mapCards();
+      renderCatalog();
       packageDetailsLoaded = true;
-      checkButton.disabled = false;
-      setStatus('Enter your event details, then check availability.');
+      checkButton.disabled = catalog.length === 0;
+      if (catalog.length) {
+        setStatus('Enter your event details, then check availability.');
+      } else {
+        setSummary(0);
+        setStatus('No packages are currently available.');
+      }
     } catch (error) {
       packageDetailsLoaded = false;
-      setStatus('Enter your event details, then try checking availability again.');
+      checkButton.disabled = true;
+      setStatus('Package catalog is temporarily unavailable.', true);
       console.error('Package catalog unavailable:', error);
     }
   };
@@ -1427,25 +1511,16 @@ document.addEventListener('DOMContentLoaded', function () {
   });
   [dateInput, guestsInput].forEach(input => input.addEventListener('input', invalidate));
   form.addEventListener('submit', event => { event.preventDefault(); checkAvailability(); });
-  cards.forEach(card => card.querySelector('.explore-btn')?.addEventListener('click', () => saveExploredPackage(card)));
+  packageGrid.addEventListener('click', event => {
+    const link = event.target.closest('.explore-btn');
+    const card = link?.closest('[data-searchable]');
+    if (card) saveExploredPackage(card);
+  });
   loadCatalog();
 })();
 </script>
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

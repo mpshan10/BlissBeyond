@@ -9,8 +9,34 @@ const BB_API_BASE_URL = !configuredApiBaseUrl.startsWith("__")
     : "https://blissbeyond.onrender.com";
 
 window.BB_API_BASE_URL = BB_API_BASE_URL;
+const configuredGoogleClientId = "__BB_GOOGLE_CLIENT_ID__";
+window.BB_GOOGLE_CLIENT_ID = configuredGoogleClientId.startsWith("__") ? "" : configuredGoogleClientId;
 window.bbApiUrl = (path) => `${BB_API_BASE_URL}${path}`;
 
+const bbNativeFetch = window.fetch.bind(window);
+window.bbApiFetch = async (input, options = {}) => {
+  const requestUrl = typeof input === 'string' ? input : input?.url || '';
+  const method = String(options.method || input?.method || 'GET').toUpperCase();
+  const isBackendRequest = requestUrl.startsWith(`${BB_API_BASE_URL}/api/`);
+  const canRetryNetworkFailure = ['GET', 'HEAD', 'OPTIONS'].includes(method)
+    || requestUrl.endsWith('/api/auth/login');
+  const maxAttempts = isBackendRequest && !isLocalFrontend ? 2 : 1;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    try {
+      const response = await bbNativeFetch(input, options);
+      const retryableStatus = [502, 503, 504].includes(response.status);
+      if (!retryableStatus || attempt === maxAttempts) return response;
+    } catch (error) {
+      if (!canRetryNetworkFailure || attempt === maxAttempts) throw error;
+    }
+
+    await new Promise((resolve) => window.setTimeout(resolve, 1500));
+  }
+
+  throw new TypeError('Unable to reach the API.');
+};
+window.fetch = window.bbApiFetch;
 const BB_STATE_KEYS = {
   venue: 'bb_selected_venue',
   event: 'bb_event_context',
@@ -1988,8 +2014,8 @@ function bbGetPasswordStrength(password) {
   return 'Weak';
 }
 
-function bbUpdatePasswordStrengthUI(password, rulesEl, strengthEl) {
-  if (!rulesEl && !strengthEl) return;
+function bbUpdatePasswordStrengthUI(password, rulesEl, strengthEl, meterFillEl, successEl) {
+  if (!rulesEl && !strengthEl && !meterFillEl && !successEl) return;
 
   const state = bbGetPasswordRuleState(password);
   const config = {
@@ -2010,14 +2036,17 @@ function bbUpdatePasswordStrengthUI(password, rulesEl, strengthEl) {
     item.textContent = `${passed ? '\u2713' : '\u25CB'} ${label}`;
   });
 
-  if (strengthEl) {
-    strengthEl.textContent = `Password strength: ${bbGetPasswordStrength(password)}`;
-    strengthEl.classList.remove('text-danger', 'text-warning', 'text-success');
-    const strength = bbGetPasswordStrength(password);
-    if (strength === 'Strong') strengthEl.classList.add('text-success');
-    else if (strength === 'Medium') strengthEl.classList.add('text-warning');
-    else strengthEl.classList.add('text-danger');
-  }
+  const matched = Object.values(state).filter(Boolean).length;
+  const strength = matched === 5 ? 'Strong' : matched >= 4 ? 'Good' : matched >= 2 ? 'Fair' : 'Weak';
+  const strengthKey = strength.toLowerCase();
+  const percentage = matched * 20;
+  if (strengthEl) strengthEl.textContent = strength;
+  const strengthRoot = strengthEl?.closest('[data-password-help]');
+  strengthRoot?.setAttribute('data-strength', strengthKey);
+  if (meterFillEl) meterFillEl.style.width = `${percentage}%`;
+  const meter = meterFillEl?.closest('[role="progressbar"]');
+  meter?.setAttribute('aria-valuenow', String(percentage));
+  successEl?.classList.toggle('d-none', matched !== 5);
 }
 
 function bbInitPackageWorkflow(config = {}) {
@@ -2398,7 +2427,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const q = input.value.trim().toLowerCase();
       const rows = [...scope.querySelectorAll('[data-searchable]')];
       rows.forEach((row) => {
-        row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+        const catalogActive = row.dataset.catalogActive !== 'false';
+        row.style.display = catalogActive && row.textContent.toLowerCase().includes(q) ? '' : 'none';
       });
     });
   });
@@ -2410,7 +2440,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const apply = (value) => {
       scope.querySelectorAll('[data-tags]').forEach((item) => {
         const show = value === 'all' || item.dataset.tags.split(',').includes(value);
-        item.style.display = show ? '' : 'none';
+        item.style.display = item.dataset.catalogActive !== 'false' && show ? '' : 'none';
       });
     };
 
@@ -2465,6 +2495,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const passwordInput = form.querySelector('[name="password"]');
     const passwordRulesEl = form.querySelector('[data-password-rules]');
     const passwordStrengthEl = form.querySelector('[data-password-strength]');
+    const passwordMeterFillEl = form.querySelector('[data-password-meter-fill]');
+    const passwordSuccessEl = form.querySelector('[data-password-success]');
 
     const setStatus = (message, variant = 'danger') => {
       if (!statusEl) return;
@@ -2485,9 +2517,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (formType === 'register') {
-      bbUpdatePasswordStrengthUI(passwordInput?.value || '', passwordRulesEl, passwordStrengthEl);
+      bbUpdatePasswordStrengthUI(passwordInput?.value || '', passwordRulesEl, passwordStrengthEl, passwordMeterFillEl, passwordSuccessEl);
       passwordInput?.addEventListener('input', () => {
-        bbUpdatePasswordStrengthUI(passwordInput?.value || '', passwordRulesEl, passwordStrengthEl);
+        bbUpdatePasswordStrengthUI(passwordInput?.value || '', passwordRulesEl, passwordStrengthEl, passwordMeterFillEl, passwordSuccessEl);
+      });
+      const confirmInput = form.querySelector('[name="confirmPassword"]');
+      confirmInput?.addEventListener('input', () => {
+        if (statusEl?.textContent === 'Passwords do not match.' && confirmInput.value === passwordInput.value) clearStatus();
       });
     }
 
@@ -2631,6 +2667,57 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   });
+
+  const googleButtons = [...document.querySelectorAll('[data-google-signin]')];
+  if (googleButtons.length) {
+    const googleForm = googleButtons[0].closest('form');
+    const googleStatus = googleForm?.querySelector('[data-auth-status]');
+    const setGoogleStatus = (message) => {
+      if (!googleStatus) return;
+      googleStatus.className = 'col-12 alert alert-danger';
+      googleStatus.textContent = message;
+      googleStatus.classList.remove('d-none');
+    };
+    const continueWithGoogle = () => {
+      if (!window.BB_GOOGLE_CLIENT_ID) {
+        setGoogleStatus('Google sign-in is not configured. Please use email and password.');
+        return;
+      }
+      if (!window.google?.accounts?.id) {
+        setGoogleStatus('Google authentication is unavailable. Please try again.');
+        return;
+      }
+      window.google.accounts.id.initialize({
+        client_id: window.BB_GOOGLE_CLIENT_ID,
+        callback: async ({ credential }) => {
+          if (!credential) {
+            setGoogleStatus('Google sign-in was cancelled.');
+            return;
+          }
+          try {
+            const response = await fetch(window.bbApiUrl('/api/auth/google'), {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+              body: JSON.stringify({ credential })
+            });
+            const data = await response.json().catch(() => null);
+            if (!response.ok) throw new Error(data?.message || 'Unable to sign in with this Google account.');
+            const remember = Boolean(googleForm?.querySelector('[name="remember"]')?.checked);
+            bbSetAuth(data, remember);
+            const redirectTarget = bbResolveAuthRedirect(googleForm?.dataset.authSuccess || '/prototype/customer/dashboard.html');
+            bbClearAuthReturnUrl();
+            window.location.replace(redirectTarget);
+          } catch (error) {
+            setGoogleStatus(error.message || 'Google authentication failed. Please try again.');
+          }
+        }
+      });
+      window.google.accounts.id.prompt((notification) => {
+        if (notification.isDismissedMoment?.()) setGoogleStatus('Google sign-in was cancelled.');
+      });
+    };
+    googleButtons.forEach((button) => button.addEventListener('click', continueWithGoogle));
+  }
 
   document.querySelectorAll('form[data-profile-form]').forEach((form) => {
     const firstNameInput = form.querySelector('[name="firstName"]');

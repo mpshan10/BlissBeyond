@@ -1,5 +1,9 @@
 package com.blissbeyond.service;
 
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+import com.google.api.client.json.jackson2.JacksonFactory;
 import com.blissbeyond.dto.auth.AuthResponse;
 import com.blissbeyond.dto.auth.LoginRequest;
 import com.blissbeyond.dto.auth.RegisterRequest;
@@ -12,15 +16,19 @@ import com.blissbeyond.repository.RoleRepository;
 import com.blissbeyond.repository.UserRepository;
 import com.blissbeyond.security.JwtService;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.List;
 import java.util.Map;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Collections;
+import java.util.UUID;
 
 @Service
 public class AuthService {
@@ -29,17 +37,20 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
+    private final String googleClientId;
 
     public AuthService(UserRepository userRepository,
                        RoleRepository roleRepository,
                        PasswordEncoder passwordEncoder,
                        AuthenticationManager authenticationManager,
-                       JwtService jwtService) {
+                       JwtService jwtService,
+                       @Value("${app.google.client-id:}") String googleClientId) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
+        this.googleClientId = googleClientId == null ? "" : googleClientId.trim();
     }
 
     @Transactional
@@ -70,6 +81,70 @@ public class AuthService {
         User user = userRepository.findByEmail(request.email().toLowerCase())
             .orElseThrow(() -> new ForbiddenActionException("Invalid credentials"));
         return issueToken(user);
+    }
+
+    @Transactional
+    public AuthResponse loginWithGoogle(String credential) {
+        if (googleClientId.isBlank()) {
+            throw new IllegalStateException("Google sign-in is not configured");
+        }
+
+        GoogleIdToken.Payload payload = verifyGoogleCredential(credential);
+        String email = payload.getEmail().trim().toLowerCase();
+        User user = userRepository.findByEmail(email).orElse(null);
+
+        if (user != null) {
+            boolean admin = user.getRoles().stream()
+                .anyMatch(role -> role.getName() == RoleName.ROLE_ADMIN);
+            if (admin) {
+                throw new ForbiddenActionException("Use the administrator login to sign in");
+            }
+            boolean customer = user.getRoles().stream()
+                .anyMatch(role -> role.getName() == RoleName.ROLE_CUSTOMER);
+            if (!customer) {
+                throw new ForbiddenActionException("Google sign-in is only available for customer accounts");
+            }
+            return issueToken(user);
+        }
+
+        Role customerRole = roleRepository.findByName(RoleName.ROLE_CUSTOMER)
+            .orElseThrow(() -> new ForbiddenActionException("Customer role is not configured"));
+        User newUser = new User();
+        newUser.setFirstName(nonBlank(payload.get("given_name"), "Google"));
+        newUser.setLastName(nonBlank(payload.get("family_name"), "Customer"));
+        newUser.setEmail(email);
+        newUser.setPasswordHash(passwordEncoder.encode(UUID.randomUUID().toString()));
+        newUser.setRoles(new HashSet<>(Set.of(customerRole)));
+        return issueToken(userRepository.save(newUser));
+    }
+
+    private GoogleIdToken.Payload verifyGoogleCredential(String credential) {
+        try {
+            GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(
+                GoogleNetHttpTransport.newTrustedTransport(),
+                JacksonFactory.getDefaultInstance())
+                .setAudience(Collections.singletonList(googleClientId))
+                .build();
+            GoogleIdToken token = verifier.verify(credential);
+            if (token == null
+                || !Boolean.TRUE.equals(token.getPayload().getEmailVerified())
+                || token.getPayload().getSubject() == null
+                || token.getPayload().getSubject().isBlank()
+                || token.getPayload().getEmail() == null
+                || token.getPayload().getEmail().isBlank()) {
+                throw new BadCredentialsException("Invalid Google credential");
+            }
+            return token.getPayload();
+        } catch (BadCredentialsException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new BadCredentialsException("Invalid Google credential");
+        }
+    }
+
+    private String nonBlank(Object value, String fallback) {
+        String text = value == null ? "" : String.valueOf(value).trim();
+        return text.isBlank() ? fallback : text;
     }
 
     private AuthResponse issueToken(User user) {

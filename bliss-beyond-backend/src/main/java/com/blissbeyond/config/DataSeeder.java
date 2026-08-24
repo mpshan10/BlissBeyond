@@ -6,6 +6,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.env.Environment;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.math.BigDecimal;
@@ -32,7 +33,8 @@ public class DataSeeder {
         FoodRepository foodRepository,
         AddOnRepository addOnRepository,
         DiningStyleRepository diningStyleRepository,
-        PasswordEncoder passwordEncoder
+        PasswordEncoder passwordEncoder,
+        Environment environment
     ) {
         return args -> {
 
@@ -53,25 +55,30 @@ public class DataSeeder {
              */
             seedVenues(venueRepository);
 
-            Role adminRole = roleRepository.findAll().stream()
-                .filter(role -> role.getName() == RoleName.ROLE_ADMIN)
-                .findFirst()
-                .orElse(null);
-
-            if (!userRepository.existsByEmail("admin@bliss.test")) {
-                User admin = new User();
-                admin.setFirstName("Bliss");
-                admin.setLastName("Admin");
-                admin.setEmail("admin@bliss.test");
-                admin.setPhone("+95 9 000 0000");
-                admin.setPasswordHash(
-                    passwordEncoder.encode("blissadmin")
+            // Keep the development admin usable when a prior local row already exists.
+            // Production keeps its independently managed admin credentials untouched.
+            if (!environment.acceptsProfiles(org.springframework.core.env.Profiles.of("production"))) {
+                String adminEmail = environment.getProperty(
+                    "APP_DEV_ADMIN_EMAIL",
+                    "admin@bliss.test"
+                ).trim().toLowerCase();
+                String adminPassword = environment.getProperty(
+                    "APP_DEV_ADMIN_PASSWORD",
+                    "blissadmin"
                 );
 
-                if (adminRole != null) {
-                    admin.addRole(adminRole);
-                }
+                Role adminRole = roleRepository.findByName(RoleName.ROLE_ADMIN)
+                    .orElseGet(() -> roleRepository.save(new Role(RoleName.ROLE_ADMIN)));
 
+                User admin = userRepository.findByEmail(adminEmail)
+                    .orElseGet(User::new);
+                admin.setFirstName("Bliss");
+                admin.setLastName("Admin");
+                admin.setEmail(adminEmail);
+                admin.setPhone("+95 9 000 0000");
+                admin.setPasswordHash(passwordEncoder.encode(adminPassword));
+                admin.setEnabled(true);
+                admin.addRole(adminRole);
                 userRepository.save(admin);
             }
 

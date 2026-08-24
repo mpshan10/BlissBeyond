@@ -88,6 +88,7 @@ html:not(.bb-admin-authorized) body { visibility: hidden; }
     <div class="col-md-5"><label class="form-label" for="venueEditPrice">Estimated Venue Hire (MMK)</label><input class="form-control" id="venueEditPrice" type="number" min="0" step="0.01" data-admin-venue-edit-price><div class="venue-modal-note mt-1">Used as the current estimated hire price for future quotations.</div></div>
     <div class="col-md-3"><label class="form-label" for="venueEditAvailable">Catalog Availability</label><select class="form-select" id="venueEditAvailable" data-admin-venue-edit-available><option value="true">Available</option><option value="false">Disabled</option></select></div>
     <div class="col-12"><label class="form-label" for="venueEditImage">Image Path</label><input class="form-control" id="venueEditImage" maxlength="255" placeholder="/prototype/assets/img/venue.jpg" data-admin-venue-edit-image></div>
+    <div class="col-12"><label class="form-label" for="venueEditWebsite">Official Website URL</label><input class="form-control" id="venueEditWebsite" type="url" maxlength="500" placeholder="https://example.com" data-admin-venue-edit-website><div class="venue-modal-note mt-1">Leave empty when no official website is available.</div></div>
   </div></div>
   <div class="modal-footer"><button class="btn btn-outline-secondary" type="button" data-bs-dismiss="modal">Cancel</button><button class="btn btn-gold" type="submit" data-admin-venue-edit-save>Save Changes</button></div>
 </form></div></div></div>
@@ -103,6 +104,7 @@ html:not(.bb-admin-authorized) body { visibility: hidden; }
     <div class="col-md-5"><label class="form-label" for="venueAddPrice">Estimated Venue Hire (MMK)</label><input class="form-control" id="venueAddPrice" type="number" min="0" step="0.01" data-admin-venue-add-price></div>
     <div class="col-md-3"><label class="form-label" for="venueAddAvailable">Catalog Availability</label><select class="form-select" id="venueAddAvailable" data-admin-venue-add-available><option value="true">Available</option><option value="false">Disabled</option></select></div>
     <div class="col-12"><label class="form-label" for="venueAddImage">Image Path</label><input class="form-control" id="venueAddImage" maxlength="255" placeholder="/prototype/assets/img/venue-1.jpg" data-admin-venue-add-image></div>
+    <div class="col-12"><label class="form-label" for="venueAddWebsite">Official Website URL</label><input class="form-control" id="venueAddWebsite" type="url" maxlength="500" placeholder="https://example.com" data-admin-venue-add-website><div class="venue-modal-note mt-1">Leave empty when no official website is available.</div></div>
   </div></div>
   <div class="modal-footer"><button class="btn btn-outline-secondary" type="button" data-bs-dismiss="modal">Cancel</button><button class="btn btn-gold" type="submit" data-admin-venue-add-save>Add Venue</button></div>
 </form></div></div></div>

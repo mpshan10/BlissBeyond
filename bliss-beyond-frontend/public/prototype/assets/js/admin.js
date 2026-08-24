@@ -38,6 +38,9 @@
     venueQuery: '',
     venueType: 'ALL',
     venueAvailability: 'ALL',
+    packages: [],
+    packageQuery: '',
+    packageCategory: 'ALL',
     consultations: [],
     consultationQuery: '',
     consultationStatus: 'ALL',
@@ -1264,6 +1267,7 @@
     document.querySelector('[data-admin-venue-edit-capacity]').value = venue.capacity ?? '';
     document.querySelector('[data-admin-venue-edit-price]').value = venue.price ?? '';
     document.querySelector('[data-admin-venue-edit-image]').value = venue.image || '';
+    document.querySelector('[data-admin-venue-edit-website]').value = venue.websiteUrl || '';
     document.querySelector('[data-admin-venue-edit-available]').value = String(Boolean(venue.available));
     updateVenuePreview(venue.image);
     window.bootstrap.Modal.getOrCreateInstance(document.getElementById('venueEditModal')).show();
@@ -1294,6 +1298,7 @@
           capacity: optionalVenueNumber('[data-admin-venue-edit-capacity]'),
           price: optionalVenueNumber('[data-admin-venue-edit-price]'),
           image: document.querySelector('[data-admin-venue-edit-image]').value.trim(),
+          websiteUrl: document.querySelector('[data-admin-venue-edit-website]').value.trim(),
           available: document.querySelector('[data-admin-venue-edit-available]').value === 'true'
         })
       });
@@ -1339,6 +1344,7 @@
           capacity: optionalVenueCreateNumber('[data-admin-venue-add-capacity]'),
           price: optionalVenueCreateNumber('[data-admin-venue-add-price]'),
           image: document.querySelector('[data-admin-venue-add-image]').value.trim(),
+          websiteUrl: document.querySelector('[data-admin-venue-add-website]').value.trim(),
           available: document.querySelector('[data-admin-venue-add-available]').value === 'true'
         })
       });
@@ -1372,6 +1378,180 @@
     element.className = `alert alert-${variant}`;
     element.textContent = message;
     element.classList.toggle('d-none', !message);
+  }
+
+  function setPackageMessage(message, variant = 'danger') {
+    const element = document.querySelector('[data-admin-package-message]');
+    if (!element) return;
+    element.className = `alert alert-${variant}`;
+    element.textContent = message;
+    element.classList.toggle('d-none', !message);
+  }
+
+  function renderAdminPackages() {
+    const rows = document.querySelector('[data-admin-package-rows]');
+    if (!rows) return;
+    const query = state.packageQuery.toLowerCase();
+    const filtered = state.packages.filter((eventPackage) => {
+      const services = (eventPackage.services || []).map((service) => service.serviceName).join(' ');
+      const searchable = `${eventPackage.name || ''} ${eventPackage.slug || ''} ${eventPackage.description || ''} ${eventPackage.venue?.name || ''} ${services}`.toLowerCase();
+      return (!query || searchable.includes(query))
+        && (state.packageCategory === 'ALL' || eventPackage.category === state.packageCategory);
+    });
+    const summary = document.querySelector('[data-admin-package-summary]');
+    if (summary) summary.textContent = `${state.packages.length} packages | ${state.packages.filter((item) => item.active).length} active`;
+    if (!filtered.length) {
+      rows.innerHTML = '<tr><td colspan="8" class="text-center py-5 text-ink-soft">No packages match these filters.</td></tr>';
+      return;
+    }
+    rows.innerHTML = filtered.map((eventPackage) => {
+      const services = (eventPackage.services || []).map((service) => escapeHtml(service.serviceName)).join(', ') || 'No services';
+      return `<tr><td><strong>${escapeHtml(eventPackage.name)}</strong><br><span class="small text-ink-soft">${escapeHtml(eventPackage.description || '')}</span><br><span class="small text-ink-soft">${escapeHtml(eventPackage.slug || '')}</span></td><td>${escapeHtml(eventPackage.category || '-')}</td><td>${escapeHtml(eventPackage.venue?.name || 'Venue not set')}<br><span class="small text-ink-soft">${escapeHtml(eventPackage.venue?.location || '')}</span></td><td><strong class="text-gold">${escapeHtml(formatMoney(eventPackage.finalPrice))}</strong></td><td>${escapeHtml(eventPackage.maxGuests ?? '-')}</td><td class="small">${services}</td><td><span class="status ${eventPackage.active ? 'confirmed' : 'cancelled'}">${eventPackage.active ? 'Active' : 'Inactive'}</span></td><td><button class="btn btn-outline-forest btn-sm" type="button" data-admin-package-edit="${escapeHtml(eventPackage.id)}">Edit</button></td></tr>`;
+    }).join('');
+  }
+
+  function populatePackageCategories() {
+    const select = document.querySelector('[data-admin-package-category]');
+    if (!select) return;
+    const categories = [...new Set(state.packages.map((item) => item.category).filter(Boolean))].sort();
+    select.innerHTML = '<option value="ALL">All event types</option>'
+      + categories.map((category) => `<option value="${escapeHtml(category)}">${escapeHtml(category)}</option>`).join('');
+  }
+
+  function openPackageEditor(id) {
+    const eventPackage = state.packages.find((item) => String(item.id) === String(id));
+    if (!eventPackage) return;
+    document.querySelector('[data-admin-package-mode]').value = 'edit';
+    document.querySelector('[data-admin-package-modal-title]').textContent = 'Package editor';
+    document.querySelector('[data-admin-package-save]').textContent = 'Save Changes';
+    document.querySelector('[data-admin-package-id]').value = eventPackage.id;
+    document.querySelector('[data-admin-package-name]').value = eventPackage.name || '';
+    const categorySelect = document.querySelector('[data-admin-package-category-edit]');
+    populatePackageCategoryEditor(categorySelect, eventPackage.category);
+    categorySelect.value = eventPackage.category || '';
+
+    document.querySelector('[data-admin-package-venue-name]').value = eventPackage.venue?.name || '';
+    document.querySelector('[data-admin-package-venue-location]').value = eventPackage.venue?.location || '';
+    document.querySelector('[data-admin-package-venue-website]').value = eventPackage.venue?.websiteUrl || '';
+    document.querySelector('[data-admin-package-price]').value = eventPackage.finalPrice ?? '';
+    document.querySelector('[data-admin-package-guests]').value = eventPackage.maxGuests ?? '';
+    document.querySelector('[data-admin-package-active]').value = String(Boolean(eventPackage.active));
+    document.querySelector('[data-admin-package-description]').value = eventPackage.description || '';
+    document.querySelector('[data-admin-package-image]').value = eventPackage.image || '';
+    renderPackageServiceEditor(eventPackage.services || []);
+    window.bootstrap.Modal.getOrCreateInstance(document.getElementById('pkgAdmin')).show();
+  }
+
+  function populatePackageCategoryEditor(select, selected = '') {
+    if (!select) return;
+    const categories = [...new Set(state.packages.map((item) => item.category).filter(Boolean))].sort();
+    select.innerHTML = categories.map((category) => `<option value="${escapeHtml(category)}">${escapeHtml(category)}</option>`).join('');
+    select.value = selected;
+  }
+
+  function renderPackageServiceEditor(services) {
+    const serviceEditor = document.querySelector('[data-admin-package-services]');
+    if (!serviceEditor) return;
+    serviceEditor.innerHTML = services.map((service) => `
+      <div class="col-md-6">
+        <label class="form-label" for="adminPackageService-${escapeHtml(service.serviceId || service.id)}">${escapeHtml(service.serviceName || service.name)}</label>
+        <textarea class="form-control" rows="4" data-admin-package-service-inclusions data-service-name="${escapeHtml(service.serviceName || service.name)}" id="adminPackageService-${escapeHtml(service.serviceId || service.id)}">${escapeHtml((service.inclusions || []).join('\n'))}</textarea>
+        <div class="form-text">Enter one inclusion per line.</div>
+      </div>`).join('') || '<div class="small text-ink-soft">No service catalog available.</div>';
+  }
+
+  function openNewPackageEditor() {
+    document.querySelector('[data-admin-package-mode]').value = 'create';
+    document.querySelector('[data-admin-package-modal-title]').textContent = 'Create New Package';
+    document.querySelector('[data-admin-package-save]').textContent = 'Create Package';
+    document.querySelector('[data-admin-package-id]').value = '';
+    document.querySelector('[data-admin-package-name]').value = '';
+    populatePackageCategoryEditor(document.querySelector('[data-admin-package-category-edit]'));
+    document.querySelector('[data-admin-package-venue-name]').value = '';
+    document.querySelector('[data-admin-package-venue-location]').value = '';
+    document.querySelector('[data-admin-package-venue-website]').value = '';
+    document.querySelector('[data-admin-package-price]').value = '';
+    document.querySelector('[data-admin-package-guests]').value = '';
+    document.querySelector('[data-admin-package-active]').value = 'true';
+    document.querySelector('[data-admin-package-description]').value = '';
+    document.querySelector('[data-admin-package-image]').value = '';
+    renderPackageServiceEditor(state.services);
+    window.bootstrap.Modal.getOrCreateInstance(document.getElementById('pkgAdmin')).show();
+  }
+
+  async function loadAdminPackages() {
+    const rows = document.querySelector('[data-admin-package-rows]');
+    if (rows) rows.innerHTML = '<tr><td colspan="8" class="text-center py-5 text-ink-soft">Loading packages...</td></tr>';
+    try {
+      const data = await adminFetch('/api/admin/packages', { method: 'GET' });
+      state.packages = Array.isArray(data) ? data : [];
+      populatePackageCategories();
+      renderAdminPackages();
+    } catch (error) {
+      setPackageMessage(error.message || 'Unable to load packages.');
+      if (rows) rows.innerHTML = '<tr><td colspan="8" class="text-center py-5 text-ink-soft">Unable to load packages.</td></tr>';
+    }
+  }
+
+  async function loadAdminPackageEditorServices() {
+    state.services = await adminFetch('/api/admin/services', { method: 'GET' });
+  }
+
+  async function submitPackageEdit(event) {
+    event.preventDefault();
+    const button = document.querySelector('[data-admin-package-save]');
+    const originalText = button.textContent;
+    button.disabled = true;
+    button.textContent = 'Saving...';
+    setPackageMessage('');
+    try {
+      const id = document.querySelector('[data-admin-package-id]').value;
+      const creating = document.querySelector('[data-admin-package-mode]').value === 'create';
+      const serviceInclusions = {};
+      document.querySelectorAll('[data-admin-package-service-inclusions]').forEach((field) => {
+        serviceInclusions[field.dataset.serviceName] = field.value.split(/\r?\n/);
+      });
+      await adminFetch(creating ? '/api/admin/packages' : `/api/admin/packages/${encodeURIComponent(id)}`, {
+        method: creating ? 'POST' : 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: document.querySelector('[data-admin-package-name]').value.trim(),
+          category: document.querySelector('[data-admin-package-category-edit]').value,
+          venueName: document.querySelector('[data-admin-package-venue-name]').value.trim(),
+          venueLocation: document.querySelector('[data-admin-package-venue-location]').value.trim(),
+          description: document.querySelector('[data-admin-package-description]').value.trim(),
+          maxGuests: Number(document.querySelector('[data-admin-package-guests]').value),
+          finalPrice: Number(document.querySelector('[data-admin-package-price]').value),
+          image: document.querySelector('[data-admin-package-image]').value.trim(),
+          active: document.querySelector('[data-admin-package-active]').value === 'true',
+          websiteUrl: document.querySelector('[data-admin-package-venue-website]').value.trim(),
+          serviceInclusions
+        })
+      });
+      window.bootstrap.Modal.getInstance(document.getElementById('pkgAdmin'))?.hide();
+      await loadAdminPackages();
+      setPackageMessage(creating ? 'Package created successfully.' : 'Package updated successfully.', 'success');
+    } catch (error) {
+      setPackageMessage(error.message || 'Unable to update this package.');
+    } finally {
+      button.disabled = false;
+      button.textContent = originalText;
+    }
+  }
+
+  function initPackagesPage() {
+    if (!document.querySelector('[data-admin-packages-page]')) return;
+    document.querySelector('[data-admin-package-search]')?.addEventListener('input', (event) => { state.packageQuery = event.target.value.trim(); renderAdminPackages(); });
+    document.querySelector('[data-admin-package-category]')?.addEventListener('change', (event) => { state.packageCategory = event.target.value; renderAdminPackages(); });
+    document.querySelector('[data-admin-package-add]')?.addEventListener('click', openNewPackageEditor);
+    document.querySelector('[data-admin-package-rows]')?.addEventListener('click', (event) => {
+      const button = event.target.closest('[data-admin-package-edit]');
+      if (button) openPackageEditor(button.dataset.adminPackageEdit);
+    });
+    document.querySelector('[data-admin-package-form]')?.addEventListener('submit', submitPackageEdit);
+    Promise.all([loadAdminVenues(), loadAdminPackageEditorServices()])
+      .then(() => loadAdminPackages())
+      .catch(() => loadAdminPackages());
   }
 
   function catalogAvailabilityBadge(available) {
@@ -1733,6 +1913,7 @@
     initCustomersPage();
     initConsultationsPage();
     initVenuesPage();
+    initPackagesPage();
     initServicesPage();
     initDashboardPage();
   }

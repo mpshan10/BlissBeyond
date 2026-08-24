@@ -93,6 +93,7 @@ public class VenueService {
             venue.getCapacity(),
             venue.getPrice(),
             venue.getImage(),
+            venue.getWebsiteUrl(),
             venue.isAvailable()
         );
     }

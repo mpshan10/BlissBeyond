@@ -11,6 +11,7 @@ public record VenueResponse(
     Integer capacity,
     BigDecimal price,
     String image,
+    String websiteUrl,
     boolean available
 ) {
 }

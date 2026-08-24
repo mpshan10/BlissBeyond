@@ -41,6 +41,7 @@ public class AdminVenueService {
         venue.setCapacity(request.capacity());
         venue.setPrice(request.price());
         venue.setImage(trimToNull(request.image()));
+        venue.setWebsiteUrl(normalizeWebsiteUrl(request.websiteUrl()));
         if (request.available() != null) {
             venue.setAvailable(request.available());
         }
@@ -58,6 +59,7 @@ public class AdminVenueService {
         venue.setCapacity(request.capacity());
         venue.setPrice(request.price());
         venue.setImage(trimToNull(request.image()));
+        venue.setWebsiteUrl(normalizeWebsiteUrl(request.websiteUrl()));
         venue.setAvailable(request.available() == null || request.available());
         return toResponse(venueRepository.save(venue));
     }
@@ -81,7 +83,7 @@ public class AdminVenueService {
     private VenueResponse toResponse(Venue venue) {
         return new VenueResponse(
             venue.getId(), venue.getName(), venue.getType(), venue.getLocation(), venue.getDescription(),
-            venue.getCapacity(), venue.getPrice(), venue.getImage(), venue.isAvailable()
+            venue.getCapacity(), venue.getPrice(), venue.getImage(), venue.getWebsiteUrl(), venue.isAvailable()
         );
     }
 
@@ -89,6 +91,15 @@ public class AdminVenueService {
         if (value == null) return null;
         String trimmed = value.trim();
         return trimmed.isEmpty() ? null : trimmed;
+    }
+
+    private String normalizeWebsiteUrl(String value) {
+        String trimmed = trimToNull(value);
+        if (trimmed == null) return null;
+        if (!trimmed.matches("(?i)^https?://.+")) {
+            throw new IllegalArgumentException("websiteUrl must begin with http:// or https://.");
+        }
+        return trimmed;
     }
 
     private String normalizeName(String value) {

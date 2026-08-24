@@ -15,6 +15,7 @@ public record AdminVenueUpdateRequest(
     @Min(0) Integer capacity,
     @DecimalMin("0.00") BigDecimal price,
     @Size(max = 255) String image,
+    @Size(max = 500) String websiteUrl,
     Boolean available
 ) {
 }

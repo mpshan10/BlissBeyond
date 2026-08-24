@@ -13,4 +13,3 @@ public interface PackageRepository extends JpaRepository<Package, Long> {
     List<Package> findAllByActiveTrueAndCategoryOrderByIdAsc(PackageCategory category);
 }
 
-

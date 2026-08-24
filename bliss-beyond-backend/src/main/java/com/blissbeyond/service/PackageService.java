@@ -38,7 +38,7 @@ public class PackageService {
     private PackageResponse map(Package p){
         var services=p.getServiceItems().stream().sorted(java.util.Comparator.comparing(PackageServiceItem::getDisplayOrder)).map(i->new PackageServiceItemResponse(i.getService().getId(),i.getService().getName(),i.getDisplayOrder(),parse(i.getInclusionJson()))).toList();
         var v=p.getVenue();
-        return new PackageResponse(p.getId(),p.getSlug(),p.getName(),p.getCategory(),p.getDescription(),p.getMaxGuests(),p.getFinalPrice(),p.getImage(),p.isActive(),new PackageVenueResponse(v.getId(),v.getName(),v.getLocation(),v.getCapacity()),services);
+        return new PackageResponse(p.getId(),p.getSlug(),p.getName(),p.getCategory(),p.getDescription(),p.getMaxGuests(),p.getFinalPrice(),p.getImage(),p.isActive(),new PackageVenueResponse(v.getId(),v.getName(),v.getLocation(),v.getCapacity(),v.getWebsiteUrl()),services);
     }
     private List<String> parse(String json){try{return objectMapper.readValue(json,new TypeReference<>(){});}catch(Exception e){throw new IllegalStateException("Invalid package inclusion data",e);}}
 }

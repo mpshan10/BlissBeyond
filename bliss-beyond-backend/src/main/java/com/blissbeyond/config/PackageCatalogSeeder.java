@@ -42,7 +42,21 @@ public class PackageCatalogSeeder implements CommandLineRunner {
         Venue v=findVenue(s.venueName);
         if(s.maxGuests<=0||s.finalPrice.signum()<=0)throw new IllegalStateException("Invalid package values: "+s.slug);
         if(v.getCapacity()!=null&&s.maxGuests>v.getCapacity())throw new IllegalStateException("Package guest limit exceeds venue capacity: "+s.slug);
-        Package p=packagesBySlug.getOrDefault(s.slug,new Package());p.setSlug(s.slug);p.setName(s.name);p.setCategory(s.category);p.setDescription(s.description);p.setVenue(v);p.setMaxGuests(s.maxGuests);p.setFinalPrice(s.finalPrice);p.setImage(null);p.setActive(true);p=packageRepository.save(p);packagesBySlug.put(s.slug,p);
+        Package p=packagesBySlug.get(s.slug);
+        if (p == null) {
+            p = new Package();
+            p.setSlug(s.slug);
+            p.setName(s.name);
+            p.setCategory(s.category);
+            p.setDescription(s.description);
+            p.setVenue(v);
+            p.setMaxGuests(s.maxGuests);
+            p.setFinalPrice(s.finalPrice);
+            p.setImage(null);
+            p.setActive(true);
+            p=packageRepository.save(p);
+            packagesBySlug.put(s.slug,p);
+        }
         for(ItemSpec i:s.items){ServiceEntity service=findService(i.serviceName);String itemKey=itemKey(s.slug,i.displayOrder);PackageServiceItem item=itemsByPackageAndOrder.getOrDefault(itemKey,new PackageServiceItem());item.setEventPackage(p);item.setService(service);item.setDisplayOrder(i.displayOrder);item.setInclusionJson(objectMapper.writeValueAsString(i.inclusions));item=itemRepository.save(item);itemsByPackageAndOrder.put(itemKey,item);}
     }
     private Venue findVenue(String name){

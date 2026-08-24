@@ -12,6 +12,8 @@ import com.blissbeyond.dto.admin.AdminAddOnUpdateRequest;
 import com.blissbeyond.dto.admin.AdminDiningStyleUpdateRequest;
 import com.blissbeyond.dto.admin.AdminServiceUpdateRequest;
 import com.blissbeyond.dto.admin.AdminVenueUpdateRequest;
+import com.blissbeyond.dto.admin.AdminPackageUpdateRequest;
+import com.blissbeyond.dto.admin.AdminPackageCreateRequest;
 import com.blissbeyond.dto.addon.AddOnResponse;
 import com.blissbeyond.dto.booking.BookingResponse;
 import com.blissbeyond.dto.diningstyle.DiningStyleResponse;
@@ -25,6 +27,7 @@ import com.blissbeyond.service.QuotationService;
 import com.blissbeyond.service.AdminCustomerService;
 import com.blissbeyond.service.AdminCatalogService;
 import com.blissbeyond.service.AdminVenueService;
+import com.blissbeyond.service.AdminPackageService;
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.http.HttpStatus;
@@ -53,6 +56,7 @@ public class AdminController {
     private final AdminCustomerService adminCustomerService;
     private final AdminCatalogService adminCatalogService;
     private final AdminVenueService adminVenueService;
+    private final AdminPackageService adminPackageService;
 
     public AdminController(FoodRepository foodRepository,
                            EventRepository eventRepository,
@@ -61,7 +65,8 @@ public class AdminController {
                            PaymentService paymentService,
                            AdminCustomerService adminCustomerService,
                            AdminCatalogService adminCatalogService,
-                           AdminVenueService adminVenueService) {
+                           AdminVenueService adminVenueService,
+                           AdminPackageService adminPackageService) {
         this.foodRepository = foodRepository;
         this.eventRepository = eventRepository;
         this.bookingService = bookingService;
@@ -70,6 +75,7 @@ public class AdminController {
         this.adminCustomerService = adminCustomerService;
         this.adminCatalogService = adminCatalogService;
         this.adminVenueService = adminVenueService;
+        this.adminPackageService = adminPackageService;
     }
 
     @GetMapping("/customers")
@@ -119,6 +125,32 @@ public class AdminController {
     @GetMapping("/food")
     public List<Food> food() {
         return foodRepository.findAll();
+    }
+
+    @GetMapping("/packages")
+    public List<com.blissbeyond.dto.eventpackage.PackageResponse> packages() {
+        return adminPackageService.listPackages();
+    }
+
+    @PostMapping("/packages")
+    @ResponseStatus(HttpStatus.CREATED)
+    public com.blissbeyond.dto.eventpackage.PackageResponse createPackage(
+        @Valid @RequestBody AdminPackageCreateRequest request
+    ) {
+        return adminPackageService.createPackage(request);
+    }
+
+    @GetMapping("/packages/{id}")
+    public com.blissbeyond.dto.eventpackage.PackageResponse packageById(@PathVariable Long id) {
+        return adminPackageService.getPackage(id);
+    }
+
+    @PutMapping("/packages/{id}")
+    public com.blissbeyond.dto.eventpackage.PackageResponse updatePackage(
+        @PathVariable Long id,
+        @Valid @RequestBody AdminPackageUpdateRequest request
+    ) {
+        return adminPackageService.updatePackage(id, request);
     }
 
     @GetMapping("/services")
