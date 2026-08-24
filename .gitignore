@@ -18,6 +18,7 @@ run-backend.args
 .env
 .env.*
 !.env.example
+!bliss-beyond-frontend/.env.production
 
 # IDE
 .vscode/

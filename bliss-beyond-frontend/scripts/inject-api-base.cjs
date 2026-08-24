@@ -2,19 +2,22 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const outputRoot = path.resolve('.output/public');
-const localFallback = 'http://localhost:8081';
 
 function readProductionApiBaseUrl() {
-  if (process.env.VITE_API_BASE_URL) return process.env.VITE_API_BASE_URL;
+  if (process.env.VITE_API_BASE_URL?.trim()) return process.env.VITE_API_BASE_URL.trim();
 
   const envPath = path.resolve('.env.production');
-  if (!fs.existsSync(envPath)) return localFallback;
+  if (!fs.existsSync(envPath)) {
+    throw new Error('VITE_API_BASE_URL is required for production builds.');
+  }
 
   const line = fs.readFileSync(envPath, 'utf8')
     .split(/\r?\n/)
     .find((entry) => entry.startsWith('VITE_API_BASE_URL='));
 
-  return line ? line.slice('VITE_API_BASE_URL='.length).trim() : localFallback;
+  const apiBaseUrl = line ? line.slice('VITE_API_BASE_URL='.length).trim() : '';
+  if (!apiBaseUrl) throw new Error('VITE_API_BASE_URL is required for production builds.');
+  return apiBaseUrl;
 }
 
 function replaceInDirectory(directory, apiBaseUrl) {

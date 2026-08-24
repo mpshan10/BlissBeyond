@@ -1,8 +1,12 @@
 ﻿// Bliss & Beyond shared prototype interactions (ES6, no backend)
 const configuredApiBaseUrl = "__BB_API_BASE_URL__";
-const BB_API_BASE_URL = configuredApiBaseUrl.startsWith("__")
-  ? "http://localhost:8081"
-  : configuredApiBaseUrl.replace(/\/+$/, "");
+const isLocalFrontend = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+const localApiBaseUrl = `http://${window.location.hostname}:8081`;
+const BB_API_BASE_URL = !configuredApiBaseUrl.startsWith("__")
+  ? configuredApiBaseUrl.replace(/\/+$/, "")
+  : isLocalFrontend
+    ? localApiBaseUrl
+    : "https://blissbeyond.onrender.com";
 
 window.BB_API_BASE_URL = BB_API_BASE_URL;
 window.bbApiUrl = (path) => `${BB_API_BASE_URL}${path}`;

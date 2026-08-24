@@ -7,10 +7,20 @@
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 import { loadEnv, type Plugin } from "vite";
 
+const LOCAL_API_BASE_URL = "http://localhost:8081";
+
+const resolveApiBaseUrl = (mode: string) => {
+  const configuredUrl = loadEnv(mode, process.cwd(), "").VITE_API_BASE_URL?.trim();
+  if (configuredUrl) return configuredUrl.replace(/\/+$/, "");
+  if (mode === "development") return LOCAL_API_BASE_URL;
+
+  throw new Error("VITE_API_BASE_URL is required for production builds.");
+};
+
 const apiBaseUrlInjection = (mode: string): Plugin => ({
   name: "bb-api-base-url-injection",
   generateBundle(_options, bundle) {
-    const apiBaseUrl = (loadEnv(mode, process.cwd(), "").VITE_API_BASE_URL || "http://localhost:8081").replace(/\/+$/, "");
+    const apiBaseUrl = resolveApiBaseUrl(mode);
 
     for (const output of Object.values(bundle)) {
       if (output.type === "asset" && typeof output.source === "string") {
