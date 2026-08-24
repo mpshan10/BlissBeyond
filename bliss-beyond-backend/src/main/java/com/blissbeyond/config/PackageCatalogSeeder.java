@@ -19,13 +19,30 @@ public class PackageCatalogSeeder implements CommandLineRunner {
     public PackageCatalogSeeder(PackageRepository p, PackageServiceItemRepository i, ServiceRepository s, VenueRepository v, ObjectMapper o){packageRepository=p;itemRepository=i;serviceRepository=s;venueRepository=v;objectMapper=o;}
     @Override @Transactional public void run(String... args)throws Exception{for(Spec s:catalog())seed(s);if(packageRepository.count()!=catalog().size())throw new IllegalStateException("Package catalog must contain exactly "+catalog().size()+" rows");}
     private void seed(Spec s)throws Exception{
-        Venue v=venueRepository.findAll().stream().filter(x->normalize(x.getName()).equals(normalize(s.venueName))).findFirst().orElseThrow(()->new IllegalStateException("Package venue not found: "+s.venueName));
+        Venue v=findVenue(s.venueName);
         if(s.maxGuests<=0||s.finalPrice.signum()<=0)throw new IllegalStateException("Invalid package values: "+s.slug);
         if(v.getCapacity()!=null&&s.maxGuests>v.getCapacity())throw new IllegalStateException("Package guest limit exceeds venue capacity: "+s.slug);
         Package p=packageRepository.findBySlug(s.slug).orElseGet(Package::new);p.setSlug(s.slug);p.setName(s.name);p.setCategory(s.category);p.setDescription(s.description);p.setVenue(v);p.setMaxGuests(s.maxGuests);p.setFinalPrice(s.finalPrice);p.setImage(null);p.setActive(true);p=packageRepository.save(p);
         for(ItemSpec i:s.items){ServiceEntity service=serviceRepository.findById(i.serviceId).orElseThrow(()->new IllegalStateException("Package service not found: "+i.serviceId));PackageServiceItem item=itemRepository.findByEventPackageIdAndDisplayOrder(p.getId(),i.displayOrder).orElseGet(PackageServiceItem::new);item.setEventPackage(p);item.setService(service);item.setDisplayOrder(i.displayOrder);item.setInclusionJson(objectMapper.writeValueAsString(i.inclusions));itemRepository.save(item);}
     }
-    private String normalize(String value){return Normalizer.normalize(value.toLowerCase(Locale.ROOT).replace('\uFFFD','a'),Normalizer.Form.NFD).replaceAll("\\p{M}","").replaceAll("[^a-z0-9]","");}
+    private Venue findVenue(String name){
+        String normalizedTarget=normalize(name);
+        return venueRepository.findAll().stream()
+            .filter(venue->normalizedTarget.equals(normalize(venue.getName())))
+            .findFirst()
+            .orElseThrow(()->new IllegalStateException("Package venue not found: "+name));
+    }
+    private String normalize(String value){
+        if(value==null)return "";
+        String normalized=value.trim().toLowerCase(Locale.ROOT)
+            .replace('-', ' ')
+            .replace('\u2013', ' ')
+            .replace('\u2014', ' ')
+            .replace('\uFFFD', 'a');
+        return Normalizer.normalize(normalized,Normalizer.Form.NFD)
+            .replaceAll("\\p{M}","")
+            .replaceAll("[^a-z0-9]","");
+    }
     private static ItemSpec item(long id,int order,List<String> labels){return new ItemSpec(id,order,labels);}
     private static Spec spec(String slug,String name,PackageCategory category,String description,String venue,int max,String price,List<ItemSpec> items){if(items.size()!=7)throw new IllegalArgumentException("Every package must have seven services: "+slug);return new Spec(slug,name,category,description,venue,max,new BigDecimal(price),items);}
     private record ItemSpec(long serviceId,int displayOrder,List<String> inclusions){}
