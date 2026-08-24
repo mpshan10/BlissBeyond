@@ -159,7 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const loadCatalog = async () => {
     try {
-      const response = await fetch('http://localhost:8081/api/services', {
+      const response = await fetch(window.bbApiUrl('/api/services'), {
         headers: { Accept: 'application/json' }
       });
 

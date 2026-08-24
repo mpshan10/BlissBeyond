@@ -1,5 +1,5 @@
 (function () {
-  const API_BASE = 'http://localhost:8081';
+  const API_BASE = window.BB_API_BASE_URL;
 
   function formatDate(value) {
     return new Intl.DateTimeFormat(undefined, { dateStyle: 'medium' })

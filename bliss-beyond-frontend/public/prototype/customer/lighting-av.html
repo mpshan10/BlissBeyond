@@ -2963,7 +2963,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function checkBackendAvailability() {
     try {
-      const response = await fetch('http://localhost:8081/api/services/5', {
+      const response = await fetch(window.bbApiUrl('/api/services/5'), {
         cache: 'no-store'
       });
 

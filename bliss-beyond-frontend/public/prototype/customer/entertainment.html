@@ -2370,7 +2370,7 @@ document.addEventListener('DOMContentLoaded', function(){
   const timePicker = document.querySelector('[data-time-picker]');
   const timeDisplay = timePicker?.querySelector('[data-time-display]');
   const timeButtons = timePicker ? timePicker.querySelectorAll('[data-hour], [data-minute], [data-period]') : [];
-  const availabilityUrl = 'http://localhost:8081/api/services/4';
+  const availabilityUrl = window.bbApiUrl('/api/services/4');
   const availabilityMessage = 'Entertainment is currently unavailable.';
 
   function selected(group){

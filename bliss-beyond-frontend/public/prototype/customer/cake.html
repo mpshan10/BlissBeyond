@@ -2696,7 +2696,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let selectedCake = null;
   const backendServiceId = 6;
   const backendServiceName = 'Cake & Desserts';
-  const backendServiceUrl = 'http://localhost:8081/api/services/6';
+  const backendServiceUrl = window.bbApiUrl('/api/services/6');
   const savedServiceData =
     typeof bbGetServiceData === 'function'
       ? bbGetServiceData()

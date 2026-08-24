@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const API_BASE = 'http://localhost:8081';
+  const API_BASE = window.BB_API_BASE_URL;
   const ADMIN_ROLE = 'ROLE_ADMIN';
   const LOGIN_URL = '/prototype/login.html';
   const CUSTOMER_DASHBOARD_URL = '/prototype/customer/dashboard.html';

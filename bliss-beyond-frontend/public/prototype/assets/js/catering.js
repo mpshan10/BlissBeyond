@@ -709,7 +709,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const loadCatalogAvailability = async () => {
     try {
-      const response = await fetch('http://localhost:8081/api/services/1', { cache: 'no-store' });
+      const response = await fetch(window.bbApiUrl('/api/services/1'), { cache: 'no-store' });
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const service = await response.json();
       const valid = Number(service?.id) === 1 && String(service?.name || '').toLowerCase() === 'catering';
@@ -726,7 +726,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const loadDiningStyleCatalog = async () => {
     try {
-      const response = await fetch('http://localhost:8081/api/dining-styles', {
+      const response = await fetch(window.bbApiUrl('/api/dining-styles'), {
         cache: 'no-store',
         headers: { Accept: 'application/json' }
       });
@@ -765,7 +765,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const loadAddonCatalog = async () => {
     try {
-      const response = await fetch('http://localhost:8081/api/addons', {
+      const response = await fetch(window.bbApiUrl('/api/addons'), {
         cache: 'no-store',
         headers: { Accept: 'application/json' }
       });
@@ -809,7 +809,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const loadFoodCatalog = async () => {
     try {
-      const response = await fetch('http://localhost:8081/api/food', {
+      const response = await fetch(window.bbApiUrl('/api/food'), {
         cache: 'no-store',
         headers: { Accept: 'application/json' }
       });

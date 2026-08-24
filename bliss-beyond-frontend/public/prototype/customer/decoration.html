@@ -4482,7 +4482,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
       const response =
         await fetch(
-          'http://localhost:8081/api/services/2',
+          window.bbApiUrl('/api/services/2'),
           {
             cache:'no-store'
           }

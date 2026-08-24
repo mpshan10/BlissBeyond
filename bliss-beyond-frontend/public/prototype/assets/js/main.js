@@ -1,4 +1,12 @@
 ﻿// Bliss & Beyond shared prototype interactions (ES6, no backend)
+const configuredApiBaseUrl = "__BB_API_BASE_URL__";
+const BB_API_BASE_URL = configuredApiBaseUrl.startsWith("__")
+  ? "http://localhost:8081"
+  : configuredApiBaseUrl.replace(/\/+$/, "");
+
+window.BB_API_BASE_URL = BB_API_BASE_URL;
+window.bbApiUrl = (path) => `${BB_API_BASE_URL}${path}`;
+
 const BB_STATE_KEYS = {
   venue: 'bb_selected_venue',
   event: 'bb_event_context',
@@ -228,7 +236,7 @@ async function bbRefreshPublicAuthNav() {
   }
 
   try {
-    const profile = await bbFetchJson('http://localhost:8081/api/customer/me', { method: 'GET' });
+    const profile = await bbFetchJson(window.bbApiUrl('/api/customer/me'), { method: 'GET' });
     bbRenderPublicAuthNav(auth, profile);
   } catch (error) {
     if (error.status === 401 || error.status === 403) {
@@ -263,7 +271,7 @@ function bbApplyCustomerProfile(profile) {
 async function bbRefreshCustomerHeader() {
   if (!window.location.pathname.startsWith('/prototype/customer/') || !bbGetAuthToken()) return;
   try {
-    const profile = await bbFetchCustomerJson('http://localhost:8081/api/customer/me', { method: 'GET' });
+    const profile = await bbFetchCustomerJson(window.bbApiUrl('/api/customer/me'), { method: 'GET' });
     bbApplyCustomerProfile(profile);
   } catch (error) {
     // Cached authentication display remains available when the profile API is offline.
@@ -295,11 +303,11 @@ async function bbRenderCustomerDashboard() {
   const load = (url) => bbFetchCustomerJson(url, { method: 'GET' }).catch(() => null);
 
   const [profile, bookings, quotations, consultations, payments] = await Promise.all([
-    load('http://localhost:8081/api/customer/me'),
-    load('http://localhost:8081/api/customer/bookings'),
-    load('http://localhost:8081/api/customer/quotations'),
-    load('http://localhost:8081/api/customer/consultations'),
-    load('http://localhost:8081/api/customer/payments')
+    load(window.bbApiUrl('/api/customer/me')),
+    load(window.bbApiUrl('/api/customer/bookings')),
+    load(window.bbApiUrl('/api/customer/quotations')),
+    load(window.bbApiUrl('/api/customer/consultations')),
+    load(window.bbApiUrl('/api/customer/payments'))
   ]);
 
   if (profile) {
@@ -460,7 +468,7 @@ async function bbRenderCustomerQuotation() {
     confirmButton.disabled = true;
     confirmButton.textContent = 'Saving...';
     try {
-      const updated = await bbFetchCustomerJson(`http://localhost:8081/api/customer/quotations/${encodeURIComponent(activeQuotation.id)}/${action}`, {
+      const updated = await bbFetchCustomerJson(window.bbApiUrl(`/api/customer/quotations/${encodeURIComponent(activeQuotation.id)}/${action}`), {
         method: 'PUT'
       });
       actionModal?.hide();
@@ -469,7 +477,7 @@ async function bbRenderCustomerQuotation() {
     } catch (error) {
       actionModal?.hide();
       try {
-        const current = await bbFetchCustomerJson(`http://localhost:8081/api/quotations/${encodeURIComponent(activeQuotation.id)}`, { method: 'GET' });
+        const current = await bbFetchCustomerJson(window.bbApiUrl(`/api/quotations/${encodeURIComponent(activeQuotation.id)}`), { method: 'GET' });
         if (String(current?.status || '').toUpperCase() === 'EXPIRED') {
           renderDetail(current);
           setActionMessage('Quotation expired.', 'danger');
@@ -566,13 +574,13 @@ async function bbRenderCustomerQuotation() {
   show(documentEl, false);
   try {
     if (queryId) {
-      const quotation = await bbFetchCustomerJson(`http://localhost:8081/api/quotations/${encodeURIComponent(queryId)}`, { method: 'GET' });
+      const quotation = await bbFetchCustomerJson(window.bbApiUrl(`/api/quotations/${encodeURIComponent(queryId)}`), { method: 'GET' });
       if (!quotation) return;
       renderDetail(quotation);
       return;
     }
 
-    const quotations = await bbFetchCustomerJson('http://localhost:8081/api/customer/quotations', { method: 'GET' });
+    const quotations = await bbFetchCustomerJson(window.bbApiUrl('/api/customer/quotations'), { method: 'GET' });
     if (!Array.isArray(quotations) || quotations.length === 0) {
       show(emptyEl, true);
       if (subtitleEl) subtitleEl.textContent = 'No active quotation found';
@@ -671,7 +679,7 @@ async function bbRenderCustomerPayment() {
     }
   };
 
-  const loadSummary = async () => bbFetchCustomerJson(`http://localhost:8081/api/customer/bookings/${encodeURIComponent(bookingId)}/payment-summary`, { method: 'GET' });
+  const loadSummary = async () => bbFetchCustomerJson(window.bbApiUrl(`/api/customer/bookings/${encodeURIComponent(bookingId)}/payment-summary`), { method: 'GET' });
 
   try {
     render(await loadSummary());
@@ -694,7 +702,7 @@ async function bbRenderCustomerPayment() {
     createButton.textContent = 'Creating request...';
     setError('');
     try {
-      await bbFetchCustomerJson(`http://localhost:8081/api/customer/bookings/${encodeURIComponent(bookingId)}/payments`, { method: 'POST' });
+      await bbFetchCustomerJson(window.bbApiUrl(`/api/customer/bookings/${encodeURIComponent(bookingId)}/payments`), { method: 'POST' });
       render(await loadSummary());
       setMessage(message, 'Payment request created. Awaiting payment confirmation.');
       show(message, true);
@@ -878,7 +886,7 @@ async function bbLoadCustomerNotifications() {
   if (!list) return;
   list.innerHTML = '<li class="text-ink-soft">Loading notifications...</li>';
   try {
-    const data = await bbFetchCustomerJson('http://localhost:8081/api/customer/notifications', { method: 'GET' });
+    const data = await bbFetchCustomerJson(window.bbApiUrl('/api/customer/notifications'), { method: 'GET' });
     bbNotificationState = Array.isArray(data) ? data : [];
     bbNotificationBadgeCount(bbNotificationState.filter((item) => !item.read).length);
     bbRenderNotifications(list);
@@ -912,7 +920,7 @@ function bbInitCustomerNotifications() {
     const notification = bbNotificationState.find((entry) => String(entry.id) === String(item.dataset.notificationId));
     if (!notification) return;
     try {
-      await bbFetchCustomerJson(`http://localhost:8081/api/customer/notifications/${encodeURIComponent(notification.id)}/read`, { method: 'PATCH' });
+      await bbFetchCustomerJson(window.bbApiUrl(`/api/customer/notifications/${encodeURIComponent(notification.id)}/read`), { method: 'PATCH' });
       notification.read = true;
       bbNotificationBadgeCount(bbNotificationState.filter((entry) => !entry.read).length);
       bbRenderNotifications(list);
@@ -929,7 +937,7 @@ function bbInitCustomerNotifications() {
   markAll.textContent = 'Mark all as read';
   markAll.addEventListener('click', async () => {
     try {
-      await bbFetchCustomerJson('http://localhost:8081/api/customer/notifications/read-all', { method: 'PATCH' });
+      await bbFetchCustomerJson(window.bbApiUrl('/api/customer/notifications/read-all'), { method: 'PATCH' });
       bbNotificationState.forEach((notification) => { notification.read = true; });
       bbNotificationBadgeCount(0);
       bbRenderNotifications(list);
@@ -949,7 +957,7 @@ async function bbFindVenueIdByName(name) {
   const target = bbNormalizeVenueName(name);
   if (!target) return null;
 
-  const venues = await bbFetchJson('http://localhost:8081/api/venues', {
+  const venues = await bbFetchJson(window.bbApiUrl('/api/venues'), {
     method: 'GET',
     headers: {}
   });
@@ -1259,7 +1267,7 @@ async function bbRenderPackageBookingDraftSummary(form, plan) {
     if (cache.key === packageKey && cache.promise) {
       packageData = await cache.promise;
     } else {
-      const promise = bbFetchJson(`http://localhost:8081/api/packages/${packageKey}`, { headers: { Accept: 'application/json' } });
+      const promise = bbFetchJson(window.bbApiUrl(`/api/packages/${packageKey}`), { headers: { Accept: 'application/json' } });
       window.__bbPackageBookingFetch = { key: packageKey, promise };
       packageData = await promise;
     }
@@ -1668,7 +1676,7 @@ async function bbRenderCustomerBookingHistory() {
   renderEmpty('Loading bookings...');
 
   try {
-    const data = await bbFetchCustomerJson('http://localhost:8081/api/customer/bookings', {
+    const data = await bbFetchCustomerJson(window.bbApiUrl('/api/customer/bookings'), {
       method: 'GET'
     });
 
@@ -1892,7 +1900,7 @@ async function bbRenderCustomerBookingStatus() {
       return;
     }
 
-    const booking = await bbFetchCustomerJson(`http://localhost:8081/api/customer/bookings/${bookingId}`, {
+    const booking = await bbFetchCustomerJson(window.bbApiUrl(`/api/customer/bookings/${bookingId}`), {
       method: 'GET'
     });
     if (!booking) return;
@@ -2269,7 +2277,7 @@ async function bbInitHomePackages() {
     'business-excellence': '/prototype/assets/img/corp2.jpg'
   };
   try {
-    const packages = await bbFetchJson('http://localhost:8081/api/packages', { headers: { Accept: 'application/json' } });
+    const packages = await bbFetchJson(window.bbApiUrl('/api/packages'), { headers: { Accept: 'application/json' } });
     const activePackages = Array.isArray(packages) ? packages.filter((item) => item && item.active !== false) : [];
     const featured = Object.entries(preferredSlugs).map(([category, slug]) => (
       activePackages.find((item) => item.category === category && item.slug === slug)
@@ -2317,7 +2325,7 @@ async function bbInitHomeVenues() {
   };
 
   try {
-    const venues = await bbFetchJson('http://localhost:8081/api/venues', { headers: { Accept: 'application/json' } });
+    const venues = await bbFetchJson(window.bbApiUrl('/api/venues'), { headers: { Accept: 'application/json' } });
     const activeVenues = Array.isArray(venues) ? venues.filter((item) => item && item.available !== false) : [];
     const featured = preferredIds.map((id) => activeVenues.find((item) => Number(item.id) === id)).filter(Boolean);
     if (featured.length !== 3) throw new Error('Featured venue catalog is incomplete.');
@@ -2489,8 +2497,8 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       const endpoint = formType === 'register'
-        ? 'http://localhost:8081/api/auth/register'
-        : 'http://localhost:8081/api/auth/login';
+        ? window.bbApiUrl('/api/auth/register')
+        : window.bbApiUrl('/api/auth/login');
 
       const emailInput = form.querySelector('[name="email"]');
       const passwordInput = form.querySelector('[name="password"]');
@@ -2653,7 +2661,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     (async () => {
       try {
-        const profile = await bbFetchCustomerJson('http://localhost:8081/api/customer/me', { method: 'GET' });
+        const profile = await bbFetchCustomerJson(window.bbApiUrl('/api/customer/me'), { method: 'GET' });
         if (profile) populate(profile);
       } catch (error) {
         setStatus('Unable to load your profile. Please try again.', 'danger');
@@ -2673,8 +2681,8 @@ document.addEventListener('DOMContentLoaded', () => {
       };
 
       await Promise.all([
-        loadCount('http://localhost:8081/api/customer/bookings', '[data-profile-bookings-row]', '[data-profile-bookings-count]'),
-        loadCount('http://localhost:8081/api/customer/quotations', '[data-profile-quotations-row]', '[data-profile-quotations-count]')
+        loadCount(window.bbApiUrl('/api/customer/bookings'), '[data-profile-bookings-row]', '[data-profile-bookings-count]'),
+        loadCount(window.bbApiUrl('/api/customer/quotations'), '[data-profile-quotations-row]', '[data-profile-quotations-count]')
       ]);
     })();
 
@@ -2694,7 +2702,7 @@ document.addEventListener('DOMContentLoaded', () => {
       submitBtn.disabled = true;
       submitBtn.textContent = 'Saving...';
       try {
-        const profile = await bbFetchCustomerJson('http://localhost:8081/api/customer/profile', {
+        const profile = await bbFetchCustomerJson(window.bbApiUrl('/api/customer/profile'), {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -2746,7 +2754,7 @@ document.addEventListener('DOMContentLoaded', () => {
       submitBtn.disabled = true;
       submitBtn.textContent = 'Changing...';
       try {
-        await bbFetchCustomerJson('http://localhost:8081/api/customer/password', {
+        await bbFetchCustomerJson(window.bbApiUrl('/api/customer/password'), {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -2920,7 +2928,7 @@ document.addEventListener('DOMContentLoaded', () => {
           packageSubmit.textContent = 'Confirming...';
         }
         try {
-          const packageBooking = await bbFetchJson('http://localhost:8081/api/customer/package-bookings', {
+          const packageBooking = await bbFetchJson(window.bbApiUrl('/api/customer/package-bookings'), {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -3030,7 +3038,7 @@ document.addEventListener('DOMContentLoaded', () => {
           venueId
         };
 
-        const eventData = await bbFetchJson('http://localhost:8081/api/events', {
+        const eventData = await bbFetchJson(window.bbApiUrl('/api/events'), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(eventPayload)
@@ -3039,7 +3047,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const serviceSelections = buildServiceSelectionsPayload();
 
-        const bookingData = await bbFetchJson('http://localhost:8081/api/bookings', {
+        const bookingData = await bbFetchJson(window.bbApiUrl('/api/bookings'), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -3072,7 +3080,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (createdEventId) {
           try {
-            await fetch(`http://localhost:8081/api/events/${createdEventId}`, {
+            await fetch(window.bbApiUrl(`/api/events/${createdEventId}`), {
               method: 'DELETE',
               headers: bbAuthHeaders({ Accept: 'application/json' })
             });

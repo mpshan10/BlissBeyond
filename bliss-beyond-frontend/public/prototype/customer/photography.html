@@ -2547,7 +2547,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const optionSelector = '[data-photo-option]';
   const continueBtn = document.querySelector('a.btn.btn-outline-forest[href="/prototype/customer/review.html"]');
   const controlSelector = `${optionSelector}, [data-photo-notes]`;
-  const BACKEND_SERVICE_URL = 'http://localhost:8081/api/services/3';
+  const BACKEND_SERVICE_URL = window.bbApiUrl('/api/services/3');
   const SERVICE_UNAVAILABLE_MESSAGE = 'Photography & Videography is currently unavailable.';
 
   const escapeHtml = (value) => String(value ?? '')

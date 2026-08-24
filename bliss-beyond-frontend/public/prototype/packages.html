@@ -1212,8 +1212,8 @@ document.addEventListener('DOMContentLoaded', function () {
 <script src="/prototype/assets/js/main.js"></script>
 <script>
 (() => {
-  const PACKAGE_API = 'http://localhost:8081/api/packages';
-  const VENUE_API = 'http://localhost:8081/api/venues/available';
+  const PACKAGE_API = window.bbApiUrl('/api/packages');
+  const VENUE_API = window.bbApiUrl('/api/venues/available');
   const form = document.querySelector('[data-package-availability-form]');
   const dateInput = document.querySelector('[data-package-catalog-date]');
   const guestsInput = document.querySelector('[data-package-catalog-guests]');
@@ -1434,7 +1434,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
 </body>
 </html>
-
 
 
 

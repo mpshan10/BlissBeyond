@@ -1106,7 +1106,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   async function loadBackendVenueCatalog() {
     try {
-      const response = await fetch("http://localhost:8081/api/venues");
+      const response = await fetch(window.bbApiUrl("/api/venues"));
       if (!response.ok) throw new Error(`Venue catalog request failed: ${response.status}`);
       const venues = await response.json();
       renderBackendVenueCatalog(venues);
@@ -1667,7 +1667,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     try {
       const response =
         await fetch(
-          `http://localhost:8081/api/venues/available?${params.toString()}`
+          window.bbApiUrl(`/api/venues/available?${params.toString()}`)
         );
 
       if (!response.ok) {
