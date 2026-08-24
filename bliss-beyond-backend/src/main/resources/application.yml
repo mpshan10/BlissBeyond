@@ -10,17 +10,17 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: ${JPA_DDL_AUTO:update}
     defer-datasource-initialization: true
     open-in-view: false
     properties:
       hibernate:
-        format_sql: true
-    show-sql: true
+        format_sql: ${JPA_FORMAT_SQL:false}
+    show-sql: ${JPA_SHOW_SQL:false}
 
   sql:
     init:
-      mode: always
+      mode: ${SQL_INIT_MODE:never}
       schema-locations: classpath:db/create_venues_table.sql
 
   jackson:

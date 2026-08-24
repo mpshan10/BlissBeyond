@@ -24,29 +24,38 @@ public class PackageCatalogSeeder implements CommandLineRunner {
     private static final String FLORAL = "Floral Design";
 
     private final PackageRepository packageRepository; private final PackageServiceItemRepository itemRepository; private final ServiceRepository serviceRepository; private final VenueRepository venueRepository; private final ObjectMapper objectMapper;
+    private Map<String, Venue> venuesByName;
+    private Map<String, ServiceEntity> servicesByName;
+    private Map<String, Package> packagesBySlug;
+    private Map<String, PackageServiceItem> itemsByPackageAndOrder;
     public PackageCatalogSeeder(PackageRepository p, PackageServiceItemRepository i, ServiceRepository s, VenueRepository v, ObjectMapper o){packageRepository=p;itemRepository=i;serviceRepository=s;venueRepository=v;objectMapper=o;}
-    @Override @Transactional public void run(String... args)throws Exception{for(Spec s:catalog())seed(s);if(packageRepository.count()!=catalog().size())throw new IllegalStateException("Package catalog must contain exactly "+catalog().size()+" rows");}
+    @Override @Transactional public void run(String... args)throws Exception{
+        List<Spec> catalog=catalog();
+        venuesByName=venueRepository.findAll().stream().collect(java.util.stream.Collectors.toMap(venue->normalize(venue.getName()),venue->venue,(first,duplicate)->first));
+        servicesByName=serviceRepository.findAll().stream().collect(java.util.stream.Collectors.toMap(service->normalize(service.getName()),service->service,(first,duplicate)->first));
+        packagesBySlug=packageRepository.findAll().stream().collect(java.util.stream.Collectors.toMap(Package::getSlug,eventPackage->eventPackage,(first,duplicate)->first));
+        itemsByPackageAndOrder=itemRepository.findAll().stream().collect(java.util.stream.Collectors.toMap(item->itemKey(item.getEventPackage().getSlug(),item.getDisplayOrder()),item->item,(first,duplicate)->first));
+        for(Spec s:catalog)seed(s);
+        if(packageRepository.count()!=catalog.size())throw new IllegalStateException("Package catalog must contain exactly "+catalog.size()+" rows");
+    }
     private void seed(Spec s)throws Exception{
         Venue v=findVenue(s.venueName);
         if(s.maxGuests<=0||s.finalPrice.signum()<=0)throw new IllegalStateException("Invalid package values: "+s.slug);
         if(v.getCapacity()!=null&&s.maxGuests>v.getCapacity())throw new IllegalStateException("Package guest limit exceeds venue capacity: "+s.slug);
-        Package p=packageRepository.findBySlug(s.slug).orElseGet(Package::new);p.setSlug(s.slug);p.setName(s.name);p.setCategory(s.category);p.setDescription(s.description);p.setVenue(v);p.setMaxGuests(s.maxGuests);p.setFinalPrice(s.finalPrice);p.setImage(null);p.setActive(true);p=packageRepository.save(p);
-        for(ItemSpec i:s.items){ServiceEntity service=findService(i.serviceName);PackageServiceItem item=itemRepository.findByEventPackageIdAndDisplayOrder(p.getId(),i.displayOrder).orElseGet(PackageServiceItem::new);item.setEventPackage(p);item.setService(service);item.setDisplayOrder(i.displayOrder);item.setInclusionJson(objectMapper.writeValueAsString(i.inclusions));itemRepository.save(item);}
+        Package p=packagesBySlug.getOrDefault(s.slug,new Package());p.setSlug(s.slug);p.setName(s.name);p.setCategory(s.category);p.setDescription(s.description);p.setVenue(v);p.setMaxGuests(s.maxGuests);p.setFinalPrice(s.finalPrice);p.setImage(null);p.setActive(true);p=packageRepository.save(p);packagesBySlug.put(s.slug,p);
+        for(ItemSpec i:s.items){ServiceEntity service=findService(i.serviceName);String itemKey=itemKey(s.slug,i.displayOrder);PackageServiceItem item=itemsByPackageAndOrder.getOrDefault(itemKey,new PackageServiceItem());item.setEventPackage(p);item.setService(service);item.setDisplayOrder(i.displayOrder);item.setInclusionJson(objectMapper.writeValueAsString(i.inclusions));item=itemRepository.save(item);itemsByPackageAndOrder.put(itemKey,item);}
     }
     private Venue findVenue(String name){
-        String normalizedTarget=normalize(name);
-        return venueRepository.findAll().stream()
-            .filter(venue->normalizedTarget.equals(normalize(venue.getName())))
-            .findFirst()
-            .orElseThrow(()->new IllegalStateException("Package venue not found: "+name));
+        Venue venue=venuesByName.get(normalize(name));
+        if(venue==null)throw new IllegalStateException("Package venue not found: "+name);
+        return venue;
     }
     private ServiceEntity findService(String name){
-        String normalizedTarget=normalize(name);
-        return serviceRepository.findAll().stream()
-            .filter(service->normalizedTarget.equals(normalize(service.getName())))
-            .findFirst()
-            .orElseThrow(()->new IllegalStateException("Package service not found: "+name));
+        ServiceEntity service=servicesByName.get(normalize(name));
+        if(service==null)throw new IllegalStateException("Package service not found: "+name);
+        return service;
     }
+    private String itemKey(String packageSlug,Integer displayOrder){return packageSlug+":"+displayOrder;}
     private String normalize(String value){
         if(value==null)return "";
         String normalized=value.trim().toLowerCase(Locale.ROOT)

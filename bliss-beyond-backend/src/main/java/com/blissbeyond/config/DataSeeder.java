@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Objects;
 
 @Configuration
 public class DataSeeder {
@@ -507,8 +508,15 @@ public class DataSeeder {
 
             } else {
 
+                List<Food> existingFoods =
+                    foodRepository.findAll();
+
                 for (Food food : foodCatalog) {
-                    upsertFood(foodRepository, food);
+                    upsertFood(
+                        foodRepository,
+                        existingFoods,
+                        food
+                    );
                 }
             }
 
@@ -1507,21 +1515,28 @@ public class DataSeeder {
 
     private void upsertFood(
         FoodRepository repository,
+        List<Food> existingFoods,
         Food replacement
     ) {
 
         Food existing =
             findFoodByName(
-                repository.findAll(),
+                existingFoods,
                 replacement.getName()
             );
 
         if (existing == null) {
 
-            repository.save(
+            Food saved = repository.save(
                 replacement
             );
 
+            existingFoods.add(saved);
+
+            return;
+        }
+
+        if (foodMatches(existing, replacement)) {
             return;
         }
 
@@ -1570,6 +1585,38 @@ public class DataSeeder {
         );
 
         repository.save(existing);
+    }
+
+    private boolean foodMatches(
+        Food existing,
+        Food replacement
+    ) {
+
+        return Objects.equals(
+                existing.getDescription(),
+                replacement.getDescription()
+            )
+            && Objects.equals(
+                existing.getCuisine().getId(),
+                replacement.getCuisine().getId()
+            )
+            && Objects.equals(
+                existing.getCategory().getId(),
+                replacement.getCategory().getId()
+            )
+            && existing.getPricePerGuest().compareTo(
+                replacement.getPricePerGuest()
+            ) == 0
+            && Objects.equals(
+                existing.getImage(),
+                replacement.getImage()
+            )
+            && existing.isVegetarian() == replacement.isVegetarian()
+            && existing.isVegan() == replacement.isVegan()
+            && existing.isHalal() == replacement.isHalal()
+            && existing.isGlutenFree() == replacement.isGlutenFree()
+            && existing.isNutFree() == replacement.isNutFree()
+            && existing.isAvailable() == replacement.isAvailable();
     }
 
     private Food findFoodByName(
