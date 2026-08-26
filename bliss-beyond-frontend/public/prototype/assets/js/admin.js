@@ -9,6 +9,7 @@
     bookings: [],
     query: '',
     status: 'ALL',
+    bookingType: 'ALL',
     pendingAction: null,
     payments: [],
     paymentQuery: '',
@@ -46,6 +47,7 @@
     consultationStatus: 'ALL',
     currentConsultation: null,
     pendingConsultationAction: null
+    ,notifications: []
   };
 
   function currentLocalPath() {
@@ -234,6 +236,7 @@
   function actionButtons(booking) {
     const id = escapeHtml(booking.bookingId);
     const buttons = [];
+    buttons.push(`<button class="btn btn-outline-forest btn-sm" type="button" data-booking-view data-booking-id="${id}">View</button>`);
     if (booking.bookingStatus === 'PENDING') {
       buttons.push(`<button class="btn btn-gold btn-sm" type="button" data-booking-action="approve" data-booking-id="${id}">Approve</button>`);
     }
@@ -259,11 +262,12 @@
         booking.venueName
       ].join(' ').toLowerCase();
       return (!query || searchable.includes(query))
-        && (state.status === 'ALL' || booking.bookingStatus === state.status);
+        && (state.status === 'ALL' || booking.bookingStatus === state.status)
+        && (state.bookingType === 'ALL' || booking.bookingType === state.bookingType);
     });
 
     if (!filtered.length) {
-      tbody.innerHTML = '<tr><td colspan="9" class="text-center py-5 text-ink-soft">No bookings found.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="10" class="text-center py-5 text-ink-soft">No bookings found.</td></tr>';
       return;
     }
 
@@ -275,16 +279,18 @@
       const packageLine = String(booking.bookingType || '').toUpperCase() === 'PACKAGE'
         ? `<span class="booking-cell-secondary mt-0">PACKAGE · ${escapeHtml(booking.packageName || 'Package booking')}</span>`
         : '<span class="booking-cell-secondary mt-0">CUSTOM</span>';
+      const isPackage = String(booking.bookingType || '').toUpperCase() === 'PACKAGE';
       const formattedTotal = formatMoney(booking.estimatedTotal).replace(/^MMK\s*/, '');
       return `
         <tr>
-          <td><span class="booking-cell-primary">${escapeHtml(booking.bookingReference || `BK-${booking.bookingId}`)}</span>${packageLine}${quotation}</td>
+          <td><span class="booking-cell-primary">${escapeHtml(booking.bookingReference || `BK-${booking.bookingId}`)}</span><span class="booking-cell-secondary">Created ${escapeHtml(formatDateTime(booking.createdAt))}</span>${quotation}</td>
           <td><span class="booking-cell-primary">${escapeHtml(booking.customerName || 'Customer')}</span><span class="booking-cell-secondary booking-customer-email" title="${escapeHtml(booking.customerEmail || '')}">${escapeHtml(booking.customerEmail || '')}</span></td>
-          <td><span>${escapeHtml(booking.eventType || 'Event')}</span><span class="booking-cell-secondary">Event #${escapeHtml(booking.eventId || '-')}</span></td>
+          <td><span class="bb-badge">${isPackage ? 'Package' : 'Customize'}</span></td>
+          <td><span>${escapeHtml(booking.eventType || 'Event')}</span><span class="booking-cell-secondary">Event #${escapeHtml(booking.eventId || '-')} | ${escapeHtml(booking.guestCount ?? '-')} guests</span></td>
           <td><span class="booking-venue">${escapeHtml(booking.venueName || 'Venue not set')}</span></td>
           <td><div class="booking-date-time"><span class="booking-date-line"><i class="bi bi-calendar3"></i>${escapeHtml(formatDate(booking.eventDate))}</span><span class="booking-time-line"><i class="bi bi-clock"></i>${escapeHtml(timeRange || 'Time not set')}</span></div></td>
-          <td>${escapeHtml(booking.guestCount ?? '-')}</td>
           <td><span class="booking-total-currency">MMK</span><span class="booking-total-amount">${escapeHtml(formattedTotal)}</span></td>
+          <td><span class="status ${statusClass(booking.paymentStatus)}">${escapeHtml(statusLabel(booking.paymentStatus || 'NOT_RECORDED'))}</span><span class="booking-cell-secondary">Paid ${escapeHtml(formatMoney(booking.paidAmount))}</span></td>
           <td><span class="status ${statusClass(booking.bookingStatus)}">${escapeHtml(statusLabel(booking.bookingStatus))}</span></td>
           <td>${actionButtons(booking)}</td>
         </tr>`;
@@ -294,7 +300,7 @@
   async function loadBookings() {
     setBookingMessage('');
     const tbody = document.querySelector('[data-admin-booking-rows]');
-    if (tbody) tbody.innerHTML = '<tr><td colspan="9" class="text-center py-5 text-ink-soft">Loading bookings...</td></tr>';
+    if (tbody) tbody.innerHTML = '<tr><td colspan="10" class="text-center py-5 text-ink-soft">Loading bookings...</td></tr>';
     try {
       const data = await adminFetch('/api/admin/bookings', { method: 'GET' });
       state.bookings = Array.isArray(data) ? data : [];
@@ -302,8 +308,35 @@
       renderBookings();
     } catch (error) {
       setBookingMessage(error.message || 'Unable to load bookings.');
-      if (tbody) tbody.innerHTML = '<tr><td colspan="9" class="text-center py-5 text-ink-soft">Unable to load bookings.</td></tr>';
+      if (tbody) tbody.innerHTML = '<tr><td colspan="10" class="text-center py-5 text-ink-soft">Unable to load bookings.</td></tr>';
     }
+  }
+
+  function renderBookingDetail(detail) {
+    const content = document.querySelector('[data-booking-detail-content]');
+    const message = document.querySelector('[data-booking-detail-message]');
+    const isPackage = detail.bookingType === 'PACKAGE';
+    document.querySelector('[data-booking-detail="reference"]').textContent = detail.bookingReference || 'Booking';
+    document.querySelector('[data-booking-detail="type"]').textContent = isPackage ? 'Package booking' : 'Customize booking';
+    message.classList.add('d-none');
+    const payments = detail.paymentSummary?.payments || [];
+    const paymentRows = payments.length ? payments.map((payment) => `<tr><td>${escapeHtml(statusLabel(payment.paymentType))}</td><td>${escapeHtml(formatMoney(payment.amount))}</td><td>${escapeHtml(statusLabel(payment.status))}</td><td>${escapeHtml(payment.method || 'Not provided')}</td></tr>`).join('') : '<tr><td colspan="4">No payment records.</td></tr>';
+    const packageBlock = isPackage && detail.packageDetails ? `<h6>Package Snapshot</h6><p><strong>${escapeHtml(detail.packageDetails.name || 'Package')}</strong> | ${escapeHtml(detail.packageDetails.category || 'Not recorded')} | ${escapeHtml(formatMoney(detail.packageDetails.bookedPrice))}</p><p>Venue: ${escapeHtml(detail.packageDetails.snapshotVenueName || 'Not recorded')} | Max guests: ${escapeHtml(detail.packageDetails.maxGuests ?? 'Not recorded')}</p><pre class="small bg-light p-2">${escapeHtml(JSON.stringify(detail.packageDetails.inclusions || {}, null, 2))}</pre>` : '';
+    const customBlock = !isPackage && detail.customizeDetails ? `<h6>Saved Service Selections</h6><ul>${(detail.customizeDetails.services || []).map((service) => `<li>${escapeHtml(service.name || 'Service')} - ${escapeHtml(formatMoney(service.price))}</li>`).join('') || '<li>No selected services recorded.</li>'}</ul><p><strong>Total:</strong> ${escapeHtml(formatMoney(detail.customizeDetails.total))}</p>` : '';
+    const quotation = detail.quotation ? `<h6>Quotation</h6><p>#${escapeHtml(detail.quotation.id)} | ${escapeHtml(statusLabel(detail.quotation.status))} | ${escapeHtml(formatMoney(detail.quotation.total))}</p>` : '<p class="text-ink-soft">Quotation not recorded.</p>';
+    const consultations = (detail.consultations || []).map((item) => `<li>${escapeHtml(statusLabel(item.status))} | ${escapeHtml(item.consultationType || 'Consultation')} | ${escapeHtml(formatDate(item.consultationDate))} ${escapeHtml(formatTime(item.startTime))}</li>`).join('') || '<li>No consultation records.</li>';
+    content.innerHTML = `<div class="row g-3"><div class="col-md-6"><h6>Customer</h6><p>${escapeHtml(detail.customer?.name || 'Not recorded')}<br>${escapeHtml(detail.customer?.email || '')}<br>${escapeHtml(detail.customer?.phone || '')}</p></div><div class="col-md-6"><h6>Booking</h6><p>Status: <strong>${escapeHtml(statusLabel(detail.bookingStatus))}</strong><br>Created: ${escapeHtml(formatDateTime(detail.createdAt))}</p></div><div class="col-md-6"><h6>Event</h6><p>${escapeHtml(detail.event?.eventType || 'Not recorded')}<br>${escapeHtml(formatDate(detail.event?.eventDate))} | ${escapeHtml(formatTime(detail.event?.startTime))} - ${escapeHtml(formatTime(detail.event?.endTime))}<br>${escapeHtml(detail.event?.guestCount ?? '-')} guests</p></div><div class="col-md-6"><h6>Venue</h6><p>${escapeHtml(detail.venue?.name || 'Not recorded')}<br>${escapeHtml(detail.venue?.location || '')}</p></div><div class="col-12">${packageBlock}${customBlock}</div><div class="col-12"><h6>Payments</h6><p>Paid: ${escapeHtml(formatMoney(detail.paymentSummary?.paidAmount))} | Pending: ${escapeHtml(formatMoney(detail.paymentSummary?.pendingAmount))}</p><div class="table-responsive"><table class="table table-sm"><thead><tr><th>Type</th><th>Amount</th><th>Status</th><th>Method</th></tr></thead><tbody>${paymentRows}</tbody></table></div></div><div class="col-12">${quotation}</div><div class="col-12"><h6>Consultations</h6><ul>${consultations}</ul></div></div>`;
+  }
+
+  async function openBookingDetail(bookingId) {
+    const modal = window.bootstrap.Modal.getOrCreateInstance(document.getElementById('bookingDetailModal'));
+    const message = document.querySelector('[data-booking-detail-message]');
+    const content = document.querySelector('[data-booking-detail-content]');
+    message.classList.add('d-none');
+    content.innerHTML = '<p class="text-ink-soft">Loading booking details...</p>';
+    modal.show();
+    try { renderBookingDetail(await adminFetch(`/api/admin/bookings/${encodeURIComponent(bookingId)}`)); }
+    catch (error) { message.textContent = error.message || 'Unable to load booking details.'; message.classList.remove('d-none'); content.innerHTML = ''; }
   }
 
   function openActionConfirmation(action, bookingId) {
@@ -371,12 +404,21 @@
       state.status = event.target.value;
       renderBookings();
     });
+    document.querySelector('[data-admin-booking-type-filter]')?.addEventListener('change', (event) => {
+      state.bookingType = event.target.value;
+      renderBookings();
+    });
     document.querySelector('[data-admin-booking-rows]')?.addEventListener('click', (event) => {
+      const view = event.target.closest('[data-booking-view]');
+      if (view) { openBookingDetail(view.dataset.bookingId); return; }
       const button = event.target.closest('[data-booking-action]');
       if (button) openActionConfirmation(button.dataset.bookingAction, button.dataset.bookingId);
     });
     document.querySelector('[data-booking-action-confirm]')?.addEventListener('click', performBookingAction);
-    loadBookings();
+    loadBookings().then(() => {
+      const bookingId = new URLSearchParams(window.location.search).get('bookingId');
+      if (bookingId) openBookingDetail(bookingId);
+    });
   }
 
   function setPaymentMessage(message, variant = 'danger') {
@@ -439,11 +481,11 @@
           <td><strong>PAY-${String(payment.paymentId).padStart(4, '0')}</strong><div class="small text-ink-soft">ID ${escapeHtml(payment.paymentId)}</div></td>
           <td><strong>${escapeHtml(payment.bookingReference || `BK-${payment.bookingId}`)}</strong><div class="small text-ink-soft">Quotation #${escapeHtml(payment.quotationId || '-')}</div></td>
           <td><strong>${escapeHtml(payment.customerName || 'Customer')}</strong><div class="small text-ink-soft">${escapeHtml(payment.customerEmail || '')}</div></td>
-          <td>${escapeHtml(payment.eventType || 'Event')}<div class="small text-ink-soft">${escapeHtml(payment.venueName || 'Venue not set')}</div></td>
-          <td><span class="bb-badge">${escapeHtml(statusLabel(payment.paymentType))}</span></td>
+          <td>${escapeHtml(payment.eventType || 'Event')}<div class="small text-ink-soft">${escapeHtml(payment.venueName || 'Venue not set')} · Booking ${escapeHtml(statusLabel(payment.bookingStatus || 'UNKNOWN'))}</div></td>
+          <td><span class="bb-badge">${escapeHtml(payment.bookingType === 'PACKAGE' ? 'Package' : 'Customize')}</span><div class="small text-ink-soft">${escapeHtml(statusLabel(payment.paymentType))}</div></td>
           <td><strong class="text-gold">${escapeHtml(formatMoney(payment.amount))}</strong></td>
           <td><span class="status ${statusClass(payment.paymentStatus)}">${escapeHtml(statusLabel(payment.paymentStatus))}</span></td>
-          <td>${method.length ? method.map(escapeHtml).join('<br>') : '<span class="text-ink-soft">Not provided</span>'}<div class="small text-ink-soft mt-1">${escapeHtml(formatDateTime(payment.paidAt))}</div></td>
+          <td>${method.length ? method.map(escapeHtml).join('<br>') : '<span class="text-ink-soft">Not provided</span>'}<div class="small text-ink-soft mt-1">${payment.createdAt || payment.paidAt ? `Submitted / paid ${escapeHtml(formatDateTime(payment.createdAt || payment.paidAt))}` : 'Submitted date not recorded'}</div></td>
           <td>${action}</td>
         </tr>`;
     }).join('');
@@ -471,7 +513,7 @@
     document.querySelector('[data-payment-modal-title]').textContent = `Confirm ${statusLabel(payment.paymentType)} Payment`;
     document.querySelector('[data-payment-modal-customer]').textContent = payment.customerName || 'Customer';
     document.querySelector('[data-payment-modal-booking]').textContent = payment.bookingReference || `Booking #${payment.bookingId}`;
-    document.querySelector('[data-payment-modal-type]').textContent = statusLabel(payment.paymentType);
+    document.querySelector('[data-payment-modal-type]').textContent = `${payment.bookingType === 'PACKAGE' ? 'Package' : 'Customize'} · ${statusLabel(payment.paymentType)}`;
     document.querySelector('[data-payment-modal-amount]').textContent = formatMoney(payment.amount);
     document.querySelector('[data-payment-method]').value = payment.paymentMethod || '';
     document.querySelector('[data-payment-reference]').value = payment.transactionReference || '';
@@ -1904,6 +1946,158 @@
       : '');
   }
 
+  function reportValue(path, fallback = 0) {
+    const report = state.reportSummary;
+    return path.split('.').reduce((value, key) => value == null ? undefined : value[key], report) ?? fallback;
+  }
+
+  function setReportValue(path, value) {
+    document.querySelectorAll(`[data-report-value="${path}"]`).forEach((element) => {
+      element.textContent = String(value ?? 0);
+    });
+  }
+
+  function renderReportList(selector, items, emptyText, label = 'Bookings') {
+    const tbody = document.querySelector(selector);
+    if (!tbody) return;
+    tbody.innerHTML = items.length
+      ? items.map((item) => `<tr><td>${escapeHtml(item.name)}</td><td>${escapeHtml(item.bookingCount)}</td></tr>`).join('')
+      : `<tr><td colspan="2" class="text-center text-ink-soft">${escapeHtml(emptyText)}</td></tr>`;
+  }
+
+  function renderBookingTrend(items) {
+    const container = document.querySelector('[data-report-booking-trend]');
+    if (!container) return;
+    if (!items.length || items.every((item) => Number(item.bookings) === 0)) {
+      container.innerHTML = '<div class="text-ink-soft">No booking data available</div>';
+      return;
+    }
+    const max = Math.max(...items.map((item) => Number(item.bookings) || 0), 1);
+    container.innerHTML = items.map((item) => {
+      const count = Number(item.bookings) || 0;
+      const height = Math.max(4, Math.round((count / max) * 100));
+      return `<div class="flex-fill text-center d-flex flex-column justify-content-end h-100"><div class="small text-ink-soft mb-1">${count}</div><div style="height:${height}%;background:linear-gradient(180deg,var(--bb-gold),var(--bb-green));border-radius:6px 6px 0 0" title="${escapeHtml(item.month)}: ${count} bookings"></div><span class="small text-ink-soft mt-1">${escapeHtml(item.month)}</span></div>`;
+    }).join('');
+  }
+
+  function renderReportSummary(summary) {
+    state.reportSummary = summary || {};
+    const bookings = summary.bookings || {};
+    const resources = summary.resources || {};
+    const consultations = summary.consultations || {};
+    const quotations = summary.quotations || {};
+    setReportValue('bookings.total', bookings.total);
+    setReportValue('bookings.confirmed', bookings.confirmed);
+    setReportValue('resources.customers', resources.customers);
+    setReportValue('totalPaidRevenue', formatMoney(summary.totalPaidRevenue));
+    setReportValue('resources.packages', resources.packages);
+    setReportValue('resources.venues', resources.venues);
+    setReportValue('consultations.total', consultations.total);
+    setReportValue('quotations.total', quotations.total);
+    document.querySelector('[data-report-detail="bookings.statuses"]').textContent = `${bookings.pending || 0} pending | ${bookings.awaitingDeposit || 0} awaiting deposit`;
+    document.querySelector('[data-report-detail="resources.packages"]').textContent = `${resources.activePackages || 0} active / ${resources.inactivePackages || 0} inactive`;
+    document.querySelector('[data-report-detail="consultations.statuses"]').textContent = `${consultations.requested || 0} requested / ${consultations.scheduled || 0} scheduled`;
+    document.querySelector('[data-report-detail="quotations.statuses"]').textContent = `${quotations.sent || 0} sent / ${quotations.accepted || 0} accepted`;
+
+    const statusRows = [
+      ['Pending', bookings.pending], ['Awaiting deposit', bookings.awaitingDeposit], ['Confirmed', bookings.confirmed],
+      ['Completed', bookings.completed], ['Cancelled', bookings.cancelled]
+    ].map(([name, bookingCount]) => ({ name, bookingCount: bookingCount || 0 }));
+    renderReportList('[data-report-booking-statuses]', statusRows, 'No booking data available');
+    renderReportList('[data-report-booking-types]', summary.bookingTypes || [], 'No booking data available');
+    renderReportList('[data-report-event-categories]', summary.eventCategories || [], 'No booking data available');
+    renderReportList('[data-report-top-venues]', summary.topVenues || [], 'No venue data available');
+    renderReportList('[data-report-top-packages]', summary.topPackages || [], 'No package data available');
+    renderBookingTrend(summary.bookingTrend || []);
+  }
+
+  async function initReportsPage() {
+    if (!document.querySelector('[data-admin-reports-page]')) return;
+    const loading = document.querySelector('[data-admin-report-loading]');
+    const content = document.querySelector('[data-admin-report-content]');
+    const message = document.querySelector('[data-admin-report-message]');
+    try {
+      const summary = await adminFetch('/api/admin/reports/summary', { method: 'GET' });
+      renderReportSummary(summary);
+      loading?.classList.add('d-none');
+      content?.classList.remove('d-none');
+    } catch (error) {
+      loading?.classList.add('d-none');
+      content?.classList.add('d-none');
+      if (message) {
+        message.textContent = 'Unable to load report data.';
+        message.classList.remove('d-none');
+      }
+    }
+  }
+
+  function renderAdminNotifications(list) {
+    if (!list) return;
+    list.innerHTML = state.notifications.length
+      ? state.notifications.map((notification) => `<li><button type="button" class="w-100 text-start border-0 bg-transparent p-2 rounded ${notification.read ? '' : 'bg-light border-start border-3 border-gold'}" data-admin-notification-id="${escapeHtml(notification.id)}"><strong>${escapeHtml(notification.title || 'Notification')}</strong><br><span class="small text-ink-soft">${escapeHtml(notification.message || '')}</span></button></li>`).join('')
+      : '<li class="text-ink-soft">You\'re all caught up.</li>';
+  }
+
+  async function loadAdminNotifications(list, badge) {
+    if (list) list.innerHTML = '<li class="text-ink-soft">Loading notifications...</li>';
+    try {
+      const [data, unreadCount] = await Promise.all([
+        adminFetch('/api/notifications?limit=20', { method: 'GET' }),
+        adminFetch('/api/notifications/unread-count', { method: 'GET' })
+      ]);
+      state.notifications = Array.isArray(data) ? data : [];
+      const unread = Number(unreadCount) || 0;
+      badge.textContent = unread > 99 ? '99+' : unread > 0 ? String(unread) : '';
+      badge.hidden = unread === 0;
+      renderAdminNotifications(list);
+    } catch (error) {
+      state.notifications = [];
+      badge.hidden = true;
+      if (list) list.innerHTML = '<li class="text-ink-soft">Unable to load notifications.</li>';
+    }
+  }
+
+  function initAdminNotifications() {
+    const actions = document.querySelector('.bb-nav .container-fluid > .d-flex');
+    if (!actions || document.querySelector('[data-admin-notification-bell]')) return;
+    actions.insertAdjacentHTML('afterbegin', '<button class="btn btn-outline-forest btn-sm bb-notification-bell" type="button" data-admin-notification-bell data-bs-toggle="modal" data-bs-target="#adminNotifyModal"><i class="bi bi-bell"></i><span class="bb-notification-count" data-admin-notification-count hidden></span><span class="visually-hidden">Notifications</span></button>');
+    document.body.insertAdjacentHTML('beforeend', '<div class="modal fade" id="adminNotifyModal" tabindex="-1" aria-labelledby="adminNotifyModalTitle" aria-hidden="true"><div class="modal-dialog modal-dialog-centered"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="adminNotifyModalTitle">Notifications</h5><button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div><div class="modal-body"><ul class="list-unstyled d-grid gap-2 mb-0" data-admin-notification-list></ul></div></div></div></div>');
+    const list = document.querySelector('[data-admin-notification-list]');
+    const badge = document.querySelector('[data-admin-notification-count]');
+    document.querySelector('[data-admin-notification-bell]').addEventListener('click', () => { void loadAdminNotifications(list, badge); });
+    list.addEventListener('click', async (event) => {
+      const item = event.target.closest('[data-admin-notification-id]');
+      if (!item) return;
+      const notification = state.notifications.find((entry) => String(entry.id) === String(item.dataset.adminNotificationId));
+      if (!notification) return;
+      try {
+        await adminFetch(`/api/notifications/${encodeURIComponent(notification.id)}/read`, { method: 'PATCH' });
+        notification.read = true;
+        const unread = state.notifications.filter((entry) => !entry.read).length;
+        badge.textContent = unread > 99 ? '99+' : unread > 0 ? String(unread) : '';
+        badge.hidden = unread === 0;
+        renderAdminNotifications(list);
+        const path = String(notification.actionUrl || '');
+        if (path.startsWith('/prototype/')) window.location.href = path;
+      } catch (error) {
+        list.insertAdjacentHTML('afterbegin', '<li class="text-danger small">Unable to mark notification as read.</li>');
+      }
+    });
+    const markAll = document.createElement('button');
+    markAll.type = 'button';
+    markAll.className = 'btn btn-link btn-sm px-0 mt-3';
+    markAll.textContent = 'Mark all as read';
+    markAll.addEventListener('click', async () => {
+      await adminFetch('/api/notifications/read-all', { method: 'PATCH' });
+      state.notifications.forEach((notification) => { notification.read = true; });
+      badge.textContent = '';
+      badge.hidden = true;
+      renderAdminNotifications(list);
+    });
+    document.querySelector('#adminNotifyModal .modal-body')?.appendChild(markAll);
+    void loadAdminNotifications(list, badge);
+  }
+
   function init() {
     updateAdminIdentity();
     initSignOut();
@@ -1916,6 +2110,8 @@
     initPackagesPage();
     initServicesPage();
     initDashboardPage();
+    initReportsPage();
+    initAdminNotifications();
   }
 
   if (document.readyState === 'loading') {

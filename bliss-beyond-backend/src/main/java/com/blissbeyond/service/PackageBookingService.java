@@ -19,6 +19,7 @@ import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import com.blissbeyond.validation.EventTimeValidator;
 
 @Service
 public class PackageBookingService {
@@ -30,6 +31,7 @@ public class PackageBookingService {
     private final PackageBookingSnapshotRepository snapshotRepository;
     private final VenueService venueService;
     private final ObjectMapper objectMapper;
+    private final NotificationService notificationService;
 
     public PackageBookingService(PackageService packageService,
                                  CurrentUserService currentUserService,
@@ -38,7 +40,8 @@ public class PackageBookingService {
                                  QuotationRepository quotationRepository,
                                  PackageBookingSnapshotRepository snapshotRepository,
                                  VenueService venueService,
-                                 ObjectMapper objectMapper) {
+                                 ObjectMapper objectMapper,
+                                 NotificationService notificationService) {
         this.packageService = packageService;
         this.currentUserService = currentUserService;
         this.eventRepository = eventRepository;
@@ -47,6 +50,7 @@ public class PackageBookingService {
         this.snapshotRepository = snapshotRepository;
         this.venueService = venueService;
         this.objectMapper = objectMapper;
+        this.notificationService = notificationService;
     }
 
     @Transactional
@@ -104,6 +108,12 @@ public class PackageBookingService {
         snapshot.setFinalPrice(price);
         snapshot.setInclusionsJson(inclusionsJson(eventPackage));
         snapshotRepository.save(snapshot);
+        notificationService.notifyAdmins(
+            customer, "BOOKING_CREATED", "New Booking Request",
+            "A new package booking request was submitted by " + customer.getFirstName() + " " + customer.getLastName() + ".",
+            "BOOKING", booking.getId(), "/prototype/admin/bookings.html?bookingId=" + booking.getId(),
+            "BOOKING_CREATED:" + booking.getId()
+        );
 
         return new PackageBookingResponse(
             booking.getId(), formatReference(booking.getId()), booking.getBookingType().name(),
@@ -114,15 +124,10 @@ public class PackageBookingService {
     }
 
     private void validateRequest(PackageBookingRequest request, Package eventPackage, Venue venue) {
-        if (request.eventDate().isBefore(LocalDate.now())) {
-            throw new IllegalArgumentException("Event date cannot be in the past.");
+        if (request.eventDate().isBefore(LocalDate.now().plusMonths(1))) {
+            throw new IllegalArgumentException("Event date must be at least one month in advance.");
         }
-        if (!request.startTime().isBefore(request.endTime())) {
-            throw new IllegalArgumentException("Start time must be before end time.");
-        }
-        if (request.startTime().isBefore(LocalTime.of(8, 0)) || request.endTime().isAfter(LocalTime.of(23, 30))) {
-            throw new IllegalArgumentException("Package bookings must be between 08:00 and 23:30.");
-        }
+        EventTimeValidator.validate(request.startTime(), request.endTime());
         long minutes = Duration.between(request.startTime(), request.endTime()).toMinutes();
         if (minutes < 120 || minutes > 720) {
             throw new IllegalArgumentException("Package booking duration must be between 2 and 12 hours.");

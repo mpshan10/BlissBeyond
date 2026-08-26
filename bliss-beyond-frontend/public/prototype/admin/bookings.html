@@ -25,6 +25,7 @@ html:not(.bb-admin-authorized) body { visibility: hidden; }
 }
 
 [data-admin-bookings-page] .bb-main {
+  min-width: 0;
   padding: 1.65rem clamp(.9rem, 1.8vw, 1.8rem) 2.5rem;
 }
 
@@ -36,6 +37,10 @@ html:not(.bb-admin-authorized) body { visibility: hidden; }
 }
 
 .admin-bookings-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .7rem;
   padding: 1.15rem 1.25rem;
   background: linear-gradient(135deg, #fff 0%, #fbf8f0 100%);
 }
@@ -69,12 +74,15 @@ html:not(.bb-admin-authorized) body { visibility: hidden; }
 }
 
 .admin-bookings-table-wrap {
+  width: 100%;
+  max-width: 100%;
   overflow-x: auto;
+  overflow-y: hidden;
   padding: 0;
 }
 
 .admin-bookings-table {
-  min-width: 1320px;
+  min-width: 1580px;
   margin: 0;
   table-layout: fixed;
 }
@@ -101,20 +109,16 @@ html:not(.bb-admin-authorized) body { visibility: hidden; }
   background: rgba(250, 247, 238, .72);
 }
 
-.admin-bookings-table th:nth-child(1) { width: 132px; }
-.admin-bookings-table th:nth-child(2) { width: 205px; }
-.admin-bookings-table th:nth-child(3) { width: 135px; }
-.admin-bookings-table th:nth-child(4) { width: 205px; }
-.admin-bookings-table th:nth-child(5) { width: 180px; }
-.admin-bookings-table th:nth-child(6) { width: 72px; text-align: center; }
-.admin-bookings-table th:nth-child(7) { width: 125px; }
-.admin-bookings-table th:nth-child(8) { width: 145px; }
-.admin-bookings-table th:nth-child(9) { width: 160px; }
-
-.admin-bookings-table td:nth-child(6) {
-  text-align: center;
-  font-weight: 700;
-}
+.admin-bookings-table th:nth-child(1) { width: 150px; }
+.admin-bookings-table th:nth-child(2) { width: 230px; }
+.admin-bookings-table th:nth-child(3) { width: 115px; }
+.admin-bookings-table th:nth-child(4) { width: 190px; }
+.admin-bookings-table th:nth-child(5) { width: 220px; }
+.admin-bookings-table th:nth-child(6) { width: 175px; }
+.admin-bookings-table th:nth-child(7) { width: 145px; }
+.admin-bookings-table th:nth-child(8) { width: 165px; }
+.admin-bookings-table th:nth-child(9) { width: 165px; }
+.admin-bookings-table th:nth-child(10) { width: 185px; }
 
 .booking-cell-primary {
   display: block;
@@ -152,16 +156,15 @@ html:not(.bb-admin-authorized) body { visibility: hidden; }
 }
 
 .booking-venue {
-  display: -webkit-box;
-  overflow: hidden;
+  display: block;
+  overflow-wrap: anywhere;
   line-height: 1.42;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
 }
 
 .booking-date-time {
   display: grid;
   gap: .45rem;
+  min-width: 145px;
 }
 
 .booking-date-line,
@@ -211,12 +214,12 @@ html:not(.bb-admin-authorized) body { visibility: hidden; }
 
 .booking-actions {
   display: grid;
-  width: 128px;
+  width: 150px;
   gap: .45rem;
 }
 
 .booking-actions .btn {
-  width: 128px;
+  width: 150px;
   min-height: 34px;
   border-radius: 9px;
   font-size: .76rem;
@@ -225,7 +228,7 @@ html:not(.bb-admin-authorized) body { visibility: hidden; }
 
 .booking-actions-empty {
   display: inline-block;
-  width: 128px;
+  width: 150px;
   color: var(--bb-ink-soft);
   font-size: .76rem;
   text-align: center;
@@ -239,6 +242,10 @@ html:not(.bb-admin-authorized) body { visibility: hidden; }
 
   [data-admin-bookings-page] .bb-main {
     width: 100%;
+  }
+
+  .admin-bookings-table {
+    min-width: 1480px;
   }
 }
 
@@ -344,19 +351,32 @@ html:not(.bb-admin-authorized) body { visibility: hidden; }
           <option value="CANCELLED">Cancelled</option>
           <option value="COMPLETED">Completed</option>
         </select>
+        <select class="form-select form-select-sm admin-bookings-filter" data-admin-booking-type-filter aria-label="Filter bookings by type">
+          <option value="ALL">All booking types</option>
+          <option value="PACKAGE">Package bookings</option>
+          <option value="CUSTOM">Customize bookings</option>
+        </select>
       </div>
       <div class="panel__body admin-bookings-table-wrap">
         <div class="table-responsive">
           <table class="table align-middle admin-bookings-table">
-            <thead><tr><th>Booking</th><th>Customer</th><th>Event</th><th>Venue</th><th>Date / Time</th><th>Guests</th><th>Total</th><th>Status</th><th>Actions</th></tr></thead>
+            <thead><tr><th>Booking</th><th>Customer</th><th>Type</th><th>Event</th><th>Venue</th><th>Date / Time</th><th>Total</th><th>Payment</th><th>Status</th><th>Actions</th></tr></thead>
             <tbody data-admin-booking-rows>
-              <tr><td colspan="9" class="text-center py-5 text-ink-soft">Loading bookings...</td></tr>
+              <tr><td colspan="10" class="text-center py-5 text-ink-soft">Loading bookings...</td></tr>
             </tbody>
           </table>
         </div>
       </div>
     </div>
   </main>
+</div>
+
+<div class="modal fade" id="bookingDetailModal" tabindex="-1" aria-labelledby="bookingDetailTitle" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable"><div class="modal-content">
+    <div class="modal-header"><div><div class="eyebrow" data-booking-detail="reference">Booking</div><h5 class="modal-title" id="bookingDetailTitle">Booking details</h5><span class="badge bg-light text-forest" data-booking-detail="type"></span></div><button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button></div>
+    <div class="modal-body"><div class="alert alert-danger d-none" data-booking-detail-message></div><div data-booking-detail-content></div></div>
+    <div class="modal-footer"><button class="btn btn-outline-secondary" type="button" data-bs-dismiss="modal">Close</button></div>
+  </div></div>
 </div>
 
 <div class="modal fade" id="bookingActionModal" tabindex="-1" aria-labelledby="bookingActionModalTitle" aria-hidden="true">

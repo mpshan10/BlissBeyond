@@ -11,22 +11,60 @@ document.addEventListener('DOMContentLoaded', () => {
   const summaryEl = root.querySelector('[data-services-summary]');
   const totalEl = root.querySelector('[data-services-total]');
   const countEls = [...root.querySelectorAll('[data-selected-count]')];
-  const continueBtn = root.querySelector('[data-continue-review]');
+  const continueBtns = [...root.querySelectorAll('[data-continue-review]')];
   const saveBtn = root.querySelector('[data-save-services]');
+  const dateStatus = root.querySelector('[data-services-date-status]');
 
   const eventContext = typeof bbGetEventContext === 'function' ? bbGetEventContext() : {};
   const venue = typeof bbGetVenue === 'function' ? bbGetVenue() : {};
   const serviceData = typeof bbGetServiceData === 'function' ? bbGetServiceData() : {};
+  const currentGuestCount = Number(eventContext?.guests || eventContext?.guestCount || 0);
+  const savedCatering = typeof bbGetCatering === 'function' ? bbGetCatering() : null;
+  let currentServices = typeof bbGetSelectedServices === 'function' ? bbGetSelectedServices() : [];
+
+  // Catering totals are guest-dependent, so discard only stale catering work.
+  if (savedCatering && Number(savedCatering.guestCount || 0) !== currentGuestCount) {
+    if (typeof bbSetCatering === 'function') bbSetCatering(null);
+    serviceData.catering = null;
+    currentServices = currentServices.filter((item) => item.id !== 'catering');
+    if (typeof bbSetSelectedServices === 'function') bbSetSelectedServices(currentServices);
+    if (typeof bbSetServiceData === 'function') bbSetServiceData('catering', null);
+  }
   const venueAllowedServices = Array.isArray(venue?.services) && venue.services.length
     ? venue.services
     : ['catering', 'decoration', 'photography', 'entertainment', 'lighting-av', 'cake', 'florals'];
   const backendCatalog = new Map();
   let backendLoaded = false;
 
+  const formatDate = (value) => {
+    if (!value) return 'Not selected';
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(String(value))) return String(value);
+    const [year, month, day] = String(value).split('-').map(Number);
+    return new Date(year, month - 1, day).toLocaleDateString('en-GB', {
+      day: '2-digit', month: 'short', year: 'numeric'
+    });
+  };
+  const formatTime = (value) => {
+    if (!/^\d{2}:\d{2}$/.test(String(value || ''))) return '';
+    const [hour, minute] = String(value).split(':').map(Number);
+    return `${hour % 12 || 12}:${String(minute).padStart(2, '0')} ${hour >= 12 ? 'PM' : 'AM'}`;
+  };
+  const startTime = eventContext?.startTime || eventContext?.eventTime || '';
+  const endTime = eventContext?.endTime || '';
+  const eventDate = eventContext?.eventDate || eventContext?.date || '';
+  const dateIsValid = typeof bbIsValidBookingDate !== 'function' || bbIsValidBookingDate(eventDate);
+  if (!dateIsValid && dateStatus) {
+    dateStatus.textContent = 'Your selected event date no longer meets the one-month advance booking requirement. Please return to Venue Selection and choose a new date.';
+    dateStatus.classList.remove('d-none');
+  }
   if (venueEl) venueEl.textContent = venue?.name || 'Selected venue';
-  if (typeEl) typeEl.textContent = eventContext?.eventType || 'Wedding';
-  if (dateEl) dateEl.textContent = eventContext?.eventDate || '20 December 2026';
-  if (guestsEl) guestsEl.textContent = `${Number(eventContext?.guests || 150).toLocaleString()} Guests`;
+  if (typeEl) typeEl.textContent = eventContext?.eventType || eventContext?.type || 'Not selected';
+  if (dateEl) dateEl.textContent = formatDate(eventContext?.eventDate || eventContext?.date);
+  const timeEl = root.querySelector('[data-event-time]');
+  if (timeEl) timeEl.textContent = startTime && endTime
+    ? `${formatTime(startTime)} - ${formatTime(endTime)}`
+    : 'Not selected';
+  if (guestsEl) guestsEl.textContent = currentGuestCount > 0 ? `${currentGuestCount.toLocaleString()} Guests` : 'Not selected';
 
   const serviceCards = [...root.querySelectorAll('[data-service-card]')];
   const toggles = [...root.querySelectorAll('[data-service-toggle]')];
@@ -150,7 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
     input.addEventListener('change', persist);
   });
 
-  const current = typeof bbGetSelectedServices === 'function' ? bbGetSelectedServices() : [];
+  const current = currentServices;
   toggles.forEach((input) => {
     input.checked = current.some((item) => item.id === input.value);
   });
@@ -193,12 +231,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 1200);
   });
 
-  continueBtn?.addEventListener('click', (event) => {
+  continueBtns.forEach((continueBtn) => continueBtn.addEventListener('click', (event) => {
     event.preventDefault();
+    if (!dateIsValid) return;
     persist();
     if (typeof window.bbSetBookingMode === 'function') window.bbSetBookingMode('CUSTOM');
     window.location.href = '/prototype/customer/review.html';
-  });
+  }));
 
   summaryEl?.addEventListener('click', (event) => {
     const remove = event.target.closest('[data-service-remove]');

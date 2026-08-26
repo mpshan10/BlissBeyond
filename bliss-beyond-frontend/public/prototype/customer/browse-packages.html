@@ -46,9 +46,13 @@
         <label class="form-label" for="pkgDate">Select Date</label>
         <input class="form-control" id="pkgDate" type="date" data-package-date>
       </div>
-      <div class="col-md-4">
-        <label class="form-label" for="pkgTime">Select Time</label>
-        <input class="form-control" id="pkgTime" type="time" data-package-time>
+      <div class="col-md-2">
+        <label class="form-label" for="pkgStartTime">Start time</label>
+        <select class="form-select" id="pkgStartTime" data-package-start-time></select>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label" for="pkgEndTime">End time</label>
+        <select class="form-select" id="pkgEndTime" data-package-end-time></select>
       </div>
       <div class="col-md-4">
         <button class="btn btn-gold w-100" type="button" data-package-check>Check Availability</button>
@@ -190,6 +194,7 @@
     </div>
   </article></div></div></main></div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/prototype/assets/js/event-time.js"></script>
 <script src="/prototype/assets/js/main.js"></script>
 
 </body>

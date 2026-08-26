@@ -7,6 +7,7 @@ import com.blissbeyond.exception.ResourceNotFoundException;
 import com.blissbeyond.exception.DuplicateResourceException;
 import com.blissbeyond.repository.BookingRepository;
 import com.blissbeyond.repository.VenueRepository;
+import com.blissbeyond.validation.EventTimeValidator;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -41,13 +42,15 @@ public class VenueService {
 
     public void ensureBookingSlotAvailable(Long venueId, LocalDate date, LocalTime startTime,
                                             LocalTime endTime, Long excludedBookingId) {
-        Venue venue = findVenueEntity(venueId);
+        Venue venue = findVenueEntityForUpdate(venueId);
         if (!venue.isAvailable()) {
             throw new IllegalArgumentException("The selected venue is currently unavailable.");
         }
-        if (date == null || startTime == null || endTime == null || !startTime.isBefore(endTime)) {
+        if (date == null) {
             throw new IllegalArgumentException("A valid event date and time range are required.");
         }
+        validateAdvanceBookingDate(date);
+        EventTimeValidator.validate(startTime, endTime);
         if (!isAvailableForSlot(venueId, date, startTime, endTime, excludedBookingId)) {
             throw new IllegalArgumentException("The selected venue is no longer available for the requested date and time.");
         }
@@ -55,10 +58,15 @@ public class VenueService {
 
     public void ensurePackageBookingSlotAvailable(Long venueId, LocalDate date, LocalTime startTime,
                                                   LocalTime endTime) {
-        Venue venue = findVenueEntity(venueId);
+        Venue venue = findVenueEntityForUpdate(venueId);
         if (!venue.isAvailable()) {
             throw new IllegalArgumentException("The selected venue is currently unavailable.");
         }
+        if (date == null) {
+            throw new IllegalArgumentException("A valid event date and time range are required.");
+        }
+        validateAdvanceBookingDate(date);
+        EventTimeValidator.validate(startTime, endTime);
         if (!isAvailableForSlot(venueId, date, startTime, endTime, null)) {
             throw new DuplicateResourceException("Venue is no longer available for the selected date and time.");
         }
@@ -80,6 +88,11 @@ public class VenueService {
 
     public Venue findVenueEntity(Long id) {
         return venueRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Venue not found"));
+    }
+
+    private Venue findVenueEntityForUpdate(Long id) {
+        return venueRepository.findByIdForUpdate(id)
             .orElseThrow(() -> new ResourceNotFoundException("Venue not found"));
     }
 
@@ -111,6 +124,7 @@ public class VenueService {
         if (date == null) {
             throw new IllegalArgumentException("date is required");
         }
+        validateAdvanceBookingDate(date);
         if (startTime == null) {
             throw new IllegalArgumentException("startTime is required");
         }
@@ -123,8 +137,13 @@ public class VenueService {
         if (guests <= 0) {
             throw new IllegalArgumentException("guests must be greater than 0");
         }
-        if (!startTime.isBefore(endTime)) {
-            throw new IllegalArgumentException("startTime must be before endTime");
+        EventTimeValidator.validate(startTime, endTime);
+    }
+
+    private void validateAdvanceBookingDate(LocalDate date) {
+        LocalDate minimumAllowedDate = LocalDate.now().plusMonths(1);
+        if (date.isBefore(minimumAllowedDate)) {
+            throw new IllegalArgumentException("Event date must be at least one month in advance.");
         }
     }
 

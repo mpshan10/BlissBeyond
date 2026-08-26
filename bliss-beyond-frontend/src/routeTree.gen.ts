@@ -14,6 +14,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as BookingRouteImport } from './routes/booking'
 import { Route as CateringRouteImport } from './routes/catering'
 import { Route as ConfirmationRouteImport } from './routes/confirmation'
+import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as PackagesRouteImport } from './routes/packages'
 import { Route as ProfileRouteImport } from './routes/profile'
@@ -48,6 +49,11 @@ const CateringRoute = CateringRouteImport.update({
 const ConfirmationRoute = ConfirmationRouteImport.update({
   id: '/confirmation',
   path: '/confirmation',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -107,6 +113,7 @@ export interface FileRoutesByFullPath {
   '/booking': typeof BookingRoute
   '/catering': typeof CateringRoute
   '/confirmation': typeof ConfirmationRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/packages': typeof PackagesRoute
   '/profile': typeof ProfileRoute
@@ -124,6 +131,7 @@ export interface FileRoutesByTo {
   '/booking': typeof BookingRoute
   '/catering': typeof CateringRoute
   '/confirmation': typeof ConfirmationRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/packages': typeof PackagesRoute
   '/profile': typeof ProfileRoute
@@ -142,6 +150,7 @@ export interface FileRoutesById {
   '/booking': typeof BookingRoute
   '/catering': typeof CateringRoute
   '/confirmation': typeof ConfirmationRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/packages': typeof PackagesRoute
   '/profile': typeof ProfileRoute
@@ -161,6 +170,7 @@ export interface FileRouteTypes {
     | '/booking'
     | '/catering'
     | '/confirmation'
+    | '/forgot-password'
     | '/login'
     | '/packages'
     | '/profile'
@@ -178,6 +188,7 @@ export interface FileRouteTypes {
     | '/booking'
     | '/catering'
     | '/confirmation'
+    | '/forgot-password'
     | '/login'
     | '/packages'
     | '/profile'
@@ -195,6 +206,7 @@ export interface FileRouteTypes {
     | '/booking'
     | '/catering'
     | '/confirmation'
+    | '/forgot-password'
     | '/login'
     | '/packages'
     | '/profile'
@@ -213,6 +225,7 @@ export interface RootRouteChildren {
   BookingRoute: typeof BookingRoute
   CateringRoute: typeof CateringRoute
   ConfirmationRoute: typeof ConfirmationRoute
+  ForgotPasswordRoute: typeof ForgotPasswordRoute
   LoginRoute: typeof LoginRoute
   PackagesRoute: typeof PackagesRoute
   ProfileRoute: typeof ProfileRoute
@@ -255,6 +268,13 @@ declare module '@tanstack/react-router' {
       path: '/confirmation'
       fullPath: '/confirmation'
       preLoaderRoute: typeof ConfirmationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -354,6 +374,7 @@ const rootRouteChildren: RootRouteChildren = {
   BookingRoute: BookingRoute,
   CateringRoute: CateringRoute,
   ConfirmationRoute: ConfirmationRoute,
+  ForgotPasswordRoute: ForgotPasswordRoute,
   LoginRoute: LoginRoute,
   PackagesRoute: PackagesRoute,
   ProfileRoute: ProfileRoute,

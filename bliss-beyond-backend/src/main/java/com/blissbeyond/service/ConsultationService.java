@@ -50,7 +50,14 @@ public class ConsultationService {
         applyRequest(request, consultation, false);
         validateDirectSlot(consultation);
         consultation.setStatus(ConsultationStatus.SCHEDULED);
-        return map(consultationRepository.save(consultation));
+        Consultation saved = consultationRepository.save(consultation);
+        notificationService.notifyAdmins(
+            current, "CONSULTATION_REQUESTED", "New Consultation Request",
+            "A consultation request was submitted by " + current.getFirstName() + " " + current.getLastName() + ".",
+            "CONSULTATION", saved.getId(), "/prototype/admin/consultations.html",
+            "CONSULTATION_REQUESTED:" + saved.getId()
+        );
+        return map(saved);
     }
 
     @Transactional(readOnly = true)
@@ -100,11 +107,12 @@ public class ConsultationService {
         String title = previousStatus == ConsultationStatus.SCHEDULED
             ? "Consultation rescheduled" : "Consultation confirmed";
         notificationService.notifyOnce(
-            saved.getCustomer(), "CONSULTATION", title,
+            saved.getCustomer(), currentUserService.requireCurrentUser(),
+            previousStatus == ConsultationStatus.SCHEDULED ? "CONSULTATION_RESCHEDULED" : "CONSULTATION_SCHEDULED", title,
             previousStatus == ConsultationStatus.SCHEDULED
                 ? "Your consultation time has been updated."
                 : "Your consultation has been confirmed.",
-            saved.getId(), "/prototype/customer/consultation.html?id=" + saved.getId(),
+            "CONSULTATION", saved.getId(), "/prototype/customer/consultation.html?id=" + saved.getId(),
             "CONSULTATION:" + saved.getId() + ":SCHEDULED:"
                 + saved.getConsultationDate() + ":" + saved.getStartTime() + ":" + saved.getEndTime()
         );
@@ -132,8 +140,8 @@ public class ConsultationService {
         consultation.setStatus(ConsultationStatus.CANCELLED);
         Consultation saved = consultationRepository.save(consultation);
         notificationService.notifyOnce(
-            saved.getCustomer(), "CONSULTATION", "Consultation cancelled",
-            "Your consultation has been cancelled.", saved.getId(),
+            saved.getCustomer(), currentUserService.requireCurrentUser(), "CONSULTATION_CANCELLED", "Consultation cancelled",
+            "Your consultation has been cancelled.", "CONSULTATION", saved.getId(),
             "/prototype/customer/consultation.html?id=" + saved.getId(),
             "CONSULTATION:" + saved.getId() + ":CANCELLED"
         );

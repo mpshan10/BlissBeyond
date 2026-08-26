@@ -25,7 +25,13 @@
   };
   const formatGuests = (value) => {
     const guests = Number(value);
-    return Number.isFinite(guests) ? `Up to ${new Intl.NumberFormat('en-US').format(guests)} Guests` : 'Guest limit not set';
+    return Number.isFinite(guests) ? `PACKAGE: UP TO ${new Intl.NumberFormat('en-US').format(guests)} GUESTS` : 'Guest limit not set';
+  };
+  const formatVenueCapacity = (value) => {
+    const capacity = Number(value);
+    return Number.isFinite(capacity) && capacity > 0
+      ? `VENUE: UP TO ${new Intl.NumberFormat('en-US').format(capacity)} GUESTS`
+      : '';
   };
   const categoryLabel = (value) => String(value || '')
     .toLowerCase()
@@ -39,6 +45,37 @@
     const icon = element.querySelector('i');
     if (icon) element.replaceChildren(icon, document.createTextNode(` ${value}`));
     else element.textContent = value;
+  };
+  const configureBookingLinks = (current) => {
+    let plan = {};
+    try {
+      const raw = window.sessionStorage.getItem('bb_package_plan');
+      plan = raw ? JSON.parse(raw) : {};
+    } catch (error) {
+      plan = {};
+    }
+    const venue = current.venue || {};
+    const guests = Number(plan.guestCount);
+    const availabilityChecked = String(plan.packageSlug || '') === String(current.slug || '')
+      && Number(plan.packageId || current.id) === Number(current.id)
+      && Number(plan.venueId) === Number(venue.id)
+      && /^\d{4}-\d{2}-\d{2}$/.test(String(plan.eventDate || ''))
+      && /^(?:0[9]|1\d|2[0-3]):00$/.test(String(plan.startTime || ''))
+      && /^(?:0[9]|1\d|2[0-3]):00$/.test(String(plan.endTime || ''))
+      && plan.startTime < plan.endTime
+      && Number.isInteger(guests) && guests > 0
+      && (!window.bbIsValidBookingDate || window.bbIsValidBookingDate(plan.eventDate))
+      && guests <= Number(current.maxGuests)
+      && (venue.capacity == null || guests <= Number(venue.capacity))
+      && (plan.packageAvailable === true || plan.available === true);
+    const target = availabilityChecked
+      ? '/prototype/customer/booking.html'
+      : `/prototype/packages.html?packageSlug=${encodeURIComponent(current.slug || '')}#package-availability`;
+    const label = availabilityChecked ? 'Continue to Booking' : 'Check Package Availability';
+    document.querySelectorAll('.hero-actions a[href*="booking.html"], .final-cta a[href*="booking.html"]').forEach((link) => {
+      link.href = target;
+      link.textContent = label;
+    });
   };
   const serviceKey = (value) => {
     const key = normalize(value);
@@ -62,6 +99,7 @@
   const renderPackage = (current) => {
     const venue = current.venue || {};
     const guests = formatGuests(current.maxGuests);
+    const venueCapacity = formatVenueCapacity(venue.capacity);
     const category = categoryLabel(current.category);
     const venueName = venue.name || 'Venue not set';
     const venueLocation = venue.location || 'Location not set';
@@ -76,7 +114,8 @@
     setElementText('.price-card .price', formatMoney(current.finalPrice));
     setElementText('.price-card small', guests);
     setElementText('#venue-title', venueName);
-    setElementText('.venue-content p', `${venueLocation} · ${guests}`);
+    setElementText('.venue-content p', [venueLocation, venueCapacity, guests].filter(Boolean).join(' | '));
+    setElementText('.venue-content p', `${venueLocation} · ${venueCapacity} · ${guests}`);
     setElementText('#cta-title', current.name || '');
     setElementText('.final-cta p', `${formatMoney(current.finalPrice)} · ${guests}`);
 
@@ -84,7 +123,7 @@
       const label = benefit.querySelector('span')?.textContent?.toLowerCase() || '';
       const value = benefit.querySelector('strong');
       if (!value) return;
-      if (label.includes('maximum guests')) value.textContent = Number(current.maxGuests).toLocaleString('en-US');
+      if (label.includes('package guest allowance')) value.textContent = Number(current.maxGuests).toLocaleString('en-US');
       if (label.includes('celebration location')) value.textContent = venueLocation;
       if (label.includes('services included')) value.textContent = String((current.services || []).length);
     });
@@ -130,6 +169,7 @@
     }
 
     document.body.dataset.packageActive = String(Boolean(current.active));
+    configureBookingLinks(current);
   };
 
   fetch(apiUrl(packageSlug ? `/api/packages/${encodeURIComponent(packageSlug)}` : '/api/packages'), {

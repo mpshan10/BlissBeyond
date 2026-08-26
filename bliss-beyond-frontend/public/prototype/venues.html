@@ -90,8 +90,8 @@
         <div class="col-lg-8">
           <div class="row g-2">
             <div class="col-sm-6 col-lg-3"><label class="venue-availability-label mb-1" for="venueEventDate">Event date</label><input id="venueEventDate" class="form-control venue-availability-field" type="date"></div>
-            <div class="col-sm-6 col-lg-3"><label class="venue-availability-label mb-1" for="venueStartTime">Start time</label><div class="venue-time-field is-empty"><span class="venue-time-placeholder" aria-hidden="true">Select start time</span><input id="venueStartTime" class="form-control venue-availability-field venue-time-input" type="time" name="startTime"></div></div>
-            <div class="col-sm-6 col-lg-3"><label class="venue-availability-label mb-1" for="venueEndTime">End time</label><div class="venue-time-field is-empty"><span class="venue-time-placeholder" aria-hidden="true">Select end time</span><input id="venueEndTime" class="form-control venue-availability-field venue-time-input" type="time" name="endTime"></div></div>
+            <div class="col-sm-6 col-lg-3"><label class="venue-availability-label mb-1" for="venueStartTime">Start time</label><select id="venueStartTime" class="form-select venue-availability-field venue-time-input" name="startTime"></select></div>
+            <div class="col-sm-6 col-lg-3"><label class="venue-availability-label mb-1" for="venueEndTime">End time</label><select id="venueEndTime" class="form-select venue-availability-field venue-time-input" name="endTime"></select></div>
             <div class="col-sm-6 col-lg-3"><label class="venue-availability-label mb-1" for="venueGuestCount">Guests</label><input id="venueGuestCount" class="form-control venue-availability-field" type="number" min="1" step="1" placeholder="300"></div>
           </div>
           <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2 mt-3"><div id="venueAvailabilityStatus" role="status" aria-live="polite"></div><button id="venueCheckAvailability" class="btn btn-gold flex-shrink-0" type="button">Check Availability</button></div>
@@ -142,13 +142,7 @@
    
 
     
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <p class="mb-0 text-ink-soft">
-        Showing <strong id="venueCount">44</strong> venues
-      </p>
-    </div>
-    <p class="small text-ink-soft mb-3">Venue hire is an estimate. Final pricing may vary by event date, duration, guest count and venue package.</p>
-<div class="row g-4" id="venueGrid">
+    <div class="row g-4" id="venueGrid">
 
     <div class="col-md-6 col-lg-4 venue-item" data-tags="indoor" data-venue-id="3"
          data-city="yangon"
@@ -187,6 +181,7 @@
           <h4 class="mb-1">Inya Lake Hotel â€“ Mingalar Hall</h4>
           <p class="small text-ink-soft mb-2"><i class="bi bi-geo-alt me-1"></i>No. 37, Kaba Aye Pagoda Road, Mayangone Township, Yangon</p>
           <p class="small text-ink-soft">Mingalar Hall ballroom at Inya Lake Hotel; suitable for weddings and functions.</p>
+          <span class="capacity-pill bb-badge gold mb-3">UP TO 350 GUESTS</span>
           <div class="d-flex justify-content-between align-items-center mt-auto">
             <strong class="text-gold">Request Quotation</strong>
             <a class="btn btn-outline-forest btn-sm"
@@ -210,6 +205,7 @@
           <h4 class="mb-1">Novotel Yangon Max â€“ Pathein Ballroom</h4>
           <p class="small text-ink-soft mb-2"><i class="bi bi-geo-alt me-1"></i>No. 459, Pyay Road, Kamayut Township, Yangon</p>
           <p class="small text-ink-soft">Pathein Ballroom is 277 mÂ² with banquet capacity up to 180 guests.</p>
+          <span class="capacity-pill bb-badge gold mb-3">UP TO 180 GUESTS</span>
           <div class="d-flex justify-content-between align-items-center mt-auto">
             <strong class="text-gold">Request Quotation</strong>
             <a class="btn btn-outline-forest btn-sm"
@@ -233,6 +229,7 @@
           <h4 class="mb-1">Rose Garden Hotel â€“ Swe Daw Banquet Hall</h4>
           <p class="small text-ink-soft mb-2"><i class="bi bi-geo-alt me-1"></i>No. 171, Upper Pansodan Road, Mingalar Taung Nyunt Township, Yangon</p>
           <p class="small text-ink-soft">The hotel lists the event space as Swe Daw & Kattha Room; suitable for private events and weddings.</p>
+          <span class="capacity-pill bb-badge gold mb-3">UP TO 250 GUESTS</span>
           <div class="d-flex justify-content-between align-items-center mt-auto">
             <strong class="text-gold">Request Quotation</strong>
             <a class="btn btn-outline-forest btn-sm"
@@ -990,12 +987,14 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="/prototype/assets/js/main.js"></script>
+<script src="/prototype/assets/js/event-time.js"></script>
 
 <script>
 document.addEventListener("DOMContentLoaded", async function () {
   const eventDateInput = document.getElementById("venueEventDate");
   const startTimeInput = document.getElementById("venueStartTime");
   const endTimeInput = document.getElementById("venueEndTime");
+  window.bbEventTime?.initialize(startTimeInput, endTimeInput);
   const guestCountInput = document.getElementById("venueGuestCount");
 
   const checkButton = document.getElementById("venueCheckAvailability");
@@ -1079,9 +1078,9 @@ document.addEventListener("DOMContentLoaded", async function () {
     grid.innerHTML = venues.map((venue, index) => {
       const region = venueRegion(venue.location);
       const tag = venueTag(venue.type);
-      const capacity = venue.capacity == null
-        ? "Capacity on request"
-        : `Capacity: ${Number(venue.capacity).toLocaleString()} guests`;
+      const capacityMarkup = venue.capacity == null
+        ? ""
+        : `<span class="capacity-pill bb-badge gold mb-3">UP TO ${Number(venue.capacity).toLocaleString()} GUESTS</span>`;
       const numericPrice = Number(venue.price);
       const price = Number.isFinite(numericPrice) && numericPrice > 0
         ? `Estimated from MMK ${numericPrice.toLocaleString()}`
@@ -1095,7 +1094,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             <h4 class="mb-1">${escapeVenueHtml(venue.name)}</h4>
             <p class="small text-ink-soft mb-2"><i class="bi bi-geo-alt me-1"></i>${escapeVenueHtml(venue.location)}</p>
             <p class="small text-ink-soft">${escapeVenueHtml(venue.description || "Venue details available on request.")}</p>
-            <p class="small text-ink-soft mb-3">${escapeVenueHtml(capacity)}</p>
+            ${capacityMarkup}
             <div class="d-flex justify-content-between align-items-center mt-auto"><strong class="text-gold">${escapeVenueHtml(price)}</strong><a class="btn btn-outline-forest btn-sm" href="/prototype/customer/services.html">View Details</a></div>
           </div>
         </article>
@@ -1111,13 +1110,37 @@ document.addEventListener("DOMContentLoaded", async function () {
       const venues = await response.json();
       renderBackendVenueCatalog(venues);
     } catch (error) {
-      console.warn("Backend venue catalog unavailable; using the existing venue cards.");
+      const fallbackCapacities = {
+        2: 250, 3: 200, 4: 350, 5: 180, 6: 150, 7: 200, 8: 150, 9: 250,
+        10: 200, 11: 400, 12: 180, 13: 150, 14: 200, 15: 200, 16: 300,
+        17: 350, 18: 250, 19: 150, 20: 300, 21: 300, 22: 150, 23: 300,
+        24: 100, 25: 250, 26: 300, 27: 100, 28: 100, 29: 200, 30: 350,
+        31: 250, 32: 300, 33: 300, 34: 480, 35: 480, 36: 100, 37: 50,
+        38: 150, 39: 350, 40: 200, 41: 250, 42: 150, 43: 300, 44: 500,
+        45: 200
+      };
+      document.querySelectorAll("#venueGrid .venue-item").forEach((card) => {
+        const venueId = Number(card.dataset.venueId);
+        const capacity = fallbackCapacities[venueId];
+        if (!Number.isFinite(capacity)) return;
+        const body = card.querySelector(".bb-card__body");
+        const description = body?.querySelector("p.small.text-ink-soft:not(.mb-2)");
+        if (!body || !description) return;
+        let badge = body.querySelector(".capacity-pill");
+        if (!badge) {
+          badge = document.createElement("span");
+          badge.className = "capacity-pill bb-badge gold mb-3";
+          description.after(badge);
+        }
+        badge.textContent = `UP TO ${capacity.toLocaleString()} GUESTS`;
+        card.querySelector("[data-venue-card]")?.setAttribute("data-venue-capacity", String(capacity));
+      });
+      console.warn("Backend venue catalog unavailable; using static capacity fallback values.");
     }
   }
 
   setVenuePricePlaceholders();
 
-  const venueCount = document.getElementById("venueCount");
   const noResults = document.getElementById("noResults");
 
   const availableVenueIds = new Set();
@@ -1127,7 +1150,11 @@ document.addEventListener("DOMContentLoaded", async function () {
   // Use the customer's local date without a UTC conversion.
   function getMinimumBookingDate() {
     const today = new Date();
-    return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+    const targetMonth = today.getMonth() + 1;
+    const targetYear = today.getFullYear() + Math.floor(targetMonth / 12);
+    const month = targetMonth % 12;
+    const day = Math.min(today.getDate(), new Date(targetYear, month + 1, 0).getDate());
+    return `${targetYear}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
   }
 
   if (eventDateInput) {
@@ -1516,11 +1543,6 @@ document.addEventListener("DOMContentLoaded", async function () {
       }
     });
 
-    if (venueCount) {
-      venueCount.textContent =
-        visibleCount;
-    }
-
     if (noResults) {
       noResults.classList.toggle(
         "d-none",
@@ -1606,12 +1628,8 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     const startMinutes = Number(startTime.slice(0, 2)) * 60 + Number(startTime.slice(3));
     const endMinutes = Number(endTime.slice(0, 2)) * 60 + Number(endTime.slice(3));
-    if (startMinutes < 480) {
-      setAvailabilityStatus("Start time must be 8:00 AM or later.", true);
-      return false;
-    }
-    if (endMinutes > 1410) {
-      setAvailabilityStatus("End time must be 11:30 PM or earlier.", true);
+    if (!window.bbEventTime?.isWholeHour(startTime) || !window.bbEventTime?.isWholeHour(endTime)) {
+      setAvailabilityStatus("Event times must use whole hours between 9:00 AM and 11:00 PM.", true);
       return false;
     }
     const duration = endMinutes - startMinutes;

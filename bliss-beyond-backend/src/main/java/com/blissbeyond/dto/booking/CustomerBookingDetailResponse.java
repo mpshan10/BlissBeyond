@@ -28,12 +28,16 @@ public record CustomerBookingDetailResponse(
     String packageSlug,
     String packageName,
     JsonNode packageInclusions,
-    BigDecimal packagePriceSnapshot
+    BigDecimal packagePriceSnapshot,
+    PaymentSummary payment,
+    QuotationSummary quotation,
+    List<ConsultationSummary> consultations
 ) {
     public record BookingEvent(
         Long id,
         String eventType,
-        Integer guestCount
+        Integer guestCount,
+        String specialRequirements
     ) {
     }
 
@@ -70,4 +74,10 @@ public record CustomerBookingDetailResponse(
         List<BookingMenuSelection> menuSelections
     ) {
     }
+
+    public record PaymentSummary(String status, BigDecimal totalAmount, BigDecimal paidAmount, BigDecimal remainingAmount) {}
+
+    public record QuotationSummary(Long id, String status, BigDecimal subtotal, BigDecimal total, LocalDateTime expiresAt) {}
+
+    public record ConsultationSummary(Long id, String status, LocalDate consultationDate, LocalTime startTime, LocalTime endTime, String consultationType) {}
 }

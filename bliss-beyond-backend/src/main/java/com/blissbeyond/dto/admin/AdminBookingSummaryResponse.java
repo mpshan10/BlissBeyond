@@ -2,6 +2,7 @@ package com.blissbeyond.dto.admin;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 public record AdminBookingSummaryResponse(
@@ -25,6 +26,9 @@ public record AdminBookingSummaryResponse(
     String bookingType,
     Long packageId,
     String packageName,
-    BigDecimal packagePriceSnapshot
+    BigDecimal packagePriceSnapshot,
+    String paymentStatus,
+    BigDecimal paidAmount,
+    LocalDateTime createdAt
 ) {
 }

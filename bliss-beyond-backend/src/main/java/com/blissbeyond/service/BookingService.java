@@ -16,6 +16,8 @@ import com.blissbeyond.entity.ServiceCustomization;
 import com.blissbeyond.entity.ServiceEntity;
 import com.blissbeyond.entity.Quotation;
 import com.blissbeyond.entity.User;
+import com.blissbeyond.entity.Payment;
+import com.blissbeyond.entity.PaymentStatus;
 import com.blissbeyond.entity.EventStatus;
 import com.blissbeyond.entity.Venue;
 import com.blissbeyond.entity.AddOn;
@@ -33,6 +35,9 @@ import com.blissbeyond.repository.ServiceRepository;
 import com.blissbeyond.repository.AddOnRepository;
 import com.blissbeyond.repository.DiningStyleRepository;
 import com.blissbeyond.repository.PackageBookingSnapshotRepository;
+import com.blissbeyond.repository.PaymentRepository;
+import com.blissbeyond.repository.ConsultationRepository;
+import com.blissbeyond.validation.EventTimeValidator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
@@ -68,6 +73,8 @@ public class BookingService {
     private final VenueService venueService;
     private final PackageBookingSnapshotRepository packageBookingSnapshotRepository;
     private final NotificationService notificationService;
+    private final PaymentRepository paymentRepository;
+    private final ConsultationRepository consultationRepository;
 
     public BookingService(
         BookingRepository bookingRepository,
@@ -83,7 +90,9 @@ public class BookingService {
         ObjectMapper objectMapper,
         VenueService venueService,
         PackageBookingSnapshotRepository packageBookingSnapshotRepository,
-        NotificationService notificationService
+        NotificationService notificationService,
+        PaymentRepository paymentRepository,
+        ConsultationRepository consultationRepository
     ) {
         this.bookingRepository = bookingRepository;
         this.eventRepository = eventRepository;
@@ -99,6 +108,8 @@ public class BookingService {
         this.venueService = venueService;
         this.packageBookingSnapshotRepository = packageBookingSnapshotRepository;
         this.notificationService = notificationService;
+        this.paymentRepository = paymentRepository;
+        this.consultationRepository = consultationRepository;
     }
 
     public List<Booking> listMine() {
@@ -131,6 +142,7 @@ public class BookingService {
     public Booking create(Event event, Quotation quotation, LocalTime startTime, LocalTime endTime, List<BookingServiceSelectionRequest> selectedServices) {
         User current = currentUserService.requireCurrentUser();
         validateBookingDate(event.getEventDate());
+        EventTimeValidator.validate(startTime, endTime);
         if (event.getVenue() != null) {
             venueService.ensureVenueCapacity(event.getVenue().getId(), event.getGuestCount());
             venueService.ensureBookingSlotAvailable(
@@ -152,6 +164,12 @@ public class BookingService {
         event.setStatus(EventStatus.BOOKED);
         booking.setStatus(BookingStatus.PENDING);
         booking = bookingRepository.save(booking);
+        notificationService.notifyAdmins(
+            current, "BOOKING_CREATED", "New Booking Request",
+            "A new booking request was submitted by " + current.getFirstName() + " " + current.getLastName() + ".",
+            "BOOKING", booking.getId(), "/prototype/admin/bookings.html?bookingId=" + booking.getId(),
+            "BOOKING_CREATED:" + booking.getId()
+        );
         persistSelectedServices(event, selectedServices);
         eventRepository.save(event);
         return booking;
@@ -202,7 +220,7 @@ public class BookingService {
     private void validateBookingDate(LocalDate eventDate) {
         LocalDate minimumAllowedDate = LocalDate.now().plusMonths(1);
         if (eventDate == null || eventDate.isBefore(minimumAllowedDate)) {
-            throw new IllegalArgumentException("Bookings must be made at least one month before the event date.");
+            throw new IllegalArgumentException("Event date must be at least one month in advance.");
         }
     }
 
@@ -492,8 +510,8 @@ public class BookingService {
             case PENDING -> "Your booking status was updated.";
         };
         notificationService.notifyOnce(
-            customer, "BOOKING", title, message, saved.getId(),
-            "/prototype/customer/booking-status.html?id=" + saved.getId(),
+            customer, currentUserService.requireCurrentUser(), "BOOKING_" + status, title, message,
+            "BOOKING", saved.getId(), "/prototype/customer/booking-status.html?id=" + saved.getId(),
             "BOOKING:" + saved.getId() + ":" + status
         );
         return saved;
@@ -569,11 +587,25 @@ public class BookingService {
             booking.getEndTime(),
             event != null ? event.getGuestCount() : null,
             resolveEstimatedTotal(booking),
-            booking.getBookingType().name(),
+            booking.getBookingType() == null ? BookingType.CUSTOM.name() : booking.getBookingType().name(),
             booking.getEventPackage() != null ? booking.getEventPackage().getId() : null,
-            booking.getEventPackage() != null ? booking.getEventPackage().getName() : null,
-            packageSnapshot(booking) != null ? packageSnapshot(booking).getFinalPrice() : null
+            packageSnapshot(booking) != null ? packageSnapshot(booking).getPackageName() : null,
+            packageSnapshot(booking) != null ? packageSnapshot(booking).getFinalPrice() : null,
+            latestPaymentStatus(booking), paidAmount(booking), remainingAmount(booking)
         );
+    }
+
+    private String latestPaymentStatus(Booking booking) {
+        List<Payment> payments = paymentRepository.findByBookingIdOrderByIdAsc(booking.getId());
+        if (payments.isEmpty()) return null;
+        Payment payment = payments.get(payments.size() - 1);
+        return payment.getPaymentStatus() == null ? null : payment.getPaymentStatus().name();
+    }
+
+    private BigDecimal paidAmount(Booking booking) {
+        return paymentRepository.findByBookingIdOrderByIdAsc(booking.getId()).stream()
+            .filter(payment -> payment.getPaymentStatus() == com.blissbeyond.entity.PaymentStatus.PAID)
+            .map(Payment::getAmount).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     private AdminBookingSummaryResponse toAdminSummaryResponse(Booking booking) {
@@ -606,7 +638,8 @@ public class BookingService {
             booking.getBookingType().name(),
             booking.getEventPackage() != null ? booking.getEventPackage().getId() : null,
             booking.getEventPackage() != null ? booking.getEventPackage().getName() : null,
-            packageSnapshot(booking) != null ? packageSnapshot(booking).getFinalPrice() : null
+            packageSnapshot(booking) != null ? packageSnapshot(booking).getFinalPrice() : null,
+            latestPaymentStatus(booking), paidAmount(booking), booking.getCreatedAt()
         );
     }
 
@@ -618,6 +651,7 @@ public class BookingService {
         CustomerBookingDetailResponse.BookingCateringDetail catering = null;
 
         for (EventService eventService : eventServices) {
+            if (!eventService.isSelected()) continue;
             ServiceEntity service = eventService.getService();
             JsonNode customization = readCustomization(eventService);
             CustomerBookingDetailResponse.BookingServiceItem serviceItem = new CustomerBookingDetailResponse.BookingServiceItem(
@@ -649,13 +683,14 @@ public class BookingService {
             new CustomerBookingDetailResponse.BookingEvent(
                 event != null ? event.getId() : null,
                 event != null ? event.getEventType() : null,
-                event != null ? event.getGuestCount() : null
+                event != null ? event.getGuestCount() : null,
+                event != null ? event.getSpecialRequirements() : null
             ),
             new CustomerBookingDetailResponse.BookingVenue(
                 venue != null ? venue.getId() : booking.getVenueId(),
                 venue != null ? venue.getName() : null,
                 venue != null ? venue.getLocation() : null,
-                venue != null ? venue.getPrice() : null
+                booking.getBookingType() == BookingType.PACKAGE && venue != null ? venue.getPrice() : null
             ),
             booking.getEventDate(),
             booking.getStartTime(),
@@ -664,13 +699,45 @@ public class BookingService {
             catering,
             resolveEstimatedTotal(booking),
             booking.getQuotation() != null ? booking.getQuotation().getId() : null,
-            booking.getBookingType().name(),
+            booking.getBookingType() == null ? BookingType.CUSTOM.name() : booking.getBookingType().name(),
             booking.getEventPackage() != null ? booking.getEventPackage().getId() : null,
             packageSnapshot(booking) != null ? packageSnapshot(booking).getPackageSlug() : null,
-            booking.getEventPackage() != null ? booking.getEventPackage().getName() : null,
+            packageSnapshot(booking) != null ? packageSnapshot(booking).getPackageName() : null,
             packageInclusions(booking),
-            packageSnapshot(booking) != null ? packageSnapshot(booking).getFinalPrice() : null
+            packageSnapshot(booking) != null ? packageSnapshot(booking).getFinalPrice() : null,
+            paymentSummary(booking), quotationSummary(booking), consultationSummaries(booking)
         );
+    }
+
+    private CustomerBookingDetailResponse.PaymentSummary paymentSummary(Booking booking) {
+        List<Payment> payments = paymentRepository.findByBookingIdOrderByIdAsc(booking.getId());
+        BigDecimal total = payments.stream().map(Payment::getAmount).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal paid = payments.stream().filter(item -> item.getPaymentStatus() == PaymentStatus.PAID)
+            .map(Payment::getAmount).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
+        Payment latest = payments.isEmpty() ? null : payments.get(payments.size() - 1);
+        return new CustomerBookingDetailResponse.PaymentSummary(
+            latest == null || latest.getPaymentStatus() == null ? null : latest.getPaymentStatus().name(),
+            total, paid, total.subtract(paid).max(BigDecimal.ZERO));
+    }
+
+    private CustomerBookingDetailResponse.QuotationSummary quotationSummary(Booking booking) {
+        Quotation quotation = booking.getQuotation();
+        return quotation == null ? null : new CustomerBookingDetailResponse.QuotationSummary(
+            quotation.getId(), quotation.getStatus() == null ? null : quotation.getStatus().name(),
+            quotation.getSubtotal(), quotation.getTotal(), quotation.getExpiresAt());
+    }
+
+    private List<CustomerBookingDetailResponse.ConsultationSummary> consultationSummaries(Booking booking) {
+        if (booking.getCustomer() == null) return List.of();
+        return consultationRepository.findByCustomerIdOrderByCreatedAtDesc(booking.getCustomer().getId()).stream()
+            .map(item -> new CustomerBookingDetailResponse.ConsultationSummary(
+                item.getId(), item.getStatus() == null ? null : item.getStatus().name(), item.getConsultationDate(),
+                item.getStartTime(), item.getEndTime(), item.getConsultationType()))
+            .toList();
+    }
+
+    private BigDecimal remainingAmount(Booking booking) {
+        return resolveEstimatedTotal(booking).subtract(paidAmount(booking)).max(BigDecimal.ZERO);
     }
 
     private JsonNode readCustomization(EventService eventService) {

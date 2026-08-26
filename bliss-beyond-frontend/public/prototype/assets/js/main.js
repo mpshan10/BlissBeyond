@@ -54,6 +54,11 @@ const BB_AUTH_KEYS = {
   returnUrl: 'bb_auth_return_url'
 };
 
+const BB_PASSWORD_RESET_KEYS = {
+  flow: 'bb_password_reset_flow',
+  cooldownUntil: 'bb_password_reset_cooldown_until'
+};
+
 let bbNotificationState = [];
 
 function bbRead(key) {
@@ -98,6 +103,21 @@ function bbGetEventContext() {
     eventTime: '6:00 PM',
     guests: 150
   };
+}
+
+function bbGetMinimumBookingDate() {
+  const today = new Date();
+  const targetMonth = today.getMonth() + 1;
+  const targetYear = today.getFullYear() + Math.floor(targetMonth / 12);
+  const month = targetMonth % 12;
+  const lastDay = new Date(targetYear, month + 1, 0).getDate();
+  const day = Math.min(today.getDate(), lastDay);
+  return `${targetYear}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+}
+
+function bbIsValidBookingDate(value) {
+  return /^\d{4}-\d{2}-\d{2}$/.test(String(value || ''))
+    && String(value) >= bbGetMinimumBookingDate();
 }
 
 function bbSetEventContext(context) {
@@ -159,6 +179,55 @@ function bbSetBookingMode(mode) {
   const normalized = String(mode || '').toUpperCase();
   if (normalized !== 'PACKAGE' && normalized !== 'CUSTOM') return false;
   return bbWrite(BB_STATE_KEYS.bookingMode, normalized);
+}
+
+function bbRemoveStateKeys(keys) {
+  keys.forEach((key) => {
+    try {
+      window.sessionStorage.removeItem(key);
+    } catch (error) {
+      // Storage may be unavailable; the in-memory flow can still continue.
+    }
+  });
+}
+
+function bbRemoveCustomizeStorageKeys(keys) {
+  bbRemoveStateKeys(keys);
+  keys.forEach((key) => {
+    try {
+      window.localStorage.removeItem(key);
+    } catch (error) {
+      // Storage may be unavailable; the in-memory flow can still continue.
+    }
+  });
+}
+
+function clearCustomizeBookingDraft() {
+  bbRemoveCustomizeStorageKeys([
+    BB_STATE_KEYS.venue,
+    BB_STATE_KEYS.event,
+    BB_STATE_KEYS.services,
+    BB_STATE_KEYS.serviceData,
+    BB_STATE_KEYS.catering,
+    BB_STATE_KEYS.bookingMode,
+    'bbVenueEventDetails',
+    'bbEventContext',
+    'bbEventType',
+    'bbEventDate',
+    'bbEventGuests',
+    'bbCateringGuests',
+    'bbEstimatedPhotographyPrice',
+    'bbPendingDiningStyle',
+    'bbPendingAddon',
+    'bbPendingDecorationTheme'
+  ]);
+}
+
+function clearPackageBookingDraft() {
+  bbRemoveStateKeys([BB_STATE_KEYS.packagePlan]);
+  if (bbGetBookingMode() === 'PACKAGE') {
+    bbRemoveStateKeys([BB_STATE_KEYS.bookingMode]);
+  }
 }
 
 function bbReadAuthFromStorage(storage) {
@@ -295,6 +364,51 @@ function bbApplyCustomerProfile(profile) {
   });
   document.querySelectorAll('[data-profile-name]').forEach((element) => {
     element.textContent = label;
+  });
+}
+
+function bbInitCustomerSidebar() {
+  if (!window.location.pathname.startsWith('/prototype/customer/')) return;
+
+  const sidebars = document.querySelectorAll('.bb-side');
+  if (!sidebars.length) return;
+
+  const paymentPath = '/prototype/customer/payment.html';
+  sidebars.forEach((sidebar) => {
+    const bookingHeading = [...sidebar.querySelectorAll('h6')].find((heading) =>
+      heading.textContent.trim().toLowerCase() === 'my bookings'
+    );
+    if (!bookingHeading) return;
+
+    const nextHeading = [...sidebar.children].find((child) => child.tagName === 'H6' && child !== bookingHeading
+      && Boolean(bookingHeading.compareDocumentPosition(child) & Node.DOCUMENT_POSITION_FOLLOWING));
+    const existingLinks = [];
+    let current = bookingHeading.nextElementSibling;
+    while (current && current !== nextHeading) {
+      if (current.matches('a')) existingLinks.push(current);
+      current = current.nextElementSibling;
+    }
+
+    const paymentLink = existingLinks.find((link) => link.getAttribute('href')?.split('?')[0] === paymentPath);
+    if (!paymentLink) {
+      const link = document.createElement('a');
+      link.href = paymentPath;
+      link.innerHTML = '<i class="bi bi-credit-card me-2"></i>Payment';
+      const historyLink = existingLinks.find((link) => link.getAttribute('href')?.includes('booking-history.html'));
+      if (historyLink) historyLink.insertAdjacentElement('afterend', link);
+      else if (nextHeading) nextHeading.insertAdjacentElement('beforebegin', link);
+      else sidebar.appendChild(link);
+    }
+
+    const currentPath = window.location.pathname.split('/').pop().toLowerCase();
+    sidebar.querySelectorAll('a').forEach((link) => {
+      const linkPath = link.getAttribute('href')?.split('?')[0] || '';
+      if (!linkPath.startsWith('/prototype/customer/')) return;
+      const isActive = linkPath.split('/').pop().toLowerCase() === currentPath;
+      link.classList.toggle('active', isActive);
+      if (isActive) link.setAttribute('aria-current', 'page');
+      else link.removeAttribute('aria-current');
+    });
   });
 }
 
@@ -633,13 +747,24 @@ async function bbRenderCustomerPayment() {
   const root = document.querySelector('[data-payment-page]');
   if (!root) return;
 
-  const bookingId = Number(new URLSearchParams(window.location.search).get('bookingId'));
+  const requestedBookingId = new URLSearchParams(window.location.search).get('bookingId');
+  const bookingId = Number(requestedBookingId);
   const content = root.querySelector('[data-payment-content]');
   const empty = root.querySelector('[data-payment-empty]');
+  const picker = root.querySelector('[data-payment-picker]');
+  const bookingList = root.querySelector('[data-payment-booking-list]');
   const error = root.querySelector('[data-payment-error]');
   const message = root.querySelector('[data-payment-message]');
-  const createButton = root.querySelector('[data-payment-create]');
+  const submitPanel = root.querySelector('[data-payment-submit-panel]');
+  const submitForm = root.querySelector('[data-payment-submit-form]');
+  const submitButton = root.querySelector('[data-payment-submit]');
+  const submitAmount = root.querySelector('[data-payment-submit-amount]');
+  const paymentMethod = root.querySelector('[data-payment-method]');
+  const paymentReference = root.querySelector('[data-payment-reference]');
+  const submitError = root.querySelector('[data-payment-submit-error]');
   const records = root.querySelector('[data-payment-records]');
+  const bookingContext = root.querySelector('[data-payment-booking-context]');
+  let currentBooking = null;
   const show = (element, visible) => element?.classList.toggle('d-none', !visible);
   const setMessage = (element, value) => {
     if (element) element.textContent = value || '';
@@ -650,10 +775,72 @@ async function bbRenderCustomerPayment() {
     show(error, Boolean(value));
   };
 
-  if (!Number.isInteger(bookingId) || bookingId <= 0) {
+  const setSubmitError = (value) => {
+    if (submitError) submitError.textContent = value || '';
+    show(submitError, Boolean(value));
+  };
+
+  const bookingTypeLabel = (booking) => String(booking?.bookingType || '').toUpperCase() === 'PACKAGE' ? 'Package' : 'Customize';
+  const paymentStatusLabel = (summary) => {
+    const payments = Array.isArray(summary?.payments) ? summary.payments : [];
+    if (payments.some((payment) => String(payment.paymentStatus || '').toUpperCase() === 'PAID')) return 'Payment Confirmed';
+    if (payments.some((payment) => String(payment.paymentStatus || '').toUpperCase() === 'PENDING')) return 'Payment Submitted · Awaiting Verification';
+    if (String(summary?.nextPaymentType || '').toUpperCase() === 'DEPOSIT') return 'Awaiting Deposit';
+    return 'No payment due';
+  };
+
+  const renderBookingPicker = async () => {
     show(content, false);
-    show(empty, true);
-    setError('Booking information is missing.');
+    show(empty, false);
+    show(picker, true);
+    setError('');
+    if (!bookingList) return;
+    bookingList.innerHTML = '<p class="text-ink-soft mb-0">Loading your bookings...</p>';
+    try {
+      const bookings = await bbFetchCustomerJson(window.bbApiUrl('/api/customer/bookings'), { method: 'GET' });
+      const candidates = Array.isArray(bookings)
+        ? bookings.filter((booking) => !['CANCELLED', 'COMPLETED'].includes(String(booking.status || '').toUpperCase()))
+        : [];
+      const summaries = await Promise.all(candidates.map(async (booking) => {
+        try {
+          return { booking, summary: await bbFetchCustomerJson(window.bbApiUrl(`/api/customer/bookings/${encodeURIComponent(booking.id)}/payment-summary`), { method: 'GET' }) };
+        } catch (requestError) {
+          return { booking, summary: null };
+        }
+      }));
+      if (!summaries.length) {
+        show(picker, false);
+        show(empty, true);
+        return;
+      }
+      bookingList.innerHTML = summaries.map(({ booking, summary }) => {
+        const status = paymentStatusLabel(summary);
+        const canPay = String(booking.status || '').toUpperCase() === 'AWAITING_DEPOSIT'
+          && status === 'Awaiting Deposit';
+        const reference = booking.ref || `BK-${String(booking.id || '').padStart(4, '0')}`;
+        const amount = summary ? bbFormatMmkDisplay(summary.nextPaymentAmount || summary.depositRequired || 0) : 'Not available';
+        return `<div class="border rounded-4 p-3 d-flex flex-wrap justify-content-between align-items-center gap-3">
+          <div><div class="d-flex flex-wrap align-items-center gap-2"><strong>${bbEscapeHtml(reference)}</strong><span class="badge text-bg-light">${bbEscapeHtml(bookingTypeLabel(booking))}</span></div>
+          <div class="small text-ink-soft">${bbEscapeHtml(booking.event?.eventType || 'Event')} · ${bbEscapeHtml(bbFormatDateDisplay(booking.eventDate))} · ${bbEscapeHtml(booking.venue?.name || 'Venue not set')}</div>
+          <div class="small mt-1">${bbEscapeHtml(status)}${canPay ? ` · Deposit ${bbEscapeHtml(amount)}` : ''}</div></div>
+          <a class="btn ${canPay ? 'btn-gold' : 'btn-outline-forest'} btn-sm" href="/prototype/customer/payment.html?bookingId=${encodeURIComponent(booking.id)}">${canPay ? 'Pay Deposit' : 'View Payment'}</a>
+        </div>`;
+      }).join('');
+    } catch (requestError) {
+      if (requestError?.status === 401) {
+        const target = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+        bbSetAuthReturnUrl(target);
+        window.location.href = `/prototype/login.html?returnUrl=${encodeURIComponent(target)}`;
+        return;
+      }
+      show(picker, false);
+      show(empty, true);
+      setError('Unable to load your payment bookings right now.');
+    }
+  };
+
+  if (!Number.isInteger(bookingId) || bookingId <= 0 || !requestedBookingId) {
+    renderBookingPicker();
     return;
   }
 
@@ -671,30 +858,39 @@ async function bbRenderCustomerPayment() {
 
     const nextType = String(summary.nextPaymentType || '').toUpperCase();
     const nextAmount = Number(summary.nextPaymentAmount || 0);
+    const canSubmit = String(currentBooking?.status || '').toUpperCase() === 'AWAITING_DEPOSIT';
     const payments = Array.isArray(summary.payments) ? summary.payments : [];
+    const paidDeposit = payments.some((payment) => String(payment.paymentType || '').toUpperCase() === 'DEPOSIT'
+      && String(payment.paymentStatus || '').toUpperCase() === 'PAID');
     const pendingNext = payments.some((payment) =>
       String(payment.paymentStatus || '').toUpperCase() === 'PENDING'
       && String(payment.paymentType || '').toUpperCase() === nextType
     );
 
-    if (Number(summary.remainingBalance || 0) === 0 && !nextType) {
+    if (paidDeposit) {
+      text('[data-payment-next-type]', 'Payment Confirmed');
+      text('[data-payment-next-message]', `Amount paid ${bbFormatMmkDisplay(summary.amountPaid)}. Your deposit has been confirmed.`);
+      text('[data-payment-pending-message]', '');
+      show(submitPanel, false);
+    } else if (Number(summary.remainingBalance || 0) === 0 && !nextType) {
       text('[data-payment-next-type]', 'Payment complete');
       text('[data-payment-next-message]', 'Payment complete. No further payment is required.');
-      show(createButton, false);
+      show(submitPanel, false);
     } else if (nextType) {
       text('[data-payment-next-type]', nextType);
       text('[data-payment-next-amount]', bbFormatMmkDisplay(nextAmount));
       text('[data-payment-next-message]', pendingNext
-        ? `${nextType === 'DEPOSIT' ? 'Deposit' : 'Balance'} payment request pending.`
+        ? 'Payment Submitted · Awaiting Verification'
         : 'Payment requests remain pending until payment confirmation is available.');
-      text('[data-payment-pending-message]', pendingNext ? `${nextType === 'DEPOSIT' ? 'Deposit' : 'Balance'} payment request pending` : '');
-      show(createButton, !pendingNext);
-      if (createButton) createButton.textContent = `Create ${nextType === 'DEPOSIT' ? 'Deposit' : 'Balance'} Payment Request`;
+      text('[data-payment-pending-message]', pendingNext ? 'The admin will verify your payment before your booking is confirmed.' : '');
+      const canSubmitDeposit = nextType === 'DEPOSIT' && !pendingNext && canSubmit;
+      show(submitPanel, canSubmitDeposit);
+      if (submitAmount) submitAmount.textContent = bbFormatMmkDisplay(nextAmount);
     } else {
       text('[data-payment-next-type]', 'No payment due');
       text('[data-payment-next-amount]', bbFormatMmkDisplay(0));
-      text('[data-payment-next-message]', 'No further payment is required.');
-      show(createButton, false);
+      text('[data-payment-next-message]', canSubmit ? 'No further payment is required.' : 'Payment requests are available only after the booking is approved and awaiting deposit.');
+      show(submitPanel, false);
     }
 
     if (records) {
@@ -709,10 +905,22 @@ async function bbRenderCustomerPayment() {
     }
   };
 
+  const renderBookingContext = (booking) => {
+    if (!bookingContext) return;
+    const type = String(booking.bookingType || '').toUpperCase() === 'PACKAGE' ? 'Package' : 'Customize';
+    bookingContext.textContent = `${booking.ref || `BK-${booking.id}`} · ${type} · ${booking.event?.eventType || 'Event'} · ${bbFormatDateDisplay(booking.eventDate)} · ${booking.venue?.name || 'Venue not set'}`;
+  };
+
   const loadSummary = async () => bbFetchCustomerJson(window.bbApiUrl(`/api/customer/bookings/${encodeURIComponent(bookingId)}/payment-summary`), { method: 'GET' });
 
   try {
-    render(await loadSummary());
+    const [summary, booking] = await Promise.all([
+      loadSummary(),
+      bbFetchCustomerJson(window.bbApiUrl(`/api/customer/bookings/${encodeURIComponent(bookingId)}`), { method: 'GET' })
+    ]);
+    currentBooking = booking;
+    renderBookingContext(booking);
+    render(summary);
   } catch (requestError) {
     if (requestError?.status === 401) {
       const target = `${window.location.pathname}${window.location.search}${window.location.hash}`;
@@ -726,21 +934,36 @@ async function bbRenderCustomerPayment() {
     return;
   }
 
-  createButton?.addEventListener('click', async () => {
-    createButton.disabled = true;
-    const originalText = createButton.textContent;
-    createButton.textContent = 'Creating request...';
+  submitForm?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    setSubmitError('');
+    const method = paymentMethod?.value || '';
+    const reference = paymentReference?.value.trim() || '';
+    if (!method) {
+      setSubmitError('Please select a payment method.');
+      paymentMethod?.focus();
+      return;
+    }
+
+    submitButton.disabled = true;
+    const originalText = submitButton.textContent;
+    submitButton.textContent = 'Submitting payment...';
     setError('');
     try {
-      await bbFetchCustomerJson(window.bbApiUrl(`/api/customer/bookings/${encodeURIComponent(bookingId)}/payments`), { method: 'POST' });
+      await bbFetchCustomerJson(window.bbApiUrl(`/api/customer/bookings/${encodeURIComponent(bookingId)}/payments`), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({ paymentMethod: method, transactionReference: reference || null })
+      });
       render(await loadSummary());
-      setMessage(message, 'Payment request created. Awaiting payment confirmation.');
+      setMessage(message, 'Deposit Submitted · Awaiting Verification');
       show(message, true);
     } catch (requestError) {
-      setError(requestError?.status === 403 ? 'Payment information could not be loaded.' : (requestError?.message || 'Unable to create payment request.'));
+      const status = requestError?.status;
+      setSubmitError(status === 409 ? 'A payment request is already awaiting verification.' : status === 400 ? 'This booking is not currently eligible for payment.' : 'Payment could not be submitted.');
     } finally {
-      createButton.disabled = false;
-      createButton.textContent = originalText;
+      submitButton.disabled = false;
+      submitButton.textContent = originalText;
     }
   });
 }
@@ -793,6 +1016,39 @@ function bbSetAuthReturnUrl(value) {
 
 function bbClearAuthReturnUrl() {
   window.sessionStorage.removeItem(BB_AUTH_KEYS.returnUrl);
+}
+
+function bbReadPasswordResetFlow() {
+  try {
+    const raw = window.sessionStorage.getItem(BB_PASSWORD_RESET_KEYS.flow);
+    return raw ? JSON.parse(raw) : null;
+  } catch (error) {
+    return null;
+  }
+}
+
+function bbWritePasswordResetFlow(flow) {
+  if (!flow) {
+    window.sessionStorage.removeItem(BB_PASSWORD_RESET_KEYS.flow);
+    return;
+  }
+  window.sessionStorage.setItem(BB_PASSWORD_RESET_KEYS.flow, JSON.stringify(flow));
+}
+
+function bbClearPasswordResetFlow() {
+  window.sessionStorage.removeItem(BB_PASSWORD_RESET_KEYS.flow);
+}
+
+function bbGetPasswordResetCooldownUntil() {
+  return Number(window.sessionStorage.getItem(BB_PASSWORD_RESET_KEYS.cooldownUntil) || 0);
+}
+
+function bbSetPasswordResetCooldownUntil(value) {
+  if (!value || Number(value) <= Date.now()) {
+    window.sessionStorage.removeItem(BB_PASSWORD_RESET_KEYS.cooldownUntil);
+    return;
+  }
+  window.sessionStorage.setItem(BB_PASSWORD_RESET_KEYS.cooldownUntil, String(Number(value)));
 }
 
 function bbResolveAuthRedirect(fallback = '/prototype/customer/dashboard.html') {
@@ -884,14 +1140,15 @@ function bbClearNotificationUi() {
 
 function bbNotificationBadgeCount(count) {
   document.querySelectorAll('[data-notification-bell]').forEach((button) => {
+    button.classList.add('bb-notification-bell');
     let badge = button.querySelector('[data-notification-count]');
     if (!badge) {
       badge = document.createElement('span');
-      badge.className = 'badge rounded-pill bg-gold text-forest ms-1';
+      badge.className = 'bb-notification-count';
       badge.dataset.notificationCount = '';
       button.appendChild(badge);
     }
-    badge.textContent = count > 0 ? String(count) : '';
+    badge.textContent = count > 99 ? '99+' : count > 0 ? String(count) : '';
     badge.hidden = count <= 0;
   });
 }
@@ -899,7 +1156,7 @@ function bbNotificationBadgeCount(count) {
 function bbRenderNotifications(list, state = bbNotificationState) {
   if (!list) return;
   if (!state.length) {
-    list.innerHTML = '<li class="text-ink-soft">No notifications yet.</li>';
+    list.innerHTML = '<li class="text-ink-soft">You\'re all caught up.</li>';
     return;
   }
   list.innerHTML = state.map((notification) => `
@@ -916,23 +1173,41 @@ async function bbLoadCustomerNotifications() {
   if (!list) return;
   list.innerHTML = '<li class="text-ink-soft">Loading notifications...</li>';
   try {
-    const data = await bbFetchCustomerJson(window.bbApiUrl('/api/customer/notifications'), { method: 'GET' });
+    const [data, unreadCount] = await Promise.all([
+      bbFetchCustomerJson(window.bbApiUrl('/api/notifications?limit=20'), { method: 'GET' }),
+      bbFetchCustomerJson(window.bbApiUrl('/api/notifications/unread-count'), { method: 'GET' })
+    ]);
     bbNotificationState = Array.isArray(data) ? data : [];
-    bbNotificationBadgeCount(bbNotificationState.filter((item) => !item.read).length);
+    bbNotificationBadgeCount(Number(unreadCount) || 0);
     bbRenderNotifications(list);
   } catch (error) {
     bbNotificationState = [];
     bbNotificationBadgeCount(0);
-    list.innerHTML = '<li class="text-ink-soft">Unable to load notifications right now.</li>';
+    list.innerHTML = '<li class="text-ink-soft">Unable to load notifications.</li>';
     console.warn('Customer notifications unavailable.');
   }
 }
 
 function bbInitCustomerNotifications() {
-  const modal = document.querySelector('#notifyModal');
-  const bells = [...document.querySelectorAll('[data-bs-target="#notifyModal"]')];
   const authUser = bbGetAuthUser();
-  if (!modal || !bells.length || !authUser?.roles?.includes('ROLE_CUSTOMER')) return;
+  if (!authUser?.roles?.includes('ROLE_CUSTOMER')) return;
+
+  let modal = document.querySelector('#notifyModal');
+  let bells = [...document.querySelectorAll('[data-bs-target="#notifyModal"]')];
+  if (!modal) {
+    const actions = document.querySelector('.bb-nav .container-fluid > .d-flex');
+    if (!actions) return;
+    const bell = document.createElement('button');
+    bell.type = 'button';
+    bell.className = 'btn btn-outline-forest btn-sm bb-notification-bell';
+    bell.dataset.bsToggle = 'modal';
+    bell.dataset.bsTarget = '#notifyModal';
+    bell.innerHTML = '<i class="bi bi-bell"></i><span class="visually-hidden">Notifications</span>';
+    actions.prepend(bell);
+    document.body.insertAdjacentHTML('beforeend', '<div class="modal fade" id="notifyModal" tabindex="-1" aria-labelledby="notifyModalTitle" aria-hidden="true"><div class="modal-dialog modal-dialog-centered"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="notifyModalTitle">Notifications</h5><button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div><div class="modal-body"><ul class="list-unstyled d-grid gap-2 mb-0" data-notification-list></ul></div></div></div></div>');
+    modal = document.querySelector('#notifyModal');
+    bells = [bell];
+  }
 
   bells.forEach((button) => {
     button.dataset.notificationBell = '';
@@ -950,11 +1225,11 @@ function bbInitCustomerNotifications() {
     const notification = bbNotificationState.find((entry) => String(entry.id) === String(item.dataset.notificationId));
     if (!notification) return;
     try {
-      await bbFetchCustomerJson(window.bbApiUrl(`/api/customer/notifications/${encodeURIComponent(notification.id)}/read`), { method: 'PATCH' });
+      await bbFetchCustomerJson(window.bbApiUrl(`/api/notifications/${encodeURIComponent(notification.id)}/read`), { method: 'PATCH' });
       notification.read = true;
       bbNotificationBadgeCount(bbNotificationState.filter((entry) => !entry.read).length);
       bbRenderNotifications(list);
-      const path = String(notification.relatedPath || '');
+      const path = String(notification.actionUrl || '');
       if (path.startsWith('/prototype/')) window.location.href = path;
     } catch (error) {
       console.warn('Unable to mark notification as read.');
@@ -967,7 +1242,7 @@ function bbInitCustomerNotifications() {
   markAll.textContent = 'Mark all as read';
   markAll.addEventListener('click', async () => {
     try {
-      await bbFetchCustomerJson(window.bbApiUrl('/api/customer/notifications/read-all'), { method: 'PATCH' });
+      await bbFetchCustomerJson(window.bbApiUrl('/api/notifications/read-all'), { method: 'PATCH' });
       bbNotificationState.forEach((notification) => { notification.read = true; });
       bbNotificationBadgeCount(0);
       bbRenderNotifications(list);
@@ -1058,7 +1333,9 @@ function bbBookingStatusLabel(status) {
   const key = String(status || '').toUpperCase();
   switch (key) {
     case 'PENDING':
-      return 'Pending';
+      return 'Pending review';
+    case 'AWAITING_DEPOSIT':
+      return 'Awaiting deposit';
     case 'CONFIRMED':
       return 'Confirmed';
     case 'CANCELLED':
@@ -1675,6 +1952,7 @@ async function bbRenderCustomerBookingHistory() {
   const bodyEl = root.querySelector('[data-booking-history-body]');
   const noteEl = root.querySelector('[data-booking-history-note]');
   const statusFilter = root.querySelector('[data-booking-history-filter]');
+  const typeFilter = root.querySelector('[data-booking-history-type-filter]');
   const searchInput = root.querySelector('[data-booking-history-search]');
 
   const rows = [];
@@ -1682,11 +1960,13 @@ async function bbRenderCustomerBookingHistory() {
 
   const syncRows = () => {
     const query = searchInput?.value?.trim().toLowerCase() || '';
-    const status = statusFilter?.value || 'all';
+      const status = statusFilter?.value || 'all';
+    const type = typeFilter?.value || 'all';
     rows.forEach((row) => {
       const matchesQuery = !query || row.dataset.searchableText.includes(query);
       const matchesStatus = status === 'all' || row.dataset.status === status;
-      row.style.display = matchesQuery && matchesStatus ? '' : 'none';
+      const matchesType = type === 'all' || row.dataset.type === type;
+      row.style.display = matchesQuery && matchesStatus && matchesType ? '' : 'none';
     });
     if (noteEl) {
       const visible = rows.filter((row) => row.style.display !== 'none').length;
@@ -1698,7 +1978,7 @@ async function bbRenderCustomerBookingHistory() {
 
   const renderEmpty = (message) => {
     if (!bodyEl) return;
-    bodyEl.innerHTML = `<tr><td colspan="8" class="text-center text-ink-soft py-4">${bbEscapeHtml(message)}</td></tr>`;
+    bodyEl.innerHTML = `<tr><td colspan="9" class="text-center text-ink-soft py-4">${bbEscapeHtml(message)}</td></tr>`;
     if (noteEl) noteEl.textContent = message;
   };
 
@@ -1728,6 +2008,8 @@ async function bbRenderCustomerBookingHistory() {
       const statusClass = bbBookingStatusClass(booking.status);
       const dateLabel = bbFormatDateDisplay(booking.eventDate);
       const totalLabel = bbFormatMmkDisplay(booking.estimatedTotal || 0);
+      const type = String(booking.bookingType || 'CUSTOM').toUpperCase();
+      const paymentLabel = booking.paymentStatus ? bbPrettyKey(booking.paymentStatus) : 'Not recorded';
       const searchText = [
         ref,
         eventLabel,
@@ -1739,13 +2021,14 @@ async function bbRenderCustomerBookingHistory() {
       ].join(' ').toLowerCase();
 
       return `
-        <tr class="align-middle" data-searchable data-status="${bbEscapeHtml(String(booking.status || '').toLowerCase())}" data-searchable-text="${bbEscapeHtml(searchText)}">
-          <td class="fw-semibold">${bbEscapeHtml(ref)}</td>
+        <tr class="align-middle" data-searchable data-type="${bbEscapeHtml(type)}" data-status="${bbEscapeHtml(String(booking.status || '').toLowerCase())}" data-searchable-text="${bbEscapeHtml(searchText)}">
+          <td class="fw-semibold">${bbEscapeHtml(ref)}<div class="small text-ink-soft">${type === 'PACKAGE' ? 'Package' : 'Customize'} · Created ${bbEscapeHtml(bbFormatDateDisplay(booking.createdAt))}</div></td>
           <td>${bbEscapeHtml(eventLabel)}</td>
           <td>${bbEscapeHtml(venueLabel)}</td>
           <td>${bbEscapeHtml(dateLabel)}</td>
           <td>${bbEscapeHtml(booking.guestCount ?? '')}</td>
           <td class="fw-semibold">${bbEscapeHtml(totalLabel)}</td>
+          <td><span class="status ${bbEscapeHtml(bbBookingStatusClass(booking.paymentStatus))}">${bbEscapeHtml(paymentLabel)}</span><div class="small text-ink-soft">Paid ${bbEscapeHtml(bbFormatMmkDisplay(booking.paidAmount || 0))}</div></td>
           <td><span class="status ${bbEscapeHtml(statusClass)}">${bbEscapeHtml(statusLabel)}</span></td>
           <td><a class="btn btn-outline-forest btn-sm" href="/prototype/customer/booking-status.html?id=${encodeURIComponent(booking.id)}">Track</a></td>
         </tr>
@@ -1756,6 +2039,7 @@ async function bbRenderCustomerBookingHistory() {
     syncRows();
     searchInput?.addEventListener('input', syncRows);
     statusFilter?.addEventListener('change', syncRows);
+    typeFilter?.addEventListener('change', syncRows);
   } catch (error) {
     renderEmpty(error?.status === 401 ? 'Please sign in again to view your bookings.' : 'Unable to load your bookings right now.');
   }
@@ -1767,7 +2051,7 @@ async function bbRenderCustomerBookingStatus() {
   if (typeof bbRequireAuth === 'function' && bbRequireAuth()) return;
 
   const params = new URL(window.location.href).searchParams;
-  const bookingId = Number(params.get('id') || 0);
+  const bookingId = Number(params.get('id') || params.get('bookingId') || 0);
   const titleEl = root.querySelector('[data-booking-title]');
   const subtitleEl = root.querySelector('[data-booking-subtitle]');
   const refEl = root.querySelector('[data-booking-ref]');
@@ -1782,6 +2066,8 @@ async function bbRenderCustomerBookingStatus() {
   const overviewEl = root.querySelector('[data-booking-overview]');
   const servicesEl = root.querySelector('[data-booking-services]');
   const priceSummaryEl = root.querySelector('[data-booking-price-summary]');
+  const paymentEl = root.querySelector('[data-booking-payment]');
+  const consultationsEl = root.querySelector('[data-booking-consultations]');
   const cateringEl = root.querySelector('[data-booking-catering]');
   const timelineEl = root.querySelector('[data-booking-timeline]');
   const quotationLink = root.querySelector('[data-booking-quotation-link]');
@@ -1796,21 +2082,31 @@ async function bbRenderCustomerBookingStatus() {
     if (overviewEl) overviewEl.innerHTML = '<p class="text-ink-soft mb-0">No booking details available.</p>';
     if (servicesEl) servicesEl.innerHTML = '<p class="text-ink-soft mb-0">No service selections available.</p>';
     if (priceSummaryEl) priceSummaryEl.innerHTML = '<p class="text-ink-soft mb-0">No price summary available.</p>';
+    if (paymentEl) paymentEl.innerHTML = '<p class="text-ink-soft mb-0">No payment information available.</p>';
+    if (consultationsEl) consultationsEl.innerHTML = '<p class="text-ink-soft mb-0">No quotation or consultation information available.</p>';
     if (cateringEl) cateringEl.innerHTML = '<p class="text-ink-soft mb-0">No catering details available.</p>';
     if (timelineEl) timelineEl.innerHTML = '<li><strong>Booking details unavailable</strong><br><span class="small text-ink-soft">Select a booking from My Bookings.</span></li>';
     if (quotationLink) quotationLink.classList.add('d-none');
-    if (payButton) payButton.classList.add('d-none');
+    if (payButton) {
+      const awaitingDeposit = String(booking.status || '').toUpperCase() === 'AWAITING_DEPOSIT';
+      payButton.href = `/prototype/customer/payment.html?bookingId=${encodeURIComponent(booking.id)}`;
+      payButton.classList.toggle('d-none', !awaitingDeposit);
+    }
   };
 
   const renderTimeline = (booking) => {
     if (!timelineEl) return;
-    const statusLabel = bbBookingStatusLabel(booking.status);
-    const eventDate = bbFormatDateDisplay(booking.eventDate);
+    const status = String(booking.status || '').toUpperCase();
+    const stage = { PENDING: 0, AWAITING_DEPOSIT: 1, CONFIRMED: 2, COMPLETED: 3 }[status];
+    if (status === 'CANCELLED') {
+      timelineEl.innerHTML = '<li class="done"><strong>Booking cancelled</strong><br><span class="small text-ink-soft">This booking has been cancelled.</span></li>';
+      return;
+    }
     const stageItems = [
-      { label: 'Booking created', detail: booking.createdAt ? bbFormatDateDisplay(booking.createdAt) : 'Recently saved', done: true },
-      { label: 'Venue reserved', detail: booking.venue?.name || 'Venue assigned', done: Boolean(booking.venue?.id || booking.venueId) },
-      { label: 'Services selected', detail: booking.services?.length ? `${booking.services.length} service${booking.services.length === 1 ? '' : 's'} saved` : 'No services saved', done: Boolean(booking.services?.length) },
-      { label: 'Event day', detail: eventDate, done: statusLabel === 'Completed' }
+      { label: 'Request submitted', detail: 'Your booking request was received.', done: stage >= 0 },
+      { label: 'Awaiting deposit', detail: 'Your booking is approved and awaiting the required deposit.', done: stage >= 1 },
+      { label: 'Confirmed', detail: 'Your booking has been confirmed.', done: stage >= 2 },
+      { label: 'Completed', detail: 'Your event booking has been completed.', done: stage >= 3 }
     ];
     timelineEl.innerHTML = stageItems.map((item) => `<li class="${item.done ? 'done' : ''}"><strong>${bbEscapeHtml(item.label)}</strong><br><span class="small text-ink-soft">${bbEscapeHtml(item.detail)}</span></li>`).join('');
   };
@@ -1819,7 +2115,7 @@ async function bbRenderCustomerBookingStatus() {
     if (!overviewEl) return;
     const isPackageBooking = String(booking.bookingType || '').toUpperCase() === 'PACKAGE' || booking.packageId != null;
     const venue = booking.venue || {};
-    const venuePrice = Number(venue.price);
+    const venuePrice = String(booking.bookingType || '').toUpperCase() === 'PACKAGE' ? Number(venue.price) : NaN;
     const venuePriceLabel = Number.isFinite(venuePrice) && venuePrice > 0
       ? bbFormatMmkDisplay(venuePrice)
       : 'Price on request';
@@ -1878,7 +2174,7 @@ async function bbRenderCustomerBookingStatus() {
     if (!priceSummaryEl) return;
     const isPackageBooking = String(booking.bookingType || '').toUpperCase() === 'PACKAGE' || booking.packageId != null;
     const serviceSubtotal = Number(booking.estimatedTotal || 0);
-    const venuePrice = Number(booking.venue?.price);
+    const venuePrice = isPackageBooking ? Number(booking.venue?.price) : NaN;
     const hasVenuePrice = Number.isFinite(venuePrice) && venuePrice > 0;
     const knownEstimatedTotal = serviceSubtotal + (hasVenuePrice ? venuePrice : 0);
     if (isPackageBooking) {
@@ -1919,6 +2215,21 @@ async function bbRenderCustomerBookingStatus() {
     `;
   };
 
+  const renderPayment = (booking) => {
+    if (!paymentEl) return;
+    const payment = booking.payment;
+    if (!payment) { paymentEl.innerHTML = '<p class="text-ink-soft mb-0">No payment records are associated with this booking.</p>'; return; }
+    paymentEl.innerHTML = `<div class="row g-3"><div class="col-6"><div class="stat-label">Status</div><strong>${bbEscapeHtml(payment.status ? bbPrettyKey(payment.status) : 'Not recorded')}</strong></div><div class="col-6"><div class="stat-label">Paid</div><strong>${bbEscapeHtml(bbFormatMmkDisplay(payment.paidAmount))}</strong></div><div class="col-6"><div class="stat-label">Recorded amount</div><strong>${bbEscapeHtml(bbFormatMmkDisplay(payment.totalAmount))}</strong></div><div class="col-6"><div class="stat-label">Remaining</div><strong>${bbEscapeHtml(bbFormatMmkDisplay(payment.remainingAmount))}</strong></div></div>${String(booking.status || '').toUpperCase() === 'AWAITING_DEPOSIT' ? '<p class="small text-ink-soft mt-3 mb-0">Your booking is approved and awaiting the required deposit. Use the existing payment page when payment is enabled for this booking.</p>' : ''}`;
+  };
+
+  const renderConsultations = (booking) => {
+    if (!consultationsEl) return;
+    const quotation = booking.quotation ? `<div class="border rounded-4 p-3 mb-3"><div class="stat-label">Quotation</div><strong>${bbEscapeHtml(booking.quotation.status ? bbPrettyKey(booking.quotation.status) : 'Not recorded')}</strong><div class="small text-ink-soft">${bbEscapeHtml(bbFormatMmkDisplay(booking.quotation.total))} · Expires ${bbEscapeHtml(bbFormatDateDisplay(booking.quotation.expiresAt))}</div></div>` : '';
+    const consultations = Array.isArray(booking.consultations) ? booking.consultations : [];
+    const consultationHtml = consultations.length ? `<ul class="list-unstyled mb-0 d-grid gap-2">${consultations.map((item) => `<li class="border rounded-4 p-3"><strong>${bbEscapeHtml(item.status ? bbPrettyKey(item.status) : 'Consultation')}</strong><div class="small text-ink-soft">${bbEscapeHtml(item.consultationType || 'Consultation')} · ${bbEscapeHtml(bbFormatDateDisplay(item.consultationDate))} · ${bbEscapeHtml(bbFormatTimeDisplay(item.startTime))} - ${bbEscapeHtml(bbFormatTimeDisplay(item.endTime))}</div></li>`).join('')}</ul>` : '<p class="small text-ink-soft mb-0">No consultation appointments recorded.</p>';
+    consultationsEl.innerHTML = `${quotation}<div class="stat-label mb-2">Consultations</div>${consultationHtml}`;
+  };
+
   try {
     if (!bookingId || bookingId <= 0) {
       setError('Choose a booking from Booking History to view its details.', 'Choose a booking from Booking History');
@@ -1939,7 +2250,7 @@ async function bbRenderCustomerBookingStatus() {
     const statusClass = bbBookingStatusClass(booking.status);
     const isPackageBooking = String(booking.bookingType || '').toUpperCase() === 'PACKAGE' || booking.packageId != null;
     const serviceSubtotal = Number(booking.estimatedTotal || 0);
-    const venuePrice = Number(booking.venue?.price);
+    const venuePrice = isPackageBooking ? Number(booking.venue?.price) : NaN;
     const hasVenuePrice = Number.isFinite(venuePrice) && venuePrice > 0;
     const estimatedTotal = bbFormatMmkDisplay(isPackageBooking
       ? Number(booking.packagePriceSnapshot ?? booking.estimatedTotal ?? 0)
@@ -1978,6 +2289,8 @@ async function bbRenderCustomerBookingStatus() {
     renderOverview(booking);
     renderServices(booking);
     renderPriceSummary(booking);
+    renderPayment(booking);
+    renderConsultations(booking);
     renderCatering(booking);
     renderTimeline(booking);
   } catch (error) {
@@ -2049,12 +2362,410 @@ function bbUpdatePasswordStrengthUI(password, rulesEl, strengthEl, meterFillEl, 
   successEl?.classList.toggle('d-none', matched !== 5);
 }
 
+function bbInitForgotPasswordPage() {
+  const root = document.querySelector('[data-forgot-password-page]');
+  if (!root) return;
+
+  const requestStage = root.querySelector('[data-reset-stage="request"]');
+  const verifyStage = root.querySelector('[data-reset-stage="verify"]');
+  const createStage = root.querySelector('[data-reset-stage="create"]');
+  const successStage = root.querySelector('[data-reset-stage="success"]');
+  const statusEl = root.querySelector('[data-reset-status]');
+  const emailInput = root.querySelector('[name="email"]');
+  const requestForm = root.querySelector('[data-reset-request-form]');
+  const verifyForm = root.querySelector('[data-reset-verify-form]');
+  const createForm = root.querySelector('[data-reset-create-form]');
+  const successLink = root.querySelector('[data-reset-signin-link]');
+  const stepPills = [...root.querySelectorAll('[data-reset-step-pill]')];
+  const emailSummaryEls = [...root.querySelectorAll('[data-reset-email-summary]')];
+  const otpInputs = [...root.querySelectorAll('[data-otp-input]')];
+  const resendButton = root.querySelector('[data-reset-resend]');
+  const resendCountdown = root.querySelector('[data-reset-countdown]');
+  const verifyButton = root.querySelector('[data-reset-verify-submit]');
+  const createButton = root.querySelector('[data-reset-create-submit]');
+  const editEmailButton = root.querySelector('[data-reset-edit-email]');
+  const newPasswordInput = root.querySelector('[name="newPassword"]');
+  const confirmPasswordInput = root.querySelector('[name="confirmPassword"]');
+  const passwordRulesEl = root.querySelector('[data-password-rules]');
+  const passwordStrengthEl = root.querySelector('[data-password-strength]');
+  const passwordMeterFillEl = root.querySelector('[data-password-meter-fill]');
+  const passwordSuccessEl = root.querySelector('[data-password-success]');
+  const cooldownSeconds = 60;
+  const stageOrder = ['request', 'verify', 'create', 'success'];
+  let cooldownTimer = null;
+  let resetFlow = bbReadPasswordResetFlow() || {};
+  let currentStage = 'request';
+
+  const normalizeEmail = (value) => String(value || '').trim().toLowerCase();
+  const normalizeToken = (value) => String(value || '').trim();
+
+  const setStatus = (message, variant = 'danger') => {
+    if (!statusEl) return;
+    statusEl.className = `col-12 alert alert-${variant}`;
+    statusEl.textContent = message;
+    statusEl.classList.remove('d-none');
+  };
+
+  const clearStatus = () => {
+    if (!statusEl) return;
+    statusEl.className = 'col-12 alert d-none';
+    statusEl.textContent = '';
+  };
+
+  const setButtonBusy = (button, busy, busyText) => {
+    if (!button) return;
+    if (!button.dataset.originalLabel) {
+      button.dataset.originalLabel = button.textContent || '';
+    }
+    button.disabled = busy;
+    button.textContent = busy ? busyText : button.dataset.originalLabel;
+  };
+
+  const syncSummary = () => {
+    const email = normalizeEmail(resetFlow.email || emailInput?.value || '');
+    emailSummaryEls.forEach((element) => {
+      element.textContent = email || 'your email address';
+    });
+    if (emailInput && currentStage !== 'request' && email) {
+      emailInput.value = email;
+    }
+  };
+
+  const syncPills = () => {
+    stepPills.forEach((pill) => {
+      const stage = pill.dataset.resetStepPill;
+      pill.classList.toggle('is-active', stage === currentStage);
+      pill.classList.toggle('is-complete', stageOrder.indexOf(stage) < stageOrder.indexOf(currentStage));
+    });
+  };
+
+  const showStage = (stage) => {
+    currentStage = stage;
+    if (requestStage) requestStage.hidden = stage !== 'request';
+    if (verifyStage) verifyStage.hidden = stage !== 'verify';
+    if (createStage) createStage.hidden = stage !== 'create';
+    if (successStage) successStage.hidden = stage !== 'success';
+    syncSummary();
+    syncPills();
+  };
+
+  const clearOtp = () => {
+    otpInputs.forEach((input) => {
+      input.value = '';
+    });
+  };
+
+  const readOtp = () => otpInputs.map((input) => input.value.replace(/\D/g, '')).join('');
+
+  const fillOtp = (value) => {
+    const digits = String(value || '').replace(/\D/g, '').slice(0, otpInputs.length).split('');
+    otpInputs.forEach((input, index) => {
+      input.value = digits[index] || '';
+    });
+    const nextIndex = Math.min(digits.length, otpInputs.length - 1);
+    otpInputs[nextIndex]?.focus();
+  };
+
+  const stopCooldown = () => {
+    if (cooldownTimer) {
+      window.clearInterval(cooldownTimer);
+      cooldownTimer = null;
+    }
+  };
+
+  const renderCooldown = () => {
+    if (!resendButton || !resendCountdown) return;
+    const until = bbGetPasswordResetCooldownUntil();
+    const remaining = Math.max(0, Math.ceil((until - Date.now()) / 1000));
+    if (remaining > 0) {
+      resendButton.disabled = true;
+      resendCountdown.textContent = `You can resend in ${remaining}s.`;
+      return;
+    }
+    resendButton.disabled = false;
+    resendCountdown.textContent = 'You can request a new code now.';
+    stopCooldown();
+  };
+
+  const startCooldown = () => {
+    bbSetPasswordResetCooldownUntil(Date.now() + cooldownSeconds * 1000);
+    renderCooldown();
+    stopCooldown();
+    cooldownTimer = window.setInterval(renderCooldown, 1000);
+  };
+
+  const requestOtp = async (email) => {
+    const response = await fetch(window.bbApiUrl('/api/auth/forgot-password/request-otp'), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({ email })
+    });
+    const data = await response.json().catch(() => null);
+    if (!response.ok) {
+      throw new Error(data?.message || 'Unable to send verification code right now.');
+    }
+    return data;
+  };
+
+  const verifyOtp = async (email, otp) => {
+    const response = await fetch(window.bbApiUrl('/api/auth/forgot-password/verify-otp'), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({ email, otp })
+    });
+    const data = await response.json().catch(() => null);
+    if (!response.ok) {
+      throw new Error(data?.message || 'Unable to verify your code right now.');
+    }
+    return data;
+  };
+
+  const resetPassword = async (payload) => {
+    const response = await fetch(window.bbApiUrl('/api/auth/forgot-password/reset'), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await response.json().catch(() => null);
+    if (!response.ok) {
+      throw new Error(data?.message || 'Unable to reset your password right now.');
+    }
+    return data;
+  };
+
+  const initOtpInputs = () => {
+    otpInputs.forEach((input, index) => {
+      input.addEventListener('input', () => {
+        const digits = input.value.replace(/\D/g, '');
+        input.value = digits.slice(-1);
+        if (input.value && index < otpInputs.length - 1) {
+          otpInputs[index + 1].focus();
+        }
+      });
+
+      input.addEventListener('keydown', (event) => {
+        if (event.key === 'Backspace' && !input.value && index > 0) {
+          otpInputs[index - 1].value = '';
+          otpInputs[index - 1].focus();
+        }
+      });
+
+      input.addEventListener('paste', (event) => {
+        event.preventDefault();
+        fillOtp(event.clipboardData?.getData('text') || '');
+      });
+    });
+  };
+
+  initOtpInputs();
+
+  if (editEmailButton) {
+    editEmailButton.addEventListener('click', () => {
+      resetFlow = { email: normalizeEmail(emailInput?.value || resetFlow.email || '') };
+      bbWritePasswordResetFlow(resetFlow);
+      clearOtp();
+      showStage('request');
+      setStatus('Update your email and request a new code.');
+    });
+  }
+
+  if (resetFlow.email) {
+    resetFlow.email = normalizeEmail(resetFlow.email);
+    bbWritePasswordResetFlow(resetFlow);
+    if (emailInput) {
+      emailInput.value = resetFlow.email;
+    }
+  }
+
+  if (resetFlow.resetToken) {
+    const expiresAt = resetFlow.resetTokenExpiresAt ? Date.parse(resetFlow.resetTokenExpiresAt) : 0;
+    if (!Number.isFinite(expiresAt) || expiresAt <= Date.now()) {
+      resetFlow = { email: resetFlow.email || '' };
+      bbWritePasswordResetFlow(resetFlow);
+    }
+  }
+
+  if (resetFlow.resetToken) {
+    showStage('create');
+  } else if (resetFlow.email) {
+    showStage('verify');
+  } else {
+    showStage('request');
+  }
+
+  syncSummary();
+  syncPills();
+  renderCooldown();
+  if (bbGetPasswordResetCooldownUntil() > Date.now()) {
+    startCooldown();
+  }
+
+  requestForm?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    clearStatus();
+    const email = normalizeEmail(emailInput?.value || '');
+    if (!email) {
+      setStatus('Please enter your registered email address.');
+      emailInput?.focus();
+      return;
+    }
+
+    const submitButton = requestForm.querySelector('button[type="submit"]');
+    setButtonBusy(submitButton, true, 'Sending...');
+    try {
+      await requestOtp(email);
+      resetFlow = { email };
+      bbWritePasswordResetFlow(resetFlow);
+      clearOtp();
+      showStage('verify');
+      startCooldown();
+      setStatus('If an account exists for this email, a verification code has been sent.', 'success');
+    } catch (error) {
+      setStatus(error.message || 'Unable to send verification code right now.');
+    } finally {
+      setButtonBusy(submitButton, false, 'Send Verification Code');
+    }
+  });
+
+  resendButton?.addEventListener('click', async () => {
+    clearStatus();
+    const email = normalizeEmail(resetFlow.email || emailInput?.value || '');
+    if (!email) {
+      showStage('request');
+      setStatus('Please enter your email address first.');
+      return;
+    }
+    if (bbGetPasswordResetCooldownUntil() > Date.now()) {
+      return;
+    }
+
+    setButtonBusy(resendButton, true, 'Resending...');
+    try {
+      await requestOtp(email);
+      resetFlow = { email };
+      bbWritePasswordResetFlow(resetFlow);
+      clearOtp();
+      startCooldown();
+      setStatus('A fresh verification code has been sent.', 'success');
+    } catch (error) {
+      setStatus(error.message || 'Unable to resend the verification code right now.');
+    } finally {
+      setButtonBusy(resendButton, false, 'Resend Code');
+    }
+  });
+
+  verifyForm?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    clearStatus();
+    const email = normalizeEmail(resetFlow.email || emailInput?.value || '');
+    const otp = readOtp();
+    if (!email) {
+      showStage('request');
+      setStatus('Please enter your email address first.');
+      return;
+    }
+    if (!/^\d{6}$/.test(otp)) {
+      setStatus('Enter the 6-digit code that was sent to your email.');
+      return;
+    }
+
+    setButtonBusy(verifyButton, true, 'Verifying...');
+    try {
+      const data = await verifyOtp(email, otp);
+      resetFlow = {
+        email,
+        resetToken: data.resetToken,
+        resetTokenExpiresAt: data.resetTokenExpiresAt
+      };
+      bbWritePasswordResetFlow(resetFlow);
+      showStage('create');
+      bbUpdatePasswordStrengthUI('', passwordRulesEl, passwordStrengthEl, passwordMeterFillEl, passwordSuccessEl);
+      setStatus('Email verified. Create your new password.', 'success');
+    } catch (error) {
+      setStatus(error.message || 'Unable to verify the code right now.');
+    } finally {
+      setButtonBusy(verifyButton, false, 'Verify Code');
+    }
+  });
+
+  newPasswordInput?.addEventListener('input', () => {
+    bbUpdatePasswordStrengthUI(
+      newPasswordInput.value,
+      passwordRulesEl,
+      passwordStrengthEl,
+      passwordMeterFillEl,
+      passwordSuccessEl
+    );
+  });
+
+  createForm?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    clearStatus();
+    const email = normalizeEmail(resetFlow.email || emailInput?.value || '');
+    const resetToken = normalizeToken(resetFlow.resetToken || '');
+    const newPassword = newPasswordInput?.value || '';
+    const confirmPassword = confirmPasswordInput?.value || '';
+
+    if (!email || !resetToken) {
+      showStage('verify');
+      setStatus('Please verify your email again before resetting the password.');
+      return;
+    }
+    if (!newPassword || !confirmPassword) {
+      setStatus('Please fill in both password fields.');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setStatus('Passwords do not match.');
+      return;
+    }
+
+    const passwordState = bbGetPasswordRuleState(newPassword);
+    if (!Object.values(passwordState).every(Boolean)) {
+      setStatus('Please create a stronger password that meets all requirements.');
+      newPasswordInput?.focus();
+      return;
+    }
+
+    setButtonBusy(createButton, true, 'Resetting...');
+    try {
+      await resetPassword({
+        email,
+        resetToken,
+        newPassword,
+        confirmPassword
+      });
+      bbClearPasswordResetFlow();
+      bbSetPasswordResetCooldownUntil(0);
+      stopCooldown();
+      showStage('success');
+      setStatus('Password updated successfully.', 'success');
+      successLink?.focus();
+    } catch (error) {
+      setStatus(error.message || 'Unable to reset your password right now.');
+    } finally {
+      setButtonBusy(createButton, false, 'Reset Password');
+    }
+  });
+
+  if (passwordRulesEl || passwordStrengthEl || passwordMeterFillEl || passwordSuccessEl) {
+    bbUpdatePasswordStrengthUI(
+      newPasswordInput?.value || '',
+      passwordRulesEl,
+      passwordStrengthEl,
+      passwordMeterFillEl,
+      passwordSuccessEl
+    );
+  }
+}
+
 function bbInitPackageWorkflow(config = {}) {
   const root = document.querySelector(config.rootSelector || '[data-package-workflow]');
   if (!root) return;
 
   const dateInput = root.querySelector('[data-package-date]');
-  const timeInput = root.querySelector('[data-package-time]');
+  const startInput = root.querySelector('[data-package-start-time]') || root.querySelector('[data-package-time]');
+  const endInput = root.querySelector('[data-package-end-time]');
   const checkBtn = root.querySelector('[data-package-check]');
   const statusEl = root.querySelector('[data-package-status]');
   const selectedDateEl = root.querySelector('[data-package-selected-date]');
@@ -2065,10 +2776,13 @@ function bbInitPackageWorkflow(config = {}) {
 
   const syncStatus = (available) => {
     const dateValue = dateInput?.value || saved.date || '';
-    const timeValue = timeInput?.value || saved.time || '';
+    const startValue = startInput?.value || saved.startTime || saved.time || '';
+    const endValue = endInput?.value || saved.endTime || '';
 
     if (selectedDateEl) selectedDateEl.textContent = dateValue || 'Select a date';
-    if (selectedTimeEl) selectedTimeEl.textContent = timeValue || 'Select a time';
+    if (selectedTimeEl) selectedTimeEl.textContent = startValue && endValue
+      ? `${window.bbEventTime?.format(startValue) || startValue} - ${window.bbEventTime?.format(endValue) || endValue}`
+      : 'Select start and end time';
     if (statusEl) {
       statusEl.innerHTML = available
         ? '<span class="bb-badge gold">Availability checked</span>'
@@ -2090,16 +2804,24 @@ function bbInitPackageWorkflow(config = {}) {
 
   const savePlan = () => {
     const date = dateInput?.value || '';
-    const time = timeInput?.value || '';
-    const available = Boolean(date && time);
-    bbSetPackagePlan({ date, time, available });
+    const startTime = startInput?.value || '';
+    const endTime = endInput?.value || '';
+    const available = Boolean(date && startTime && endTime && startTime < endTime);
+    bbSetPackagePlan({ date, time: startTime, eventDate: date, startTime, endTime, available });
     syncStatus(available);
     return available;
   };
 
   if (saved.date && dateInput) dateInput.value = saved.date;
-  if (saved.time && timeInput) timeInput.value = saved.time;
-  syncStatus(Boolean(saved.date && saved.time && saved.available));
+  if (window.bbEventTime && startInput && endInput) {
+    window.bbEventTime.initialize(startInput, endInput, saved.startTime || saved.time, saved.endTime);
+  }
+  if (saved.startTime && startInput) startInput.value = saved.startTime;
+  if (saved.endTime && endInput) {
+    window.bbEventTime?.syncEnd(startInput, endInput, 'Select end time');
+    endInput.value = saved.endTime;
+  }
+  syncStatus(Boolean(saved.date && (saved.startTime || saved.time) && saved.endTime && saved.available));
 
   checkBtn?.addEventListener('click', () => {
     const available = savePlan();
@@ -2108,11 +2830,14 @@ function bbInitPackageWorkflow(config = {}) {
     }
   });
 
-  [dateInput, timeInput].forEach((input) => {
+  [dateInput, startInput, endInput].forEach((input) => {
     input?.addEventListener('change', () => {
       bbSetPackagePlan({
         date: dateInput?.value || '',
-        time: timeInput?.value || '',
+        time: startInput?.value || '',
+        eventDate: dateInput?.value || '',
+        startTime: startInput?.value || '',
+        endTime: endInput?.value || '',
         available: false
       });
       syncStatus(false);
@@ -2123,7 +2848,7 @@ function bbInitPackageWorkflow(config = {}) {
     const button = event.target.closest('[data-package-book], [data-package-link]');
     if (!button) return;
     const currentPlan = bbGetPackagePlan();
-    if (currentPlan?.date && currentPlan?.time && currentPlan?.available) return;
+    if (currentPlan?.date && (currentPlan?.startTime || currentPlan?.time) && currentPlan?.endTime && currentPlan?.available) return;
     event.preventDefault();
     event.stopPropagation();
     if (statusEl) {
@@ -2265,6 +2990,8 @@ window.bbGetVenue = bbGetVenue;
 window.bbSetVenue = bbSetVenue;
 window.bbGetEventContext = bbGetEventContext;
 window.bbSetEventContext = bbSetEventContext;
+window.bbGetMinimumBookingDate = bbGetMinimumBookingDate;
+window.bbIsValidBookingDate = bbIsValidBookingDate;
 window.bbGetSelectedServices = bbGetSelectedServices;
 window.bbSetSelectedServices = bbSetSelectedServices;
 window.bbGetServiceData = bbGetServiceData;
@@ -2275,6 +3002,8 @@ window.bbGetPackagePlan = bbGetPackagePlan;
 window.bbSetPackagePlan = bbSetPackagePlan;
 window.bbGetBookingMode = bbGetBookingMode;
 window.bbSetBookingMode = bbSetBookingMode;
+window.clearCustomizeBookingDraft = clearCustomizeBookingDraft;
+window.clearPackageBookingDraft = clearPackageBookingDraft;
 window.bbGetAuth = bbGetAuth;
 window.bbGetAuthToken = bbGetAuthToken;
 window.bbGetAuthUser = bbGetAuthUser;
@@ -2376,15 +3105,15 @@ async function bbInitHomeVenues() {
       const image = item.image || fallbackImages[item.id];
       const capacity = Number(item.capacity);
       const capacityLabel = Number.isFinite(capacity) && capacity > 0
-        ? `UP TO ${capacity.toLocaleString()} GUESTS`
-        : 'CAPACITY ON REQUEST';
+        ? `<span class="capacity-pill bb-badge gold">UP TO ${capacity.toLocaleString()} GUESTS</span>`
+        : '';
       return `<div class="col-md-6 col-lg-4" data-home-venue-card data-venue-id="${venueId}">
         <article class="bb-card reveal h-100">
           <div class="bb-card__media" style="background-image:url('${bbEscapeHtml(image || '')}');"></div>
           <div class="bb-card__body d-flex flex-column h-100">
             <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
               <span class="bb-badge">${bbEscapeHtml(type)}</span>
-              <span class="bb-badge gold">${bbEscapeHtml(capacityLabel)}</span>
+              ${capacityLabel}
             </div>
             <h4 class="mb-1">${bbEscapeHtml(name)}</h4>
             <p class="small text-ink-soft mb-2"><i class="bi bi-geo-alt me-1"></i>${bbEscapeHtml(location)}</p>
@@ -2461,7 +3190,9 @@ document.addEventListener('DOMContentLoaded', () => {
     bbInitPackageWorkflow({});
   }
 
+  bbInitCustomerSidebar();
   bbUpdateAuthDisplay();
+  bbInitForgotPasswordPage();
   bbRefreshPublicAuthNav();
   bbRefreshCustomerHeader();
   bbInitCustomerNotifications();
@@ -3014,6 +3745,10 @@ document.addEventListener('DOMContentLoaded', () => {
           setStatus('Please check package availability again before booking.', 'warning');
           return;
         }
+        if (!bbIsValidBookingDate(plan?.eventDate)) {
+          setStatus('Event date must be at least one month in advance.', 'danger');
+          return;
+        }
         if (packageSubmit) {
           packageSubmit.disabled = true;
           packageSubmit.textContent = 'Confirming...';
@@ -3041,6 +3776,7 @@ document.addEventListener('DOMContentLoaded', () => {
             venueId: packageBooking.venueId,
             venueName: packageBooking.venueName
           }));
+          clearPackageBookingDraft();
           bbRenderPackageBookingSuccess(form, packageBooking);
         } catch (error) {
           if (error?.status === 401) {
@@ -3098,6 +3834,11 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
+      if (!bbIsValidBookingDate(eventDate)) {
+        setStatus('Event date must be at least one month in advance.', 'danger');
+        return;
+      }
+
       if (!Number.isFinite(venueId) || venueId <= 0) {
         setStatus('Please select your venue again before confirming your booking.', 'danger');
         return;
@@ -3152,6 +3893,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         window.sessionStorage.setItem('bbLatestEvent', JSON.stringify(eventData));
         window.sessionStorage.setItem('bbLatestBooking', JSON.stringify(bookingData));
+        clearCustomizeBookingDraft();
         setStatus('Booking saved successfully. Redirecting...', 'success');
         window.setTimeout(() => {
           if (bookingData?.id) {

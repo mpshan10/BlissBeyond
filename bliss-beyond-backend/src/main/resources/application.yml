@@ -27,6 +27,18 @@ spring:
     serialization:
       write-dates-as-timestamps: false
 
+  mail:
+    host: ${MAIL_HOST:}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: ${MAIL_SMTP_AUTH:true}
+          starttls:
+            enable: ${MAIL_SMTP_STARTTLS:true}
+
 server:
   port: ${PORT:${SERVER_PORT:8081}}
 
@@ -40,3 +52,6 @@ app:
 
   google:
     client-id: ${GOOGLE_CLIENT_ID:}
+
+  mail:
+    from: ${MAIL_FROM:}

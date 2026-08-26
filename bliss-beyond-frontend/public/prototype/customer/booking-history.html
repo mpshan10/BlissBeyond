@@ -72,24 +72,30 @@
           <option value="completed">Completed</option>
           <option value="cancelled">Cancelled</option>
         </select>
+        <select class="form-select" style="max-width:200px" data-booking-history-type-filter>
+          <option value="all">All booking types</option>
+          <option value="PACKAGE">Package</option>
+          <option value="CUSTOM">Customize</option>
+        </select>
       </div>
       <div class="panel__body" id="bhTable" data-booking-history-list>
         <div class="table-responsive">
           <table class="table align-middle ">
             <thead>
               <tr>
-                <th>Ref</th>
+                <th>Ref / Type</th>
                 <th>Event</th>
                 <th>Venue</th>
                 <th>Date</th>
                 <th>Guests</th>
                 <th>Total</th>
+                <th>Payment</th>
                 <th>Status</th>
                 <th></th>
               </tr>
             </thead>
             <tbody data-booking-history-body>
-              <tr><td colspan="8" class="text-center text-ink-soft py-4">Loading bookings...</td></tr>
+              <tr><td colspan="9" class="text-center text-ink-soft py-4">Loading bookings...</td></tr>
             </tbody>
           </table>
         </div>

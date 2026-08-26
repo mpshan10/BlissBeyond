@@ -12,43 +12,35 @@
 <link href="/prototype/assets/css/style.css" rel="stylesheet">
 
 <style>
-/* Editable event details on Select Services page */
-.event-edit-controls{
+/* Availability-sensitive event details are informational on this page. */
+.event-summary-pills{
   display:flex;
   flex-wrap:wrap;
   gap:.65rem;
   align-items:center;
 }
 
-.event-edit-control{
-  width:auto;
-  min-width:145px;
-  height:42px;
-  padding:.45rem 2.2rem .45rem 1rem;
+.event-summary-pill{
+  display:inline-flex;
+  align-items:center;
+  min-height:38px;
+  padding:.45rem .85rem;
   border:1px solid #dfd3bf;
   border-radius:999px;
   background-color:#f5efe4;
   color:#173f35;
   font-family:'Karla',sans-serif;
   font-size:.9rem;
-  cursor:pointer;
-}
-
-.event-edit-control.event-date{
-  min-width:175px;
-  padding-right:1rem;
-}
-
-.event-edit-control:focus{
-  outline:none;
-  border-color:#b9852f;
-  box-shadow:0 0 0 .15rem rgba(185,133,47,.12);
-  background:#fff;
+  white-space:nowrap;
 }
 
 @media (max-width:575.98px){
-  .event-edit-control{
-    width:100%;
+  .event-summary-pills{
+    align-items:stretch;
+  }
+  .event-summary-pill{
+    flex:1 1 100%;
+    white-space:normal;
   }
 }
 
@@ -155,41 +147,19 @@
         <div class="col-lg-8">
           <div class="workflow-context__title mb-2">Your Event</div>
           <div class="workflow-context__value mb-2" data-event-venue>Willow Garden Estate</div>
-          <div class="event-edit-controls">
-            <select class="event-edit-control" id="serviceEventType" aria-label="Event Type">
-              <option value="Wedding">Wedding</option>
-              <option value="Anniversary">Anniversary</option>
-              <option value="Graduation">Graduation</option>
-              <option value="Birthday">Birthday</option>
-              <option value="Corporate">Corporate</option>
-              <option value="Engagement">Engagement</option>
-            </select>
-
-            <input class="event-edit-control event-date"
-                   id="serviceEventDate"
-                   type="date"
-                   aria-label="Event Date">
-
-            <select class="event-edit-control" id="serviceEventGuests" aria-label="Guests">
-              <option value="50">50 Guests</option>
-              <option value="100">100 Guests</option>
-              <option value="150">150 Guests</option>
-              <option value="200">200 Guests</option>
-              <option value="250">250 Guests</option>
-              <option value="300">300 Guests</option>
-              <option value="350">350 Guests</option>
-              <option value="400">400 Guests</option>
-              <option value="450">450 Guests</option>
-              <option value="500">500 Guests</option>
-            </select>
+          <div class="event-summary-pills" aria-label="Selected event details">
+            <span class="event-summary-pill"><span class="visually-hidden">Event type: </span><strong data-event-type>Not selected</strong></span>
+            <span class="event-summary-pill"><span class="visually-hidden">Event date: </span><strong data-event-date>Not selected</strong></span>
+            <span class="event-summary-pill"><span class="visually-hidden">Event time: </span><strong data-event-time>Not selected</strong></span>
+            <span class="event-summary-pill"><span class="visually-hidden">Guests: </span><strong data-event-guests>Not selected</strong></span>
           </div>
         </div>
         <div class="col-lg-4 text-lg-end">
-          <p class="small text-ink-soft mb-1">Venue-specific services are shown here using temporary session storage for this prototype.</p>
           <span class="bb-badge gold" data-selected-count>0 Services Selected</span>
         </div>
       </div>
     </div>
+    <div class="alert alert-warning d-none mb-4" data-services-date-status role="alert"></div>
 
     <div class="row g-4">
       <div class="col-lg-8">
@@ -408,91 +378,6 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="/prototype/assets/js/main.js"></script>
 <script src="/prototype/assets/js/services.js"></script>
-
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-  const typeControl = document.getElementById('serviceEventType');
-  const dateControl = document.getElementById('serviceEventDate');
-  const guestControl = document.getElementById('serviceEventGuests');
-
-  function getContext() {
-    if (typeof window.bbGetEventContext === 'function') {
-      return window.bbGetEventContext() || {};
-    }
-
-    try {
-      return JSON.parse(sessionStorage.getItem('bbEventContext') || '{}');
-    } catch (e) {
-      return {};
-    }
-  }
-
-  function normalizeDateForInput(value) {
-    if (!value) return '';
-
-    // Already YYYY-MM-DD
-    if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
-
-    const parsed = new Date(value);
-    if (Number.isNaN(parsed.getTime())) return '';
-
-    const y = parsed.getFullYear();
-    const m = String(parsed.getMonth() + 1).padStart(2, '0');
-    const d = String(parsed.getDate()).padStart(2, '0');
-    return `${y}-${m}-${d}`;
-  }
-
-  function loadControls() {
-    const ctx = getContext();
-
-    typeControl.value = ctx.eventType || ctx.type || 'Wedding';
-    dateControl.value = normalizeDateForInput(ctx.eventDate || ctx.date) || '2026-12-20';
-
-    const guests = String(ctx.guests || ctx.guestCount || 150);
-    const existing = Array.from(guestControl.options).some(option => option.value === guests);
-
-    if (!existing) {
-      const option = document.createElement('option');
-      option.value = guests;
-      option.textContent = `${guests} Guests`;
-      guestControl.appendChild(option);
-    }
-
-    guestControl.value = guests;
-  }
-
-  function saveControls() {
-    const current = getContext();
-
-    const updated = {
-      ...current,
-      eventType: typeControl.value,
-      type: typeControl.value,
-      eventDate: dateControl.value,
-      date: dateControl.value,
-      guests: Number(guestControl.value),
-      guestCount: Number(guestControl.value)
-    };
-
-    if (typeof window.bbSetEventContext === 'function') {
-      window.bbSetEventContext(updated);
-    } else {
-      sessionStorage.setItem('bbEventContext', JSON.stringify(updated));
-    }
-
-    // Compatibility with pages that read separate prototype keys.
-    sessionStorage.setItem('bbEventType', typeControl.value);
-    sessionStorage.setItem('bbEventDate', dateControl.value);
-    sessionStorage.setItem('bbEventGuests', guestControl.value);
-  }
-
-  [typeControl, dateControl, guestControl].forEach(function (control) {
-    control.addEventListener('change', saveControls);
-  });
-
-  loadControls();
-});
-</script>
 
 </body>
 </html>

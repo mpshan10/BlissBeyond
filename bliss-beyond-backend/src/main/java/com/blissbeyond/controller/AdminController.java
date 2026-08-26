@@ -14,6 +14,8 @@ import com.blissbeyond.dto.admin.AdminServiceUpdateRequest;
 import com.blissbeyond.dto.admin.AdminVenueUpdateRequest;
 import com.blissbeyond.dto.admin.AdminPackageUpdateRequest;
 import com.blissbeyond.dto.admin.AdminPackageCreateRequest;
+import com.blissbeyond.dto.admin.AdminReportSummaryResponse;
+import com.blissbeyond.dto.admin.AdminBookingDetailResponse;
 import com.blissbeyond.dto.addon.AddOnResponse;
 import com.blissbeyond.dto.booking.BookingResponse;
 import com.blissbeyond.dto.diningstyle.DiningStyleResponse;
@@ -28,6 +30,8 @@ import com.blissbeyond.service.AdminCustomerService;
 import com.blissbeyond.service.AdminCatalogService;
 import com.blissbeyond.service.AdminVenueService;
 import com.blissbeyond.service.AdminPackageService;
+import com.blissbeyond.service.AdminReportService;
+import com.blissbeyond.service.AdminBookingDetailService;
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.http.HttpStatus;
@@ -38,11 +42,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PutMapping;
 
 import java.util.List;
+import java.time.LocalDate;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -57,6 +64,8 @@ public class AdminController {
     private final AdminCatalogService adminCatalogService;
     private final AdminVenueService adminVenueService;
     private final AdminPackageService adminPackageService;
+    private final AdminReportService adminReportService;
+    private final AdminBookingDetailService adminBookingDetailService;
 
     public AdminController(FoodRepository foodRepository,
                            EventRepository eventRepository,
@@ -66,7 +75,9 @@ public class AdminController {
                            AdminCustomerService adminCustomerService,
                            AdminCatalogService adminCatalogService,
                            AdminVenueService adminVenueService,
-                           AdminPackageService adminPackageService) {
+                           AdminPackageService adminPackageService,
+                           AdminReportService adminReportService,
+                           AdminBookingDetailService adminBookingDetailService) {
         this.foodRepository = foodRepository;
         this.eventRepository = eventRepository;
         this.bookingService = bookingService;
@@ -76,6 +87,8 @@ public class AdminController {
         this.adminCatalogService = adminCatalogService;
         this.adminVenueService = adminVenueService;
         this.adminPackageService = adminPackageService;
+        this.adminReportService = adminReportService;
+        this.adminBookingDetailService = adminBookingDetailService;
     }
 
     @GetMapping("/customers")
@@ -207,6 +220,11 @@ public class AdminController {
         return bookingService.listAdminSummaries();
     }
 
+    @GetMapping("/bookings/{id}")
+    public AdminBookingDetailResponse booking(@PathVariable Long id) {
+        return adminBookingDetailService.get(id);
+    }
+
     @GetMapping("/quotations")
     public List<AdminQuotationSummaryResponse> quotations() {
         return quotationService.listAdminSummaries();
@@ -233,6 +251,17 @@ public class AdminController {
     @GetMapping("/payments")
     public List<AdminPaymentResponse> payments() {
         return paymentService.listAdminPayments();
+    }
+
+    @GetMapping("/reports/summary")
+    public AdminReportSummaryResponse reportSummary(
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to
+    ) {
+        if (from != null && to != null && from.isAfter(to)) {
+            throw new IllegalArgumentException("The report start date must be on or before the end date.");
+        }
+        return adminReportService.summary(from, to);
     }
 
     @PatchMapping("/payments/{id}/confirm")

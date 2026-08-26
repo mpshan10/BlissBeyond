@@ -23,7 +23,7 @@ public class CustomerNotificationController {
 
     @GetMapping
     public List<NotificationResponse> list() {
-        return notificationService.listMine();
+        return notificationService.listMine(20);
     }
 
     @GetMapping("/unread-count")

@@ -4,7 +4,9 @@ import com.blissbeyond.dto.admin.AdminPaymentConfirmationRequest;
 import com.blissbeyond.dto.admin.AdminPaymentResponse;
 import com.blissbeyond.dto.payment.PaymentResponse;
 import com.blissbeyond.dto.payment.PaymentSummaryResponse;
+import com.blissbeyond.dto.payment.CustomerPaymentSubmissionRequest;
 import com.blissbeyond.entity.Booking;
+import com.blissbeyond.entity.BookingStatus;
 import com.blissbeyond.entity.Event;
 import com.blissbeyond.entity.Payment;
 import com.blissbeyond.entity.PaymentStatus;
@@ -34,20 +36,26 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final CurrentUserService currentUserService;
     private final BookingService bookingService;
+    private final NotificationService notificationService;
 
     public PaymentService(BookingRepository bookingRepository,
                           PaymentRepository paymentRepository,
                           CurrentUserService currentUserService,
-                          BookingService bookingService) {
+                          BookingService bookingService,
+                          NotificationService notificationService) {
         this.bookingRepository = bookingRepository;
         this.paymentRepository = paymentRepository;
         this.currentUserService = currentUserService;
         this.bookingService = bookingService;
+        this.notificationService = notificationService;
     }
 
     @Transactional
-    public Payment createNextPayment(Long bookingId) {
+    public Payment createNextPayment(Long bookingId, CustomerPaymentSubmissionRequest request) {
         Booking booking = requireOwnedBooking(bookingId);
+        if (booking.getStatus() != BookingStatus.AWAITING_DEPOSIT) {
+            throw new IllegalArgumentException("Payment is available only while the booking is awaiting deposit.");
+        }
         PaymentCalculation calculation = calculate(booking);
         PaymentType nextType = calculation.nextPaymentType();
 
@@ -55,18 +63,28 @@ public class PaymentService {
             throw new IllegalArgumentException("This booking is fully paid.");
         }
 
-        return paymentRepository
-            .findFirstByBookingIdAndPaymentTypeAndPaymentStatusOrderByIdDesc(
-                bookingId, nextType, PaymentStatus.PENDING
-            )
-            .orElseGet(() -> {
-                Payment payment = new Payment();
-                payment.setBooking(booking);
-                payment.setPaymentType(nextType);
-                payment.setAmount(calculation.nextPaymentAmount());
-                payment.setPaymentStatus(PaymentStatus.PENDING);
-                return paymentRepository.save(payment);
-            });
+        var existing = paymentRepository.findFirstByBookingIdAndPaymentTypeAndPaymentStatusOrderByIdDesc(
+            bookingId, nextType, PaymentStatus.PENDING);
+        if (existing.isPresent()) return existing.get();
+
+        Payment payment = new Payment();
+        payment.setBooking(booking);
+        payment.setPaymentType(nextType);
+        payment.setAmount(calculation.nextPaymentAmount());
+        payment.setPaymentStatus(PaymentStatus.PENDING);
+        payment.setPaymentMethod(normalizeOptional(request == null ? null : request.paymentMethod()));
+        payment.setTransactionReference(normalizeOptional(request == null ? null : request.transactionReference()));
+        Payment saved = paymentRepository.save(payment);
+        String customerName = booking.getCustomer() == null
+            ? "A customer"
+            : (booking.getCustomer().getFirstName() + " " + booking.getCustomer().getLastName()).trim();
+        notificationService.notifyAdmins(
+            booking.getCustomer(), "PAYMENT_SUBMITTED", "Payment Submitted",
+            customerName + " submitted payment for Booking BK-" + String.format("%04d", booking.getId()) + ".",
+            "PAYMENT", saved.getId(), "/prototype/admin/payments.html",
+            "PAYMENT_SUBMITTED:" + saved.getId()
+        );
+        return saved;
     }
 
     @Transactional(readOnly = true)
@@ -134,7 +152,14 @@ public class PaymentService {
         payment.setTransactionReference(normalizeOptional(request == null ? null : request.transactionReference()));
         payment.setPaymentStatus(PaymentStatus.PAID);
         payment.setPaidAt(LocalDateTime.now());
-        return toAdminResponse(paymentRepository.save(payment));
+        Payment saved = paymentRepository.save(payment);
+        notificationService.notifyOnce(
+            booking.getCustomer(), currentUserService.requireCurrentUser(), "PAYMENT_CONFIRMED",
+            "Payment Confirmed", "Your payment has been confirmed.",
+            "PAYMENT", saved.getId(), "/prototype/customer/payment.html?bookingId=" + booking.getId(),
+            "PAYMENT_CONFIRMED:" + saved.getId() + ":PAID"
+        );
+        return toAdminResponse(saved);
     }
 
     private AdminPaymentResponse toAdminResponse(Payment payment) {
@@ -164,7 +189,10 @@ public class PaymentService {
             payment.getTransactionReference(),
             payment.getPaidAt(),
             quotation != null ? quotation.getId() : null,
-            quotation != null ? quotation.getTotal() : null
+            quotation != null ? quotation.getTotal() : null,
+            booking == null || booking.getBookingType() == null ? null : booking.getBookingType().name(),
+            booking == null || booking.getStatus() == null ? null : booking.getStatus().name(),
+            null
         );
     }
 

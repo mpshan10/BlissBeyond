@@ -20,6 +20,9 @@ public record AdminPaymentResponse(
     String transactionReference,
     LocalDateTime paidAt,
     Long quotationId,
-    BigDecimal quotationTotal
+    BigDecimal quotationTotal,
+    String bookingType,
+    String bookingStatus,
+    LocalDateTime createdAt
 ) {
 }

@@ -449,6 +449,54 @@ a:hover {
     border-color: var(--bb-gold-soft);
 }
 
+.bb-notification-bell {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.65rem;
+    height: 2.4rem;
+    padding: 0;
+    overflow: visible;
+}
+
+.bb-notification-bell > i {
+    font-size: 1.05rem;
+    line-height: 1;
+}
+
+.bb-notification-count {
+    position: absolute;
+    top: -0.38rem;
+    right: -0.38rem;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.35rem;
+    height: 1.35rem;
+    padding: 0 0.3rem;
+    border: 2px solid var(--bb-cream, #fffdf9);
+    border-radius: 999px;
+    background: var(--bb-gold, #b98c3f);
+    color: var(--bb-green, #173f35);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.capacity-pill {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    max-width: 100%;
+    padding: 0.34rem 0.55rem;
+    white-space: nowrap;
+    flex: 0 0 auto;
+}
+
 
 /* =========================================================
    FEATURES / LIST
@@ -872,6 +920,144 @@ a:hover {
         flex: 0 0 520px;
         max-width: 520px;
     }
+}
+
+.auth-panel--stacked .panel {
+    position: relative;
+    overflow: hidden;
+}
+
+.auth-panel--stacked .panel::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, var(--bb-gold), rgba(185, 140, 63, 0.08));
+}
+
+.reset-steps {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+}
+
+.reset-step-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    border: 1px solid var(--bb-line);
+    border-radius: 999px;
+    background: #fff;
+    color: var(--bb-ink-soft);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    padding: 0.4rem 0.75rem;
+    text-transform: uppercase;
+}
+
+.reset-step-pill.is-active {
+    border-color: var(--bb-gold);
+    color: var(--bb-green);
+    box-shadow: 0 0 0 1px rgba(185, 140, 63, 0.14);
+}
+
+.reset-step-pill.is-complete {
+    border-color: rgba(21, 82, 69, 0.25);
+    background: rgba(21, 82, 69, 0.06);
+    color: var(--bb-green-600);
+}
+
+.reset-stage {
+    display: grid;
+    gap: 1rem;
+}
+
+.reset-stage[hidden] {
+    display: none !important;
+}
+
+.reset-stage__heading {
+    display: grid;
+    gap: 0.3rem;
+}
+
+.reset-stage__eyebrow {
+    color: var(--bb-gold);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+}
+
+.reset-stage__copy {
+    color: var(--bb-ink-soft);
+    margin: 0;
+}
+
+.otp-grid {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 0.55rem;
+}
+
+.otp-slot {
+    width: 100%;
+    height: 3.4rem;
+    border: 1px solid var(--bb-line);
+    border-radius: 12px;
+    font-size: 1.15rem;
+    font-weight: 700;
+    text-align: center;
+    background: #fff;
+    box-shadow: inset 0 1px 2px rgba(18, 33, 28, 0.04);
+}
+
+.otp-slot:focus {
+    border-color: var(--bb-gold);
+    box-shadow: 0 0 0 0.18rem rgba(185, 140, 63, 0.14);
+    outline: none;
+}
+
+.otp-slot::-webkit-outer-spin-button,
+.otp-slot::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.otp-slot[type="number"] {
+    -moz-appearance: textfield;
+}
+
+.reset-inline-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.reset-resend {
+    font-size: 0.84rem;
+    font-weight: 700;
+}
+
+.reset-countdown {
+    font-size: 0.78rem;
+    color: var(--bb-ink-soft);
+}
+
+.reset-success-panel {
+    text-align: center;
+    padding: 1.25rem;
+    border-radius: 16px;
+    border: 1px solid rgba(21, 82, 69, 0.16);
+    background: linear-gradient(180deg, rgba(21, 82, 69, 0.08), #fff);
+}
+
+.reset-success-panel h2 {
+    margin-bottom: 0.4rem;
 }
 
 
@@ -1376,6 +1562,95 @@ a:hover {
 .summary-list li i {
     color: var(--bb-gold);
     margin-right: 0.45rem;
+}
+
+.review-service-list {
+    gap: 0;
+}
+
+.review-event-card {
+    padding: 1.15rem 1.3rem;
+    border: 1px solid rgba(185, 140, 63, 0.35);
+    border-radius: 18px;
+    background: linear-gradient(135deg, #fffdf8, #faf5e9);
+    box-shadow: 0 8px 20px rgba(18, 47, 39, 0.06);
+}
+
+.review-event-card__label {
+    margin-bottom: 0.3rem;
+    color: var(--bb-gold);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.review-event-card__venue {
+    color: var(--bb-green);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(1.35rem, 2.3vw, 1.8rem);
+    font-weight: 700;
+    line-height: 1.15;
+}
+
+.review-event-card__pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.85rem;
+}
+
+.review-service-list .review-service-row {
+    display: grid;
+    grid-template-columns: 1.35rem minmax(0, 1fr) auto;
+    align-items: start;
+    gap: 0.7rem;
+    padding: 0.85rem 0;
+    text-align: left;
+}
+
+.review-service-row__icon {
+    margin: 0.18rem 0 0;
+    font-size: 1.05rem;
+}
+
+.review-service-row__info {
+    min-width: 0;
+    display: block;
+    text-align: left;
+}
+
+.review-service-row__info strong {
+    display: block;
+    color: var(--bb-green);
+    font-weight: 700;
+}
+
+.review-service-row__info small {
+    display: block;
+    margin-top: 0.22rem;
+    color: var(--bb-ink-soft);
+    line-height: 1.45;
+}
+
+.review-service-row__price {
+    color: var(--bb-green);
+    font-size: 0.95rem;
+    font-weight: 700;
+    line-height: 1.4;
+    text-align: right;
+    white-space: nowrap;
+}
+
+@media (max-width: 575.98px) {
+    .review-service-list .review-service-row {
+        grid-template-columns: 1.25rem minmax(0, 1fr);
+    }
+
+    .review-service-row__price {
+        grid-column: 2;
+        text-align: left;
+    }
 }
 
 .workflow-summary {
@@ -2405,5 +2680,14 @@ a:hover {
     .bb-card__body > .d-flex.justify-content-between.align-items-start.mb-2 .bb-badge.gold {
         font-size: 0.55rem;
         padding-inline: 0.42rem;
+    }
+
+    .otp-grid {
+        gap: 0.42rem;
+    }
+
+    .otp-slot {
+        height: 3rem;
+        border-radius: 10px;
     }
 }

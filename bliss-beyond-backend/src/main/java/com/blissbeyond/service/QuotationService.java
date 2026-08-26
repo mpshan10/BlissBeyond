@@ -104,8 +104,6 @@ public class QuotationService {
         quotation.setNotes(normalizeNotes(request.notes()));
         quotation.setExpiresAt(request.expiresAt());
         Quotation saved = quotationRepository.save(quotation);
-        notifyQuotation(saved, "Quotation updated", "Your quotation has been updated.",
-            "QUOTATION:" + saved.getId() + ":UPDATED:" + saved.getTotal() + ":" + saved.getNotes());
         return toAdminDetail(saved);
     }
 
@@ -118,8 +116,12 @@ public class QuotationService {
         }
         quotation.setStatus(QuotationStatus.SENT);
         Quotation saved = quotationRepository.save(quotation);
-        notifyQuotation(saved, "Quotation ready", "Your quotation is ready to review.",
-            "QUOTATION:" + saved.getId() + ":SENT:" + saved.getTotal() + ":" + saved.getExpiresAt());
+        notificationService.notifyOnce(
+            saved.getEvent().getCustomer(), currentUserService.requireCurrentUser(), "QUOTATION_AVAILABLE",
+            "New Quotation Available", "Your quotation is ready to review.",
+            "QUOTATION", saved.getId(), "/prototype/customer/quotation.html?id=" + saved.getId(),
+            "QUOTATION_AVAILABLE:" + saved.getId() + ":SENT"
+        );
         return toAdminDetail(saved);
     }
 
@@ -171,7 +173,15 @@ public class QuotationService {
         quotation.setTotal(total);
         quotation.setNotes(notes);
         quotation.setStatus(QuotationStatus.DRAFT);
-        return quotationRepository.save(quotation);
+        Quotation saved = quotationRepository.save(quotation);
+        User customer = event.getCustomer();
+        notificationService.notifyAdmins(
+            customer, "QUOTATION_REQUESTED", "New Quotation Request",
+            "A quotation request was submitted by " + customer.getFirstName() + " " + customer.getLastName() + ".",
+            "QUOTATION", saved.getId(), "/prototype/admin/quotations.html",
+            "QUOTATION_REQUESTED:" + saved.getId()
+        );
+        return saved;
     }
 
     @Transactional

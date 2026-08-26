@@ -216,8 +216,8 @@ footer strong{color:var(--forest)}
           <div class="row g-3">
             <div class="col-md-6"><label class="package-modal__label" for="packageEventDate">Event date</label><input class="form-control package-modal__field" id="packageEventDate" type="date" data-package-event-date required></div>
             <div class="col-md-6"><label class="package-modal__label" for="packageGuestCount">Guests</label><input class="form-control package-modal__field" id="packageGuestCount" type="number" min="1" data-package-guest-count required></div>
-            <div class="col-md-6"><label class="package-modal__label" for="packageStartTime">Start time</label><input class="form-control package-modal__field" id="packageStartTime" type="time" data-package-start-time required></div>
-            <div class="col-md-6"><label class="package-modal__label" for="packageEndTime">End time</label><input class="form-control package-modal__field" id="packageEndTime" type="time" data-package-end-time required></div>
+            <div class="col-md-6"><label class="package-modal__label" for="packageStartTime">Start time</label><select class="form-select package-modal__field" id="packageStartTime" data-package-start-time required></select></div>
+            <div class="col-md-6"><label class="package-modal__label" for="packageEndTime">End time</label><select class="form-select package-modal__field" id="packageEndTime" data-package-end-time required></select></div>
           </div>
           <div class="package-modal__note mt-3" data-package-helper role="status" aria-live="polite">Availability will be checked for this package.</div>
           <div class="package-modal__status mt-3 d-none" data-package-form-status role="alert"></div>
@@ -235,6 +235,7 @@ footer strong{color:var(--forest)}
 <footer>&copy; 2026 <strong>Bliss &amp; Beyond</strong> - Celebrate every chapter of your love.</footer>
 <script src="/prototype/assets/js/main.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/prototype/assets/js/event-time.js"></script>
 <script>
 (() => {
   const PACKAGE_API = window.bbApiUrl('/api/packages/inya-sunset-engagement');
@@ -247,6 +248,7 @@ footer strong{color:var(--forest)}
   const guestInput = document.querySelector('[data-package-guest-count]');
   const startInput = document.querySelector('[data-package-start-time]');
   const endInput = document.querySelector('[data-package-end-time]');
+  window.bbEventTime?.initialize(startInput, endInput);
   const checkButton = document.querySelector('[data-package-check]');
   const formStatus = document.querySelector('[data-package-form-status]');
   const helper = document.querySelector('[data-package-helper]');
@@ -269,10 +271,16 @@ footer strong{color:var(--forest)}
   let checkInProgress = false;
   let confirmedAvailability = null;
 
-  const localDate = () => {
-    const now = new Date();
-    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-  };
+  const localDate = () => typeof window.bbGetMinimumBookingDate === 'function'
+    ? window.bbGetMinimumBookingDate()
+    : (() => {
+      const today = new Date();
+      const targetMonth = today.getMonth() + 1;
+      const targetYear = today.getFullYear() + Math.floor(targetMonth / 12);
+      const month = targetMonth % 12;
+      const day = Math.min(today.getDate(), new Date(targetYear, month + 1, 0).getDate());
+      return `${targetYear}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    })();
   const formatDate = value => new Intl.DateTimeFormat('en-US', { dateStyle: 'long' }).format(new Date(`${value}T00:00:00`));
   const formatTime = value => {
     const [hour, minute] = value.split(':').map(Number);
@@ -326,6 +334,7 @@ footer strong{color:var(--forest)}
     guestInput.value = saved.guestCount || '';
     startInput.value = saved.startTime || '';
     endInput.value = saved.endTime || '';
+    window.bbEventTime?.syncEnd(startInput, endInput, 'Select end time');
   };
   const validate = () => {
     const date = dateInput.value;
@@ -333,20 +342,20 @@ footer strong{color:var(--forest)}
     const start = startInput.value;
     const end = endInput.value;
     if (!date) return 'Please choose an event date.';
-    if (date < localDate()) return 'Please choose today or a future event date.';
+    if (date < localDate()) return 'Please select an event date at least one month in advance.';
     if (!Number.isInteger(guests) || guests < 1) return 'Please enter a valid guest count.';
     if (guests > packageCatalog.maxGuests) return `This package supports up to ${packageCatalog.maxGuests.toLocaleString()} guests.`;
     if (!start || !end) return 'Please choose a start time and end time.';
     const startMinutes = Number(start.slice(0, 2)) * 60 + Number(start.slice(3));
     const endMinutes = Number(end.slice(0, 2)) * 60 + Number(end.slice(3));
     if (startMinutes >= endMinutes) return 'Start time must be earlier than end time.';
-    if (startMinutes < 480) return 'Start time must be 8:00 AM or later.';
-    if (endMinutes > 1410) return 'End time must be 11:30 PM or earlier.';
+    if (!window.bbEventTime?.isWholeHour(start) || !window.bbEventTime?.isWholeHour(end)) return 'Event times must use whole hours between 9:00 AM and 11:00 PM.';
     const duration = endMinutes - startMinutes;
     if (duration < 120) return 'Your event must be at least 2 hours long.';
     if (duration > 720) return 'Your event cannot be longer than 12 hours.';
     return null;
   };
+  dateInput.min = localDate();
   const savePlan = (details) => {
     if (typeof window.bbSetPackagePlan !== 'function') return;
     window.bbSetPackagePlan({ packageId:packageCatalog.id, packageSlug:packageCatalog.slug, packageName:packageCatalog.name, venueId:packageCatalog.venueId, venueName:packageCatalog.venueName, maxGuests:packageCatalog.maxGuests, eventDate:details.date, startTime:details.start, endTime:details.end, guestCount:details.guests, available:true, packageAvailable:true });

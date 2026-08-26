@@ -21,6 +21,9 @@ public record CustomerBookingSummaryResponse(
     String bookingType,
     Long packageId,
     String packageName,
-    BigDecimal packagePriceSnapshot
+    BigDecimal packagePriceSnapshot,
+    String paymentStatus,
+    BigDecimal paidAmount,
+    BigDecimal remainingAmount
 ) {
 }

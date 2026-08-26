@@ -34,6 +34,8 @@
   .package-availability-reason{color:#68746c;font-size:.78rem;margin:.35rem 0 0}
   .package-card-availability{min-height:1.55rem}
   .package-availability-hidden{display:none!important}
+  #pkgGrid .bb-card__body > .d-flex.justify-content-between.align-items-start.mb-2{flex-wrap:wrap}
+  #pkgGrid .package-capacity{flex:0 0 auto;max-width:100%;width:auto;white-space:nowrap}
   @media (max-width:575.98px){.package-availability-panel{padding:1.1rem}.package-availability-panel .btn{width:100%}}
 </style>
 </head>
@@ -129,7 +131,7 @@ document.addEventListener('DOMContentLoaded', function () {
   </div>
 </header>
 
-<section class="section package-availability-section" aria-labelledby="packageAvailabilityHeading">
+<section class="section package-availability-section" id="package-availability" aria-labelledby="packageAvailabilityHeading">
   <div class="container">
     <div class="package-availability-panel">
       <div class="row g-3 align-items-end">
@@ -143,8 +145,8 @@ document.addEventListener('DOMContentLoaded', function () {
             <div class="row g-2">
               <div class="col-sm-6 col-lg-3"><label class="package-availability-label mb-1" for="packageCatalogDate">Event date</label><input class="form-control package-availability-field" id="packageCatalogDate" type="date" data-package-catalog-date required></div>
               <div class="col-sm-6 col-lg-3"><label class="package-availability-label mb-1" for="packageCatalogGuests">Guests</label><input class="form-control package-availability-field" id="packageCatalogGuests" type="number" min="1" step="1" placeholder="80" data-package-catalog-guests required></div>
-              <div class="col-sm-6 col-lg-3"><label class="package-availability-label mb-1" for="packageCatalogStart">Start time</label><div class="package-time-field is-empty"><span class="package-time-placeholder" aria-hidden="true">Select start time</span><input class="form-control package-availability-field" id="packageCatalogStart" type="time" data-package-catalog-start required></div></div>
-              <div class="col-sm-6 col-lg-3"><label class="package-availability-label mb-1" for="packageCatalogEnd">End time</label><div class="package-time-field is-empty"><span class="package-time-placeholder" aria-hidden="true">Select end time</span><input class="form-control package-availability-field" id="packageCatalogEnd" type="time" data-package-catalog-end required></div></div>
+              <div class="col-sm-6 col-lg-3"><label class="package-availability-label mb-1" for="packageCatalogStart">Start time</label><select class="form-select package-availability-field" id="packageCatalogStart" data-package-catalog-start required></select></div>
+              <div class="col-sm-6 col-lg-3"><label class="package-availability-label mb-1" for="packageCatalogEnd">End time</label><select class="form-select package-availability-field" id="packageCatalogEnd" data-package-catalog-end required></select></div>
             </div>
             <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2 mt-3">
               <div class="package-availability-note small" data-package-availability-status role="status" aria-live="polite">Loading package catalog...</div>
@@ -353,6 +355,7 @@ document.addEventListener('DOMContentLoaded', function () {
             <div class="d-flex justify-content-between align-items-start mb-2">
               <span class="bb-badge">Wedding</span>
               <span class="bb-badge gold">UP TO 150 GUESTS</span>
+              <span class="bb-badge gold">VENUE: UP TO 350 GUESTS</span>
             </div>
             <h4 class="mb-2">Inya Garden Romance</h4>
             <p class="small text-ink-soft mb-3">A romantic lakeside wedding with garden styling, fresh floral details and an elegant reception experience.</p>
@@ -379,6 +382,7 @@ document.addEventListener('DOMContentLoaded', function () {
             <div class="d-flex justify-content-between align-items-start mb-2">
               <span class="bb-badge">Wedding</span>
               <span class="bb-badge gold">UP TO 180 GUESTS</span>
+              <span class="bb-badge gold">VENUE: UP TO 180 GUESTS</span>
             </div>
             <h4 class="mb-2">The Yangon Ever After</h4>
             <p class="small text-ink-soft mb-3">A sophisticated premium hotel wedding with polished styling, elevated dining and complete celebration services.</p>
@@ -457,6 +461,7 @@ document.addEventListener('DOMContentLoaded', function () {
             <div class="d-flex justify-content-between align-items-start mb-2">
               <span class="bb-badge">Wedding</span>
               <span class="bb-badge gold">UP TO 200 GUESTS</span>
+              <span class="bb-badge gold">VENUE: UP TO 250 GUESTS</span>
             </div>
             <h4 class="mb-2">Rose Garden Elegance</h4>
             <p class="small text-ink-soft mb-3">An elegant floral hotel wedding with romantic styling, polished dining and sophisticated celebration details.</p>
@@ -1153,7 +1158,7 @@ document.addEventListener('DOMContentLoaded', function () {
       </div>
       <div class="modal-footer">
         <a class="btn btn-outline-forest" href="/prototype/customer/custom-package.html">Customise</a>
-        <a class="btn btn-gold" href="/prototype/customer/booking.html">Book this package</a>
+        <a class="btn btn-gold" href="/prototype/packages.html#package-availability">Check Package Availability</a>
       </div>
     </div>
   </div>
@@ -1212,6 +1217,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="/prototype/assets/js/main.js"></script>
+<script src="/prototype/assets/js/event-time.js"></script>
 <script>
 (() => {
   const apiUrl = path => {
@@ -1227,6 +1233,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const guestsInput = document.querySelector('[data-package-catalog-guests]');
   const startInput = document.querySelector('[data-package-catalog-start]');
   const endInput = document.querySelector('[data-package-catalog-end]');
+  window.bbEventTime?.initialize(startInput, endInput);
   const checkButton = document.querySelector('[data-package-catalog-check]');
   const statusEl = document.querySelector('[data-package-availability-status]');
   const summaryEl = document.querySelector('[data-package-availability-summary]');
@@ -1258,6 +1265,7 @@ document.addEventListener('DOMContentLoaded', function () {
   let cards = [];
   const timeInputs = [startInput, endInput];
   const savedPlan = typeof window.bbGetPackagePlan === 'function' ? window.bbGetPackagePlan() : {};
+  const requestedPackageSlug = new URLSearchParams(window.location.search).get('packageSlug') || '';
   let catalog = [];
   let catalogBySlug = new Map();
   let packageDetailsLoaded = false;
@@ -1265,14 +1273,20 @@ document.addEventListener('DOMContentLoaded', function () {
   let checking = false;
   let availableVenueIds = new Set();
 
-  const localDate = () => {
-    const now = new Date();
-    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-  };
+  const localDate = () => typeof window.bbGetMinimumBookingDate === 'function'
+    ? window.bbGetMinimumBookingDate()
+    : (() => {
+      const today = new Date();
+      const targetMonth = today.getMonth() + 1;
+      const targetYear = today.getFullYear() + Math.floor(targetMonth / 12);
+      const month = targetMonth % 12;
+      const day = Math.min(today.getDate(), new Date(targetYear, month + 1, 0).getDate());
+      return `${targetYear}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    })();
   const formatDate = value => new Intl.DateTimeFormat('en-US', { dateStyle:'long' }).format(new Date(`${value}T00:00:00`));
   const formatTime = value => { const [hour, minute] = value.split(':').map(Number); return `${hour % 12 || 12}:${String(minute).padStart(2, '0')} ${hour >= 12 ? 'PM' : 'AM'}`; };
   const setStatus = (message, error = false) => { statusEl.textContent = message; statusEl.classList.toggle('is-error', error); };
-  const syncTimePlaceholder = input => { const wrapper = input.closest('.package-time-field'); wrapper.classList.toggle('is-empty', !input.value); };
+  const syncTimePlaceholder = input => { const wrapper = input.closest('.package-time-field'); wrapper?.classList.toggle('is-empty', !input.value); };
   const setSummary = (count, details) => {
     if (count === null) { summaryEl.innerHTML = ''; return; }
     if (count === 0) { summaryEl.innerHTML = '<strong>No packages are available for your selected event.</strong><br><small>Try changing your date, time, or guest count.</small>'; return; }
@@ -1304,7 +1318,18 @@ document.addEventListener('DOMContentLoaded', function () {
     if (title) title.textContent = item.name;
     if (description) description.textContent = item.description;
     if (category) category.textContent = String(item.category || '').toLowerCase().replace(/^./, letter => letter.toUpperCase());
-    if (capacity) capacity.textContent = `Up to ${Number(item.maxGuests).toLocaleString()} guests`;
+    if (capacity) capacity.textContent = `UP TO ${Number(item.maxGuests).toLocaleString()} GUESTS`;
+    let venueCapacity = card.querySelector('.package-venue-capacity');
+    if (!venueCapacity) {
+      venueCapacity = document.createElement('div');
+      venueCapacity.className = 'package-venue-capacity small text-ink-soft mt-1';
+      (capacity?.parentElement || card.querySelector('.bb-card__body'))?.appendChild(venueCapacity);
+    }
+    venueCapacity.classList.toggle('capacity-pill', item.venue?.capacity != null);
+    venueCapacity.hidden = item.venue?.capacity == null;
+    venueCapacity.textContent = item.venue?.capacity == null
+      ? ''
+      : `VENUE: UP TO ${Number(item.venue.capacity).toLocaleString()} GUESTS`;
     if (price) price.textContent = `MMK ${Number(item.finalPrice).toLocaleString()}`;
   };
   const resolvePackageImage = value => {
@@ -1345,6 +1370,7 @@ document.addEventListener('DOMContentLoaded', function () {
           </div>
           <h4 class="mb-2"></h4>
           <p class="small text-ink-soft mb-3"></p>
+          <div class="package-venue-capacity small text-ink-soft mb-2"></div>
           <ul class="list-check mb-3"></ul>
           <div class="package-footer">
             <div class="package-price"><div class="bb-price"></div></div>
@@ -1357,7 +1383,13 @@ document.addEventListener('DOMContentLoaded', function () {
     const category = card.querySelector('.package-category');
     const capacity = card.querySelector('.package-capacity');
     category.textContent = String(item.category || '').toLowerCase().replace(/^./, letter => letter.toUpperCase());
-    capacity.textContent = `Up to ${Number(item.maxGuests).toLocaleString()} guests`;
+    capacity.textContent = `UP TO ${Number(item.maxGuests).toLocaleString()} GUESTS`;
+    const venueCapacity = card.querySelector('.package-venue-capacity');
+    venueCapacity.classList.toggle('capacity-pill', item.venue?.capacity != null);
+    venueCapacity.hidden = item.venue?.capacity == null;
+    venueCapacity.textContent = item.venue?.capacity == null
+      ? ''
+      : `VENUE: UP TO ${Number(item.venue.capacity).toLocaleString()} GUESTS`;
     card.querySelector('h4').textContent = item.name || '';
     card.querySelector('p').textContent = item.description || '';
     const inclusionList = card.querySelector('.list-check');
@@ -1398,14 +1430,13 @@ document.addEventListener('DOMContentLoaded', function () {
     const start = startInput.value;
     const end = endInput.value;
     if (!date) return 'Please choose an event date.';
-    if (date < localDate()) return 'Please choose today or a future event date.';
+    if (date < localDate()) return 'Please select an event date at least one month in advance.';
     if (!Number.isInteger(guests) || guests < 1) return 'Please enter a valid guest count.';
     if (!start || !end) return 'Please choose a start time and end time.';
     const startMinutes = Number(start.slice(0, 2)) * 60 + Number(start.slice(3));
     const endMinutes = Number(end.slice(0, 2)) * 60 + Number(end.slice(3));
     if (startMinutes >= endMinutes) return 'Start time must be earlier than end time.';
-    if (startMinutes < 480) return 'Start time must be 8:00 AM or later.';
-    if (endMinutes > 1410) return 'End time must be 11:30 PM or earlier.';
+    if (!window.bbEventTime?.isWholeHour(start) || !window.bbEventTime?.isWholeHour(end)) return 'Event times must use whole hours between 9:00 AM and 11:00 PM.';
     const duration = endMinutes - startMinutes;
     if (duration < 120) return 'Your event must be at least 2 hours long.';
     if (duration > 720) return 'Your event cannot be longer than 12 hours.';
@@ -1454,6 +1485,22 @@ document.addEventListener('DOMContentLoaded', function () {
       availableVenueIds = new Set(venues.map(venue => String(venue?.id)).filter(id => id !== 'undefined' && id !== 'null'));
       availabilityChecked = true;
       saveEventPlan();
+      const requestedPackage = requestedPackageSlug ? catalogBySlug.get(requestedPackageSlug) : null;
+      if (requestedPackage && typeof window.bbSetPackagePlan === 'function') {
+        const requestedAvailable = availableVenueIds.has(String(requestedPackage.venue?.id))
+          && Number(guestsInput.value) <= Number(requestedPackage.maxGuests)
+          && (requestedPackage.venue?.capacity == null || Number(guestsInput.value) <= Number(requestedPackage.venue.capacity));
+        window.bbSetPackagePlan({
+          packageId: requestedPackage.id,
+          packageSlug: requestedPackage.slug,
+          packageName: requestedPackage.name,
+          venueId: requestedPackage.venue?.id,
+          venueName: requestedPackage.venue?.name,
+          maxGuests: requestedPackage.maxGuests,
+          packageAvailable: requestedAvailable,
+          available: requestedAvailable
+        });
+      }
       renderStatuses();
       const availableCount = cards.filter(card => { const item = catalogBySlug.get(card.dataset.packageSlug); return Number(guestsInput.value) <= Number(item.maxGuests) && availableVenueIds.has(String(item.venue?.id)); }).length;
       const details = `${formatDate(dateInput.value)} · ${formatTime(startInput.value)}–${formatTime(endInput.value)} · ${Number(guestsInput.value).toLocaleString()} guests`;
@@ -1501,11 +1548,12 @@ document.addEventListener('DOMContentLoaded', function () {
   if (savedPlan.eventDate) dateInput.value = savedPlan.eventDate;
   if (savedPlan.startTime) startInput.value = savedPlan.startTime;
   if (savedPlan.endTime) endInput.value = savedPlan.endTime;
+  window.bbEventTime?.syncEnd(startInput, endInput, 'Select end time');
   if (savedPlan.guestCount) guestsInput.value = savedPlan.guestCount;
   timeInputs.forEach(input => {
     syncTimePlaceholder(input);
-    input.addEventListener('focus', () => { input.closest('.package-time-field').classList.add('is-focused'); syncTimePlaceholder(input); });
-    input.addEventListener('blur', () => { input.closest('.package-time-field').classList.remove('is-focused'); syncTimePlaceholder(input); });
+    input.addEventListener('focus', () => { input.closest('.package-time-field')?.classList.add('is-focused'); syncTimePlaceholder(input); });
+    input.addEventListener('blur', () => { input.closest('.package-time-field')?.classList.remove('is-focused'); syncTimePlaceholder(input); });
     input.addEventListener('input', () => { syncTimePlaceholder(input); invalidate(); });
     input.addEventListener('change', () => { syncTimePlaceholder(input); invalidate(); });
   });
@@ -1522,5 +1570,3 @@ document.addEventListener('DOMContentLoaded', function () {
 
 </body>
 </html>
-
-

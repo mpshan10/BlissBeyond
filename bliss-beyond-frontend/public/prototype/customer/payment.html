@@ -44,15 +44,20 @@
   </aside>
   <main class="bb-main" data-payment-page>
     <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
-      <div><span class="eyebrow">Customer portal</span><h1 class="h2 mt-1 mb-1">Payment</h1><p class="small text-ink-soft mb-0">Review your payment requirement and create a payment request.</p></div>
+      <div><span class="eyebrow">Customer portal</span><h1 class="h2 mt-1 mb-1">Payments</h1><p class="small text-ink-soft mb-0">Review payment status for your Bliss &amp; Beyond bookings.</p></div>
       <a class="btn btn-outline-forest btn-sm" href="/prototype/customer/booking-status.html">Booking Status</a>
     </div>
     <div class="alert alert-danger d-none" data-payment-error></div>
     <div class="alert alert-success d-none" data-payment-message></div>
-    <div class="panel d-none" data-payment-empty><div class="panel__body text-center py-5"><i class="bi bi-credit-card fs-1 text-forest"></i><h2 class="h4 mt-3">Payment information unavailable</h2><p class="text-ink-soft mb-0">We could not find payment information for this booking.</p></div></div>
+    <div class="panel d-none" data-payment-picker>
+      <div class="panel__head"><h2 class="h5 mb-0">Choose a booking</h2></div>
+      <div class="panel__body"><p class="text-ink-soft">Select a booking to review its payment status or pay an eligible deposit.</p><div class="d-grid gap-3" data-payment-booking-list></div></div>
+    </div>
+    <div class="panel d-none" data-payment-empty><div class="panel__body text-center py-5"><i class="bi bi-credit-card fs-1 text-forest"></i><h2 class="h4 mt-3">No payment records to show</h2><p class="text-ink-soft mb-0">You do not have any customer bookings available for payment.</p></div></div>
     <div class="row g-4" data-payment-content>
       <div class="col-lg-7">
-        <div class="panel mb-4"><div class="panel__head"><h5 class="mb-0">Payment Summary</h5></div><div class="panel__body">
+        <div class="panel mb-4"><div class="panel__head"><h5 class="mb-0" data-payment-booking-title>Payment Summary</h5></div><div class="panel__body">
+          <div class="small text-ink-soft mb-3" data-payment-booking-context>Loading payment details...</div>
           <div class="d-flex justify-content-between mb-2"><span class="text-ink-soft">Quotation total</span><strong data-payment-quotation-total>MMK 0</strong></div>
           <div class="d-flex justify-content-between mb-2"><span class="text-ink-soft">Deposit required (30%)</span><strong data-payment-deposit-required>MMK 0</strong></div>
           <div class="d-flex justify-content-between mb-2"><span class="text-ink-soft">Amount paid</span><strong data-payment-amount-paid>MMK 0</strong></div>
@@ -63,11 +68,24 @@
         </div></div>
         <div class="panel"><div class="panel__head"><h5 class="mb-0">Payment Requests</h5></div><div class="panel__body" data-payment-records><p class="text-ink-soft mb-0">No payment requests yet.</p></div></div>
       </div>
-      <div class="col-lg-5"><div class="panel"><div class="panel__head"><h5 class="mb-0">Next Step</h5></div><div class="panel__body">
-        <p class="text-ink-soft" data-payment-next-message>Payment requests remain pending until payment confirmation is available.</p>
-        <button class="btn btn-gold w-100 d-none" type="button" data-payment-create> Create Payment Request </button>
-        <div class="small text-ink-soft mt-3" data-payment-pending-message></div>
-      </div></div></div>
+      <div class="col-lg-5">
+        <div class="panel mb-4"><div class="panel__head"><h5 class="mb-0">Next Step</h5></div><div class="panel__body">
+          <p class="text-ink-soft" data-payment-next-message>Payment requests remain pending until payment confirmation is available.</p>
+          <div class="small text-ink-soft mt-3" data-payment-pending-message></div>
+        </div></div>
+        <div class="panel d-none" data-payment-submit-panel>
+          <div class="panel__head"><h5 class="mb-0">Pay Deposit</h5></div>
+          <div class="panel__body">
+            <form data-payment-submit-form novalidate>
+              <div class="d-flex justify-content-between align-items-center mb-3"><span class="text-ink-soft">Amount due</span><strong class="bb-price" data-payment-submit-amount>MMK 0</strong></div>
+              <div class="mb-3"><label class="form-label" for="customerPaymentMethod">Payment method</label><select class="form-select" id="customerPaymentMethod" data-payment-method required><option value="">Select a payment method</option><option value="BANK_TRANSFER">Bank Transfer</option><option value="KBZPAY">KBZPay</option><option value="WAVEPAY">WavePay</option><option value="CASH">Cash</option></select></div>
+              <div class="mb-3"><label class="form-label" for="customerPaymentReference">Transaction / Reference Number <span class="text-ink-soft">(optional)</span></label><input class="form-control" id="customerPaymentReference" data-payment-reference maxlength="120" autocomplete="off" placeholder="Enter your payment reference"></div>
+              <div class="alert alert-danger d-none" data-payment-submit-error></div>
+              <button class="btn btn-gold w-100" type="submit" data-payment-submit>Submit Deposit Payment</button>
+            </form>
+          </div>
+        </div>
+      </div>
     </div>
   </main>
 </div>

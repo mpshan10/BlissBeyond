@@ -9,6 +9,7 @@ import com.blissbeyond.dto.event.EventResponse;
 import com.blissbeyond.dto.quotation.QuotationResponse;
 import com.blissbeyond.dto.payment.PaymentResponse;
 import com.blissbeyond.dto.payment.PaymentSummaryResponse;
+import com.blissbeyond.dto.payment.CustomerPaymentSubmissionRequest;
 import com.blissbeyond.entity.User;
 import com.blissbeyond.entity.Booking;
 import com.blissbeyond.entity.BookingType;
@@ -26,6 +27,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -93,9 +96,12 @@ public class CustomerController {
     }
 
     @org.springframework.web.bind.annotation.PostMapping("/bookings/{bookingId}/payments")
-    public org.springframework.http.ResponseEntity<PaymentResponse> createPayment(@PathVariable Long bookingId) {
+    public org.springframework.http.ResponseEntity<PaymentResponse> createPayment(
+        @PathVariable Long bookingId,
+        @Valid @RequestBody(required = false) CustomerPaymentSubmissionRequest request
+    ) {
         return org.springframework.http.ResponseEntity.status(org.springframework.http.HttpStatus.CREATED)
-            .body(paymentService.toResponse(paymentService.createNextPayment(bookingId)));
+            .body(paymentService.toResponse(paymentService.createNextPayment(bookingId, request)));
     }
 
     @GetMapping("/bookings/{bookingId}/payment-summary")
