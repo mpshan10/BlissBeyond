@@ -12,6 +12,7 @@ import java.util.List;
 
 public interface ConsultationRepository extends JpaRepository<Consultation, Long> {
     List<Consultation> findByCustomerIdOrderByCreatedAtDesc(Long customerId);
+    List<Consultation> findByBookingIdOrderByCreatedAtDesc(Long bookingId);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     List<Consultation> findByConsultationDate(LocalDate consultationDate);

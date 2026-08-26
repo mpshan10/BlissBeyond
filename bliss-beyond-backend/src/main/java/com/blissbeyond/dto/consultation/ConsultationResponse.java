@@ -6,6 +6,11 @@ import java.time.LocalTime;
 
 public record ConsultationResponse(
     Long id,
+    Long bookingId,
+    String bookingMode,
+    String eventType,
+    String venueName,
+    LocalDate eventDate,
     Long customerId,
     String customerName,
     String customerEmail,

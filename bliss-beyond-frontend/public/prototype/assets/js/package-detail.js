@@ -72,7 +72,7 @@
       ? '/prototype/customer/booking.html'
       : `/prototype/packages.html?packageSlug=${encodeURIComponent(current.slug || '')}#package-availability`;
     const label = availabilityChecked ? 'Continue to Booking' : 'Check Package Availability';
-    document.querySelectorAll('.hero-actions a[href*="booking.html"], .final-cta a[href*="booking.html"]').forEach((link) => {
+    document.querySelectorAll('.hero-actions a, .final-cta a').forEach((link) => {
       link.href = target;
       link.textContent = label;
     });

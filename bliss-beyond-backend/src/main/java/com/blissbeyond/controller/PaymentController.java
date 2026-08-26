@@ -4,14 +4,15 @@ import com.blissbeyond.dto.payment.PaymentResponse;
 import com.blissbeyond.service.CurrentUserService;
 import com.blissbeyond.repository.PaymentRepository;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/customer/payments")
+@PreAuthorize("hasRole('CUSTOMER')")
 public class PaymentController {
     private final PaymentRepository paymentRepository;
     private final CurrentUserService currentUserService;
@@ -32,7 +33,10 @@ public class PaymentController {
             payment.getPaymentStatus() != null ? payment.getPaymentStatus().name() : null,
             payment.getPaymentMethod(),
             payment.getTransactionReference(),
-            payment.getPaidAt()
+            payment.getPaidAt(),
+            payment.getSubmittedAt(),
+            payment.getRejectedAt(),
+            payment.getAdminNote()
         )).toList();
     }
 

@@ -2,6 +2,7 @@ package com.blissbeyond.controller;
 
 import com.blissbeyond.dto.consultation.ConsultationRequest;
 import com.blissbeyond.dto.consultation.ConsultationResponse;
+import com.blissbeyond.dto.consultation.PlannerOption;
 import com.blissbeyond.service.ConsultationService;
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,6 +28,11 @@ public class AdminConsultationController {
     @GetMapping
     public List<ConsultationResponse> list() {
         return consultationService.listAll();
+    }
+
+    @GetMapping("/planners")
+    public List<PlannerOption> planners() {
+        return consultationService.availablePlanners();
     }
 
     @GetMapping("/{id}")

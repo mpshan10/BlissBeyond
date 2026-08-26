@@ -37,12 +37,12 @@
 </div></div></div>
 <div class="bb-shell"><aside class="bb-side"><h6>Overview</h6><a class="" href="/prototype/customer/dashboard.html">Dashboard</a><a class="" href="/prototype/customer/profile.html">My Profile</a><h6>Plan your event</h6><a class="" href="/prototype/customer/browse-packages.html">Browse Packages</a><a class="" href="/prototype/customer/venue-selection.html">Venue Selection</a><a class="" href="/prototype/customer/ai-recommendation.html">AI Recommendation</a><a class="" href="/prototype/customer/booking.html">New Booking</a><h6>My bookings</h6><a class="active" href="/prototype/customer/consultation.html">Consultation</a><a class="" href="/prototype/customer/booking-history.html">Booking History</a><a class="" href="/prototype/customer/quotation.html">Quotations</a><h6>Account</h6><a href="/prototype/login.html">Sign out</a></aside><main class="bb-main"><div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
       <div><span class="eyebrow">Customer portal</span><h1 class="h2 mt-1 mb-1">Book a Consultation</h1>
-      <p class="small text-ink-soft mb-0">Free 30-minute planning call, online or at our studio.</p></div><div class="d-flex gap-2"></div></div>
+      <p class="small text-ink-soft mb-0">Free 30-minute planning call, online or at our studio.</p><div class="small text-forest d-none" data-consultation-booking-context></div></div><div class="d-flex gap-2"></div></div>
 <div class="row g-4">
   <div class="col-lg-7"><div class="panel"><div class="panel__body">
     <form class="row g-3" data-consultation-form>
       <div class="col-md-6"><label class="form-label" for="consultationType">Consultation type</label><select class="form-select" id="consultationType" name="consultationType"><option>Online video call</option><option>Studio visit</option><option>Phone call</option></select></div>
-      <div class="col-md-6"><label class="form-label" for="consultationPlanner">Planner</label><select class="form-select" id="consultationPlanner" name="planner"><option value="">Any available planner</option></select></div>
+      <div class="col-md-6"><label class="form-label" for="consultationPlanner">Planner</label><select class="form-select" id="consultationPlanner" name="planner" required data-consultation-planner><option value="">Select Planner</option></select><div class="small text-ink-soft mt-2" data-consultation-planner-hint>Choose a planner to see available consultation times.</div></div>
       <div class="col-md-6"><label class="form-label" for="consultationDate">Preferred date</label><input class="form-control" id="consultationDate" name="consultationDate" type="date" required></div>
       <div class="col-md-6"><label class="form-label">Preferred time</label>
         <div class="d-flex flex-wrap gap-2" data-consultation-slots><span class="small text-ink-soft">Choose a date to see available times.</span></div></div>

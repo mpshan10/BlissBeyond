@@ -58,10 +58,12 @@
       <div class="col-lg-7">
         <div class="panel mb-4"><div class="panel__head"><h5 class="mb-0" data-payment-booking-title>Payment Summary</h5></div><div class="panel__body">
           <div class="small text-ink-soft mb-3" data-payment-booking-context>Loading payment details...</div>
-          <div class="d-flex justify-content-between mb-2"><span class="text-ink-soft">Quotation total</span><strong data-payment-quotation-total>MMK 0</strong></div>
+          <div class="d-flex justify-content-between mb-2"><span class="text-ink-soft">Total event price</span><strong data-payment-quotation-total>MMK 0</strong></div>
           <div class="d-flex justify-content-between mb-2"><span class="text-ink-soft">Deposit required (30%)</span><strong data-payment-deposit-required>MMK 0</strong></div>
+          <div class="d-flex justify-content-between mb-2"><span class="text-ink-soft">Deposit due date</span><strong data-payment-deposit-due>Not scheduled</strong></div>
           <div class="d-flex justify-content-between mb-2"><span class="text-ink-soft">Amount paid</span><strong data-payment-amount-paid>MMK 0</strong></div>
           <div class="d-flex justify-content-between mb-3"><span class="text-ink-soft">Remaining balance</span><strong data-payment-remaining>MMK 0</strong></div>
+          <div class="d-flex justify-content-between mb-3"><span class="text-ink-soft">Balance due date</span><strong data-payment-balance-due>Not scheduled</strong></div>
           <hr>
           <div class="d-flex justify-content-between align-items-center"><span>Payment due now</span><span class="bb-price" data-payment-next-amount>MMK 0</span></div>
           <div class="small text-ink-soft mt-1" data-payment-next-type></div>
@@ -74,7 +76,7 @@
           <div class="small text-ink-soft mt-3" data-payment-pending-message></div>
         </div></div>
         <div class="panel d-none" data-payment-submit-panel>
-          <div class="panel__head"><h5 class="mb-0">Pay Deposit</h5></div>
+          <div class="panel__head"><h5 class="mb-0" data-payment-submit-title>Pay Deposit</h5></div>
           <div class="panel__body">
             <form data-payment-submit-form novalidate>
               <div class="d-flex justify-content-between align-items-center mb-3"><span class="text-ink-soft">Amount due</span><strong class="bb-price" data-payment-submit-amount>MMK 0</strong></div>

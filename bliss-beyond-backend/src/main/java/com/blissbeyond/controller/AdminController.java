@@ -2,6 +2,7 @@ package com.blissbeyond.controller;
 
 import com.blissbeyond.dto.admin.AdminBookingSummaryResponse;
 import com.blissbeyond.dto.admin.AdminPaymentConfirmationRequest;
+import com.blissbeyond.dto.admin.AdminPaymentRejectionRequest;
 import com.blissbeyond.dto.admin.AdminPaymentResponse;
 import com.blissbeyond.dto.admin.AdminQuotationSummaryResponse;
 import com.blissbeyond.dto.admin.AdminQuotationDetailResponse;
@@ -248,6 +249,11 @@ public class AdminController {
         return quotationService.sendAdminQuotation(id);
     }
 
+    @PatchMapping("/quotations/{id}/revise")
+    public AdminQuotationDetailResponse reviseQuotation(@PathVariable Long id) {
+        return quotationService.reviseRejected(id);
+    }
+
     @GetMapping("/payments")
     public List<AdminPaymentResponse> payments() {
         return paymentService.listAdminPayments();
@@ -270,6 +276,14 @@ public class AdminController {
         @Valid @RequestBody(required = false) AdminPaymentConfirmationRequest request
     ) {
         return paymentService.confirmPayment(id, request);
+    }
+
+    @PatchMapping("/payments/{id}/reject")
+    public AdminPaymentResponse rejectPayment(
+        @PathVariable Long id,
+        @Valid @RequestBody AdminPaymentRejectionRequest request
+    ) {
+        return paymentService.rejectPayment(id, request);
     }
 
     @PatchMapping("/bookings/{id}/confirm")

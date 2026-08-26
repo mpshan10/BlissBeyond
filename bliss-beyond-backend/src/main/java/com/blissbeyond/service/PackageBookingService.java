@@ -8,7 +8,6 @@ import com.blissbeyond.exception.ResourceNotFoundException;
 import com.blissbeyond.repository.BookingRepository;
 import com.blissbeyond.repository.EventRepository;
 import com.blissbeyond.repository.PackageBookingSnapshotRepository;
-import com.blissbeyond.repository.QuotationRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -27,7 +26,6 @@ public class PackageBookingService {
     private final CurrentUserService currentUserService;
     private final EventRepository eventRepository;
     private final BookingRepository bookingRepository;
-    private final QuotationRepository quotationRepository;
     private final PackageBookingSnapshotRepository snapshotRepository;
     private final VenueService venueService;
     private final ObjectMapper objectMapper;
@@ -37,7 +35,6 @@ public class PackageBookingService {
                                  CurrentUserService currentUserService,
                                  EventRepository eventRepository,
                                  BookingRepository bookingRepository,
-                                 QuotationRepository quotationRepository,
                                  PackageBookingSnapshotRepository snapshotRepository,
                                  VenueService venueService,
                                  ObjectMapper objectMapper,
@@ -46,7 +43,6 @@ public class PackageBookingService {
         this.currentUserService = currentUserService;
         this.eventRepository = eventRepository;
         this.bookingRepository = bookingRepository;
-        this.quotationRepository = quotationRepository;
         this.snapshotRepository = snapshotRepository;
         this.venueService = venueService;
         this.objectMapper = objectMapper;
@@ -74,19 +70,9 @@ public class PackageBookingService {
         event = eventRepository.save(event);
 
         BigDecimal price = eventPackage.getFinalPrice();
-        Quotation quotation = new Quotation();
-        quotation.setEvent(event);
-        quotation.setSubtotal(price);
-        quotation.setDiscount(BigDecimal.ZERO);
-        quotation.setAdditionalCharges(BigDecimal.ZERO);
-        quotation.setTotal(price);
-        quotation.setStatus(QuotationStatus.DRAFT);
-        quotation = quotationRepository.save(quotation);
-
         Booking booking = new Booking();
         booking.setCustomer(customer);
         booking.setEvent(event);
-        booking.setQuotation(quotation);
         booking.setVenueId(venue.getId());
         booking.setEventDate(request.eventDate());
         booking.setStartTime(request.startTime());

@@ -19,10 +19,10 @@ public class PackageService {
     @Transactional(readOnly=true)
     public List<PackageResponse> list(PackageCategory category){
         var packages=category==null?repository.findAllByActiveTrueOrderByIdAsc():repository.findAllByActiveTrueAndCategoryOrderByIdAsc(category);
-        return packages.stream().map(this::map).toList();
+        return packages.stream().filter(p -> p.getVenue() != null && p.getVenue().isAvailable()).map(this::map).toList();
     }
     @Transactional(readOnly=true)
-    public PackageResponse get(String slug){return map(repository.findBySlugAndActiveTrue(slug).orElseThrow(()->new ResourceNotFoundException("Package not found")));}
+    public PackageResponse get(String slug){return map(repository.findBySlugAndActiveTrue(slug).filter(p -> p.getVenue() != null && p.getVenue().isAvailable()).orElseThrow(()->new ResourceNotFoundException("Package not found")));}
     @Transactional(readOnly=true)
     public Package requireActiveEntity(Long id, String slug) {
         if (id != null) {

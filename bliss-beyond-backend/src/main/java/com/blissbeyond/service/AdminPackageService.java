@@ -62,8 +62,7 @@ public class AdminPackageService {
         }
 
         var venue = findVenue(request.venueName());
-        venue.setLocation(request.venueLocation().trim());
-        venue.setWebsiteUrl(normalizeWebsiteUrl(request.websiteUrl()));
+        validateGuestLimit(request.maxGuests(), venue);
 
         Package eventPackage = new Package();
         eventPackage.setSlug(slug);
@@ -86,16 +85,25 @@ public class AdminPackageService {
         eventPackage.setName(request.name().trim());
         eventPackage.setCategory(request.category());
         var venue = findVenue(request.venueName());
-        venue.setLocation(request.venueLocation().trim());
+        validateGuestLimit(request.maxGuests(), venue);
         eventPackage.setVenue(venue);
         eventPackage.setDescription(request.description().trim());
         eventPackage.setMaxGuests(request.maxGuests());
         eventPackage.setFinalPrice(request.finalPrice());
         eventPackage.setImage(blankToNull(request.image()));
         eventPackage.setActive(request.active());
-        venue.setWebsiteUrl(normalizeWebsiteUrl(request.websiteUrl()));
         updateServiceInclusions(eventPackage, request.serviceInclusions());
         return toResponse(packageRepository.save(eventPackage));
+    }
+
+    private void validateGuestLimit(Integer maxGuests, com.blissbeyond.entity.Venue venue) {
+        if (maxGuests == null || maxGuests < 1) {
+            throw new IllegalArgumentException("Package guest limit must be at least 1 guest.");
+        }
+        if (venue.getCapacity() != null && maxGuests > venue.getCapacity()) {
+            throw new IllegalArgumentException("Package guest limit cannot exceed the selected venue capacity of "
+                + venue.getCapacity() + " guests.");
+        }
     }
 
     private void updateServiceInclusions(Package eventPackage, Map<String, List<String>> requestedInclusions) {

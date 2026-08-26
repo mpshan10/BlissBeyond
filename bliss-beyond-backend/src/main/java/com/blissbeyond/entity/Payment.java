@@ -39,6 +39,15 @@ public class Payment extends BaseEntity {
     @Column
     private LocalDateTime paidAt;
 
+    @Column(name = "submitted_at")
+    private LocalDateTime submittedAt;
+
+    @Column(name = "rejected_at")
+    private LocalDateTime rejectedAt;
+
+    @Column(name = "admin_note", length = 1000)
+    private String adminNote;
+
     public Booking getBooking() { return booking; }
     public void setBooking(Booking booking) { this.booking = booking; }
     public BigDecimal getAmount() { return amount; }
@@ -53,4 +62,10 @@ public class Payment extends BaseEntity {
     public void setTransactionReference(String transactionReference) { this.transactionReference = transactionReference; }
     public LocalDateTime getPaidAt() { return paidAt; }
     public void setPaidAt(LocalDateTime paidAt) { this.paidAt = paidAt; }
+    public LocalDateTime getSubmittedAt() { return submittedAt; }
+    public void setSubmittedAt(LocalDateTime submittedAt) { this.submittedAt = submittedAt; }
+    public LocalDateTime getRejectedAt() { return rejectedAt; }
+    public void setRejectedAt(LocalDateTime rejectedAt) { this.rejectedAt = rejectedAt; }
+    public String getAdminNote() { return adminNote; }
+    public void setAdminNote(String adminNote) { this.adminNote = adminNote; }
 }

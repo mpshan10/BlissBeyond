@@ -89,7 +89,7 @@ html:not(.bb-admin-authorized) body { visibility: hidden; }
     <div class="col-12"><label class="form-label" for="consultationScheduleDate">Consultation Date</label><input class="form-control" id="consultationScheduleDate" type="date" required data-admin-consultation-schedule-date></div>
     <div class="col-6"><label class="form-label" for="consultationScheduleStart">Start Time</label><input class="form-control" id="consultationScheduleStart" type="time" required data-admin-consultation-schedule-start></div>
     <div class="col-6"><label class="form-label" for="consultationScheduleEnd">End Time</label><input class="form-control" id="consultationScheduleEnd" type="time" required data-admin-consultation-schedule-end></div>
-    <div class="col-12"><label class="form-label" for="consultationSchedulePlanner">Planner</label><input class="form-control" id="consultationSchedulePlanner" maxlength="120" placeholder="Leave empty if unassigned" data-admin-consultation-schedule-planner></div>
+    <div class="col-12"><label class="form-label" for="consultationSchedulePlanner">Planner</label><select class="form-select" id="consultationSchedulePlanner" required data-admin-consultation-schedule-planner><option value="">Loading planners...</option></select></div>
   </div></div>
   <div class="modal-footer"><button class="btn btn-outline-secondary" type="button" data-bs-dismiss="modal">Cancel</button><button class="btn btn-gold" type="submit" data-admin-consultation-schedule-save>Save Schedule</button></div>
 </form></div></div></div>

@@ -26,7 +26,10 @@ public class VenueService {
     }
 
     public List<VenueResponse> listVenues() {
-        return venueRepository.findAll().stream().map(this::map).toList();
+        return venueRepository.findAll().stream()
+            .filter(Venue::isAvailable)
+            .map(this::map)
+            .toList();
     }
 
     public List<VenueResponse> findAvailableVenues(LocalDate date, LocalTime startTime, LocalTime endTime, Integer guests) {
@@ -34,7 +37,7 @@ public class VenueService {
 
         return venueRepository.findAll().stream()
             .filter(Venue::isAvailable)
-            .filter(venue -> venue.getCapacity() == null || venue.getCapacity() >= guests)
+            .filter(venue -> venue.getCapacity() != null && venue.getCapacity() >= guests)
             .filter(venue -> isAvailableForSlot(venue.getId(), date, startTime, endTime, null))
             .map(this::map)
             .toList();
@@ -77,7 +80,10 @@ public class VenueService {
             throw new IllegalArgumentException("guestCount must be greater than 0");
         }
         Venue venue = findVenueEntity(venueId);
-        if (venue.getCapacity() != null && venue.getCapacity() < guests) {
+        if (venue.getCapacity() == null) {
+            throw new IllegalArgumentException("The selected venue does not have a configured guest capacity.");
+        }
+        if (venue.getCapacity() < guests) {
             throw new IllegalArgumentException("The selected venue cannot accommodate the requested guest count.");
         }
     }

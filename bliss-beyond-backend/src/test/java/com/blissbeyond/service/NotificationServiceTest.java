@@ -44,26 +44,24 @@ class NotificationServiceTest {
     @Test
     void broadcastsOneIndependentNotificationPerAdmin() {
         when(userRepository.findDistinctByRolesName(RoleName.ROLE_ADMIN)).thenReturn(List.of(adminA, adminB));
-        when(notificationRepository.existsByRecipientIdAndDedupeKey(anyLong(), anyString())).thenReturn(false);
-
         service.notifyAdmins(customer, "BOOKING_CREATED", "New Booking Request", "A booking was submitted.",
             "BOOKING", 42L, "/prototype/admin/bookings.html", "BOOKING_CREATED:42");
 
-        ArgumentCaptor<Notification> captor = ArgumentCaptor.forClass(Notification.class);
-        verify(notificationRepository, times(2)).save(captor.capture());
-        assertEquals(List.of(20L, 21L), captor.getAllValues().stream()
-            .map(item -> item.getRecipient().getId()).toList());
-        assertEquals(2, captor.getAllValues().stream().map(Notification::getDedupeKey).distinct().count());
+        ArgumentCaptor<Long> recipientCaptor = ArgumentCaptor.forClass(Long.class);
+        verify(notificationRepository, times(2)).insertIfAbsent(recipientCaptor.capture(), isNull(),
+            eq("BOOKING_CREATED"), eq("New Booking Request"), eq("A booking was submitted."),
+            eq("BOOKING"), eq(42L), eq("/prototype/admin/bookings.html"), anyString(), any());
+        assertEquals(List.of(20L, 21L), recipientCaptor.getAllValues());
     }
 
     @Test
     void duplicateEventForSameRecipientIsIgnored() {
-        when(notificationRepository.existsByRecipientIdAndDedupeKey(anyLong(), anyString())).thenReturn(true);
-
         service.notifyOnce(customer, adminA, "BOOKING_CONFIRMED", "Booking Confirmed", "Confirmed.",
             "BOOKING", 42L, "/prototype/customer/booking-status.html?id=42", "BOOKING_CONFIRMED:42");
 
-        verify(notificationRepository, never()).save(any(Notification.class));
+        verify(notificationRepository).insertIfAbsent(eq(10L), eq(20L), eq("BOOKING_CONFIRMED"),
+            eq("Booking Confirmed"), eq("Confirmed."), eq("BOOKING"), eq(42L),
+            eq("/prototype/customer/booking-status.html?id=42"), anyString(), any());
     }
 
     @Test
@@ -94,14 +92,15 @@ class NotificationServiceTest {
     }
 
     @Test
-    void markAllReadOnlyLoadsTheAuthenticatedRecipientStream() {
+    void markAllReadUsesBulkUpdateForAuthenticatedRecipient() {
         when(currentUserService.requireCurrentUser()).thenReturn(adminA);
-        when(notificationRepository.findByRecipientIdOrderByCreatedAtDesc(20L)).thenReturn(List.of());
+        when(notificationRepository.markAllUnreadAsRead(eq(20L), any())).thenReturn(3);
 
-        service.markAllRead();
+        assertEquals(3, service.markAllRead());
 
-        verify(notificationRepository).findByRecipientIdOrderByCreatedAtDesc(20L);
-        verify(notificationRepository).saveAll(List.of());
+        verify(notificationRepository).markAllUnreadAsRead(eq(20L), any());
+        verify(notificationRepository, never()).findByRecipientIdOrderByCreatedAtDesc(anyLong());
+        verify(notificationRepository, never()).saveAll(any());
     }
 
     private User user(Long id) {

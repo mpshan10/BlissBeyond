@@ -61,6 +61,12 @@ public class QuotationService {
     @Transactional(readOnly = true)
     public List<AdminQuotationSummaryResponse> listAdminSummaries() {
         return quotationRepository.findAllByOrderByIdDesc().stream()
+            .filter(quotation -> {
+                Booking booking = quotation.getEvent() == null
+                    ? null
+                    : bookingRepository.findByEventId(quotation.getEvent().getId()).orElse(null);
+                return booking == null || booking.getBookingType() != BookingType.PACKAGE;
+            })
             .map(this::toAdminSummary)
             .toList();
     }
@@ -75,7 +81,7 @@ public class QuotationService {
         Quotation quotation = requireQuotation(id);
         requireDraft(quotation);
 
-        Booking booking = quotation.getEvent() == null ? null : bookingRepository.findByEventId(quotation.getEvent().getId()).orElse(null);
+        Booking booking = requireActionableBooking(quotation);
         var snapshot = packageSnapshot(booking);
         BigDecimal subtotal = snapshot != null ? snapshot.getFinalPrice() : quotation.getSubtotal();
         if (subtotal == null || subtotal.signum() < 0) {
@@ -111,16 +117,17 @@ public class QuotationService {
     public AdminQuotationDetailResponse sendAdminQuotation(Long id) {
         Quotation quotation = requireQuotation(id);
         requireDraft(quotation);
+        Booking booking = requireActionableBooking(quotation);
         if (quotation.getExpiresAt() == null || !quotation.getExpiresAt().isAfter(LocalDateTime.now())) {
             throw new IllegalArgumentException("Quotation expiry must be in the future before sending.");
         }
         quotation.setStatus(QuotationStatus.SENT);
         Quotation saved = quotationRepository.save(quotation);
         notificationService.notifyOnce(
-            saved.getEvent().getCustomer(), currentUserService.requireCurrentUser(), "QUOTATION_AVAILABLE",
+            booking.getCustomer(), currentUserService.requireCurrentUser(), "QUOTATION_AVAILABLE",
             "New Quotation Available", "Your quotation is ready to review.",
             "QUOTATION", saved.getId(), "/prototype/customer/quotation.html?id=" + saved.getId(),
-            "QUOTATION_AVAILABLE:" + saved.getId() + ":SENT"
+            "QUOTATION_AVAILABLE:" + saved.getId() + ":SENT:" + saved.getExpiresAt()
         );
         return toAdminDetail(saved);
     }
@@ -143,6 +150,8 @@ public class QuotationService {
         if (quotationRepository.findByEventId(event.getId()).isPresent()) {
             throw new DuplicateResourceException("A quotation already exists for this event");
         }
+
+        requireActionableBooking(event);
 
         if (event.getVenue() == null || event.getVenue().getPrice() == null) {
             throw new IllegalArgumentException("Venue price is not available for quotation.");
@@ -194,8 +203,22 @@ public class QuotationService {
         return transitionOwnedQuotation(id, QuotationStatus.REJECTED);
     }
 
+    @Transactional
+    public AdminQuotationDetailResponse reviseRejected(Long id) {
+        Quotation quotation = requireQuotation(id);
+        if (quotation.getStatus() != QuotationStatus.REJECTED) {
+            throw new IllegalArgumentException("Only REJECTED quotations can be revised.");
+        }
+        requireActionableBooking(quotation);
+        quotation.setStatus(QuotationStatus.DRAFT);
+        quotation.setNotes(null);
+        quotation.setExpiresAt(LocalDateTime.now().plusDays(14));
+        return toAdminDetail(quotationRepository.save(quotation));
+    }
+
     private Quotation transitionOwnedQuotation(Long id, QuotationStatus targetStatus) {
         Quotation quotation = requireOwnedQuotation(id);
+        Booking booking = requireActionableBooking(quotation);
         if (quotation.getStatus() != QuotationStatus.SENT) {
             throw new IllegalArgumentException("Only SENT quotations can be accepted or rejected.");
         }
@@ -206,7 +229,33 @@ public class QuotationService {
         }
 
         quotation.setStatus(targetStatus);
-        return quotationRepository.save(quotation);
+        Quotation saved = quotationRepository.save(quotation);
+        if (targetStatus == QuotationStatus.ACCEPTED && saved.getEvent() != null) {
+            if (booking.getBookingType() == BookingType.CUSTOM) {
+                User customer = saved.getEvent().getCustomer();
+                String customerName = customer == null ? "A customer"
+                    : (customer.getFirstName() + " " + customer.getLastName()).trim();
+                notificationService.notifyAdmins(
+                    customer, "QUOTATION_ACCEPTED", "Quotation Accepted",
+                    customerName + " accepted quotation QT-" + String.format("%04d", saved.getId())
+                        + " for Booking BK-" + String.format("%04d", booking.getId()) + ".",
+                    "BOOKING", booking.getId(), "/prototype/admin/bookings.html?bookingId=" + booking.getId(),
+                    "QUOTATION_ACCEPTED:" + saved.getId()
+                );
+            }
+        } else if (targetStatus == QuotationStatus.REJECTED) {
+            User customer = saved.getEvent() == null ? null : saved.getEvent().getCustomer();
+            String customerName = customer == null ? "A customer"
+                : (customer.getFirstName() + " " + customer.getLastName()).trim();
+            notificationService.notifyAdmins(
+                customer, "QUOTATION_REJECTED", "Quotation Rejected",
+                customerName + " rejected quotation QT-" + String.format("%04d", saved.getId())
+                    + " for Booking BK-" + String.format("%04d", booking.getId()) + ".",
+                "QUOTATION", saved.getId(), "/prototype/admin/quotations.html?quotationId=" + saved.getId(),
+                "QUOTATION_REJECTED:" + saved.getId()
+            );
+        }
+        return saved;
     }
 
     private void validateNonNegative(BigDecimal value, String field) {
@@ -218,6 +267,33 @@ public class QuotationService {
     private Quotation requireQuotation(Long id) {
         return quotationRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Quotation not found"));
+    }
+
+    private Booking requireActionableBooking(Event event) {
+        Booking booking = event == null || event.getId() == null
+            ? null
+            : bookingRepository.findByEventId(event.getId()).orElse(null);
+        if (booking == null) {
+            throw new IllegalArgumentException("Quotation must be linked to an active CUSTOMIZE booking.");
+        }
+        return requireActionableBooking(booking);
+    }
+
+    private Booking requireActionableBooking(Quotation quotation) {
+        return requireActionableBooking(quotation == null ? null : quotation.getEvent());
+    }
+
+    private Booking requireActionableBooking(Booking booking) {
+        if (booking == null || booking.getBookingType() != BookingType.CUSTOM) {
+            throw new IllegalArgumentException("Quotation actions are available only for CUSTOMIZE bookings.");
+        }
+        if (booking.getStatus() == com.blissbeyond.entity.BookingStatus.CANCELLED) {
+            throw new IllegalArgumentException("Quotation actions are not available for cancelled bookings.");
+        }
+        if (booking.getStatus() == com.blissbeyond.entity.BookingStatus.COMPLETED) {
+            throw new IllegalArgumentException("Quotation actions are not available for completed bookings.");
+        }
+        return booking;
     }
 
     private void requireDraft(Quotation quotation) {
@@ -288,7 +364,8 @@ public class QuotationService {
             .map(eventService -> new AdminQuotationDetailResponse.ServiceLine(
                 eventService.getId(),
                 eventService.getService() != null ? eventService.getService().getId() : null,
-                eventService.getService() != null ? eventService.getService().getName() : null,
+                eventService.getServiceNameSnapshot() != null ? eventService.getServiceNameSnapshot()
+                    : (eventService.getService() != null ? eventService.getService().getName() : null),
                 eventService.getEstimatedTotal()
             ))
             .toList() : List.of();

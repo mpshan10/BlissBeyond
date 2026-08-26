@@ -22,12 +22,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/quotations")
+@PreAuthorize("hasRole('CUSTOMER')")
 public class QuotationController {
     private final QuotationService quotationService;
     private final EventService eventService;
@@ -103,7 +105,8 @@ public class QuotationController {
                 .filter(com.blissbeyond.entity.EventService::isSelected)
                 .map(service -> new QuotationResponse.QuotationServiceLine(
                     service.getService() != null ? service.getService().getId() : null,
-                    service.getService() != null ? service.getService().getName() : null,
+                    service.getServiceNameSnapshot() != null ? service.getServiceNameSnapshot()
+                        : (service.getService() != null ? service.getService().getName() : null),
                     service.getEstimatedTotal()
                 ))
                 .toList() : List.of(),

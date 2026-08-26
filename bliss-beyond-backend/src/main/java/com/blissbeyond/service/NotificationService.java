@@ -61,14 +61,9 @@ public class NotificationService {
     }
 
     @Transactional
-    public void markAllRead() {
+    public int markAllRead() {
         User current = currentUserService.requireCurrentUser();
-        List<Notification> notifications = notificationRepository.findByRecipientIdOrderByCreatedAtDesc(current.getId());
-        LocalDateTime readAt = LocalDateTime.now();
-        notifications.forEach(notification -> {
-            if (notification.getReadAt() == null) notification.setReadAt(readAt);
-        });
-        notificationRepository.saveAll(notifications);
+        return notificationRepository.markAllUnreadAsRead(current.getId(), LocalDateTime.now());
     }
 
     public void notifyAdmins(User actor, String type, String title, String message,
@@ -98,7 +93,9 @@ public class NotificationService {
         notification.setActionUrl(normalizeActionUrl(actionUrl));
         notification.setDedupeKey(dedupeKey);
         notification.setReadAt(null);
-        notificationRepository.save(notification);
+        notificationRepository.insertIfAbsent(
+            recipient.getId(), actor == null ? null : actor.getId(), type, title, message,
+            referenceType, referenceId, normalizeActionUrl(actionUrl), dedupeKey, LocalDateTime.now());
     }
 
     // Compatibility adapter for existing customer notification call sites.

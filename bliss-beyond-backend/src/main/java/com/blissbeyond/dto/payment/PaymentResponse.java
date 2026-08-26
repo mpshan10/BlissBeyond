@@ -11,6 +11,9 @@ public record PaymentResponse(
     String paymentStatus,
     String paymentMethod,
     String transactionReference,
-    LocalDateTime paidAt
+    LocalDateTime paidAt,
+    LocalDateTime submittedAt,
+    LocalDateTime rejectedAt,
+    String adminNote
 ) {
 }

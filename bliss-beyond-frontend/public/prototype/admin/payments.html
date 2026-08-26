@@ -85,7 +85,7 @@
       <div class="panel__body">
         <div class="table-responsive">
           <table class="table align-middle">
-            <thead><tr><th>Payment</th><th>Booking</th><th>Customer</th><th>Event</th><th>Type</th><th>Amount</th><th>Status</th><th>Method / Reference / Paid At</th><th>Actions</th></tr></thead>
+            <thead><tr><th>Payment</th><th>Booking</th><th>Customer</th><th>Event</th><th>Type</th><th>Amount</th><th>Status</th><th>Method / Reference / Submitted At</th><th>Actions</th></tr></thead>
             <tbody data-admin-payment-rows><tr><td colspan="9" class="text-center py-5 text-ink-soft">Loading payments...</td></tr></tbody>
           </table>
         </div>
@@ -115,9 +115,14 @@
         <label class="form-label" for="paymentReference">Transaction reference <span class="text-ink-soft">(optional)</span></label>
         <input class="form-control" id="paymentReference" maxlength="120" data-payment-reference placeholder="Verified bank or receipt reference">
       </div>
+      <div class="mt-3 d-none" data-payment-rejection-field>
+        <label class="form-label" for="paymentRejectionReason">Rejection reason</label>
+        <textarea class="form-control" id="paymentRejectionReason" maxlength="1000" rows="3" data-payment-rejection-reason></textarea>
+      </div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-outline-secondary" type="button" data-bs-dismiss="modal">Cancel</button>
+      <button class="btn btn-outline-danger d-none" type="button" data-payment-reject-submit>Reject Payment</button>
       <button class="btn btn-gold" type="button" data-payment-confirm-submit>Confirm Payment</button>
     </div>
   </div></div>

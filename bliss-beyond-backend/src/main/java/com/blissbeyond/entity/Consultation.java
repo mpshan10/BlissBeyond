@@ -21,6 +21,10 @@ public class Consultation extends BaseEntity {
     @JoinColumn(name = "customer_id", nullable = false)
     private User customer;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "booking_id")
+    private Booking booking;
+
     @Column(nullable = false)
     private LocalDate consultationDate;
 
@@ -57,6 +61,8 @@ public class Consultation extends BaseEntity {
 
     public User getCustomer() { return customer; }
     public void setCustomer(User customer) { this.customer = customer; }
+    public Booking getBooking() { return booking; }
+    public void setBooking(Booking booking) { this.booking = booking; }
     public LocalDate getConsultationDate() { return consultationDate; }
     public void setConsultationDate(LocalDate consultationDate) { this.consultationDate = consultationDate; }
     public LocalTime getStartTime() { return startTime; }

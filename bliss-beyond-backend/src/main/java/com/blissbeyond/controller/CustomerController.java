@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -38,6 +39,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/customer")
+@PreAuthorize("hasRole('CUSTOMER')")
 public class CustomerController {
     private final CurrentUserService currentUserService;
     private final EventService eventService;
@@ -165,7 +167,8 @@ public class CustomerController {
                 .filter(com.blissbeyond.entity.EventService::isSelected)
                 .map(service -> new QuotationResponse.QuotationServiceLine(
                     service.getService() != null ? service.getService().getId() : null,
-                    service.getService() != null ? service.getService().getName() : null,
+                    service.getServiceNameSnapshot() != null ? service.getServiceNameSnapshot()
+                        : (service.getService() != null ? service.getService().getName() : null),
                     service.getEstimatedTotal()
                 ))
                 .toList() : List.of(),

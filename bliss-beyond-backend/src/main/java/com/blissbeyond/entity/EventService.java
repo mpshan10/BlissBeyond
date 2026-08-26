@@ -20,6 +20,9 @@ public class EventService extends BaseEntity {
     @JoinColumn(name = "service_id", nullable = false)
     private ServiceEntity service;
 
+    @Column(name = "service_name_snapshot", length = 120)
+    private String serviceNameSnapshot;
+
     @Column(nullable = false)
     private boolean selected = true;
 
@@ -33,6 +36,8 @@ public class EventService extends BaseEntity {
     public void setEvent(Event event) { this.event = event; }
     public ServiceEntity getService() { return service; }
     public void setService(ServiceEntity service) { this.service = service; }
+    public String getServiceNameSnapshot() { return serviceNameSnapshot; }
+    public void setServiceNameSnapshot(String serviceNameSnapshot) { this.serviceNameSnapshot = serviceNameSnapshot; }
     public boolean isSelected() { return selected; }
     public void setSelected(boolean selected) { this.selected = selected; }
     public BigDecimal getEstimatedTotal() { return estimatedTotal; }

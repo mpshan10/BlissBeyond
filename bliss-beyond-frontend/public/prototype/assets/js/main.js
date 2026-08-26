@@ -2,10 +2,10 @@
 const configuredApiBaseUrl = "__BB_API_BASE_URL__";
 const isLocalFrontend = ['localhost', '127.0.0.1'].includes(window.location.hostname);
 const localApiBaseUrl = `http://${window.location.hostname}:8081`;
-const BB_API_BASE_URL = !configuredApiBaseUrl.startsWith("__")
-  ? configuredApiBaseUrl.replace(/\/+$/, "")
-  : isLocalFrontend
-    ? localApiBaseUrl
+const BB_API_BASE_URL = isLocalFrontend
+  ? localApiBaseUrl
+  : !configuredApiBaseUrl.startsWith("__")
+    ? configuredApiBaseUrl.replace(/\/+$/, "")
     : "https://blissbeyond.onrender.com";
 
 window.BB_API_BASE_URL = BB_API_BASE_URL;
@@ -581,8 +581,9 @@ async function bbRenderCustomerQuotation() {
   const renderActions = (quotation) => {
     activeQuotation = quotation;
     const status = String(quotation.status || '').toUpperCase();
-    show(acceptButton, status === 'SENT');
-    show(rejectButton, status === 'SENT');
+    const isPackage = String(quotation.bookingType || '').toUpperCase() === 'PACKAGE';
+    show(acceptButton, status === 'SENT' && !isPackage);
+    show(rejectButton, status === 'SENT' && !isPackage);
     const bookingId = Number(quotation.bookingId);
     const hasBooking = Number.isInteger(bookingId) && bookingId > 0;
     show(paymentLink, status === 'ACCEPTED' && hasBooking);
@@ -591,7 +592,7 @@ async function bbRenderCustomerQuotation() {
     }
     if (status === 'DRAFT') setActionMessage('This quotation is being prepared.');
     else if (status === 'ACCEPTED') setActionMessage(hasBooking ? 'Quotation accepted.' : 'Quotation accepted, but no booking is linked yet.', hasBooking ? 'success' : 'warning');
-    else if (status === 'REJECTED') setActionMessage('Quotation rejected.', 'danger');
+    else if (status === 'REJECTED') setActionMessage('Quotation rejected and awaiting possible Admin revision.', 'danger');
     else if (status === 'EXPIRED') setActionMessage('Quotation expired.', 'danger');
     else setActionMessage('');
   };
@@ -764,6 +765,7 @@ async function bbRenderCustomerPayment() {
   const submitError = root.querySelector('[data-payment-submit-error]');
   const records = root.querySelector('[data-payment-records]');
   const bookingContext = root.querySelector('[data-payment-booking-context]');
+  const submitTitle = root.querySelector('[data-payment-submit-title]');
   let currentBooking = null;
   const show = (element, visible) => element?.classList.toggle('d-none', !visible);
   const setMessage = (element, value) => {
@@ -782,6 +784,11 @@ async function bbRenderCustomerPayment() {
 
   const bookingTypeLabel = (booking) => String(booking?.bookingType || '').toUpperCase() === 'PACKAGE' ? 'Package' : 'Customize';
   const paymentStatusLabel = (summary) => {
+    if (summary?.paymentState === 'FULLY_PAID') return 'Fully Paid';
+    if (summary?.paymentState === 'BALANCE_OVERDUE') return 'Balance Overdue';
+    if (summary?.paymentState === 'BALANCE_DUE') return 'Balance Due';
+    if (summary?.paymentState === 'BALANCE_PENDING') return 'Balance Submitted · Awaiting Verification';
+    if (summary?.paymentState === 'DEPOSIT_OVERDUE') return 'Deposit Overdue';
     const payments = Array.isArray(summary?.payments) ? summary.payments : [];
     if (payments.some((payment) => String(payment.paymentStatus || '').toUpperCase() === 'PAID')) return 'Payment Confirmed';
     if (payments.some((payment) => String(payment.paymentStatus || '').toUpperCase() === 'PENDING')) return 'Payment Submitted · Awaiting Verification';
@@ -815,15 +822,14 @@ async function bbRenderCustomerPayment() {
       }
       bookingList.innerHTML = summaries.map(({ booking, summary }) => {
         const status = paymentStatusLabel(summary);
-        const canPay = String(booking.status || '').toUpperCase() === 'AWAITING_DEPOSIT'
-          && status === 'Awaiting Deposit';
+        const canPay = ['Awaiting Deposit', 'Balance Due'].includes(status);
         const reference = booking.ref || `BK-${String(booking.id || '').padStart(4, '0')}`;
         const amount = summary ? bbFormatMmkDisplay(summary.nextPaymentAmount || summary.depositRequired || 0) : 'Not available';
         return `<div class="border rounded-4 p-3 d-flex flex-wrap justify-content-between align-items-center gap-3">
           <div><div class="d-flex flex-wrap align-items-center gap-2"><strong>${bbEscapeHtml(reference)}</strong><span class="badge text-bg-light">${bbEscapeHtml(bookingTypeLabel(booking))}</span></div>
           <div class="small text-ink-soft">${bbEscapeHtml(booking.event?.eventType || 'Event')} · ${bbEscapeHtml(bbFormatDateDisplay(booking.eventDate))} · ${bbEscapeHtml(booking.venue?.name || 'Venue not set')}</div>
           <div class="small mt-1">${bbEscapeHtml(status)}${canPay ? ` · Deposit ${bbEscapeHtml(amount)}` : ''}</div></div>
-          <a class="btn ${canPay ? 'btn-gold' : 'btn-outline-forest'} btn-sm" href="/prototype/customer/payment.html?bookingId=${encodeURIComponent(booking.id)}">${canPay ? 'Pay Deposit' : 'View Payment'}</a>
+          <a class="btn ${canPay ? 'btn-gold' : 'btn-outline-forest'} btn-sm" href="/prototype/customer/payment.html?bookingId=${encodeURIComponent(booking.id)}">${canPay ? (status === 'Balance Due' ? 'Pay Balance' : 'Pay Deposit') : 'View Payment'}</a>
         </div>`;
       }).join('');
     } catch (requestError) {
@@ -853,12 +859,14 @@ async function bbRenderCustomerPayment() {
     const text = (selector, value) => setMessage(root.querySelector(selector), value);
     text('[data-payment-quotation-total]', bbFormatMmkDisplay(summary.quotationTotal));
     text('[data-payment-deposit-required]', bbFormatMmkDisplay(summary.depositRequired));
+    text('[data-payment-deposit-due]', summary.depositDueDate ? bbFormatDateDisplay(summary.depositDueDate) : 'Not scheduled');
     text('[data-payment-amount-paid]', bbFormatMmkDisplay(summary.amountPaid));
     text('[data-payment-remaining]', bbFormatMmkDisplay(summary.remainingBalance));
+    text('[data-payment-balance-due]', summary.balanceDueDate ? bbFormatDateDisplay(summary.balanceDueDate) : 'Not scheduled');
 
     const nextType = String(summary.nextPaymentType || '').toUpperCase();
     const nextAmount = Number(summary.nextPaymentAmount || 0);
-    const canSubmit = String(currentBooking?.status || '').toUpperCase() === 'AWAITING_DEPOSIT';
+    const bookingStatus = String(currentBooking?.status || '').toUpperCase();
     const payments = Array.isArray(summary.payments) ? summary.payments : [];
     const paidDeposit = payments.some((payment) => String(payment.paymentType || '').toUpperCase() === 'DEPOSIT'
       && String(payment.paymentStatus || '').toUpperCase() === 'PAID');
@@ -867,29 +875,28 @@ async function bbRenderCustomerPayment() {
       && String(payment.paymentType || '').toUpperCase() === nextType
     );
 
-    if (paidDeposit) {
-      text('[data-payment-next-type]', 'Payment Confirmed');
-      text('[data-payment-next-message]', `Amount paid ${bbFormatMmkDisplay(summary.amountPaid)}. Your deposit has been confirmed.`);
-      text('[data-payment-pending-message]', '');
-      show(submitPanel, false);
-    } else if (Number(summary.remainingBalance || 0) === 0 && !nextType) {
+    if (Number(summary.remainingBalance || 0) === 0 && !nextType) {
       text('[data-payment-next-type]', 'Payment complete');
       text('[data-payment-next-message]', 'Payment complete. No further payment is required.');
       show(submitPanel, false);
     } else if (nextType) {
-      text('[data-payment-next-type]', nextType);
+      const overdue = ['DEPOSIT_OVERDUE', 'BALANCE_OVERDUE'].includes(summary.paymentState);
+      const balancePayment = nextType === 'BALANCE';
+      const canSubmit = !pendingNext && !overdue && ((nextType === 'DEPOSIT' && bookingStatus === 'AWAITING_DEPOSIT') || (balancePayment && bookingStatus === 'CONFIRMED'));
+      text('[data-payment-next-type]', summary.paymentState || nextType);
       text('[data-payment-next-amount]', bbFormatMmkDisplay(nextAmount));
       text('[data-payment-next-message]', pendingNext
         ? 'Payment Submitted · Awaiting Verification'
-        : 'Payment requests remain pending until payment confirmation is available.');
-      text('[data-payment-pending-message]', pendingNext ? 'The admin will verify your payment before your booking is confirmed.' : '');
-      const canSubmitDeposit = nextType === 'DEPOSIT' && !pendingNext && canSubmit;
-      show(submitPanel, canSubmitDeposit);
+        : overdue ? 'The payment deadline has passed.' : 'Payment requests remain pending until payment confirmation is available.');
+      text('[data-payment-pending-message]', pendingNext ? 'The admin will verify your payment before your booking is updated.' : '');
+      show(submitPanel, canSubmit);
+      if (submitTitle) submitTitle.textContent = balancePayment ? 'Pay Remaining Balance' : 'Pay Deposit';
+      if (submitButton) submitButton.textContent = balancePayment ? 'Submit Balance Payment' : 'Submit Deposit Payment';
       if (submitAmount) submitAmount.textContent = bbFormatMmkDisplay(nextAmount);
     } else {
       text('[data-payment-next-type]', 'No payment due');
       text('[data-payment-next-amount]', bbFormatMmkDisplay(0));
-      text('[data-payment-next-message]', canSubmit ? 'No further payment is required.' : 'Payment requests are available only after the booking is approved and awaiting deposit.');
+      text('[data-payment-next-message]', 'No further payment is required.');
       show(submitPanel, false);
     }
 
@@ -897,7 +904,7 @@ async function bbRenderCustomerPayment() {
       records.innerHTML = payments.length ? payments.map((payment) => {
         const status = String(payment.paymentStatus || '').toUpperCase();
         const type = String(payment.paymentType || 'PAYMENT').toUpperCase();
-        const details = [payment.paymentMethod, payment.transactionReference, payment.paidAt ? bbFormatDateDisplay(payment.paidAt) : '']
+        const details = [payment.paymentMethod, payment.transactionReference, payment.submittedAt ? `Submitted ${bbFormatDateDisplay(payment.submittedAt)}` : '', payment.paidAt ? `Paid ${bbFormatDateDisplay(payment.paidAt)}` : '', payment.rejectedAt ? `Rejected ${bbFormatDateDisplay(payment.rejectedAt)}` : '', payment.adminNote]
           .filter(Boolean)
           .join(' · ');
         return `<div class="d-flex flex-wrap justify-content-between gap-3 border-bottom py-3"><div><strong>${bbEscapeHtml(type)}</strong><div class="small text-ink-soft">${bbEscapeHtml(details || 'Payment request')}</div></div><div class="text-md-end"><strong>${bbEscapeHtml(bbFormatMmkDisplay(payment.amount))}</strong><div class="small"><span class="status ${status.toLowerCase()}">${bbEscapeHtml(status || 'UNKNOWN')}</span></div></div></div>`;
@@ -1153,6 +1160,17 @@ function bbNotificationBadgeCount(count) {
   });
 }
 
+function bbIsTrustedNotificationPath(value) {
+  const path = String(value || '').trim();
+  if (!path || !path.startsWith('/prototype/') || path.startsWith('//') || path.includes('\\') || path.includes('//')) return false;
+  try {
+    const url = new URL(path, window.location.origin);
+    return url.origin === window.location.origin && url.pathname.startsWith('/prototype/');
+  } catch (error) {
+    return false;
+  }
+}
+
 function bbRenderNotifications(list, state = bbNotificationState) {
   if (!list) return;
   if (!state.length) {
@@ -1230,7 +1248,7 @@ function bbInitCustomerNotifications() {
       bbNotificationBadgeCount(bbNotificationState.filter((entry) => !entry.read).length);
       bbRenderNotifications(list);
       const path = String(notification.actionUrl || '');
-      if (path.startsWith('/prototype/')) window.location.href = path;
+      if (bbIsTrustedNotificationPath(path)) window.location.href = path;
     } catch (error) {
       console.warn('Unable to mark notification as read.');
     }
@@ -1427,6 +1445,23 @@ function bbRenderBookingCatering(service) {
 
 function bbHasPackageBookingMode() {
   return bbGetBookingMode() === 'PACKAGE';
+}
+
+function bbHasActivePackageBookingDraft() {
+  const plan = bbGetPackagePlan();
+  return bbHasPackageBookingMode()
+    && Boolean(String(plan?.packageId || '').trim() || String(plan?.packageSlug || '').trim());
+}
+
+function bbHasActiveCustomizeBookingDraft() {
+  if (bbGetBookingMode() !== 'CUSTOM') return false;
+  return Boolean(
+    bbRead(BB_STATE_KEYS.venue)
+    || bbRead(BB_STATE_KEYS.event)
+    || bbRead(BB_STATE_KEYS.services)
+    || bbRead(BB_STATE_KEYS.serviceData)
+    || bbRead(BB_STATE_KEYS.catering)
+  );
 }
 
 function bbPackagePlanSignature(plan) {
@@ -2226,7 +2261,7 @@ async function bbRenderCustomerBookingStatus() {
     if (!consultationsEl) return;
     const quotation = booking.quotation ? `<div class="border rounded-4 p-3 mb-3"><div class="stat-label">Quotation</div><strong>${bbEscapeHtml(booking.quotation.status ? bbPrettyKey(booking.quotation.status) : 'Not recorded')}</strong><div class="small text-ink-soft">${bbEscapeHtml(bbFormatMmkDisplay(booking.quotation.total))} · Expires ${bbEscapeHtml(bbFormatDateDisplay(booking.quotation.expiresAt))}</div></div>` : '';
     const consultations = Array.isArray(booking.consultations) ? booking.consultations : [];
-    const consultationHtml = consultations.length ? `<ul class="list-unstyled mb-0 d-grid gap-2">${consultations.map((item) => `<li class="border rounded-4 p-3"><strong>${bbEscapeHtml(item.status ? bbPrettyKey(item.status) : 'Consultation')}</strong><div class="small text-ink-soft">${bbEscapeHtml(item.consultationType || 'Consultation')} · ${bbEscapeHtml(bbFormatDateDisplay(item.consultationDate))} · ${bbEscapeHtml(bbFormatTimeDisplay(item.startTime))} - ${bbEscapeHtml(bbFormatTimeDisplay(item.endTime))}</div></li>`).join('')}</ul>` : '<p class="small text-ink-soft mb-0">No consultation appointments recorded.</p>';
+    const consultationHtml = consultations.length ? `<ul class="list-unstyled mb-0 d-grid gap-2">${consultations.map((item) => `<li class="border rounded-4 p-3"><strong>${bbEscapeHtml(item.status ? bbPrettyKey(item.status) : 'Consultation')}</strong><div class="small text-ink-soft">${bbEscapeHtml(item.consultationType || 'Consultation')} · ${bbEscapeHtml(bbFormatDateDisplay(item.consultationDate))} · ${bbEscapeHtml(bbFormatTimeDisplay(item.startTime))} - ${bbEscapeHtml(bbFormatTimeDisplay(item.endTime))}</div><div class="small text-ink-soft">Planner: ${bbEscapeHtml(item.planner || 'To be assigned')}</div></li>`).join('')}</ul>` : '<p class="small text-ink-soft mb-0">No consultation appointments recorded.</p>';
     consultationsEl.innerHTML = `${quotation}<div class="stat-label mb-2">Consultations</div>${consultationHtml}`;
   };
 
@@ -3621,6 +3656,15 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('form[data-booking-form]').forEach((form) => {
     if (typeof bbRequireAuth === 'function' && bbRequireAuth()) return;
 
+    const confirmationRoot = form.closest('[data-booking-confirmation-page]');
+    const startScreen = confirmationRoot?.querySelector('[data-booking-start-screen]');
+    const hasActiveDraft = bbHasActivePackageBookingDraft() || bbHasActiveCustomizeBookingDraft();
+    if (!hasActiveDraft) {
+      confirmationRoot?.classList.add('is-booking-start-mode');
+      startScreen?.classList.remove('d-none');
+      return;
+    }
+
     const statusEl = form.querySelector('[data-booking-status]');
     const getSubmitButton = () => form.closest('[data-booking-confirmation-page]')?.querySelector('[data-booking-submit]')
       || form.querySelector('[data-booking-submit]');
@@ -3679,6 +3723,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const eventContext = bbGetEventContext();
       const storedVenue = bbGetVenue() || {};
       const legacyVenue = bbRead('bbVenueEventDetails') || {};
+      const packagePlan = bbGetPackagePlan();
 
       if (eventTypeInput && (eventContext.eventType || legacyVenue.eventType)) {
         eventTypeInput.value = eventContext.eventType || legacyVenue.eventType;
@@ -3708,8 +3753,11 @@ document.addEventListener('DOMContentLoaded', () => {
       if (venueInput && storedVenue.name) {
         venueInput.value = storedVenue.name;
       }
-      if (requestsInput && (eventContext.specialRequirements || legacyVenue.specialRequirements)) {
-        requestsInput.value = eventContext.specialRequirements || legacyVenue.specialRequirements;
+      if (requestsInput) {
+        const savedRequests = bbHasPackageBookingMode()
+          ? packagePlan.specialRequests
+          : (eventContext.specialRequirements || legacyVenue.specialRequirements);
+        if (savedRequests) requestsInput.value = savedRequests;
       }
     };
 
@@ -3728,7 +3776,11 @@ document.addEventListener('DOMContentLoaded', () => {
       input?.addEventListener('input', refreshBookingDraftSummary);
     });
     requestsInput?.addEventListener('input', () => {
-      bbSetEventContext({ specialRequirements: requestsInput.value.trim() || null });
+      if (bbHasPackageBookingMode()) {
+        bbSetPackagePlan({ specialRequests: requestsInput.value.trim() || null });
+      } else {
+        bbSetEventContext({ specialRequirements: requestsInput.value.trim() || null });
+      }
       bbSyncPackageSpecialRequestsSummary(form);
     });
 
@@ -3764,7 +3816,7 @@ document.addEventListener('DOMContentLoaded', () => {
               startTime: plan.startTime,
               endTime: plan.endTime,
               guestCount: Number(plan.guestCount),
-              specialRequests: requestsInput?.value?.trim() || null
+              specialRequests: requestsInput?.value?.trim() || plan.specialRequests || null
             })
           });
           window.sessionStorage.setItem('bbLatestBooking', JSON.stringify(packageBooking));

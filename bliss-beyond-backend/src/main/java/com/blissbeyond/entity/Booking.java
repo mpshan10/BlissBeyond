@@ -59,6 +59,9 @@ public class Booking extends BaseEntity {
     @Column
     private LocalDateTime confirmedAt;
 
+    @Column(name = "deposit_requested_at")
+    private LocalDateTime depositRequestedAt;
+
     public Long getVenueId() { return venueId; }
     public void setVenueId(Long venueId) { this.venueId = venueId; }
     public LocalDate getEventDate() { return eventDate; }
@@ -79,6 +82,8 @@ public class Booking extends BaseEntity {
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
     public LocalDateTime getConfirmedAt() { return confirmedAt; }
     public void setConfirmedAt(LocalDateTime confirmedAt) { this.confirmedAt = confirmedAt; }
+    public LocalDateTime getDepositRequestedAt() { return depositRequestedAt; }
+    public void setDepositRequestedAt(LocalDateTime depositRequestedAt) { this.depositRequestedAt = depositRequestedAt; }
     public BookingType getBookingType() { return bookingType == null ? BookingType.CUSTOM : bookingType; }
     public void setBookingType(BookingType bookingType) { this.bookingType = bookingType; }
     public Package getEventPackage() { return eventPackage; }

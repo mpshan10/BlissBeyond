@@ -178,6 +178,11 @@ public class BookingService {
     @Transactional
     public Booking approveBooking(Long id) {
         Booking booking = requireBooking(id);
+        if (booking.getBookingType() == BookingType.CUSTOM
+            && (booking.getQuotation() == null
+                || booking.getQuotation().getStatus() != com.blissbeyond.entity.QuotationStatus.ACCEPTED)) {
+            throw new IllegalArgumentException("Customer must accept the quotation before deposit can be requested.");
+        }
         if (booking.getStatus() == BookingStatus.PENDING && booking.getVenueId() != null) {
             venueService.ensureBookingSlotAvailable(
                 booking.getVenueId(),
@@ -186,6 +191,11 @@ public class BookingService {
                 booking.getEndTime(),
                 booking.getId()
             );
+        }
+        LocalDateTime depositRequestedAt = LocalDateTime.now();
+        LocalDate balanceDueDate = booking.getEventDate() == null ? null : booking.getEventDate().minusDays(7);
+        if (balanceDueDate != null && !depositRequestedAt.plusDays(5).toLocalDate().isBefore(balanceDueDate)) {
+            throw new IllegalArgumentException("The deposit deadline would overlap the balance deadline.");
         }
         return transitionBookingStatus(booking, BookingStatus.AWAITING_DEPOSIT);
     }
@@ -209,12 +219,22 @@ public class BookingService {
 
     @Transactional
     public Booking cancelBooking(Long id) {
-        return transitionBookingStatus(id, BookingStatus.CANCELLED);
+        Booking booking = requireBooking(id);
+        if (booking.getStatus() == BookingStatus.CONFIRMED
+            && paymentRepository.findByBookingIdOrderByIdAsc(id).stream()
+                .anyMatch(payment -> payment.getPaymentStatus() == PaymentStatus.PAID)) {
+            throw new IllegalArgumentException("Confirmed paid bookings cannot be cancelled directly. Payment/refund review is required.");
+        }
+        return transitionBookingStatus(booking, BookingStatus.CANCELLED);
     }
 
     @Transactional
     public Booking completeBooking(Long id) {
-        return transitionBookingStatus(id, BookingStatus.COMPLETED);
+        Booking booking = requireBooking(id);
+        if (remainingBalance(booking).signum() > 0) {
+            throw new IllegalArgumentException("A booking cannot be completed while a balance remains unpaid.");
+        }
+        return transitionBookingStatus(booking, BookingStatus.COMPLETED);
     }
 
     private void validateBookingDate(LocalDate eventDate) {
@@ -274,6 +294,7 @@ public class BookingService {
             EventService eventService = new EventService();
             eventService.setEvent(event);
             eventService.setService(service);
+            eventService.setServiceNameSnapshot(service.getName());
             eventService.setSelected(true);
             eventService.setEstimatedTotal(estimatedTotal);
             eventService.setCustomizationJson(null);
@@ -489,6 +510,9 @@ public class BookingService {
         }
 
         booking.setStatus(targetStatus);
+        if (targetStatus == BookingStatus.AWAITING_DEPOSIT && booking.getDepositRequestedAt() == null) {
+            booking.setDepositRequestedAt(LocalDateTime.now());
+        }
         if (targetStatus == BookingStatus.CONFIRMED && booking.getConfirmedAt() == null) {
             booking.setConfirmedAt(LocalDateTime.now());
         }
@@ -506,7 +530,8 @@ public class BookingService {
             case CONFIRMED -> "Your booking is confirmed.";
             case CANCELLED -> "Your booking has been cancelled.";
             case COMPLETED -> "Your event booking has been completed.";
-            case AWAITING_DEPOSIT -> "Your booking was approved and is awaiting deposit.";
+            case AWAITING_DEPOSIT -> "Your booking was approved. The 30% deposit is due by "
+                + saved.getDepositRequestedAt().plusDays(5).toLocalDate() + ".";
             case PENDING -> "Your booking status was updated.";
         };
         notificationService.notifyOnce(
@@ -515,6 +540,28 @@ public class BookingService {
             "BOOKING:" + saved.getId() + ":" + status
         );
         return saved;
+    }
+
+    private BigDecimal remainingBalance(Booking booking) {
+        BigDecimal total;
+        if (booking.getBookingType() == BookingType.PACKAGE) {
+            total = packageBookingSnapshotRepository.findByBookingId(booking.getId())
+                .map(PackageBookingSnapshot::getFinalPrice)
+                .orElseThrow(() -> new IllegalArgumentException("Historical package price is unavailable."));
+        } else {
+            Quotation quotation = booking.getQuotation();
+            if (quotation == null || quotation.getStatus() != com.blissbeyond.entity.QuotationStatus.ACCEPTED
+                || quotation.getTotal() == null) {
+                throw new IllegalArgumentException("Payment is available only for an accepted quotation.");
+            }
+            total = quotation.getTotal();
+        }
+        BigDecimal paid = paymentRepository.findByBookingIdOrderByIdAsc(booking.getId()).stream()
+            .filter(payment -> payment.getPaymentStatus() == PaymentStatus.PAID)
+            .map(Payment::getAmount)
+            .filter(java.util.Objects::nonNull)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+        return total.subtract(paid).max(BigDecimal.ZERO);
     }
 
     private boolean isAllowedTransition(BookingStatus currentStatus, BookingStatus targetStatus) {
@@ -656,7 +703,7 @@ public class BookingService {
             JsonNode customization = readCustomization(eventService);
             CustomerBookingDetailResponse.BookingServiceItem serviceItem = new CustomerBookingDetailResponse.BookingServiceItem(
                 service != null ? service.getId() : null,
-                service != null ? service.getName() : null,
+                eventService.getServiceNameSnapshot() != null ? eventService.getServiceNameSnapshot() : (service != null ? service.getName() : null),
                 eventService.getEstimatedTotal(),
                 eventService.isSelected(),
                 customization
@@ -666,7 +713,7 @@ public class BookingService {
             if (service != null && service.getId() != null && service.getId() == 1L) {
                 catering = new CustomerBookingDetailResponse.BookingCateringDetail(
                     service.getId(),
-                    service.getName(),
+                    eventService.getServiceNameSnapshot() != null ? eventService.getServiceNameSnapshot() : service.getName(),
                     eventService.getEstimatedTotal(),
                     customization,
                     mapMenuSelections(event)
@@ -729,10 +776,10 @@ public class BookingService {
 
     private List<CustomerBookingDetailResponse.ConsultationSummary> consultationSummaries(Booking booking) {
         if (booking.getCustomer() == null) return List.of();
-        return consultationRepository.findByCustomerIdOrderByCreatedAtDesc(booking.getCustomer().getId()).stream()
+        return consultationRepository.findByBookingIdOrderByCreatedAtDesc(booking.getId()).stream()
             .map(item -> new CustomerBookingDetailResponse.ConsultationSummary(
                 item.getId(), item.getStatus() == null ? null : item.getStatus().name(), item.getConsultationDate(),
-                item.getStartTime(), item.getEndTime(), item.getConsultationType()))
+                item.getStartTime(), item.getEndTime(), item.getConsultationType(), item.getPlanner()))
             .toList();
     }
 

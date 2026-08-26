@@ -54,6 +54,17 @@
     return `${window.location.pathname}${window.location.search}${window.location.hash}`;
   }
 
+  function isTrustedNotificationPath(value) {
+    const path = String(value || '').trim();
+    if (!path || !path.startsWith('/prototype/') || path.startsWith('//') || path.includes('\\') || path.includes('//')) return false;
+    try {
+      const url = new URL(path, window.location.origin);
+      return url.origin === window.location.origin && url.pathname.startsWith('/prototype/');
+    } catch (error) {
+      return false;
+    }
+  }
+
   function redirectToLogin() {
     const returnUrl = currentLocalPath();
     window.bbSetAuthReturnUrl?.(returnUrl);
@@ -238,12 +249,19 @@
     const buttons = [];
     buttons.push(`<button class="btn btn-outline-forest btn-sm" type="button" data-booking-view data-booking-id="${id}">View</button>`);
     if (booking.bookingStatus === 'PENDING') {
-      buttons.push(`<button class="btn btn-gold btn-sm" type="button" data-booking-action="approve" data-booking-id="${id}">Approve</button>`);
+      const isPackage = String(booking.bookingType || '').toUpperCase() === 'PACKAGE';
+      if (isPackage || booking.quotationStatus === 'ACCEPTED') {
+        buttons.push(`<button class="btn btn-gold btn-sm" type="button" data-booking-action="approve" data-booking-id="${id}">Approve</button>`);
+      } else {
+        buttons.push('<span class="booking-actions-empty">Awaiting quotation acceptance</span>');
+      }
     }
     if (booking.bookingStatus === 'CONFIRMED') {
       buttons.push(`<button class="btn btn-outline-forest btn-sm" type="button" data-booking-action="complete" data-booking-id="${id}">Complete</button>`);
     }
-    if (['PENDING', 'AWAITING_DEPOSIT', 'CONFIRMED'].includes(booking.bookingStatus)) {
+    const paidConfirmed = booking.bookingStatus === 'CONFIRMED' && Number(booking.paidAmount || 0) > 0;
+    if (['PENDING', 'AWAITING_DEPOSIT'].includes(booking.bookingStatus)
+        || (booking.bookingStatus === 'CONFIRMED' && !paidConfirmed)) {
       buttons.push(`<button class="btn btn-outline-danger btn-sm" type="button" data-booking-action="cancel" data-booking-id="${id}">Cancel</button>`);
     }
     if (!buttons.length) return '<span class="booking-actions-empty">No actions</span>';
@@ -312,6 +330,27 @@
     }
   }
 
+  function renderPackageInclusions(inclusions) {
+    const groups = Array.isArray(inclusions)
+      ? inclusions
+      : inclusions && typeof inclusions === 'object' && Array.isArray(inclusions.services)
+        ? inclusions.services
+        : [];
+    if (!groups.length) {
+      return '<div class="text-ink-soft">Package inclusion details unavailable.</div>';
+    }
+    return groups.map((group) => {
+      const items = Array.isArray(group?.inclusions) ? group.inclusions : [];
+      const inclusionList = items.length
+        ? `<ul class="mb-0 ps-3">${items.map((item) => {
+          const label = typeof item === 'object' ? (item?.label || item?.name || item?.title || '') : item;
+          return label ? `<li>${escapeHtml(label)}</li>` : '';
+        }).join('')}</ul>`
+        : '<div class="small text-ink-soft">Included</div>';
+      return `<div class="border rounded-3 p-3 h-100"><h6 class="mb-2">${escapeHtml(group?.serviceName || 'Included service')}</h6>${inclusionList}</div>`;
+    }).join('');
+  }
+
   function renderBookingDetail(detail) {
     const content = document.querySelector('[data-booking-detail-content]');
     const message = document.querySelector('[data-booking-detail-message]');
@@ -319,13 +358,17 @@
     document.querySelector('[data-booking-detail="reference"]').textContent = detail.bookingReference || 'Booking';
     document.querySelector('[data-booking-detail="type"]').textContent = isPackage ? 'Package booking' : 'Customize booking';
     message.classList.add('d-none');
-    const payments = detail.paymentSummary?.payments || [];
-    const paymentRows = payments.length ? payments.map((payment) => `<tr><td>${escapeHtml(statusLabel(payment.paymentType))}</td><td>${escapeHtml(formatMoney(payment.amount))}</td><td>${escapeHtml(statusLabel(payment.status))}</td><td>${escapeHtml(payment.method || 'Not provided')}</td></tr>`).join('') : '<tr><td colspan="4">No payment records.</td></tr>';
-    const packageBlock = isPackage && detail.packageDetails ? `<h6>Package Snapshot</h6><p><strong>${escapeHtml(detail.packageDetails.name || 'Package')}</strong> | ${escapeHtml(detail.packageDetails.category || 'Not recorded')} | ${escapeHtml(formatMoney(detail.packageDetails.bookedPrice))}</p><p>Venue: ${escapeHtml(detail.packageDetails.snapshotVenueName || 'Not recorded')} | Max guests: ${escapeHtml(detail.packageDetails.maxGuests ?? 'Not recorded')}</p><pre class="small bg-light p-2">${escapeHtml(JSON.stringify(detail.packageDetails.inclusions || {}, null, 2))}</pre>` : '';
+    const payments = detail.payments?.records || [];
+    const paymentRows = payments.length ? payments.map((payment) => `<tr><td>${escapeHtml(statusLabel(payment.paymentType))}</td><td>${escapeHtml(formatMoney(payment.amount))}</td><td>${escapeHtml(statusLabel(payment.status))}</td><td>${escapeHtml(payment.method || 'Not provided')}</td><td>${escapeHtml(payment.transactionReference || 'Not provided')}</td><td>${escapeHtml(formatDateTime(payment.paidAt))}</td></tr>`).join('') : '<tr><td colspan="6">No payment records.</td></tr>';
+    const packageDetails = detail.packageDetails;
+    const packageBlock = isPackage && packageDetails ? `<section class="booking-detail-section border rounded-3 p-3"><div class="stat-label mb-1">Package Snapshot</div><h5 class="mb-3">${escapeHtml(packageDetails.name || 'Package')}</h5><div class="row g-3 mb-4"><div class="col-sm-4"><div class="stat-label mb-1">Event Type</div><div>${escapeHtml(packageDetails.category || 'Not recorded')}</div></div><div class="col-sm-4"><div class="stat-label mb-1">Package Price</div><div class="fw-semibold">${escapeHtml(formatMoney(packageDetails.bookedPrice))}</div></div><div class="col-sm-4"><div class="stat-label mb-1">Package Guest Limit</div><div>Up to ${escapeHtml(packageDetails.maxGuests ?? 'Not recorded')} guests</div></div><div class="col-12"><div class="stat-label mb-1">Venue</div><div>${escapeHtml(packageDetails.snapshotVenueName || 'Not recorded')}</div></div></div><div class="stat-label mb-2">Package Inclusions</div><div class="row g-3">${renderPackageInclusions(packageDetails.inclusions)}</div></section>` : '';
     const customBlock = !isPackage && detail.customizeDetails ? `<h6>Saved Service Selections</h6><ul>${(detail.customizeDetails.services || []).map((service) => `<li>${escapeHtml(service.name || 'Service')} - ${escapeHtml(formatMoney(service.price))}</li>`).join('') || '<li>No selected services recorded.</li>'}</ul><p><strong>Total:</strong> ${escapeHtml(formatMoney(detail.customizeDetails.total))}</p>` : '';
-    const quotation = detail.quotation ? `<h6>Quotation</h6><p>#${escapeHtml(detail.quotation.id)} | ${escapeHtml(statusLabel(detail.quotation.status))} | ${escapeHtml(formatMoney(detail.quotation.total))}</p>` : '<p class="text-ink-soft">Quotation not recorded.</p>';
+    const quotation = isPackage
+      ? '<p class="text-ink-soft">Quotation not required for package bookings.</p>'
+      : (detail.quotation ? `<h6>Quotation</h6><p>#${escapeHtml(detail.quotation.id)} | ${escapeHtml(statusLabel(detail.quotation.status))} | ${escapeHtml(formatMoney(detail.quotation.total))}</p>` : '<p class="text-ink-soft">Quotation not recorded.</p>');
     const consultations = (detail.consultations || []).map((item) => `<li>${escapeHtml(statusLabel(item.status))} | ${escapeHtml(item.consultationType || 'Consultation')} | ${escapeHtml(formatDate(item.consultationDate))} ${escapeHtml(formatTime(item.startTime))}</li>`).join('') || '<li>No consultation records.</li>';
-    content.innerHTML = `<div class="row g-3"><div class="col-md-6"><h6>Customer</h6><p>${escapeHtml(detail.customer?.name || 'Not recorded')}<br>${escapeHtml(detail.customer?.email || '')}<br>${escapeHtml(detail.customer?.phone || '')}</p></div><div class="col-md-6"><h6>Booking</h6><p>Status: <strong>${escapeHtml(statusLabel(detail.bookingStatus))}</strong><br>Created: ${escapeHtml(formatDateTime(detail.createdAt))}</p></div><div class="col-md-6"><h6>Event</h6><p>${escapeHtml(detail.event?.eventType || 'Not recorded')}<br>${escapeHtml(formatDate(detail.event?.eventDate))} | ${escapeHtml(formatTime(detail.event?.startTime))} - ${escapeHtml(formatTime(detail.event?.endTime))}<br>${escapeHtml(detail.event?.guestCount ?? '-')} guests</p></div><div class="col-md-6"><h6>Venue</h6><p>${escapeHtml(detail.venue?.name || 'Not recorded')}<br>${escapeHtml(detail.venue?.location || '')}</p></div><div class="col-12">${packageBlock}${customBlock}</div><div class="col-12"><h6>Payments</h6><p>Paid: ${escapeHtml(formatMoney(detail.paymentSummary?.paidAmount))} | Pending: ${escapeHtml(formatMoney(detail.paymentSummary?.pendingAmount))}</p><div class="table-responsive"><table class="table table-sm"><thead><tr><th>Type</th><th>Amount</th><th>Status</th><th>Method</th></tr></thead><tbody>${paymentRows}</tbody></table></div></div><div class="col-12">${quotation}</div><div class="col-12"><h6>Consultations</h6><ul>${consultations}</ul></div></div>`;
+    const venueName = isPackage ? (packageDetails?.snapshotVenueName || detail.venue?.name) : detail.venue?.name;
+    content.innerHTML = `<div class="row g-3"><div class="col-md-6"><h6>Customer</h6><p>${escapeHtml(detail.customer?.name || 'Not recorded')}<br>${escapeHtml(detail.customer?.email || '')}<br>${escapeHtml(detail.customer?.phone || '')}</p></div><div class="col-md-6"><h6>Booking</h6><p>Status: <strong>${escapeHtml(statusLabel(detail.bookingStatus))}</strong><br>Created: ${escapeHtml(formatDateTime(detail.createdAt))}</p></div><div class="col-md-6"><h6>Event</h6><p>${escapeHtml(detail.event?.eventType || 'Not recorded')}<br>${escapeHtml(formatDate(detail.event?.eventDate))} | ${escapeHtml(formatTime(detail.event?.startTime))} - ${escapeHtml(formatTime(detail.event?.endTime))}<br>${escapeHtml(detail.event?.guestCount ?? '-')} guests</p></div><div class="col-md-6"><h6>Venue</h6><p>${escapeHtml(venueName || 'Not recorded')}<br>${escapeHtml(detail.venue?.location || '')}</p></div><div class="col-12">${packageBlock}${customBlock}</div><div class="col-12"><h6>Payments</h6><p>Paid: ${escapeHtml(formatMoney(detail.payments?.paidAmount))} | Pending: ${escapeHtml(formatMoney(detail.payments?.pendingAmount))}</p><div class="table-responsive"><table class="table table-sm"><thead><tr><th>Type</th><th>Amount</th><th>Status</th><th>Method</th><th>Reference</th><th>Paid at</th></tr></thead><tbody>${paymentRows}</tbody></table></div></div><div class="col-12">${quotation}</div><div class="col-12"><h6>Consultations</h6><ul>${consultations}</ul></div></div>`;
   }
 
   async function openBookingDetail(bookingId) {
@@ -474,10 +517,10 @@
     tbody.innerHTML = filtered.map((payment) => {
       const method = [payment.paymentMethod, payment.transactionReference].filter(Boolean);
       const action = payment.paymentStatus === 'PENDING'
-        ? `<button class="btn btn-gold btn-sm" type="button" data-payment-confirm data-payment-id="${escapeHtml(payment.paymentId)}">Confirm Payment</button>`
+        ? `<div class="d-flex flex-wrap gap-2"><button class="btn btn-gold btn-sm" type="button" data-payment-confirm data-payment-id="${escapeHtml(payment.paymentId)}">Confirm</button><button class="btn btn-outline-danger btn-sm" type="button" data-payment-reject data-payment-id="${escapeHtml(payment.paymentId)}">Reject</button></div>`
         : '<span class="small text-ink-soft">No actions</span>';
       return `
-        <tr>
+        <tr data-payment-row="${escapeHtml(payment.paymentId)}">
           <td><strong>PAY-${String(payment.paymentId).padStart(4, '0')}</strong><div class="small text-ink-soft">ID ${escapeHtml(payment.paymentId)}</div></td>
           <td><strong>${escapeHtml(payment.bookingReference || `BK-${payment.bookingId}`)}</strong><div class="small text-ink-soft">Quotation #${escapeHtml(payment.quotationId || '-')}</div></td>
           <td><strong>${escapeHtml(payment.customerName || 'Customer')}</strong><div class="small text-ink-soft">${escapeHtml(payment.customerEmail || '')}</div></td>
@@ -485,7 +528,7 @@
           <td><span class="bb-badge">${escapeHtml(payment.bookingType === 'PACKAGE' ? 'Package' : 'Customize')}</span><div class="small text-ink-soft">${escapeHtml(statusLabel(payment.paymentType))}</div></td>
           <td><strong class="text-gold">${escapeHtml(formatMoney(payment.amount))}</strong></td>
           <td><span class="status ${statusClass(payment.paymentStatus)}">${escapeHtml(statusLabel(payment.paymentStatus))}</span></td>
-          <td>${method.length ? method.map(escapeHtml).join('<br>') : '<span class="text-ink-soft">Not provided</span>'}<div class="small text-ink-soft mt-1">${payment.createdAt || payment.paidAt ? `Submitted / paid ${escapeHtml(formatDateTime(payment.createdAt || payment.paidAt))}` : 'Submitted date not recorded'}</div></td>
+          <td>${method.length ? method.map(escapeHtml).join('<br>') : '<span class="text-ink-soft">Not provided</span>'}<div class="small text-ink-soft mt-1">${payment.submittedAt || payment.createdAt || payment.paidAt ? `Submitted ${escapeHtml(formatDateTime(payment.submittedAt || payment.createdAt || payment.paidAt))}` : 'Submitted date not recorded'}</div></td>
           <td>${action}</td>
         </tr>`;
     }).join('');
@@ -500,6 +543,8 @@
       state.payments = Array.isArray(data) ? data : [];
       updatePaymentStats(state.payments);
       renderPayments();
+      const deepLinkId = new URLSearchParams(window.location.search).get('paymentId');
+      if (deepLinkId) focusPayment(deepLinkId);
     } catch (error) {
       setPaymentMessage(error.message || 'Unable to load payments.');
       if (tbody) tbody.innerHTML = '<tr><td colspan="9" class="text-center py-5 text-ink-soft">Unable to load payments.</td></tr>';
@@ -510,6 +555,9 @@
     const payment = state.payments.find((item) => String(item.paymentId) === String(paymentId));
     if (!payment || payment.paymentStatus !== 'PENDING') return;
     state.pendingPayment = payment;
+    document.querySelector('[data-payment-rejection-field]')?.classList.add('d-none');
+    document.querySelector('[data-payment-confirm-submit]')?.classList.remove('d-none');
+    document.querySelector('[data-payment-reject-submit]')?.classList.add('d-none');
     document.querySelector('[data-payment-modal-title]').textContent = `Confirm ${statusLabel(payment.paymentType)} Payment`;
     document.querySelector('[data-payment-modal-customer]').textContent = payment.customerName || 'Customer';
     document.querySelector('[data-payment-modal-booking]').textContent = payment.bookingReference || `Booking #${payment.bookingId}`;
@@ -518,6 +566,28 @@
     document.querySelector('[data-payment-method]').value = payment.paymentMethod || '';
     document.querySelector('[data-payment-reference]').value = payment.transactionReference || '';
     window.bootstrap.Modal.getOrCreateInstance(document.getElementById('paymentConfirmModal')).show();
+  }
+
+  function openPaymentRejection(paymentId) {
+    const payment = state.payments.find((item) => String(item.paymentId) === String(paymentId));
+    if (!payment || payment.paymentStatus !== 'PENDING') return;
+    state.pendingPayment = payment;
+    document.querySelector('[data-payment-modal-title]').textContent = `Reject ${statusLabel(payment.paymentType)} Payment`;
+    document.querySelector('[data-payment-modal-customer]').textContent = payment.customerName || 'Customer';
+    document.querySelector('[data-payment-modal-booking]').textContent = payment.bookingReference || `Booking #${payment.bookingId}`;
+    document.querySelector('[data-payment-modal-type]').textContent = `${payment.bookingType === 'PACKAGE' ? 'Package' : 'Customize'} · ${statusLabel(payment.paymentType)}`;
+    document.querySelector('[data-payment-modal-amount]').textContent = formatMoney(payment.amount);
+    document.querySelector('[data-payment-rejection-reason]').value = '';
+    document.querySelector('[data-payment-rejection-field]')?.classList.remove('d-none');
+    document.querySelector('[data-payment-confirm-submit]')?.classList.add('d-none');
+    document.querySelector('[data-payment-reject-submit]')?.classList.remove('d-none');
+    window.bootstrap.Modal.getOrCreateInstance(document.getElementById('paymentConfirmModal')).show();
+  }
+
+  function focusPayment(paymentId) {
+    const row = document.querySelector(`[data-payment-row="${CSS.escape(String(paymentId))}"]`);
+    row?.classList.add('table-warning');
+    row?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
   async function confirmPayment() {
@@ -545,6 +615,23 @@
     }
   }
 
+  async function rejectPayment() {
+    if (!state.pendingPayment) return;
+    const button = document.querySelector('[data-payment-reject-submit]');
+    const reason = document.querySelector('[data-payment-rejection-reason]').value.trim();
+    if (!reason) { setPaymentMessage('A rejection reason is required.'); return; }
+    button.disabled = true;
+    try {
+      await adminFetch(`/api/admin/payments/${encodeURIComponent(state.pendingPayment.paymentId)}/reject`, {
+        method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ reason })
+      });
+      window.bootstrap.Modal.getInstance(document.getElementById('paymentConfirmModal'))?.hide();
+      await loadPayments();
+      setPaymentMessage('Payment rejected and customer notified.', 'success');
+    } catch (error) { setPaymentMessage(error.message || 'Unable to reject this payment.'); }
+    finally { button.disabled = false; state.pendingPayment = null; }
+  }
+
   function initPaymentsPage() {
     if (!document.querySelector('[data-admin-payments-page]')) return;
     document.querySelector('[data-admin-payment-search]')?.addEventListener('input', (event) => {
@@ -562,8 +649,11 @@
     document.querySelector('[data-admin-payment-rows]')?.addEventListener('click', (event) => {
       const button = event.target.closest('[data-payment-confirm]');
       if (button) openPaymentConfirmation(button.dataset.paymentId);
+      const rejectButton = event.target.closest('[data-payment-reject]');
+      if (rejectButton) openPaymentRejection(rejectButton.dataset.paymentId);
     });
     document.querySelector('[data-payment-confirm-submit]')?.addEventListener('click', confirmPayment);
+    document.querySelector('[data-payment-reject-submit]')?.addEventListener('click', rejectPayment);
     loadPayments();
   }
 
@@ -631,6 +721,8 @@
       state.quotations = Array.isArray(data) ? data : [];
       updateQuotationStats(state.quotations);
       renderQuotations();
+      const deepLinkId = new URLSearchParams(window.location.search).get('quotationId');
+      if (deepLinkId) openQuotationDetail(deepLinkId);
     } catch (error) {
       setQuotationMessage(error.message || 'Unable to load quotations.');
       if (tbody) tbody.innerHTML = '<tr><td colspan="9" class="text-center py-5 text-ink-soft">Unable to load quotations.</td></tr>';
@@ -646,6 +738,9 @@
     state.currentQuotation = quotation;
     const draft = quotation.status === 'DRAFT';
     const isPackage = String(quotation.bookingType || '').toUpperCase() === 'PACKAGE';
+    const bookingStatus = String(quotation.bookingStatus || '').toUpperCase();
+    const activeBooking = bookingStatus !== 'CANCELLED' && bookingStatus !== 'COMPLETED';
+    const canRevise = quotation.status === 'REJECTED' && !isPackage && activeBooking;
     setQuotationText('reference', `QT-${String(quotation.quotationId).padStart(4, '0')}`);
     setQuotationText('status', statusLabel(quotation.status));
     setQuotationText('customer', quotation.customerName || 'Customer');
@@ -690,6 +785,7 @@
     if (expires) { expires.value = quotation.expiresAt ? String(quotation.expiresAt).slice(0, 16) : ''; expires.disabled = !draft; }
     document.querySelector('[data-quotation-save]')?.classList.toggle('d-none', !draft);
     document.querySelector('[data-quotation-send]')?.classList.toggle('d-none', !draft);
+    document.querySelector('[data-quotation-revise]')?.classList.toggle('d-none', !canRevise);
     document.querySelector('[data-quotation-locked]')?.classList.toggle('d-none', draft);
   }
 
@@ -761,6 +857,23 @@
     }
   }
 
+  async function reviseQuotation() {
+    const quotation = state.currentQuotation;
+    if (!quotation || quotation.status !== 'REJECTED') return;
+    const button = document.querySelector('[data-quotation-revise]');
+    if (button) { button.disabled = true; button.textContent = 'Revising...'; }
+    try {
+      const revised = await adminFetch(`/api/admin/quotations/${encodeURIComponent(quotation.quotationId)}/revise`, { method: 'PATCH' });
+      populateQuotationDetail(revised);
+      await loadQuotations();
+      setQuotationMessage('Quotation reopened as a draft for revision.', 'success');
+    } catch (error) {
+      setQuotationMessage(error.message || 'Unable to revise this quotation.');
+    } finally {
+      if (button) { button.disabled = false; button.textContent = 'Revise / Re-quote'; }
+    }
+  }
+
   function initQuotationsPage() {
     if (!document.querySelector('[data-admin-quotations-page]')) return;
     document.querySelector('[data-admin-quotation-search]')?.addEventListener('input', (event) => {
@@ -778,6 +891,7 @@
     document.querySelector('[data-quotation-save]')?.addEventListener('click', saveQuotationDraft);
     document.querySelector('[data-quotation-send]')?.addEventListener('click', openQuotationSendConfirmation);
     document.querySelector('[data-quotation-send-confirm]')?.addEventListener('click', sendQuotation);
+    document.querySelector('[data-quotation-revise]')?.addEventListener('click', reviseQuotation);
     loadQuotations();
   }
 
@@ -1051,9 +1165,27 @@
       state.consultations = Array.isArray(data) ? data : [];
       updateConsultationStats();
       renderConsultations();
+      const consultationId = new URLSearchParams(window.location.search).get('consultationId');
+      if (consultationId) await openConsultationDetail(consultationId);
     } catch (error) {
       setConsultationMessage(error.message || 'Unable to load consultations.');
       if (rows) rows.innerHTML = '<tr><td colspan="8" class="text-center py-5 text-ink-soft">Unable to load consultations.</td></tr>';
+    }
+  }
+
+  async function loadAdminPlannerOptions() {
+    const select = document.querySelector('[data-admin-consultation-schedule-planner]');
+    if (!select) return;
+    try {
+      const planners = await adminFetch('/api/admin/consultations/planners', { method: 'GET' });
+      select.replaceChildren(new Option('Select Planner', ''));
+      (Array.isArray(planners) ? planners : []).forEach((planner) => {
+        select.appendChild(new Option(`${planner.name} - ${planner.specialty}`, planner.name));
+      });
+    } catch (error) {
+      select.replaceChildren(new Option('Unable to load planners', ''));
+      select.disabled = true;
+      setConsultationMessage('Unable to load planner options.');
     }
   }
 
@@ -1072,6 +1204,11 @@
       detail.innerHTML = [
         detailItem('Customer', consultation.customerName || `Customer #${consultation.customerId || '-'}`),
         detailItem('Email', consultation.customerEmail || 'Email unavailable'),
+        detailItem('Related Booking', consultation.bookingId ? `BK-${String(consultation.bookingId).padStart(4, '0')}` : 'General consultation'),
+        detailItem('Booking Mode', consultation.bookingMode || 'Not linked'),
+        detailItem('Event', consultation.eventType || 'Not linked'),
+        detailItem('Venue', consultation.venueName || 'Not linked'),
+        detailItem('Event Date', consultation.eventDate ? formatDate(consultation.eventDate) : 'Not linked'),
         detailItem('Consultation Type', consultation.consultationType),
         detailItem('Date', formatDate(consultation.consultationDate)),
         detailItem('Time', time || 'Time not set'),
@@ -1195,6 +1332,7 @@
     });
     document.querySelector('[data-admin-consultation-schedule-form]')?.addEventListener('submit', submitConsultationSchedule);
     document.querySelector('[data-admin-consultation-action-confirm]')?.addEventListener('click', confirmConsultationAction);
+    void loadAdminPlannerOptions();
     loadAdminConsultations();
   }
 
@@ -1472,7 +1610,7 @@
     populatePackageCategoryEditor(categorySelect, eventPackage.category);
     categorySelect.value = eventPackage.category || '';
 
-    document.querySelector('[data-admin-package-venue-name]').value = eventPackage.venue?.name || '';
+    populatePackageVenues(eventPackage.venue?.name || '');
     document.querySelector('[data-admin-package-venue-location]').value = eventPackage.venue?.location || '';
     document.querySelector('[data-admin-package-venue-website]').value = eventPackage.venue?.websiteUrl || '';
     document.querySelector('[data-admin-package-price]').value = eventPackage.finalPrice ?? '';
@@ -1489,6 +1627,41 @@
     const categories = [...new Set(state.packages.map((item) => item.category).filter(Boolean))].sort();
     select.innerHTML = categories.map((category) => `<option value="${escapeHtml(category)}">${escapeHtml(category)}</option>`).join('');
     select.value = selected;
+  }
+
+  function syncPackageVenueDetails() {
+    const select = document.querySelector('[data-admin-package-venue-name]');
+    const venue = state.venues.find((item) => item.name === select?.value);
+    const location = document.querySelector('[data-admin-package-venue-location]');
+    const capacity = document.querySelector('[data-admin-package-venue-capacity]');
+    const website = document.querySelector('[data-admin-package-venue-website]');
+    const guests = document.querySelector('[data-admin-package-guests]');
+    const help = document.querySelector('[data-admin-package-capacity-help]');
+    if (location) location.value = venue?.location || '';
+    if (capacity) capacity.value = venue?.capacity == null ? 'Not configured' : `${Number(venue.capacity).toLocaleString()} guests`;
+    if (website) website.value = venue?.websiteUrl || '';
+    if (guests) {
+      if (venue?.capacity != null) {
+        guests.max = String(venue.capacity);
+        guests.setCustomValidity(Number(guests.value || 0) > Number(venue.capacity)
+          ? `Package guest limit cannot exceed the selected venue capacity of ${venue.capacity} guests.` : '');
+      } else {
+        guests.removeAttribute('max');
+        guests.setCustomValidity('');
+      }
+    }
+    if (help) help.textContent = venue?.capacity == null
+      ? 'This venue needs a configured capacity before packages can be limited safely.'
+      : `Venue capacity: ${Number(venue.capacity).toLocaleString()} guests.`;
+  }
+
+  function populatePackageVenues(selected = '') {
+    const select = document.querySelector('[data-admin-package-venue-name]');
+    if (!select) return;
+    select.innerHTML = '<option value="">Select an existing venue</option>'
+      + state.venues.map((venue) => `<option value="${escapeHtml(venue.name)}">${escapeHtml(venue.name)}</option>`).join('');
+    select.value = selected;
+    syncPackageVenueDetails();
   }
 
   function renderPackageServiceEditor(services) {
@@ -1509,7 +1682,7 @@
     document.querySelector('[data-admin-package-id]').value = '';
     document.querySelector('[data-admin-package-name]').value = '';
     populatePackageCategoryEditor(document.querySelector('[data-admin-package-category-edit]'));
-    document.querySelector('[data-admin-package-venue-name]').value = '';
+    populatePackageVenues();
     document.querySelector('[data-admin-package-venue-location]').value = '';
     document.querySelector('[data-admin-package-venue-website]').value = '';
     document.querySelector('[data-admin-package-price]').value = '';
@@ -1517,6 +1690,7 @@
     document.querySelector('[data-admin-package-active]').value = 'true';
     document.querySelector('[data-admin-package-description]').value = '';
     document.querySelector('[data-admin-package-image]').value = '';
+    syncPackageVenueDetails();
     renderPackageServiceEditor(state.services);
     window.bootstrap.Modal.getOrCreateInstance(document.getElementById('pkgAdmin')).show();
   }
@@ -1591,6 +1765,8 @@
       if (button) openPackageEditor(button.dataset.adminPackageEdit);
     });
     document.querySelector('[data-admin-package-form]')?.addEventListener('submit', submitPackageEdit);
+    document.querySelector('[data-admin-package-venue-name]')?.addEventListener('change', syncPackageVenueDetails);
+    document.querySelector('[data-admin-package-guests]')?.addEventListener('input', syncPackageVenueDetails);
     Promise.all([loadAdminVenues(), loadAdminPackageEditorServices()])
       .then(() => loadAdminPackages())
       .catch(() => loadAdminPackages());
@@ -2078,7 +2254,7 @@
         badge.hidden = unread === 0;
         renderAdminNotifications(list);
         const path = String(notification.actionUrl || '');
-        if (path.startsWith('/prototype/')) window.location.href = path;
+        if (isTrustedNotificationPath(path)) window.location.href = path;
       } catch (error) {
         list.insertAdjacentHTML('afterbegin', '<li class="text-danger small">Unable to mark notification as read.</li>');
       }
@@ -2088,11 +2264,15 @@
     markAll.className = 'btn btn-link btn-sm px-0 mt-3';
     markAll.textContent = 'Mark all as read';
     markAll.addEventListener('click', async () => {
-      await adminFetch('/api/notifications/read-all', { method: 'PATCH' });
-      state.notifications.forEach((notification) => { notification.read = true; });
-      badge.textContent = '';
-      badge.hidden = true;
-      renderAdminNotifications(list);
+      try {
+        await adminFetch('/api/notifications/read-all', { method: 'PATCH' });
+        state.notifications.forEach((notification) => { notification.read = true; });
+        badge.textContent = '';
+        badge.hidden = true;
+        renderAdminNotifications(list);
+      } catch (error) {
+        list.insertAdjacentHTML('afterbegin', '<li class="text-danger small">Unable to mark notifications as read.</li>');
+      }
     });
     document.querySelector('#adminNotifyModal .modal-body')?.appendChild(markAll);
     void loadAdminNotifications(list, badge);

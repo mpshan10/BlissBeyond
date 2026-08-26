@@ -17,11 +17,16 @@ public class ServiceCatalogService {
     }
 
     public List<ServiceResponse> list() {
-        return serviceRepository.findAll().stream().map(this::map).toList();
+        return serviceRepository.findAll().stream()
+            .filter(ServiceEntity::isAvailable)
+            .map(this::map)
+            .toList();
     }
 
     public ServiceResponse get(Long id) {
-        return map(serviceRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Service not found")));
+        return map(serviceRepository.findById(id)
+            .filter(ServiceEntity::isAvailable)
+            .orElseThrow(() -> new ResourceNotFoundException("Service not found")));
     }
 
     public ServiceEntity findEntity(Long id) {

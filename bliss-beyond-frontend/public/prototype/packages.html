@@ -29,12 +29,9 @@
   .package-availability-summary{color:#214c3b;min-height:1.5rem}
   .package-availability-summary strong{font-family:"Cormorant Garamond",serif;font-size:1.55rem}
   .package-availability-summary small{color:#68746c}
-  .package-availability-badge{align-items:center;display:inline-flex;gap:.3rem;margin-top:.35rem}
-  .package-availability-badge--available{background:#e5f1e8;color:#216345}
-  .package-availability-reason{color:#68746c;font-size:.78rem;margin:.35rem 0 0}
-  .package-card-availability{min-height:1.55rem}
   .package-availability-hidden{display:none!important}
-  #pkgGrid .bb-card__body > .d-flex.justify-content-between.align-items-start.mb-2{flex-wrap:wrap}
+  #pkgGrid .bb-card__body > .d-flex.justify-content-between.align-items-start.mb-2{flex-wrap:nowrap;gap:.5rem;justify-content:flex-start!important}
+  #pkgGrid .bb-card__body > .d-flex.justify-content-between.align-items-start.mb-2 > .bb-badge:first-child{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   #pkgGrid .package-capacity{flex:0 0 auto;max-width:100%;width:auto;white-space:nowrap}
   @media (max-width:575.98px){.package-availability-panel{padding:1.1rem}.package-availability-panel .btn{width:100%}}
 </style>
@@ -355,7 +352,6 @@ document.addEventListener('DOMContentLoaded', function () {
             <div class="d-flex justify-content-between align-items-start mb-2">
               <span class="bb-badge">Wedding</span>
               <span class="bb-badge gold">UP TO 150 GUESTS</span>
-              <span class="bb-badge gold">VENUE: UP TO 350 GUESTS</span>
             </div>
             <h4 class="mb-2">Inya Garden Romance</h4>
             <p class="small text-ink-soft mb-3">A romantic lakeside wedding with garden styling, fresh floral details and an elegant reception experience.</p>
@@ -382,7 +378,6 @@ document.addEventListener('DOMContentLoaded', function () {
             <div class="d-flex justify-content-between align-items-start mb-2">
               <span class="bb-badge">Wedding</span>
               <span class="bb-badge gold">UP TO 180 GUESTS</span>
-              <span class="bb-badge gold">VENUE: UP TO 180 GUESTS</span>
             </div>
             <h4 class="mb-2">The Yangon Ever After</h4>
             <p class="small text-ink-soft mb-3">A sophisticated premium hotel wedding with polished styling, elevated dining and complete celebration services.</p>
@@ -461,7 +456,6 @@ document.addEventListener('DOMContentLoaded', function () {
             <div class="d-flex justify-content-between align-items-start mb-2">
               <span class="bb-badge">Wedding</span>
               <span class="bb-badge gold">UP TO 200 GUESTS</span>
-              <span class="bb-badge gold">VENUE: UP TO 250 GUESTS</span>
             </div>
             <h4 class="mb-2">Rose Garden Elegance</h4>
             <p class="small text-ink-soft mb-3">An elegant floral hotel wedding with romantic styling, polished dining and sophisticated celebration details.</p>
@@ -1292,23 +1286,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (count === 0) { summaryEl.innerHTML = '<strong>No packages are available for your selected event.</strong><br><small>Try changing your date, time, or guest count.</small>'; return; }
     summaryEl.innerHTML = `<strong>${count.toLocaleString()} Package${count === 1 ? '' : 's'} Available</strong><br><small>Based on ${details}</small>`;
   };
-  const statusNode = card => card.querySelector('.package-card-availability');
-  const clearCardStatuses = () => cards.forEach(card => statusNode(card)?.remove());
   const clearAvailabilityVisibility = () => cards.forEach(card => card.classList.remove('package-availability-hidden'));
-  const setCardStatus = card => {
-    statusNode(card)?.remove();
-    const node = document.createElement('div');
-    node.className = 'package-card-availability';
-    const badge = document.createElement('span');
-    badge.className = 'bb-badge package-availability-badge package-availability-badge--available';
-    const icon = document.createElement('i');
-    icon.className = 'bi bi-check-circle';
-    icon.setAttribute('aria-hidden', 'true');
-    badge.append(icon, document.createTextNode(' Available'));
-    node.appendChild(badge);
-    const header = card.querySelector('.bb-card__body > .d-flex.justify-content-between.align-items-start.mb-2');
-    (header || card.querySelector('.bb-card__body'))?.after(node);
-  };
   const updateCardCatalogFields = (card, item) => {
     const title = card.querySelector('h4');
     const description = card.querySelector('.bb-card__body > p');
@@ -1319,17 +1297,6 @@ document.addEventListener('DOMContentLoaded', function () {
     if (description) description.textContent = item.description;
     if (category) category.textContent = String(item.category || '').toLowerCase().replace(/^./, letter => letter.toUpperCase());
     if (capacity) capacity.textContent = `UP TO ${Number(item.maxGuests).toLocaleString()} GUESTS`;
-    let venueCapacity = card.querySelector('.package-venue-capacity');
-    if (!venueCapacity) {
-      venueCapacity = document.createElement('div');
-      venueCapacity.className = 'package-venue-capacity small text-ink-soft mt-1';
-      (capacity?.parentElement || card.querySelector('.bb-card__body'))?.appendChild(venueCapacity);
-    }
-    venueCapacity.classList.toggle('capacity-pill', item.venue?.capacity != null);
-    venueCapacity.hidden = item.venue?.capacity == null;
-    venueCapacity.textContent = item.venue?.capacity == null
-      ? ''
-      : `VENUE: UP TO ${Number(item.venue.capacity).toLocaleString()} GUESTS`;
     if (price) price.textContent = `MMK ${Number(item.finalPrice).toLocaleString()}`;
   };
   const resolvePackageImage = value => {
@@ -1370,7 +1337,6 @@ document.addEventListener('DOMContentLoaded', function () {
           </div>
           <h4 class="mb-2"></h4>
           <p class="small text-ink-soft mb-3"></p>
-          <div class="package-venue-capacity small text-ink-soft mb-2"></div>
           <ul class="list-check mb-3"></ul>
           <div class="package-footer">
             <div class="package-price"><div class="bb-price"></div></div>
@@ -1384,12 +1350,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const capacity = card.querySelector('.package-capacity');
     category.textContent = String(item.category || '').toLowerCase().replace(/^./, letter => letter.toUpperCase());
     capacity.textContent = `UP TO ${Number(item.maxGuests).toLocaleString()} GUESTS`;
-    const venueCapacity = card.querySelector('.package-venue-capacity');
-    venueCapacity.classList.toggle('capacity-pill', item.venue?.capacity != null);
-    venueCapacity.hidden = item.venue?.capacity == null;
-    venueCapacity.textContent = item.venue?.capacity == null
-      ? ''
-      : `VENUE: UP TO ${Number(item.venue.capacity).toLocaleString()} GUESTS`;
     card.querySelector('h4').textContent = item.name || '';
     card.querySelector('p').textContent = item.description || '';
     const inclusionList = card.querySelector('.list-check');
@@ -1420,7 +1380,6 @@ document.addEventListener('DOMContentLoaded', function () {
       window.bbSetPackagePlan({ available:false, packageAvailable:false });
     }
     clearAvailabilityVisibility();
-    clearCardStatuses();
     setSummary(null);
     setStatus('Details changed. Check availability again.');
   };
@@ -1456,7 +1415,6 @@ document.addEventListener('DOMContentLoaded', function () {
     window.bbSetPackagePlan({ packageId:item.id, packageSlug:item.slug, packageName:item.name, venueId:item.venue?.id, venueName:item.venue?.name, maxGuests:item.maxGuests, packageAvailable, available:packageAvailable });
   };
   const renderStatuses = () => {
-    clearCardStatuses();
     clearAvailabilityVisibility();
     cards.forEach(card => {
       const item = catalogBySlug.get(card.dataset.packageSlug);
@@ -1464,7 +1422,6 @@ document.addEventListener('DOMContentLoaded', function () {
       const venueAvailable = availableVenueIds.has(String(item.venue?.id));
       const available = !guestLimit && venueAvailable;
       card.classList.toggle('package-availability-hidden', !available);
-      if (available) setCardStatus(card);
     });
   };
   const checkAvailability = async () => {
@@ -1511,7 +1468,6 @@ document.addEventListener('DOMContentLoaded', function () {
       availabilityChecked = false;
       availableVenueIds.clear();
       clearAvailabilityVisibility();
-      clearCardStatuses();
       setSummary(null);
       setStatus("We couldn't check package availability right now. Please try again.", true);
     } finally {

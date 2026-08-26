@@ -79,5 +79,5 @@ public record CustomerBookingDetailResponse(
 
     public record QuotationSummary(Long id, String status, BigDecimal subtotal, BigDecimal total, LocalDateTime expiresAt) {}
 
-    public record ConsultationSummary(Long id, String status, LocalDate consultationDate, LocalTime startTime, LocalTime endTime, String consultationType) {}
+    public record ConsultationSummary(Long id, String status, LocalDate consultationDate, LocalTime startTime, LocalTime endTime, String consultationType, String planner) {}
 }

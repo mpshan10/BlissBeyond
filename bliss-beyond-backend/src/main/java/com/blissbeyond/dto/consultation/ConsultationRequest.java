@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 public record ConsultationRequest(
+    Long bookingId,
     @NotNull LocalDate consultationDate,
     @NotNull LocalTime startTime,
     LocalTime endTime,

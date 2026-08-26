@@ -1,0 +1,3 @@
+ALTER TABLE notifications
+    MODIFY COLUMN type VARCHAR(40) NOT NULL,
+    MODIFY COLUMN dedupe_key VARCHAR(64) NOT NULL;

@@ -79,7 +79,7 @@ public class AdminBookingDetailService {
                 venue == null ? booking.getVenueId() : venue.getId(), venue == null ? null : venue.getName(),
                 venue == null ? null : venue.getLocation(), venue == null ? null : venue.getCapacity(),
                 venue == null ? null : venue.getPrice()),
-            paymentSummary(payments), quotation(quotation), consultations(customer),
+            paymentSummary(payments), quotation(quotation), consultations(booking),
             bookingType == BookingType.PACKAGE ? packageDetails(booking) : null,
             bookingType == BookingType.CUSTOM ? customizeDetails(booking, quotation) : null
         );
@@ -106,9 +106,9 @@ public class AdminBookingDetailService {
             item.getCreatedAt(), item.getExpiresAt(), item.getNotes());
     }
 
-    private List<AdminBookingDetailResponse.Consultation> consultations(User customer) {
-        if (customer == null) return List.of();
-        return consultationRepository.findByCustomerIdOrderByCreatedAtDesc(customer.getId()).stream()
+    private List<AdminBookingDetailResponse.Consultation> consultations(Booking booking) {
+        if (booking == null) return List.of();
+        return consultationRepository.findByBookingIdOrderByCreatedAtDesc(booking.getId()).stream()
             .map(item -> new AdminBookingDetailResponse.Consultation(item.getId(), item.getStatus() == null ? null : item.getStatus().name(),
                 item.getConsultationDate(), item.getStartTime(), item.getEndTime(), item.getConsultationType(), item.getPlanner(), item.getNotes()))
             .toList();
@@ -132,8 +132,10 @@ public class AdminBookingDetailService {
                 .findFirst().map(item -> parse(item.getPayloadJson())).orElse(parse(eventService.getCustomizationJson()));
             BigDecimal price = eventService.getEstimatedTotal();
             services.add(new AdminBookingDetailResponse.CustomizeService(
-                eventService.getId(), service == null ? null : service.getName(), price, true, customization));
-            if (service != null && price != null) breakdown.add(new AdminBookingDetailResponse.PriceLine(service.getName(), price));
+                eventService.getId(), eventService.getServiceNameSnapshot() != null
+                    ? eventService.getServiceNameSnapshot() : (service == null ? null : service.getName()), price, true, customization));
+            if (price != null) breakdown.add(new AdminBookingDetailResponse.PriceLine(
+                eventService.getServiceNameSnapshot() != null ? eventService.getServiceNameSnapshot() : (service == null ? null : service.getName()), price));
         }
         BigDecimal total = quotation != null && quotation.getTotal() != null
             ? quotation.getTotal()

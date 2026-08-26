@@ -37,7 +37,7 @@ public class CustomerNotificationController {
     }
 
     @PatchMapping("/read-all")
-    public void markAllRead() {
-        notificationService.markAllRead();
+    public int markAllRead() {
+        return notificationService.markAllRead();
     }
 }
