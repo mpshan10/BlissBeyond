@@ -11,6 +11,12 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 <link href="/prototype/assets/css/style.css" rel="stylesheet">
 <style>html:not(.bb-admin-authorized) body { visibility: hidden; }</style>
+<style>
+.package-admin-thumb { width: 58px; height: 50px; object-fit: cover; border: 1px solid var(--bb-line); border-radius: 10px; background: #edf0eb; }
+.package-preview { height: 180px; overflow: hidden; border: 1px solid var(--bb-line); border-radius: 14px; background: #edf0eb; color: var(--bb-green); }
+.package-preview img { width: 100%; height: 100%; object-fit: cover; }
+.package-preview-placeholder { display: grid; width: 100%; height: 100%; place-items: center; }
+</style>
 </head>
 <body data-admin-page data-admin-packages-page>
 <nav class="navbar bb-nav sticky-top"><div class="container-fluid px-3 px-lg-4">
@@ -45,7 +51,7 @@
       <div class="col-md-4"><label class="form-label" for="adminPackageGuests">Max guests</label><input id="adminPackageGuests" class="form-control" type="number" min="1" step="1" required data-admin-package-guests><div class="form-text" data-admin-package-capacity-help>Select a venue to see its capacity.</div></div>
       <div class="col-md-4"><label class="form-label">Status</label><select class="form-select" data-admin-package-active><option value="true">Active</option><option value="false">Inactive</option></select></div>
       <div class="col-12"><label class="form-label" for="adminPackageDescription">Description</label><textarea id="adminPackageDescription" class="form-control" rows="4" maxlength="2000" required data-admin-package-description></textarea></div>
-      <div class="col-12"><label class="form-label" for="adminPackageImage">Image path</label><input id="adminPackageImage" class="form-control" maxlength="500" data-admin-package-image></div>
+      <div class="col-12"><label class="form-label">Image</label><div class="package-preview mb-3"><img class="d-none" alt="Package preview" data-admin-package-preview><span class="package-preview-placeholder"><i class="bi bi-image fs-2"></i></span></div><input class="form-control" type="file" accept="image/jpeg,image/png,image/webp" data-admin-package-photo><div class="form-text">JPG, PNG or WebP · Max 5 MB</div></div>
       <div class="col-12"><label class="form-label">Included services</label><div class="row g-3" data-admin-package-services><div class="small text-ink-soft">Loading...</div></div></div>
     </div></div><div class="modal-footer"><button class="btn btn-outline-forest" type="button" data-bs-dismiss="modal">Cancel</button><button class="btn btn-gold" type="submit" data-admin-package-save>Save Changes</button></div>
   </form></div></div></div>

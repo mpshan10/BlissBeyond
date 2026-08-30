@@ -2,6 +2,7 @@ package com.blissbeyond.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -19,6 +20,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -43,10 +45,12 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(
+            HttpSecurity http,
+            CorsConfigurationSource corsConfigurationSource) throws Exception {
 
         http
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            .cors(cors -> cors.configurationSource(corsConfigurationSource))
             .csrf(csrf -> csrf.disable())
             .exceptionHandling(exceptions -> exceptions
                 .authenticationEntryPoint(restAuthenticationEntryPoint)
@@ -69,6 +73,8 @@ public class SecurityConfig {
                     "/api/packages/**",
                     "/api/public/**",
                     "/uploads/profile-photos/**",
+                    "/uploads/package-images/**",
+                    "/uploads/venue-images/**",
                     "/actuator/health",
                     "/error"
                 ).permitAll()
@@ -117,21 +123,21 @@ public class SecurityConfig {
     }
 
     @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
+    public CorsConfigurationSource corsConfigurationSource(
+            @Value("${app.cors.allowed-origins:}") String configuredOrigins) {
 
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOrigins(Arrays.asList(
-            "https://bliss-beyond.vercel.app",
-            "http://localhost:8081",
-            "http://127.0.0.1:8081",
-            "http://localhost:3000",
-            "http://localhost:4200",
-            "http://localhost:5173",
-            "http://127.0.0.1:5173",
-            "http://localhost:8082",
-            "http://127.0.0.1:8082"
-        ));
+        List<String> allowedOrigins = Arrays.stream(configuredOrigins.split(","))
+                .map(String::trim)
+                .filter(origin -> !origin.isEmpty())
+                .toList();
+
+        if (allowedOrigins.contains("*")) {
+            throw new IllegalStateException("CORS_ALLOWED_ORIGINS must not contain a wildcard origin.");
+        }
+
+        configuration.setAllowedOrigins(allowedOrigins);
 
         configuration.setAllowedMethods(Arrays.asList(
             "GET",

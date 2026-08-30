@@ -9,15 +9,18 @@ import com.blissbeyond.repository.VenueRepository;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 @Service
 public class AdminVenueService {
     private final VenueRepository venueRepository;
+    private final VenueImageStorageService venueImageStorageService;
 
-    public AdminVenueService(VenueRepository venueRepository) {
+    public AdminVenueService(VenueRepository venueRepository, VenueImageStorageService venueImageStorageService) {
         this.venueRepository = venueRepository;
+        this.venueImageStorageService = venueImageStorageService;
     }
 
     @Transactional(readOnly = true)
@@ -28,6 +31,22 @@ public class AdminVenueService {
     @Transactional(readOnly = true)
     public VenueResponse getVenue(Long id) {
         return toResponse(requireVenue(id));
+    }
+
+    @Transactional
+    public VenueResponse updateVenuePhoto(Long id, MultipartFile photo) {
+        Venue venue = requireVenue(id);
+        String previousUrl = venue.getImage();
+        VenueImageStorageService.StoredPhoto stored = venueImageStorageService.store(venue, photo);
+        try {
+            venue.setImage(stored.publicUrl());
+            VenueResponse saved = toResponse(venueRepository.save(venue));
+            venueImageStorageService.deleteManagedPhoto(previousUrl);
+            return saved;
+        } catch (RuntimeException ex) {
+            venueImageStorageService.deleteManagedPhoto(stored.publicUrl());
+            throw ex;
+        }
     }
 
     @Transactional

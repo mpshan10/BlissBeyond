@@ -1302,7 +1302,9 @@ document.addEventListener('DOMContentLoaded', function () {
   const resolvePackageImage = value => {
     const raw = String(value || '').trim();
     if (!raw) return '';
-    if (/^https?:\/\//i.test(raw) || raw.startsWith('/')) return raw;
+    if (/^https?:\/\//i.test(raw)) return raw;
+    if (raw.startsWith('/uploads/')) return window.bbApiUrl(raw);
+    if (raw.startsWith('/')) return raw;
     const normalized = raw.replace(/^\.\//, '').replace(/^\/+/, '');
     if (normalized.startsWith('prototype/')) return `/${normalized}`;
     if (normalized.startsWith('assets/')) return `/prototype/${normalized}`;

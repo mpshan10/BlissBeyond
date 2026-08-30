@@ -18,7 +18,9 @@
   const resolveImage = (value) => {
     const raw = String(value || '').trim();
     if (!raw) return '';
-    if (/^https?:\/\//i.test(raw) || raw.startsWith('/')) return raw;
+    if (/^https?:\/\//i.test(raw)) return raw;
+    if (raw.startsWith('/uploads/')) return apiUrl(raw);
+    if (raw.startsWith('/')) return raw;
     const normalized = raw.replace(/^\.\//, '').replace(/^\/+/, '');
     if (normalized.startsWith('prototype/')) return `/${normalized}`;
     if (normalized.startsWith('assets/')) return `/prototype/${normalized}`;
@@ -36,7 +38,7 @@
   };
   const formatGuests = (value) => {
     const guests = Number(value);
-    return Number.isFinite(guests) ? `PACKAGE: UP TO ${new Intl.NumberFormat('en-US').format(guests)} GUESTS` : 'Guest limit not set';
+    return Number.isFinite(guests) ? `Up to ${new Intl.NumberFormat('en-US').format(guests)} Guests` : 'Guest limit not set';
   };
   const formatCapacityValue = (value) => {
     const capacity = Number(value);
@@ -169,13 +171,17 @@
     setElementText('[data-hero-package-capacity]', formatCapacityValue(current.maxGuests));
     setElementText('[data-hero-venue]', venueName);
     setElementText('[data-hero-location]', venueLocation);
+    setElementText('[data-venue-summary]', venueLocation);
     setElementText('.price-card .price', formatMoney(current.finalPrice));
     setElementText('.price-card small', guests);
+    setElementText('[data-benefit-services]', String(Array.isArray(current.services) ? current.services.length : 0));
+    setElementText('[data-benefit-guests]', Number.isFinite(Number(current.maxGuests)) ? new Intl.NumberFormat('en-US').format(Number(current.maxGuests)) : 'Not set');
+    setElementText('[data-benefit-location]', venueLocation || 'Location');
     setElementText('#venue-title', venueName);
     setElementText('#cta-title', current.name || '');
-    setElementText('.final-cta p', `${formatMoney(current.finalPrice)} · ${guests}`);
+    setElementText('[data-cta-summary]', `${formatMoney(current.finalPrice)} · ${guests}`);
 
-    setElementText('.venue-content p', venueLocation);
+    setElementText('.venue-content p', `${venueLocation} · ${formatCapacityValue(venue.capacity)}`);
     serviceCards.forEach((card) => { card.hidden = true; closeServiceCard(card); });
     const renderedServiceKeys = new Set();
     (Array.isArray(current.services) ? current.services : []).forEach((service) => {

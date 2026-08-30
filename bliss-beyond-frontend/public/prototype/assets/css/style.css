@@ -151,10 +151,30 @@ a:hover {
 }
 
 .bb-nav .navbar-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
     font-family: 'Cormorant Garamond', serif;
-    font-size: 1.5rem;
+    font-size: 0;
     font-weight: 700;
     color: var(--bb-green);
+}
+
+.bb-nav .navbar-brand::before,
+.bb-footer .navbar-brand::before {
+    content: '';
+    display: block;
+    flex: 0 0 54px;
+    width: 54px;
+    height: 54px;
+    background: url('/prototype/assets/img/bliss-beyond-logo.png') center / contain no-repeat;
+}
+
+.bb-footer .navbar-brand {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0;
+    line-height: 1;
 }
 
 .bb-nav .navbar-brand small {

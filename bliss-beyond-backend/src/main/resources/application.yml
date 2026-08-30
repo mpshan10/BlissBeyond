@@ -29,6 +29,12 @@ spring:
     serialization:
       write-dates-as-timestamps: false
 
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      # Leave room for multipart boundaries while keeping each image capped at 5 MB.
+      max-request-size: 6MB
+
   mail:
     host: ${MAIL_HOST:}
     port: ${MAIL_PORT:587}
@@ -53,7 +59,7 @@ app:
     jwt-expiration-minutes: ${JWT_EXPIRATION_MINUTES:120}
 
   admin:
-    email: ${APP_DEV_ADMIN_EMAIL:blissbeyond01@gmail.com}
+    email: ${ADMIN_EMAIL:blissbeyond01@gmail.com}
 
   google:
     client-id: ${GOOGLE_CLIENT_ID:}

@@ -1,115 +1,3515 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>About Us | Bliss &amp; Beyond</title>
-<meta name="description" content="Meet the planning and catering team behind Bliss & Beyond, delivering over 200 events every year.">
-<link rel="icon" href="/prototype/../favicon.ico">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Karla:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-<link href="/prototype/assets/css/style.css" rel="stylesheet">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>About Us | Bliss &amp; Beyond</title>
+
+  <meta name="description"
+        content="Learn about Bliss & Beyond, an event planning platform created by five Second-Year Semester IV Section B students from the University of Information Technology (UIT).">
+
+  <link rel="icon" href="/prototype/../favicon.ico">
+
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Karla:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+        rel="stylesheet">
+
+  <link href="/prototype/assets/css/style.css" rel="stylesheet">
+
+  <style>
+
+    :root {
+      --green: #0d4035;
+      --green-dark: #082f28;
+      --gold: #c5903e;
+      --gold-light: #e5c78f;
+      --cream: #f8f5ee;
+      --text: #263a34;
+      --muted: #6f766f;
+      --border: #e4dccf;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Karla", sans-serif;
+      color: var(--text);
+      background: #ffffff;
+      overflow-x: hidden;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      font-family: "Cormorant Garamond", serif;
+    }
+
+    /* =========================================================
+       ANIMATIONS
+    ========================================================= */
+
+    .reveal,
+    .reveal-left,
+    .reveal-right,
+    .reveal-scale {
+      opacity: 0;
+
+      transition:
+        opacity .8s ease,
+        transform .8s ease;
+    }
+
+    .reveal {
+      transform: translateY(36px);
+    }
+
+    .reveal-left {
+      transform: translateX(-40px);
+    }
+
+    .reveal-right {
+      transform: translateX(40px);
+    }
+
+    .reveal-scale {
+      transform: scale(.96);
+    }
+
+    .reveal.show,
+    .reveal-left.show,
+    .reveal-right.show,
+    .reveal-scale.show {
+      opacity: 1;
+      transform: none;
+    }
+
+    .delay-1 {
+      transition-delay: .08s;
+    }
+
+    .delay-2 {
+      transition-delay: .16s;
+    }
+
+    .delay-3 {
+      transition-delay: .24s;
+    }
+
+    .delay-4 {
+      transition-delay: .32s;
+    }
+
+    .delay-5 {
+      transition-delay: .40s;
+    }
+
+    /* =========================================================
+       COMMON
+    ========================================================= */
+
+    .about-section {
+      padding: 88px 0;
+    }
+
+    .about-section-soft {
+      background: var(--cream);
+    }
+
+    .about-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+
+      margin-bottom: 12px;
+
+      color: var(--gold);
+
+      font-size: .76rem;
+      font-weight: 700;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+
+    .about-label::before {
+      content: "";
+
+      width: 34px;
+      height: 1px;
+
+      background: var(--gold);
+    }
+
+    .about-label-center {
+      justify-content: center;
+    }
+
+    .about-label-center::before {
+      display: none;
+    }
+
+    .about-title {
+      color: var(--green-dark);
+
+      font-size: clamp(2.3rem, 4vw, 3.45rem);
+      line-height: 1.05;
+      font-weight: 600;
+
+      margin-bottom: 18px;
+    }
+
+    .about-text {
+      color: var(--muted);
+
+      line-height: 1.75;
+      font-size: .96rem;
+    }
+
+    .about-intro {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .gold-line {
+      width: 60px;
+      height: 2px;
+
+      border: 0;
+      opacity: 1;
+
+      background: var(--gold);
+
+      margin: 18px 0 24px;
+    }
+
+    .gold-line-center {
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* =========================================================
+       HERO - ABOUT US SPLIT DESIGN
+    ========================================================= */
+
+    .about-hero {
+      position: relative;
+      min-height: 650px;
+      display: flex;
+      align-items: center;
+      padding: 82px 0;
+      overflow: hidden;
+
+      background:
+        radial-gradient(
+          circle at 8% 20%,
+          rgba(197, 144, 62, .09),
+          transparent 30%
+        ),
+        linear-gradient(
+          120deg,
+          #f9f6ef 0%,
+          #ffffff 58%,
+          #f5efe4 100%
+        );
+    }
+
+    .about-hero::before {
+      content: "";
+      position: absolute;
+      width: 420px;
+      height: 420px;
+      left: -230px;
+      bottom: -210px;
+      border-radius: 50%;
+      border: 1px solid rgba(197, 144, 62, .16);
+      pointer-events: none;
+    }
+
+    .about-hero::after {
+      content: "";
+      position: absolute;
+      width: 220px;
+      height: 220px;
+      right: 4%;
+      top: -110px;
+      border-radius: 50%;
+      background: rgba(13, 64, 53, .035);
+      pointer-events: none;
+    }
+
+    .about-hero-content {
+      position: relative;
+      z-index: 3;
+      max-width: 650px;
+      padding: 0;
+      animation: aboutContentIn .9s ease forwards;
+    }
+
+    .about-hero-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 22px;
+
+      color: var(--gold);
+      font-size: .78rem;
+      font-weight: 700;
+      letter-spacing: .20em;
+      text-transform: uppercase;
+    }
+
+    .about-hero-label::before {
+      content: "";
+      width: 42px;
+      height: 1px;
+      background: var(--gold);
+    }
+
+    .about-hero h1 {
+      max-width: 660px;
+      margin: 0 0 26px;
+      color: var(--green-dark);
+
+      font-family: "Cormorant Garamond", serif;
+      font-size: clamp(3.4rem, 5.7vw, 5.4rem);
+      font-weight: 600;
+      line-height: .98;
+    }
+
+    .about-hero h1 span {
+      display: block;
+      margin-top: 8px;
+      color: var(--gold);
+      font-style: italic;
+      font-weight: 500;
+    }
+
+    .about-hero-description {
+      max-width: 610px;
+      margin-bottom: 15px;
+      color: var(--muted);
+      font-size: .98rem;
+      line-height: 1.8;
+      text-align: justify;
+      text-justify: inter-word;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 22px;
+      margin-top: 31px;
+    }
+
+    .hero-main-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+
+      padding: 14px 24px;
+      border-radius: 999px;
+
+      background: var(--green-dark);
+      color: #ffffff;
+
+      font-size: .9rem;
+      font-weight: 600;
+      text-decoration: none;
+
+      transition:
+        transform .3s ease,
+        background-color .3s ease,
+        box-shadow .3s ease;
+    }
+
+    .hero-main-btn:hover {
+      color: #ffffff;
+      background: var(--green);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px rgba(8, 47, 40, .18);
+    }
+
+    .hero-text-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--green-dark);
+      font-size: .9rem;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .hero-text-link i {
+      transition: transform .25s ease;
+    }
+
+    .hero-text-link:hover {
+      color: var(--gold);
+    }
+
+    .hero-text-link:hover i {
+      transform: translateX(5px);
+    }
+
+    .about-hero-image-wrap {
+      position: relative;
+
+      width: 100%;
+      max-width: 650px;
+      aspect-ratio: 1 / 1;
+
+      margin-left: auto;
+
+      animation: aboutImageIn 1s ease forwards;
+    }
+
+    /* Soft cream circle behind the image */
+    .about-image-shape {
+      position: absolute;
+
+      width: 92%;
+      height: 92%;
+
+      right: -4%;
+      top: 7%;
+
+      border-radius: 50%;
+
+      background: #f3eee4;
+
+      box-shadow:
+        0 30px 60px rgba(8, 47, 40, .12);
+
+      pointer-events: none;
+    }
+
+    /* Actual About Us image clipped inside the circle */
+    .about-hero-image {
+      position: absolute;
+      z-index: 2;
+
+      width: 88%;
+      height: 88%;
+
+      left: 0;
+      top: 0;
+
+      display: block;
+
+      object-fit: cover;
+      object-position: center;
+
+      border-radius: 50%;
+
+      box-shadow:
+        0 22px 55px rgba(8, 47, 40, .14);
+
+      transition:
+        transform .55s ease,
+        filter .55s ease;
+    }
+
+    .about-hero-image-wrap:hover .about-hero-image {
+      transform: scale(1.018);
+      filter: saturate(1.03);
+    }
+
+    /* Platform floating card */
+    .about-floating-card {
+      position: absolute;
+      z-index: 5;
+
+      left: 0;
+      bottom: 8%;
+
+      min-width: 330px;
+
+      display: flex;
+      align-items: center;
+      gap: 16px;
+
+      padding: 20px 24px;
+
+      border: 1px solid rgba(255,255,255,.82);
+      border-radius: 20px;
+
+      background: rgba(255,255,255,.94);
+
+      backdrop-filter: blur(12px);
+
+      box-shadow:
+        0 18px 45px rgba(17, 50, 42, .13);
+    }
+
+    .floating-icon {
+      flex: 0 0 56px;
+
+      width: 56px;
+      height: 56px;
+
+      display: grid;
+      place-items: center;
+
+      border-radius: 50%;
+
+      background: #f4ead9;
+      color: var(--gold);
+
+      font-size: 1.35rem;
+    }
+
+    .about-floating-card div:last-child {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .floating-small {
+      margin-bottom: 5px;
+
+      color: var(--gold);
+
+      font-size: .70rem;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    .about-floating-card strong {
+      color: var(--green-dark);
+
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .about-floating-card small {
+      margin-top: 3px;
+
+      color: var(--muted);
+
+      font-size: .82rem;
+    }
+
+    /* Event types badge */
+    .about-member-badge {
+      position: absolute;
+      z-index: 6;
+
+      right: 2%;
+      top: 12%;
+
+      display: flex;
+      align-items: center;
+      gap: 11px;
+
+      padding: 16px 20px;
+
+      border-radius: 17px;
+
+      background: var(--gold);
+      color: #ffffff;
+
+      box-shadow:
+        0 15px 35px rgba(197,144,62,.25);
+    }
+
+    .about-member-badge strong {
+      font-family: "Cormorant Garamond", serif;
+
+      font-size: 2.3rem;
+      font-weight: 500;
+      line-height: 1;
+    }
+
+    .about-member-badge span {
+      font-size: .70rem;
+      font-weight: 700;
+
+      line-height: 1.3;
+
+      letter-spacing: .07em;
+      text-transform: uppercase;
+    }
+
+    @keyframes aboutContentIn {
+      from {
+        opacity: 0;
+        transform: translateX(-35px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes aboutImageIn {
+      from {
+        opacity: 0;
+        transform: translateX(35px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @media (max-width: 991.98px) {
+      .about-hero {
+        min-height: auto;
+        padding: 70px 0 80px;
+      }
+
+      .about-hero-content {
+        max-width: 760px;
+      }
+
+      .about-hero-image-wrap {
+        max-width: 600px;
+        margin: 38px auto 0;
+      }
+    }
+
+    @media (max-width: 575.98px) {
+      .about-hero {
+        padding: 55px 0 65px;
+      }
+
+      .about-hero h1 {
+        font-size: 3rem;
+      }
+
+      .about-hero-description {
+        text-align: left;
+      }
+
+      .hero-actions {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .about-hero-image-wrap {
+        max-width: 430px;
+        margin-top: 35px;
+      }
+
+      .about-floating-card {
+        left: 3%;
+        bottom: 3%;
+
+        min-width: 250px;
+
+        padding: 14px 16px;
+      }
+
+      .floating-icon {
+        width: 46px;
+        height: 46px;
+        flex-basis: 46px;
+      }
+
+      .about-member-badge {
+        right: 0;
+        top: 8%;
+
+        padding: 12px 15px;
+      }
+
+      .about-member-badge strong {
+        font-size: 1.8rem;
+      }
+    }
+
+/* =========================================================
+       WHO WE ARE
+    ========================================================= */
+
+    .who-section {
+      padding: 90px 0;
+
+      background: #ffffff;
+    }
+
+    .who-main-content {
+      max-width: 950px;
+
+      margin: 0 auto;
+
+      text-align: center;
+    }
+
+    .who-description {
+      max-width: 920px;
+
+      margin: 0 auto;
+    }
+
+    .who-description .about-text {
+      text-align: justify;
+      text-justify: inter-word;
+
+      line-height: 1.85;
+
+      margin-bottom: 18px;
+    }
+
+    .who-features {
+      margin-top: 44px;
+    }
+
+    .who-feature-card {
+      height: 100%;
+
+      padding: 30px 26px;
+
+      border: 1px solid var(--border);
+      border-radius: 18px;
+
+      background: #ffffff;
+
+      transition:
+        transform .3s ease,
+        box-shadow .3s ease;
+    }
+
+    .who-feature-card:hover {
+      transform: translateY(-7px);
+
+      box-shadow:
+        0 18px 45px rgba(25,60,51,.08);
+    }
+
+    .who-feature-icon {
+      width: 50px;
+      height: 50px;
+
+      display: grid;
+      place-items: center;
+
+      border-radius: 50%;
+
+      background: #f5eee3;
+      color: var(--gold);
+
+      font-size: 1.2rem;
+
+      margin-bottom: 18px;
+    }
+
+    .who-feature-card h4 {
+      color: var(--green-dark);
+
+      font-size: 1.45rem;
+
+      margin-bottom: 8px;
+    }
+
+    .who-feature-card p {
+      margin: 0;
+
+      color: var(--muted);
+
+      font-size: .88rem;
+      line-height: 1.65;
+    }
+
+    /* =========================================================
+       WHAT WE DO
+    ========================================================= */
+
+    /* =========================================================
+       WHAT WE DO - IMAGE HOVER CARDS
+    ========================================================= */
+
+    .event-card {
+      position: relative;
+      height: 100%;
+      min-height: 315px;
+      padding: 30px 30px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background-color: #ffffff;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+      overflow: hidden;
+      cursor: pointer;
+
+      transition:
+        transform .35s ease,
+        box-shadow .35s ease,
+        border-color .35s ease;
+    }
+
+    /* Keep the actual image invisible until hover */
+    .event-card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      background-image: var(--event-image);
+      background-position: center;
+      background-size: cover;
+      background-repeat: no-repeat;
+      opacity: 0;
+      transform: scale(1.06);
+
+      transition:
+        opacity .38s ease,
+        transform .7s ease;
+    }
+
+    .event-card-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+
+      background:
+        linear-gradient(
+          180deg,
+          rgba(5, 39, 32, .28) 0%,
+          rgba(5, 39, 32, .70) 58%,
+          rgba(5, 39, 32, .92) 100%
+        );
+
+      opacity: 0;
+
+      transition: opacity .38s ease;
+    }
+
+    .event-card-content {
+      position: relative;
+      z-index: 2;
+      height: 100%;
+    }
+
+    /* Related images for each event type */
+    .event-wedding {
+      --event-image:
+        url("https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=82");
+    }
+
+    .event-birthday {
+      --event-image:
+        url("https://images.unsplash.com/photo-1530103862676-de8c9debad1d?auto=format&fit=crop&w=1200&q=82");
+    }
+
+    .event-engagement {
+      --event-image:
+        url("https://images.unsplash.com/photo-1529636798458-92182e662485?auto=format&fit=crop&w=1200&q=82");
+    }
+
+    .event-anniversary {
+      --event-image:
+        url("https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=1200&q=82");
+    }
+
+    .event-graduation {
+      --event-image:
+        url("/prototype/assets/img/graduation.webp");
+    }
+
+    .event-corporate {
+      --event-image:
+        url("https://images.unsplash.com/photo-1505373877841-8d25f7d46678?auto=format&fit=crop&w=1200&q=82");
+    }
+
+    .event-card:hover {
+      border-color: rgba(197, 144, 62, .72);
+      transform: translateY(-8px);
+
+      box-shadow:
+        0 22px 48px rgba(16, 50, 42, .20);
+    }
+
+    .event-card:hover::after {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .event-card:hover .event-card-overlay {
+      opacity: 1;
+    }
+
+    .event-icon {
+      width: 55px;
+      height: 55px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: #f5eee2;
+      color: var(--gold);
+      font-size: 1.35rem;
+      margin-bottom: 19px;
+
+      transition:
+        background-color .3s ease,
+        color .3s ease,
+        transform .3s ease,
+        border-color .3s ease;
+    }
+
+    .event-card h3 {
+      color: var(--green-dark);
+      font-size: 1.65rem;
+      margin-bottom: 10px;
+
+      transition: color .3s ease;
+    }
+
+    .event-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: .89rem;
+      line-height: 1.7;
+      text-align: justify;
+      text-justify: inter-word;
+
+      transition: color .3s ease;
+    }
+
+    .event-card:hover .event-icon {
+      background: var(--gold);
+      color: #ffffff;
+      transform: scale(1.08);
+    }
+
+    .event-card:hover h3 {
+      color: #ffffff;
+    }
+
+    .event-card:hover p {
+      color: rgba(255,255,255,.92);
+    }
+
+    /* Keep the gold left-line tap selection effect */
+    .event-card::before {
+      content: "";
+      position: absolute;
+      z-index: 4;
+      left: 0;
+      top: 50%;
+      width: 5px;
+      height: 0;
+      border-radius: 0 5px 5px 0;
+      background: var(--gold);
+      transform: translateY(-50%);
+      transition: height .35s ease;
+    }
+
+    .event-card.card-selected::before {
+      height: 72%;
+    }
+
+    .event-card.card-selected {
+      border-color: rgba(197, 144, 62, .70);
+    }
+
+/* =========================================================
+       OUR APPROACH
+    ========================================================= */
+
+    .approach-panel {
+      overflow: hidden;
+
+      border-radius: 26px;
+
+      background: var(--green-dark);
+    }
+
+    .approach-content {
+      padding: 60px;
+    }
+
+    .approach-content .about-title {
+      color: #ffffff;
+    }
+
+    .approach-content .about-text {
+      color: rgba(255,255,255,.76);
+    }
+
+    .approach-right {
+      height: 100%;
+
+      padding: 52px;
+
+      display: flex;
+      align-items: center;
+
+      background: var(--green);
+    }
+
+    .approach-visual {
+      width: 100%;
+
+      display: grid;
+      gap: 16px;
+    }
+
+    .approach-mini {
+      padding: 19px;
+
+      border: 1px solid rgba(255,255,255,.15);
+      border-radius: 15px;
+
+      background: rgba(255,255,255,.06);
+
+      color: #ffffff;
+    }
+
+    .approach-mini i {
+      color: var(--gold-light);
+
+      margin-right: 10px;
+    }
+
+    .approach-mini p {
+      margin: 7px 0 0 28px;
+
+      color: rgba(255,255,255,.66);
+
+      font-size: .83rem;
+      line-height: 1.5;
+    }
+
+    .approach-quote {
+      margin-top: 26px;
+
+      padding-top: 22px;
+
+      border-top: 1px solid rgba(255,255,255,.17);
+
+      color: var(--gold-light);
+
+      font-family: "Cormorant Garamond", serif;
+      font-size: 1.65rem;
+      line-height: 1.4;
+
+      }
+
+    /* =========================================================
+   EVENT CARD - CLICK / TAP EFFECT
+========================================================= */
+
+.event-card {
+  position: relative;
+  cursor: pointer;
+  overflow: hidden;
+
+  transition:
+    transform .3s ease,
+    box-shadow .3s ease,
+    border-color .3s ease;
+}
+
+/* Golden line */
+.event-card::before {
+  content: "";
+  position: absolute;
+
+  left: 0;
+  top: 50%;
+
+  width: 5px;
+  height: 0;
+
+  background: #c5903e;
+  border-radius: 0 5px 5px 0;
+
+  transform: translateY(-50%);
+
+  transition: height .35s ease;
+}
+
+/* After clicking */
+.event-card.card-selected::before {
+  height: 72%;
+}
+
+.event-card.card-selected {
+  border-color: rgba(197, 144, 62, .55);
+
+  transform: translateY(-3px);
+
+  box-shadow:
+    0 14px 35px rgba(17, 54, 46, .09);
+}
+
+    /* =========================================================
+       OUR SERVICES
+    ========================================================= */
+
+    .services-section {
+      background: #ffffff;
+    }
+
+    .services-list {
+      width: 100%;
+      max-width: 1250px;
+
+      margin: 0 auto;
+    }
+
+    .service-feature {
+      width: 100%;
+
+      display: grid;
+      grid-template-columns: 70px 1fr;
+
+      align-items: start;
+
+      column-gap: 30px;
+
+      padding: 30px 0;
+
+      border-bottom: 1px solid var(--border);
+
+      transition:
+        padding-left .3s ease;
+    }
+
+    .service-feature:last-child {
+      border-bottom: none;
+    }
+
+    .service-feature:hover {
+      padding-left: 14px;
+    }
+
+    .service-number {
+      color: var(--gold);
+
+      font-family: "Cormorant Garamond", serif;
+      font-size: 1.8rem;
+      font-weight: 600;
+      line-height: 1.2;
+
+      padding-top: 2px;
+
+      transition:
+        transform .3s ease;
+    }
+
+    .service-feature:hover .service-number {
+      transform: translateX(4px);
+    }
+
+    .service-content {
+      width: 100%;
+    }
+
+    .service-content h4 {
+      margin: 0 0 10px;
+
+      color: var(--green-dark);
+
+      font-family: "Cormorant Garamond", serif;
+      font-size: 1.65rem;
+      font-weight: 600;
+      line-height: 1.2;
+    }
+
+    .service-content p {
+      width: 100%;
+
+      margin: 0;
+
+      color: var(--muted);
+
+      font-family: "Karla", sans-serif;
+      font-size: .94rem;
+      font-weight: 400;
+      line-height: 1.8;
+
+      text-align: justify;
+      text-justify: inter-word;
+    }
+
+    /* =========================================================
+       MISSION / VISION
+       IMPROVED CARD DESIGN
+    ========================================================= */
+
+    .mission-card,
+    .vision-card {
+      position: relative;
+
+      height: 100%;
+      min-height: 390px;
+
+      padding: 48px 46px;
+
+      border-radius: 26px;
+
+      overflow: hidden;
+
+      transition:
+        transform .3s ease,
+        box-shadow .3s ease;
+    }
+
+    .mission-card::before,
+    .vision-card::before {
+      content: "";
+
+      position: absolute;
+
+      width: 210px;
+      height: 210px;
+
+      right: -80px;
+      top: -80px;
+
+      border-radius: 50%;
+
+      pointer-events: none;
+    }
+
+    .mission-card::after,
+    .vision-card::after {
+      content: "";
+
+      position: absolute;
+
+      width: 130px;
+      height: 130px;
+
+      left: -65px;
+      bottom: -65px;
+
+      border-radius: 50%;
+
+      pointer-events: none;
+    }
+
+    /* MISSION */
+
+    .mission-card {
+      background:
+        linear-gradient(
+          145deg,
+          #082f28 0%,
+          #0d493d 100%
+        );
+
+      border:
+        1px solid rgba(255,255,255,.13);
+
+      color: #ffffff;
+
+      box-shadow:
+        0 18px 45px rgba(8,47,40,.16);
+    }
+
+    .mission-card::before {
+      background: rgba(255,255,255,.04);
+
+      border:
+        1px solid rgba(255,255,255,.08);
+    }
+
+    .mission-card::after {
+      background:
+        rgba(229,199,143,.05);
+
+      border:
+        1px solid rgba(229,199,143,.08);
+    }
+
+    /* VISION */
+
+    .vision-card {
+      background:
+        linear-gradient(
+          145deg,
+          #c28b36 0%,
+          #d2a04b 100%
+        );
+
+      border:
+        1px solid rgba(78,52,10,.14);
+
+      color: var(--green-dark);
+
+      box-shadow:
+        0 18px 45px rgba(134,94,28,.13);
+    }
+
+    .vision-card::before {
+      background:
+        rgba(255,255,255,.09);
+
+      border:
+        1px solid rgba(255,255,255,.13);
+    }
+
+    .vision-card::after {
+      background:
+        rgba(8,47,40,.035);
+
+      border:
+        1px solid rgba(8,47,40,.07);
+    }
+
+    /* ICON */
+
+    .purpose-icon {
+      position: relative;
+      z-index: 2;
+
+      width: 60px;
+      height: 60px;
+
+      display: grid;
+      place-items: center;
+
+      margin-bottom: 38px;
+
+      border-radius: 50%;
+
+      font-size: 1.55rem;
+    }
+
+    .mission-card .purpose-icon {
+      background:
+        rgba(255,255,255,.075);
+
+      border:
+        1px solid rgba(229,199,143,.48);
+
+      color: #eacb94;
+
+      box-shadow:
+        inset 0 0 0 5px rgba(255,255,255,.025);
+    }
+
+    .vision-card .purpose-icon {
+      background:
+        rgba(255,255,255,.20);
+
+      border:
+        1px solid rgba(8,47,40,.18);
+
+      color: #08382f;
+
+      box-shadow:
+        inset 0 0 0 5px rgba(255,255,255,.07);
+    }
+
+    /* TITLES */
+
+    .mission-card h3,
+    .vision-card h3 {
+      position: relative;
+      z-index: 2;
+
+      font-size: 2.7rem;
+      font-weight: 600;
+      line-height: 1.1;
+
+      margin-bottom: 22px;
+    }
+
+    .mission-card h3 {
+      color: #ffffff !important;
+    }
+
+    .vision-card h3 {
+      color: var(--green-dark) !important;
+    }
+
+    /* PARAGRAPHS */
+
+    .mission-card p,
+    .vision-card p {
+      position: relative;
+      z-index: 2;
+
+      font-family: "Karla", sans-serif;
+
+      font-size: .98rem;
+      line-height: 1.85;
+
+      text-align: justify;
+      text-justify: inter-word;
+
+      margin-bottom: 0;
+    }
+
+    .mission-card p {
+      color: rgba(255,255,255,.87) !important;
+    }
+
+    .vision-card p {
+      color: #153d34 !important;
+    }
+
+    /* HOVER */
+
+    .mission-card:hover,
+    .vision-card:hover {
+      transform: translateY(-7px);
+    }
+
+    .mission-card:hover {
+      box-shadow:
+        0 24px 55px rgba(8,47,40,.24);
+    }
+
+    .vision-card:hover {
+      box-shadow:
+        0 24px 55px rgba(134,94,28,.20);
+    }
+
+    .mission-card .purpose-icon,
+    .vision-card .purpose-icon {
+      transition:
+        transform .3s ease;
+    }
+
+    .mission-card:hover .purpose-icon,
+    .vision-card:hover .purpose-icon {
+      transform: scale(1.08);
+    }
+
+    /* =========================================================
+       WHY CHOOSE US
+    ========================================================= */
+
+    .why-panel {
+      padding: 42px;
+
+      border: 1px solid var(--border);
+      border-radius: 24px;
+
+      background: #ffffff;
+    }
+
+    .why-item {
+      display: flex;
+      gap: 18px;
+
+      margin-bottom: 27px;
+    }
+
+    .why-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .why-icon {
+      min-width: 42px;
+      height: 42px;
+
+      display: grid;
+      place-items: center;
+
+      border-radius: 50%;
+
+      background: var(--green-dark);
+      color: var(--gold-light);
+    }
+
+    .why-item h4 {
+      color: var(--green-dark);
+
+      font-size: 1.35rem;
+
+      margin-bottom: 6px;
+    }
+
+    .why-item p {
+      margin: 0;
+
+      color: var(--muted);
+
+      font-size: .9rem;
+      line-height: 1.65;
+    }
+
+    /* =========================================================
+       PROCESS
+    ========================================================= */
+
+    .process-step {
+      text-align: center;
+    }
+
+    .process-number {
+      width: 68px;
+      height: 68px;
+
+      display: grid;
+      place-items: center;
+
+      margin: 0 auto 22px;
+
+      border: 1px solid var(--gold);
+      border-radius: 50%;
+
+      background: var(--cream);
+      color: var(--green-dark);
+
+      font-family: "Cormorant Garamond", serif;
+      font-size: 1.7rem;
+      font-weight: 700;
+    }
+
+    .process-step h4 {
+      color: var(--green-dark);
+
+      font-size: 1.45rem;
+
+      margin-bottom: 9px;
+    }
+
+    .process-step p {
+      max-width: 230px;
+
+      margin: 0 auto;
+
+      color: var(--muted);
+
+      font-size: .86rem;
+      line-height: 1.65;
+    }
+
+    /* =========================================================
+       BRAND STATEMENT
+    ========================================================= */
+
+    .brand-statement {
+      padding: 98px 0;
+
+      text-align: center;
+
+      color: #ffffff;
+
+      background:
+        linear-gradient(
+          rgba(8,46,38,.94),
+          rgba(8,46,38,.94)
+        ),
+        url("/prototype/assets/img/catering.jpg")
+        center / cover no-repeat;
+    }
+
+    .brand-statement-icon {
+      width: 58px;
+      height: 58px;
+
+      display: grid;
+      place-items: center;
+
+      margin: 0 auto 25px;
+
+      border:
+        1px solid rgba(230,199,144,.6);
+
+      border-radius: 50%;
+
+      color: var(--gold-light);
+    }
+
+    .brand-statement blockquote {
+      max-width: 900px;
+
+      margin: 0 auto;
+
+      font-family: "Cormorant Garamond", serif;
+      font-size: clamp(2.3rem, 4vw, 4rem);
+      line-height: 1.08;
+    }
+
+    .brand-statement blockquote span {
+      color: #e9cb97;
+
+      font-style: italic;
+    }
+
+    .brand-statement p {
+      max-width: 650px;
+
+      margin: 25px auto 0;
+
+      color: rgba(255,255,255,.68);
+
+      line-height: 1.7;
+    }
+
+    /* =========================================================
+       CTA
+    ========================================================= */
+
+    .about-cta {
+      padding: 68px 0 42px;
+
+      background: var(--cream);
+    }
+
+    .cta-panel {
+      width: 100%;
+
+      padding: 58px 35px;
+
+      border-radius: 20px;
+
+      background: var(--green);
+
+      text-align: center;
+
+      color: #ffffff;
+    }
+
+    .cta-panel .about-label {
+      display: none;
+    }
+
+    .cta-panel h2 {
+      max-width: 760px;
+
+      margin: 0 auto 15px;
+
+      color: #ffffff;
+
+      font-size: clamp(2.4rem, 4vw, 3.1rem);
+      line-height: 1.1;
+    }
+
+    .cta-panel p {
+      max-width: 680px;
+
+      margin: 0 auto 28px;
+
+      color: rgba(255,255,255,.88);
+
+      font-size: .98rem;
+      line-height: 1.7;
+    }
+
+    .cta-actions {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+
+      gap: 12px;
+    }
+
+    .cta-primary,
+    .cta-secondary {
+      min-height: 52px;
+
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+
+      padding: 12px 26px;
+
+      border-radius: 999px;
+
+      font-family: "Karla", sans-serif;
+      font-size: .9rem;
+      font-weight: 700;
+      letter-spacing: .03em;
+
+      text-decoration: none;
+
+      transition:
+        transform .25s ease,
+        background .25s ease,
+        color .25s ease;
+    }
+
+    .cta-primary {
+      min-width: 220px;
+
+      background: var(--gold);
+
+      border: 1px solid var(--gold);
+
+      color: #ffffff;
+    }
+
+    .cta-primary:hover {
+      background: #d29d49;
+      border-color: #d29d49;
+
+      color: #ffffff;
+
+      transform: translateY(-2px);
+    }
+
+    .cta-secondary {
+      min-width: 150px;
+
+      border:
+        1px solid rgba(255,255,255,.65);
+
+      background: transparent;
+
+      color: #ffffff;
+    }
+
+    .cta-secondary:hover {
+      background: #ffffff;
+
+      color: var(--green);
+
+      transform: translateY(-2px);
+    }
+
+    /* =========================================================
+       FOOTER - DARK GREEN HOME STYLE
+    ========================================================= */
+
+    .bb-footer {
+      padding: 68px 0 0 !important;
+      background: #0c4438 !important;
+      color: rgba(255,255,255,.78) !important;
+      border-top: none !important;
+    }
+
+    .bb-footer .row {
+      align-items: flex-start;
+    }
+
+    .bb-footer .navbar-brand {
+      color: #ffffff !important;
+      font-family: "Karla", sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 14px !important;
+      text-decoration: none;
+    }
+
+    .bb-footer h5,
+    .bb-footer .h6 {
+      color: #ffffff !important;
+      font-family: "Cormorant Garamond", serif;
+      font-size: 1.15rem !important;
+      font-weight: 600;
+      margin-bottom: 20px !important;
+    }
+
+    .bb-footer p {
+      color: rgba(255,255,255,.72) !important;
+      font-size: .91rem;
+      line-height: 1.75;
+    }
+
+    .bb-footer span {
+      color: rgba(255,255,255,.72) !important;
+    }
+
+    .bb-footer a {
+      color: rgba(255,255,255,.86) !important;
+      text-decoration: none;
+      transition: color .25s ease, transform .25s ease;
+    }
+
+    .bb-footer a:hover {
+      color: var(--gold) !important;
+    }
+
+    .bb-footer ul {
+      margin: 0;
+      padding: 0;
+    }
+
+    .bb-footer li {
+      margin-bottom: 12px;
+    }
+
+    .bb-footer li:last-child {
+      margin-bottom: 0;
+    }
+
+    .bb-footer li a {
+      font-size: .95rem;
+    }
+
+    .bb-footer .d-flex.gap-3.fs-5 {
+      margin-top: 20px;
+      gap: 18px !important;
+    }
+
+    .bb-footer .d-flex.gap-3.fs-5 a {
+      color: #ffffff !important;
+      font-size: 1.38rem;
+      transition: color .25s ease, transform .25s ease;
+    }
+
+    .bb-footer .d-flex.gap-3.fs-5 a:hover {
+      color: var(--gold) !important;
+      transform: translateY(-3px);
+    }
+
+    .bb-footer .foot-bottom {
+      margin-top: 48px !important;
+      padding: 23px 0 27px !important;
+      border-top: 1px solid rgba(255,255,255,.18) !important;
+      color: rgba(255,255,255,.70) !important;
+      font-size: .84rem;
+    }
+
+    .bb-footer .foot-bottom span {
+      color: rgba(255,255,255,.70) !important;
+    }
+
+    /* =========================================================
+       RESPONSIVE
+    ========================================================= */
+
+    @media (max-width: 991.98px) {
+
+      .about-section {
+        padding: 68px 0;
+      }
+
+      .approach-content,
+      .approach-right {
+        padding: 40px 30px;
+      }
+
+      .services-list {
+        max-width: 100%;
+      }
+
+      .service-feature {
+        grid-template-columns: 58px 1fr;
+
+        column-gap: 22px;
+
+        padding: 27px 0;
+      }
+
+      .service-number {
+        font-size: 1.65rem;
+      }
+
+      .service-content h4 {
+        font-size: 1.55rem;
+      }
+
+      .bb-footer {
+        padding-top: 55px !important;
+      }
+
+      .bb-footer .col-lg-4,
+      .bb-footer .col-lg-2 {
+        margin-bottom: 24px;
+      }
+
+    }
+
+    @media (max-width: 767px) {
+
+      .mission-card,
+      .vision-card {
+        min-height: auto;
+
+        padding: 36px 28px;
+
+        border-radius: 20px;
+      }
+
+      .purpose-icon {
+        width: 54px;
+        height: 54px;
+
+        margin-bottom: 29px;
+      }
+
+      .mission-card h3,
+      .vision-card h3 {
+        font-size: 2.25rem;
+
+        margin-bottom: 16px;
+      }
+
+      .mission-card p,
+      .vision-card p {
+        text-align: left;
+
+        font-size: .92rem;
+      }
+
+    }
+
+    @media (max-width: 575.98px) {
+
+      .event-card {
+        min-height: 290px;
+      }
+
+
+      .about-hero {
+        min-height: auto;
+      }
+
+      .about-hero-content {
+        padding: 55px 0;
+      }
+
+      .about-hero h1 {
+        font-size: 3rem;
+      }
+
+      .service-feature {
+        grid-template-columns: 45px 1fr;
+
+        column-gap: 15px;
+
+        padding: 24px 0;
+      }
+
+      .service-number {
+        font-size: 1.4rem;
+      }
+
+      .service-content h4 {
+        font-size: 1.4rem;
+
+        margin-bottom: 8px;
+      }
+
+      .service-content p {
+        font-size: .87rem;
+        line-height: 1.7;
+
+        text-align: left;
+      }
+
+      .service-feature:hover {
+        padding-left: 0;
+      }
+
+      .cta-panel {
+        padding: 45px 22px;
+      }
+
+      .cta-actions {
+        flex-direction: column;
+      }
+
+      .cta-primary,
+      .cta-secondary {
+        width: 100%;
+      }
+
+      .bb-footer {
+        padding-top: 45px !important;
+      }
+
+      .bb-footer .row {
+        --bs-gutter-y: 2rem;
+      }
+
+      .bb-footer .col-6 {
+        width: 100%;
+      }
+
+      .bb-footer .foot-bottom {
+        margin-top: 30px !important;
+        padding-top: 18px !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 8px !important;
+      }
+
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+
+      *,
+      *::before,
+      *::after {
+        transition: none !important;
+        animation: none !important;
+      }
+
+    }
+</style>
+
 </head>
+
+
 <body>
 
+
+<!-- =========================================================
+     NAVBAR
+========================================================= -->
+
 <nav class="navbar navbar-expand-lg bb-nav sticky-top">
+
   <div class="container">
-    <a class="navbar-brand me-4" href="/prototype/index.html">Bliss &amp; Beyond<small>Events &amp; Catering</small></a>
-    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#bbNav" aria-label="Menu">
+
+    <a class="navbar-brand me-4"
+       href="/prototype/index.html">
+
+      Bliss &amp; Beyond
+
+      <small>
+        Events &amp; Catering
+      </small>
+
+    </a>
+
+
+    <button
+      class="navbar-toggler border-0"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#bbNav"
+      aria-label="Menu">
+
       <span class="navbar-toggler-icon"></span>
+
     </button>
-    <div class="collapse navbar-collapse" id="bbNav">
-      <ul class="navbar-nav ms-auto align-items-lg-center"><li class="nav-item"><a class="nav-link" href="/prototype/index.html">Home</a></li><li class="nav-item"><a class="nav-link active" href="/prototype/about.html">About</a></li><li class="nav-item"><a class="nav-link" href="/prototype/services.html">Services</a></li><li class="nav-item"><a class="nav-link" href="/prototype/packages.html">Packages</a></li><li class="nav-item"><a class="nav-link" href="/prototype/venues.html">Venues</a></li><li class="nav-item"><a class="nav-link" href="/prototype/faq.html">FAQ</a></li><li class="nav-item"><a class="nav-link" href="/prototype/contact.html">Contact</a></li></ul>
+
+
+    <div class="collapse navbar-collapse"
+         id="bbNav">
+
+      <ul class="navbar-nav ms-auto align-items-lg-center">
+
+        <li class="nav-item">
+          <a class="nav-link"
+             href="/prototype/index.html">
+            Home
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link active"
+             href="/prototype/about.html">
+            About
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link"
+             href="/prototype/services.html">
+            Services
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link"
+             href="/prototype/packages.html">
+            Packages
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link"
+             href="/prototype/venues.html">
+            Venues
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link"
+             href="/prototype/faq.html">
+            FAQ
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link"
+             href="/prototype/contact.html">
+            Contact
+          </a>
+        </li>
+
+      </ul>
+
+
       <div class="d-flex gap-2 mt-3 mt-lg-0 ms-lg-3">
-        <a class="btn btn-outline-forest btn-sm" href="/prototype/login.html">Login</a>
-        <a class="btn btn-gold btn-sm" href="/prototype/register.html">Get Started</a>
+
+        <a class="btn btn-outline-forest btn-sm"
+           href="/prototype/login.html">
+          Login
+        </a>
+
+        <a class="btn btn-gold btn-sm"
+           href="/prototype/register.html">
+          Get Started
+        </a>
+
       </div>
+
     </div>
+
   </div>
+
 </nav>
 
-<header class="page-head">
+
+<!-- =========================================================
+     HERO
+========================================================= -->
+
+<header class="about-hero">
+
   <div class="container">
-    <h1 class="mb-2">About Bliss &amp; Beyond</h1>
-    <p class="mb-0 col-lg-7">A planning and catering house built on precision, warmth and a little bit of technology.</p>
+
+    <div class="row align-items-center g-5">
+
+      <!-- LEFT CONTENT -->
+      <div class="col-lg-6">
+
+        <div class="about-hero-content">
+
+          <span class="about-hero-label">
+            About Bliss &amp; Beyond
+          </span>
+
+          <h1>
+            Planning celebrations with
+            <span>purpose &amp; creativity.</span>
+          </h1>
+
+          <p class="about-hero-description">
+            Bliss &amp; Beyond is an event planning and catering platform
+            created to make weddings, birthdays, engagements, anniversaries,
+            graduations and corporate celebrations easier to plan,
+            personalize and organize.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <!-- RIGHT IMAGE -->
+      <div class="col-lg-6">
+
+        <div class="about-hero-image-wrap">
+
+          <div class="about-image-shape"></div>
+
+          <img
+            src="/prototype/assets/img/UIT.jpg"
+            alt="Bliss and Beyond About Us"
+            class="about-hero-image">
+
+          <div class="about-floating-card">
+
+            <div class="floating-icon">
+              <i class="bi bi-stars"></i>
+            </div>
+
+            <div>
+              <span class="floating-small">
+                One Platform
+              </span>
+
+              <strong>
+                Plan Every Celebration
+              </strong>
+
+              <small>
+                Venues · Packages · Services
+              </small>
+            </div>
+
+          </div>
+
+          <div class="about-member-badge">
+
+            <strong>6</strong>
+
+            <span>
+              Event<br>
+              Types
+            </span>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
   </div>
+
 </header>
 
-<section class="section"><div class="container"><div class="row g-5 align-items-center">
-  <div class="col-lg-6"><img class="img-fluid rounded-4" src="/prototype/assets/img/catering.jpg" alt="Catering detail" loading="lazy"></div>
-  <div class="col-lg-6"><span class="eyebrow">Our story</span><h2 class="mt-2">Twelve years of celebrations</h2><hr class="rule">
-    <p class="text-ink-soft">What began in 2014 as a two-person catering kitchen now delivers over 200 events a year across weddings, corporate galas and private celebrations. We kept the hospitality of a small team and added the systems of a large one.</p>
-    <p class="text-ink-soft">In 2024 we introduced our AI planning assistant, which turns a short brief into a costed, venue-matched plan â€” giving our planners more time for the details that machines can't handle.</p>
-    <div class="row g-3 mt-2">
-      <div class="col-4"><div class="bb-price">1,200+</div><div class="stat-label">Events</div></div>
-      <div class="col-4"><div class="bb-price">48</div><div class="stat-label">Team members</div></div>
-      <div class="col-4"><div class="bb-price">42</div><div class="stat-label">Venues</div></div>
-    </div></div>
-</div></div></section>
-<section class="section bg-cream"><div class="container">
-  <div class="text-center mb-5"><span class="eyebrow">What guides us</span><h2 class="mt-2">Our values</h2><hr class="rule rule-center"></div>
-  <div class="row g-4">
-  <div class="col-md-4"><div class="bb-card reveal"><div class="bb-card__body">
-    <span class="feature-icon mb-3"><i class="bi bi-gem"></i></span><h5>Considered detail</h5><p class="small text-ink-soft mb-0">Every place setting, cue and transition is rehearsed before your guests arrive.</p></div></div></div><div class="col-md-4"><div class="bb-card reveal"><div class="bb-card__body">
-    <span class="feature-icon mb-3"><i class="bi bi-people"></i></span><h5>Genuine hospitality</h5><p class="small text-ink-soft mb-0">We plan for people, not templates â€” your guest experience leads every decision.</p></div></div></div><div class="col-md-4"><div class="bb-card reveal"><div class="bb-card__body">
-    <span class="feature-icon mb-3"><i class="bi bi-graph-up-arrow"></i></span><h5>Transparent value</h5><p class="small text-ink-soft mb-0">Itemised quotations, no hidden service lines, no surprise invoices.</p></div></div></div>
-  </div></div></section>
-<section class="section"><div class="container">
-  <div class="text-center mb-5"><span class="eyebrow">The team</span><h2 class="mt-2">Planners behind the scenes</h2><hr class="rule rule-center"></div>
-  <div class="row g-4">
-  <div class="col-6 col-lg-3"><div class="bb-card reveal text-center"><div class="bb-card__body">
-    <div class="feature-icon mx-auto mb-3"><i class="bi bi-person"></i></div><h5 class="mb-0">Dilani Jayasuriya</h5>
-    <span class="small text-ink-soft">Head of Planning</span></div></div></div><div class="col-6 col-lg-3"><div class="bb-card reveal text-center"><div class="bb-card__body">
-    <div class="feature-icon mx-auto mb-3"><i class="bi bi-person"></i></div><h5 class="mb-0">Marcus Aravinda</h5>
-    <span class="small text-ink-soft">Executive Chef</span></div></div></div><div class="col-6 col-lg-3"><div class="bb-card reveal text-center"><div class="bb-card__body">
-    <div class="feature-icon mx-auto mb-3"><i class="bi bi-person"></i></div><h5 class="mb-0">Shanika Perera</h5>
-    <span class="small text-ink-soft">Venue Partnerships</span></div></div></div><div class="col-6 col-lg-3"><div class="bb-card reveal text-center"><div class="bb-card__body">
-    <div class="feature-icon mx-auto mb-3"><i class="bi bi-person"></i></div><h5 class="mb-0">Rehan Cooray</h5>
-    <span class="small text-ink-soft">Operations Lead</span></div></div></div>
-  </div></div></section>
 
-<footer class="bb-footer">
+<!-- =========================================================
+     WHO WE ARE
+========================================================= -->
+
+<section class="who-section" id="who-we-are">
+
   <div class="container">
+
+    <div class="who-main-content reveal">
+
+      <span class="about-label about-label-center">
+        Who We Are
+      </span>
+
+      <h2 class="about-title">
+        A modern way to plan meaningful events
+      </h2>
+
+      <hr class="gold-line gold-line-center">
+
+
+      <div class="who-description">
+
+        <p class="about-text">
+          Bliss &amp; Beyond is an event planning and catering platform
+          created to make celebrations easier to organize, personalize
+          and manage. Our goal is to provide one clear and convenient
+          place where customers can begin turning an event idea into
+          a complete celebration.
+        </p>
+
+        <p class="about-text">
+          Instead of searching separately for venues, catering,
+          decoration, flowers, photography, entertainment and other
+          requirements, users can explore these important parts
+          through one connected platform.
+        </p>
+
+        <p class="about-text">
+          We support weddings, birthdays, engagements, anniversaries,
+          graduations and corporate celebrations while giving users
+          the flexibility to select services that match their
+          preferences, requirements and event style.
+        </p>
+
+      </div>
+
+    </div>
+
+
+    <div class="row g-4 who-features">
+
+      <div class="col-md-4">
+
+        <div class="who-feature-card reveal delay-1">
+
+          <div class="who-feature-icon">
+            <i class="bi bi-grid-1x2"></i>
+          </div>
+
+          <h4>
+            Everything in One Place
+          </h4>
+
+          <p>
+            Explore venues, packages and individual event services
+            without managing every requirement separately.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div class="col-md-4">
+
+        <div class="who-feature-card reveal delay-2">
+
+          <div class="who-feature-icon">
+            <i class="bi bi-sliders"></i>
+          </div>
+
+          <h4>
+            Personalized Planning
+          </h4>
+
+          <p>
+            Choose services and details that match your preferences
+            instead of relying only on fixed event combinations.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div class="col-md-4">
+
+        <div class="who-feature-card reveal delay-3">
+
+          <div class="who-feature-icon">
+            <i class="bi bi-check2-circle"></i>
+          </div>
+
+          <h4>
+            Greater Convenience
+          </h4>
+
+          <p>
+            Keep important event choices connected and easier to
+            understand, review and organize.
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =========================================================
+     WHAT WE DO
+========================================================= -->
+
+<section class="about-section">
+
+  <div class="container">
+
+    <div class="text-center about-intro mb-5 reveal">
+
+      <span class="about-label about-label-center">
+        What We Do
+      </span>
+
+      <h2 class="about-title">
+        Celebrations for life's important moments
+      </h2>
+
+      <hr class="gold-line gold-line-center">
+
+      <p class="about-text">
+        Bliss &amp; Beyond is designed to support a variety of
+        meaningful occasions, each with its own style and requirements.
+      </p>
+
+    </div>
+
     <div class="row g-4">
-      <div class="col-lg-4">
-        <a class="navbar-brand d-block h4 mb-2" href="/prototype/index.html">Bliss &amp; Beyond</a>
-        <p class="small mb-3">AI-powered event planning and catering management for weddings, celebrations and corporate gatherings since 2014.</p>
-        <div class="d-flex gap-3 fs-5">
-          <a href="#"><i class="bi bi-instagram"></i></a><a href="#"><i class="bi bi-facebook"></i></a>
-          <a href="#"><i class="bi bi-pinterest"></i></a><a href="#"><i class="bi bi-linkedin"></i></a>
+
+      <div class="col-md-6 col-lg-4">
+        <div class="event-card event-wedding reveal delay-1">
+          <div class="event-card-overlay"></div>
+          <div class="event-card-content">
+            <div class="event-icon">
+              <i class="bi bi-heart"></i>
+            </div>
+            <h3>Weddings</h3>
+            <p>
+              Bring venue selection, catering, decoration, florals,
+              photography and entertainment together for a meaningful
+              wedding celebration.
+            </p>
+          </div>
         </div>
       </div>
-      <div class="col-6 col-lg-2"><h5 class="h6 mb-3">Explore</h5>
-        <ul class="list-unstyled d-grid gap-2">
-          <li><a href="/prototype/about.html">About Us</a></li><li><a href="/prototype/services.html">Services</a></li>
-          <li><a href="/prototype/packages.html">Packages</a></li><li><a href="/prototype/venues.html">Venues</a></li>
-          </ul></div>
-      <div class="col-6 col-lg-2"><h5 class="h6 mb-3">Account</h5>
-        <ul class="list-unstyled d-grid gap-2">
-          <li><a href="/prototype/login.html">Login</a></li><li><a href="/prototype/register.html">Register</a></li>
-          <li><a href="/prototype/customer/dashboard.html">Customer Portal</a></li>
-          <li><a href="/prototype/admin/dashboard.html">Admin Panel</a></li>
-          <li><a href="/prototype/faq.html">FAQ</a></li></ul></div>
-      <div class="col-lg-4"><h5 class="h6 mb-3">Stay in touch</h5>
-        <p class="small mb-2">18 Rosewood Avenue, Colombo 05 Â· +94 11 234 5678 Â· hello@blissandbeyond.com</p>
-        <form class="d-flex flex-column flex-sm-row gap-2 align-items-stretch" data-demo="note">
-          <input class="form-control form-control-sm" type="email" placeholder="Email address" required>
-          <button class="btn btn-gold btn-sm" type="submit">Subscribe</button>
-          <span class="d-none" data-demo-note></span>
-        </form>
-        <p class="small mt-2 mb-0 text-white-50">Prototype only â€” no data is stored.</p>
+
+      <div class="col-md-6 col-lg-4">
+        <div class="event-card event-birthday reveal delay-2">
+          <div class="event-card-overlay"></div>
+          <div class="event-card-content">
+            <div class="event-icon">
+              <i class="bi bi-cake2"></i>
+            </div>
+            <h3>Birthdays</h3>
+            <p>
+              Plan birthday celebrations around the personality,
+              style, age and preferences of the person being celebrated.
+            </p>
+          </div>
+        </div>
       </div>
+
+      <div class="col-md-6 col-lg-4">
+        <div class="event-card event-engagement reveal delay-3">
+          <div class="event-card-overlay"></div>
+          <div class="event-card-content">
+            <div class="event-icon">
+              <i class="bi bi-gem"></i>
+            </div>
+            <h3>Engagements</h3>
+            <p>
+              Create elegant and personal engagement celebrations
+              that mark the beginning of an important new chapter.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4">
+        <div class="event-card event-anniversary reveal delay-1">
+          <div class="event-card-overlay"></div>
+          <div class="event-card-content">
+            <div class="event-icon">
+              <i class="bi bi-calendar-heart"></i>
+            </div>
+            <h3>Anniversaries</h3>
+            <p>
+              Celebrate relationships, memories and milestones
+              with an event designed around the meaning of the occasion.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4">
+        <div class="event-card event-graduation reveal delay-2">
+          <div class="event-card-overlay"></div>
+          <div class="event-card-content">
+            <div class="event-icon">
+              <i class="bi bi-mortarboard"></i>
+            </div>
+            <h3>Graduations</h3>
+            <p>
+              Celebrate academic achievements and milestones
+              together with family, friends and classmates.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4">
+        <div class="event-card event-corporate reveal delay-3">
+          <div class="event-card-overlay"></div>
+          <div class="event-card-content">
+            <div class="event-icon">
+              <i class="bi bi-buildings"></i>
+            </div>
+            <h3>Corporate Celebrations</h3>
+            <p>
+              Support company gatherings, ceremonies and professional
+              events where organization and presentation are important.
+            </p>
+          </div>
+        </div>
+      </div>
+
     </div>
-    <div class="foot-bottom mt-4 d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2">
-      <span>&copy; 2026 Bliss &amp; Beyond. Frontend prototype.</span>
-      <span>Privacy Policy Â· Terms of Service</span>
-    </div>
+
   </div>
+
+</section>
+
+
+<!-- =========================================================
+     OUR APPROACH
+========================================================= -->
+
+<section class="about-section about-section-soft">
+
+  <div class="container">
+
+    <div class="approach-panel reveal-scale">
+
+      <div class="row g-0">
+
+        <div class="col-lg-7">
+
+          <div class="approach-content">
+
+            <span class="about-label"
+                  style="color:#e4c58d;">
+              Our Approach
+            </span>
+
+            <h2 class="about-title">
+              We begin with the client's ideas.
+            </h2>
+
+            <hr class="gold-line">
+
+            <p class="about-text">
+              Every celebration should reflect the people behind it.
+              Customers may have different budgets, guest numbers,
+              preferred styles, venues and priorities.
+            </p>
+
+            <p class="about-text">
+              Because of this, Bliss &amp; Beyond is designed around
+              personalization rather than one fixed solution.
+            </p>
+
+            <p class="about-text mb-0">
+              Customers can explore packages for convenience or
+              choose individual services when they want greater
+              control over their celebration.
+            </p>
+
+            <div class="approach-quote">
+              “A memorable event begins with understanding what
+              the client wants the celebration to feel like.”
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div class="col-lg-5">
+
+          <div class="approach-right">
+
+            <div class="approach-visual">
+
+              <div class="approach-mini">
+
+                <i class="bi bi-chat-heart"></i>
+
+                <strong>
+                  Understand the Idea
+                </strong>
+
+                <p>
+                  Begin with the customer's occasion and expectations.
+                </p>
+
+              </div>
+
+
+              <div class="approach-mini">
+
+                <i class="bi bi-search"></i>
+
+                <strong>
+                  Explore the Options
+                </strong>
+
+                <p>
+                  Find suitable venues, packages and event services.
+                </p>
+
+              </div>
+
+
+              <div class="approach-mini">
+
+                <i class="bi bi-sliders"></i>
+
+                <strong>
+                  Personalize the Details
+                </strong>
+
+                <p>
+                  Adjust important choices according to preferences.
+                </p>
+
+              </div>
+
+
+              <div class="approach-mini">
+
+                <i class="bi bi-stars"></i>
+
+                <strong>
+                  Create the Experience
+                </strong>
+
+                <p>
+                  Bring the selected elements together into one event.
+                </p>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =========================================================
+     OUR SERVICES
+========================================================= -->
+
+<section class="about-section services-section">
+
+  <div class="container">
+
+    <div class="text-center about-intro mb-5 reveal">
+
+      <span class="about-label about-label-center">
+        Our Services
+      </span>
+
+      <h2 class="about-title">
+        Everything your event needs
+      </h2>
+
+      <hr class="gold-line gold-line-center">
+
+      <p class="about-text">
+        Bliss &amp; Beyond brings important event services together
+        to make the planning journey more convenient.
+      </p>
+
+    </div>
+
+
+    <div class="services-list">
+
+
+      <div class="service-feature reveal">
+
+        <div class="service-number">
+          01
+        </div>
+
+        <div class="service-content">
+
+          <h4>
+            Event Planning
+          </h4>
+
+          <p>
+            Organize the important requirements of the celebration
+            and keep the different parts of the event connected
+            throughout the planning process.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div class="service-feature reveal">
+
+        <div class="service-number">
+          02
+        </div>
+
+        <div class="service-content">
+
+          <h4>
+            Venue Selection
+          </h4>
+
+          <p>
+            Explore suitable venues based on event type, capacity,
+            location and other important requirements for the
+            celebration.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div class="service-feature reveal">
+
+        <div class="service-number">
+          03
+        </div>
+
+        <div class="service-content">
+
+          <h4>
+            Catering
+          </h4>
+
+          <p>
+            Choose dining styles and menu options for different
+            occasions while creating a catering experience that
+            matches the event and guest preferences.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div class="service-feature reveal">
+
+        <div class="service-number">
+          04
+        </div>
+
+        <div class="service-content">
+
+          <h4>
+            Decoration &amp; Styling
+          </h4>
+
+          <p>
+            Select decorative elements that match the preferred
+            event style and help create a consistent atmosphere
+            throughout the celebration.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div class="service-feature reveal">
+
+        <div class="service-number">
+          05
+        </div>
+
+        <div class="service-content">
+
+          <h4>
+            Florals
+          </h4>
+
+          <p>
+            Choose flowers for stages, tables and celebration
+            spaces to complement the selected decoration,
+            colour palette and overall event style.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div class="service-feature reveal">
+
+        <div class="service-number">
+          06
+        </div>
+
+        <div class="service-content">
+
+          <h4>
+            Photography
+          </h4>
+
+          <p>
+            Capture meaningful moments throughout the celebration
+            and preserve important memories that clients and their
+            guests can look back on.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div class="service-feature reveal">
+
+        <div class="service-number">
+          07
+        </div>
+
+        <div class="service-content">
+
+          <h4>
+            Entertainment
+          </h4>
+
+          <p>
+            Add entertainment options that match the type and
+            atmosphere of the event while creating a more enjoyable
+            and engaging experience for guests.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div class="service-feature reveal">
+
+        <div class="service-number">
+          08
+        </div>
+
+        <div class="service-content">
+
+          <h4>
+            Sound, Lighting &amp; AV
+          </h4>
+
+          <p>
+            Support speeches, music, performances and presentations
+            with suitable sound, lighting and audiovisual options
+            for the celebration.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div class="service-feature reveal">
+
+        <div class="service-number">
+          09
+        </div>
+
+        <div class="service-content">
+
+          <h4>
+            Event Coordination
+          </h4>
+
+          <p>
+            Bring individual event choices together into one
+            organized plan so that the different services and
+            important details can work together smoothly.
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =========================================================
+     MISSION & VISION
+========================================================= -->
+
+<section class="about-section about-section-soft">
+
+  <div class="container">
+
+    <div class="text-center about-intro mb-5 reveal">
+
+      <span class="about-label about-label-center">
+        Our Direction
+      </span>
+
+      <h2 class="about-title">
+        Our Mission &amp; Vision
+      </h2>
+
+      <hr class="gold-line gold-line-center">
+
+    </div>
+
+
+    <div class="row g-4">
+
+      <div class="col-lg-6">
+
+        <div class="mission-card reveal-left">
+
+          <div class="purpose-icon">
+            <i class="bi bi-bullseye"></i>
+          </div>
+
+          <h3>
+            Our Mission
+          </h3>
+
+          <p>
+            Our mission is to simplify event planning by providing
+            one organized digital platform where users can explore
+            venues, packages and services.
+          </p>
+
+          <p class="mt-3">
+            We aim to reduce unnecessary complexity while giving
+            customers freedom to personalize important details.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div class="col-lg-6">
+
+        <div class="vision-card reveal-right">
+
+          <div class="purpose-icon">
+            <i class="bi bi-eye"></i>
+          </div>
+
+          <h3>
+            Our Vision
+          </h3>
+
+          <p>
+            Our vision is for Bliss &amp; Beyond to become a complete,
+            trusted and convenient digital platform for planning
+            memorable celebrations.
+          </p>
+
+          <p class="mt-3">
+            We hope to combine technology, creativity and convenience
+            to improve the way people plan events.
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =========================================================
+     WHY CHOOSE US
+========================================================= -->
+
+<section class="about-section about-section-soft">
+
+  <div class="container">
+
+    <div class="row g-5 align-items-center">
+
+      <div class="col-lg-5">
+
+        <div class="reveal-left">
+
+          <span class="about-label">
+            Why Choose Us
+          </span>
+
+          <h2 class="about-title">
+            A simpler and more connected planning experience
+          </h2>
+
+          <hr class="gold-line">
+
+          <p class="about-text">
+            Bliss &amp; Beyond brings important parts of event planning
+            into one connected experience while still allowing users
+            to personalize their celebration.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div class="col-lg-7">
+
+        <div class="why-panel reveal-right">
+
+
+          <div class="why-item">
+
+            <div class="why-icon">
+              <i class="bi bi-check-lg"></i>
+            </div>
+
+            <div>
+
+              <h4>
+                Attention to Detail
+              </h4>
+
+              <p>
+                Review individual parts of the celebration carefully.
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div class="why-item">
+
+            <div class="why-icon">
+              <i class="bi bi-check-lg"></i>
+            </div>
+
+            <div>
+
+              <h4>
+                Convenience
+              </h4>
+
+              <p>
+                Explore important event services through one platform.
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div class="why-item">
+
+            <div class="why-icon">
+              <i class="bi bi-check-lg"></i>
+            </div>
+
+            <div>
+
+              <h4>
+                Personalization
+              </h4>
+
+              <p>
+                Choose services according to individual preferences.
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div class="why-item">
+
+            <div class="why-icon">
+              <i class="bi bi-check-lg"></i>
+            </div>
+
+            <div>
+
+              <h4>
+                Organized Planning
+              </h4>
+
+              <p>
+                Keep important choices easier to understand and manage.
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div class="why-item">
+
+            <div class="why-icon">
+              <i class="bi bi-check-lg"></i>
+            </div>
+
+            <div>
+
+              <h4>
+                Quality Experience
+              </h4>
+
+              <p>
+                Combine functionality with an attractive user interface.
+              </p>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =========================================================
+     PROCESS
+========================================================= -->
+
+<section class="about-section about-section-soft">
+
+  <div class="container">
+
+    <div class="text-center about-intro mb-5 reveal">
+
+      <span class="about-label about-label-center">
+        Our Process
+      </span>
+
+      <h2 class="about-title">
+        From an idea to a celebration
+      </h2>
+
+      <hr class="gold-line gold-line-center">
+
+    </div>
+
+
+    <div class="row g-4">
+
+      <div class="col-md-6 col-lg-3">
+
+        <div class="process-step reveal delay-1">
+
+          <div class="process-number">
+            01
+          </div>
+
+          <h4>
+            Your Idea
+          </h4>
+
+          <p>
+            Begin with the event type, date, guests and overall vision.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div class="col-md-6 col-lg-3">
+
+        <div class="process-step reveal delay-2">
+
+          <div class="process-number">
+            02
+          </div>
+
+          <h4>
+            Explore &amp; Plan
+          </h4>
+
+          <p>
+            Browse venues, packages and services that fit the celebration.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div class="col-md-6 col-lg-3">
+
+        <div class="process-step reveal delay-3">
+
+          <div class="process-number">
+            03
+          </div>
+
+          <h4>
+            Personalize
+          </h4>
+
+          <p>
+            Choose catering, decoration, florals and other details.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div class="col-md-6 col-lg-3">
+
+        <div class="process-step reveal delay-4">
+
+          <div class="process-number">
+            04
+          </div>
+
+          <h4>
+            Celebrate
+          </h4>
+
+          <p>
+            Bring every selected element together into one memorable event.
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =========================================================
+     BRAND STATEMENT
+========================================================= -->
+
+<section class="brand-statement">
+
+  <div class="container reveal">
+
+    <div class="brand-statement-icon">
+      <i class="bi bi-stars"></i>
+    </div>
+
+    <blockquote>
+
+      “We plan the details,
+      so you can enjoy the
+      <span>moments that matter.</span>”
+
+    </blockquote>
+
+    <p>
+      Bliss &amp; Beyond represents our belief that a celebration
+      is more than a venue, menu or decoration. It is an experience
+      built around people, relationships and memories.
+    </p>
+
+  </div>
+
+</section>
+
+
+<!-- =========================================================
+     CTA
+========================================================= -->
+
+<section class="about-cta">
+
+  <div class="container">
+
+    <div class="cta-panel reveal-scale">
+
+      <span class="about-label">
+        Start Your Celebration
+      </span>
+
+      <h2>
+        Your memorable event starts with an idea.
+      </h2>
+
+      <p>
+        Explore Bliss &amp; Beyond to discover packages, compare services,
+        browse venues and begin creating a celebration that reflects your
+        style and priorities.
+      </p>
+
+
+      <div class="cta-actions">
+
+        <a href="/prototype/packages.html"
+           class="cta-primary">
+
+          <i class="bi bi-box-seam me-2"></i>
+
+          Explore Packages
+
+        </a>
+
+
+        <a href="/prototype/services.html"
+           class="cta-secondary">
+
+          <i class="bi bi-grid me-2"></i>
+
+          Our Services
+
+        </a>
+
+
+        <a href="/prototype/contact.html"
+           class="cta-secondary">
+
+          <i class="bi bi-chat-dots me-2"></i>
+
+          Contact Us
+
+        </a>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =========================================================
+     FOOTER
+========================================================= -->
+
+<footer class="bb-footer">
+
+  <div class="container">
+
+    <div class="row g-4">
+
+
+      <div class="col-lg-4">
+
+        <a class="navbar-brand d-block h4 mb-2"
+           href="/prototype/index.html">
+
+          Bliss &amp; Beyond
+
+        </a>
+
+        <p class="small mb-3">
+          Event planning for weddings, birthdays, engagements,
+          anniversaries, graduations and corporate celebrations.
+        </p>
+
+
+        <div class="d-flex gap-3 fs-5">
+
+          <a href="#"
+             aria-label="Instagram">
+            <i class="bi bi-instagram"></i>
+          </a>
+
+          <a href="#"
+             aria-label="Facebook">
+            <i class="bi bi-facebook"></i>
+          </a>
+
+          <a href="#"
+             aria-label="Pinterest">
+            <i class="bi bi-pinterest"></i>
+          </a>
+
+          <a href="#"
+             aria-label="LinkedIn">
+            <i class="bi bi-linkedin"></i>
+          </a>
+
+        </div>
+
+      </div>
+
+
+      <div class="col-6 col-lg-2">
+
+        <h5 class="h6 mb-3">
+          Explore
+        </h5>
+
+        <ul class="list-unstyled d-grid gap-2">
+
+          <li>
+            <a href="/prototype/about.html">
+              About Us
+            </a>
+          </li>
+
+          <li>
+            <a href="/prototype/services.html">
+              Services
+            </a>
+          </li>
+
+          <li>
+            <a href="/prototype/packages.html">
+              Packages
+            </a>
+          </li>
+
+          <li>
+            <a href="/prototype/venues.html">
+              Venues
+            </a>
+          </li>
+
+        </ul>
+
+      </div>
+
+
+      <div class="col-6 col-lg-2">
+
+        <h5 class="h6 mb-3">
+          Account
+        </h5>
+
+        <ul class="list-unstyled d-grid gap-2">
+
+          <li>
+            <a href="/prototype/login.html">
+              Login
+            </a>
+          </li>
+
+          <li>
+            <a href="/prototype/register.html">
+              Register
+            </a>
+          </li>
+
+          <li>
+            <a href="/prototype/customer/dashboard.html">
+              Customer Portal
+            </a>
+          </li>
+
+          <li>
+            <a href="/prototype/faq.html">
+              FAQ
+            </a>
+          </li>
+
+        </ul>
+
+      </div>
+
+
+      <div class="col-lg-4">
+
+        <h5 class="h6 mb-3">
+          Bliss &amp; Beyond Project
+        </h5>
+
+        <p class="small mb-2">
+          University of Information Technology (UIT)
+        </p>
+
+        <p class="small mb-2">
+          Second Year · Semester IV · Section B
+        </p>
+
+        <p class="small mb-0">
+          Developed by our five-member student project team.
+        </p>
+
+      </div>
+
+    </div>
+
+
+    <div class="foot-bottom
+                d-flex flex-column flex-sm-row
+                justify-content-between
+                align-items-start align-items-sm-center
+                gap-2">
+
+      <span>
+        &copy; 2026 Bliss &amp; Beyond. Frontend prototype.
+      </span>
+
+      <span>
+        University of Information Technology (UIT)
+      </span>
+
+    </div>
+
+  </div>
+
 </footer>
 
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 <script src="/prototype/assets/js/main.js"></script>
 
+
+<script>
+
+  document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+      const elements =
+        document.querySelectorAll(
+          ".reveal, .reveal-left, .reveal-right, .reveal-scale"
+        );
+
+
+      const observer =
+        new IntersectionObserver(
+
+          function (entries) {
+
+            entries.forEach(
+              function (entry) {
+
+                if (entry.isIntersecting) {
+
+                  entry.target.classList.add("show");
+
+                  observer.unobserve(entry.target);
+
+                }
+
+              }
+            );
+
+          },
+
+          {
+            threshold: 0.12,
+            rootMargin: "0px 0px -40px 0px"
+          }
+
+        );
+
+
+      elements.forEach(
+        function (element) {
+
+          observer.observe(element);
+
+        }
+      );
+
+    }
+  );
+
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  const eventCards = document.querySelectorAll(".event-card");
+
+  eventCards.forEach(function (card) {
+
+    card.setAttribute("role", "button");
+    card.setAttribute("tabindex", "0");
+    card.setAttribute("aria-pressed", "false");
+
+    function toggleEventCard() {
+      const alreadySelected = card.classList.contains("card-selected");
+
+      eventCards.forEach(function (item) {
+        item.classList.remove("card-selected");
+        item.setAttribute("aria-pressed", "false");
+      });
+
+      if (!alreadySelected) {
+        card.classList.add("card-selected");
+        card.setAttribute("aria-pressed", "true");
+      }
+    }
+
+    card.addEventListener("click", toggleEventCard);
+
+    card.addEventListener("keydown", function (event) {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        toggleEventCard();
+      }
+    });
+
+  });
+
+});
+</script>
+
+
 </body>
+
 </html>

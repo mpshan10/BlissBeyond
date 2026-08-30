@@ -16,6 +16,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -32,13 +33,16 @@ public class AdminPackageService {
     private final ObjectMapper objectMapper;
     private final VenueRepository venueRepository;
     private final ServiceRepository serviceRepository;
+    private final PackageImageStorageService packageImageStorageService;
 
     public AdminPackageService(PackageRepository packageRepository, ObjectMapper objectMapper,
-                               VenueRepository venueRepository, ServiceRepository serviceRepository) {
+                               VenueRepository venueRepository, ServiceRepository serviceRepository,
+                               PackageImageStorageService packageImageStorageService) {
         this.packageRepository = packageRepository;
         this.objectMapper = objectMapper;
         this.venueRepository = venueRepository;
         this.serviceRepository = serviceRepository;
+        this.packageImageStorageService = packageImageStorageService;
     }
 
     @Transactional(readOnly = true)
@@ -94,6 +98,22 @@ public class AdminPackageService {
         eventPackage.setActive(request.active());
         updateServiceInclusions(eventPackage, request.serviceInclusions());
         return toResponse(packageRepository.save(eventPackage));
+    }
+
+    @Transactional
+    public PackageResponse updatePackagePhoto(Long id, MultipartFile photo) {
+        Package eventPackage = requirePackage(id);
+        String previousUrl = eventPackage.getImage();
+        PackageImageStorageService.StoredPhoto stored = packageImageStorageService.store(eventPackage, photo);
+        try {
+            eventPackage.setImage(stored.publicUrl());
+            PackageResponse saved = toResponse(packageRepository.save(eventPackage));
+            packageImageStorageService.deleteManagedPhoto(previousUrl);
+            return saved;
+        } catch (RuntimeException ex) {
+            packageImageStorageService.deleteManagedPhoto(stored.publicUrl());
+            throw ex;
+        }
     }
 
     private void validateGuestLimit(Integer maxGuests, com.blissbeyond.entity.Venue venue) {

@@ -47,6 +47,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.MediaType;
 import com.blissbeyond.dto.admin.AdminServiceCatalogOptionRequest;
 import com.blissbeyond.dto.service.ServiceCatalogOptionResponse;
 
@@ -141,6 +144,11 @@ public class AdminController {
         return adminVenueService.updateVenue(id, request);
     }
 
+    @PostMapping(value = "/venues/{id}/photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public VenueResponse updateVenuePhoto(@PathVariable Long id, @RequestPart("photo") MultipartFile photo) {
+        return adminVenueService.updateVenuePhoto(id, photo);
+    }
+
     @GetMapping("/food")
     public List<Food> food() {
         return foodRepository.findAll();
@@ -170,6 +178,14 @@ public class AdminController {
         @Valid @RequestBody AdminPackageUpdateRequest request
     ) {
         return adminPackageService.updatePackage(id, request);
+    }
+
+    @PostMapping(value = "/packages/{id}/photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public com.blissbeyond.dto.eventpackage.PackageResponse updatePackagePhoto(
+        @PathVariable Long id,
+        @RequestPart("photo") MultipartFile photo
+    ) {
+        return adminPackageService.updatePackagePhoto(id, photo);
     }
 
     @GetMapping("/services")

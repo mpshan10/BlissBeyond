@@ -74,7 +74,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public ResponseEntity<Map<String, Object>> handleMaxUploadSize(MaxUploadSizeExceededException ex) {
-        return build(HttpStatus.BAD_REQUEST, "Profile photo must be 5 MB or smaller.");
+        return build(HttpStatus.BAD_REQUEST, "Image must be 5 MB or smaller.");
     }
 
     @ExceptionHandler(Exception.class)

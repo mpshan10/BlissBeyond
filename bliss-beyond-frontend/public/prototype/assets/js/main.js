@@ -383,6 +383,10 @@ function bbInitCustomerSidebar() {
   const sidebars = document.querySelectorAll('.bb-side');
   if (!sidebars.length) return;
 
+  sidebars.forEach((sidebar) => {
+    sidebar.querySelectorAll('a[href="/prototype/customer/venue-selection.html"]').forEach((link) => link.remove());
+  });
+
   const paymentPath = '/prototype/customer/payment.html';
   sidebars.forEach((sidebar) => {
     const bookingHeading = [...sidebar.querySelectorAll('h6')].find((heading) =>
@@ -3124,7 +3128,7 @@ async function bbInitHomePackages() {
     if (featured.length !== 4) throw new Error('Featured package catalog is incomplete.');
 
     root.innerHTML = featured.map((item) => {
-      const image = item.image || fallbackImages[item.slug];
+      const image = item.image?.startsWith('/uploads/') ? window.bbApiUrl(item.image) : (item.image || fallbackImages[item.slug]);
       const category = String(item.category || '').toLowerCase();
       return `<div class="col-md-6 col-xl-3" data-home-package-card>
         <article class="bb-card reveal h-100">

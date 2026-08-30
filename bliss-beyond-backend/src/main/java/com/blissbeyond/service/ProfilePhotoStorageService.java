@@ -21,13 +21,24 @@ public class ProfilePhotoStorageService {
     private static final String PUBLIC_PREFIX = "/uploads/profile-photos/";
 
     private final Path uploadRoot;
+    private final CloudImageStorageService cloudImageStorageService;
 
-    public ProfilePhotoStorageService(@Value("${app.uploads.root:${user.dir}/uploads}") String uploadRoot) {
+    public ProfilePhotoStorageService(
+        @Value("${app.uploads.root:${user.dir}/uploads}") String uploadRoot,
+        CloudImageStorageService cloudImageStorageService
+    ) {
         this.uploadRoot = Path.of(uploadRoot).toAbsolutePath().normalize();
+        this.cloudImageStorageService = cloudImageStorageService;
     }
 
     public StoredPhoto store(User user, MultipartFile photo) {
         validate(photo);
+        if (cloudImageStorageService.usesCloudinary()) {
+            return new StoredPhoto(
+                cloudImageStorageService.upload(photo, "bliss-beyond/profile-photos/" + user.getId()),
+                null
+            );
+        }
         String extension = extensionFor(photo.getContentType());
         Path userDirectory = uploadRoot.resolve("profile-photos").resolve(String.valueOf(user.getId())).normalize();
         if (!userDirectory.startsWith(uploadRoot)) {

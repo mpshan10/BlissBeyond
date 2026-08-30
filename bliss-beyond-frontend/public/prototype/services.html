@@ -1,125 +1,1481 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
 <title>Services | Bliss &amp; Beyond</title>
-<meta name="description" content="Full event planning, premium catering, décor, venue sourcing, entertainment and AI-powered planning.">
+
+<meta
+  name="description"
+  content="Full event planning, premium catering, décor, venue sourcing, entertainment and AI-powered planning."
+>
+
 <link rel="icon" href="/prototype/../favicon.ico">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Karla:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-<link href="/prototype/assets/css/style.css" rel="stylesheet">
+
+<link
+  href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Karla:wght@300;400;500;600;700&display=swap"
+  rel="stylesheet"
+>
+
+<link
+  href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+  rel="stylesheet"
+>
+
+<link
+  href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+  rel="stylesheet"
+>
+
+<link
+  href="/prototype/assets/css/style.css"
+  rel="stylesheet"
+>
+
+<style>
+
+/* =====================================================
+   SERVICE CARDS ONLY
+   ===================================================== */
+
+.service-info-card {
+  height: 100%;
+}
+
+.service-info-card .bb-card__body {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.service-info-card p {
+  flex-grow: 1;
+}
+
+.service-info-card .btn {
+  align-self: flex-start;
+}
+
+
+/* =====================================================
+   SERVICE DETAILS POPUP
+   ===================================================== */
+
+.service-popup {
+  border: 1px solid #dfd3c1;
+  border-radius: 22px;
+  overflow: hidden;
+
+  box-shadow:
+    0 24px 60px
+    rgba(12, 47, 39, 0.15);
+}
+
+.service-popup .modal-header {
+  padding:
+    1.7rem
+    1.8rem
+    1rem;
+}
+
+.service-popup .modal-body {
+  padding-left: 1.8rem;
+  padding-right: 1.8rem;
+  padding-bottom: 1.2rem;
+}
+
+.service-popup .modal-footer {
+  padding:
+    0
+    1.8rem
+    1.7rem;
+}
+
+.service-popup .modal-title {
+  font-family:
+    "Cormorant Garamond",
+    serif;
+
+  font-size: 2rem;
+
+  font-weight: 600;
+
+  color: #102f28;
+}
+
+.service-popup #servicePopupDescription,
+.service-popup li {
+  font-size: 1rem;
+
+  line-height: 1.6;
+
+  color: #202020;
+}
+
+</style>
+
 </head>
+
 <body>
 
+
+<!-- =====================================================
+     NAVBAR
+     UNCHANGED
+     ===================================================== -->
+
 <nav class="navbar navbar-expand-lg bb-nav sticky-top">
+
   <div class="container">
-    <a class="navbar-brand me-4" href="/prototype/index.html">Bliss &amp; Beyond<small>Events &amp; Catering</small></a>
-    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#bbNav" aria-label="Menu">
+
+    <a
+      class="navbar-brand me-4"
+      href="/prototype/index.html"
+    >
+      Bliss &amp; Beyond
+
+      <small>
+        Events &amp; Catering
+      </small>
+    </a>
+
+
+    <button
+      class="navbar-toggler border-0"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#bbNav"
+      aria-label="Menu"
+    >
       <span class="navbar-toggler-icon"></span>
     </button>
-    <div class="collapse navbar-collapse" id="bbNav">
-<ul class="navbar-nav ms-auto align-items-lg-center"><li class="nav-item"><a class="nav-link" href="/prototype/index.html">Home</a></li><li class="nav-item"><a class="nav-link" href="/prototype/about.html">About</a></li><li class="nav-item"><a class="nav-link active" href="/prototype/services.html">Services</a></li><li class="nav-item"><a class="nav-link" href="/prototype/packages.html">Packages</a></li><li class="nav-item"><a class="nav-link" href="/prototype/venues.html">Venues</a></li><li class="nav-item"><a class="nav-link" href="/prototype/faq.html">FAQ</a></li><li class="nav-item"><a class="nav-link" href="/prototype/contact.html">Contact</a></li></ul>
+
+
+    <div
+      class="collapse navbar-collapse"
+      id="bbNav"
+    >
+
+      <ul class="navbar-nav ms-auto align-items-lg-center">
+
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            href="/prototype/index.html"
+          >
+            Home
+          </a>
+        </li>
+
+
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            href="/prototype/about.html"
+          >
+            About
+          </a>
+        </li>
+
+
+        <li class="nav-item">
+          <a
+            class="nav-link active"
+            href="/prototype/services.html"
+          >
+            Services
+          </a>
+        </li>
+
+
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            href="/prototype/packages.html"
+          >
+            Packages
+          </a>
+        </li>
+
+
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            href="/prototype/venues.html"
+          >
+            Venues
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            href="/prototype/faq.html"
+          >
+            FAQ
+          </a>
+        </li>
+
+
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            href="/prototype/contact.html"
+          >
+            Contact
+          </a>
+        </li>
+
+      </ul>
+
+
       <div class="d-flex gap-2 mt-3 mt-lg-0 ms-lg-3">
-        <a class="btn btn-outline-forest btn-sm" href="/prototype/login.html">Login</a>
-        <a class="btn btn-gold btn-sm" href="/prototype/register.html">Get Started</a>
+
+        <a
+          class="btn btn-outline-forest btn-sm"
+          href="/prototype/login.html"
+        >
+          Login
+        </a>
+
+
+        <a
+          class="btn btn-gold btn-sm"
+          href="/prototype/register.html"
+        >
+          Get Started
+        </a>
+
       </div>
+
     </div>
+
   </div>
+
 </nav>
 
+
+<!-- =====================================================
+     PAGE HEADER
+     UNCHANGED
+     ===================================================== -->
+
 <header class="page-head">
+
   <div class="container">
-   
-    <h1 class="mb-2">Our Services</h1>
-    <p class="mb-0 col-lg-7">Planning, catering, design and production — delivered by one accountable team.</p>
+
+    <h1 class="mb-2">
+      Our Services
+    </h1>
+
+    <p class="mb-0 col-lg-7">
+      Planning, catering, design and production —
+      delivered by one accountable team.
+    </p>
+
   </div>
+
 </header>
-<section class="section"><div class="container">
-  <div class="row g-4">
-  <div class="col-md-6 col-lg-3"><div class="bb-card reveal"><div class="bb-card__body">
-    <span class="feature-icon mb-3"><i class="bi bi-calendar-heart"></i></span><h5>Full Event Planning</h5>
-    <p class="small text-ink-soft">End-to-end planning, timelines, vendor management and on-day coordination.</p>
-    <a class="small text-gold" href="/prototype/contact.html">Enquire <i class="bi bi-arrow-right"></i></a></div></div></div><div class="col-md-6 col-lg-3"><div class="bb-card reveal"><div class="bb-card__body">
-    <span class="feature-icon mb-3"><i class="bi bi-egg-fried"></i></span><h5>Premium Catering</h5>
-    <p class="small text-ink-soft">Plated, buffet and live-station menus crafted by our executive chefs.</p>
-    <a class="small text-gold" href="/prototype/contact.html">Enquire <i class="bi bi-arrow-right"></i></a></div></div></div><div class="col-md-6 col-lg-3"><div class="bb-card reveal"><div class="bb-card__body">
-    <span class="feature-icon mb-3"><i class="bi bi-flower1"></i></span><h5>Décor &amp; Floral Design</h5>
-    <p class="small text-ink-soft">Concept boards, floral installations, lighting and stage design.</p>
-    <a class="small text-gold" href="/prototype/contact.html">Enquire <i class="bi bi-arrow-right"></i></a></div></div></div><div class="col-md-6 col-lg-3"><div class="bb-card reveal"><div class="bb-card__body">
-    <span class="feature-icon mb-3"><i class="bi bi-building"></i></span><h5>Venue Sourcing</h5>
-    <p class="small text-ink-soft">Curated venue portfolio with availability holds and site visits.</p>
-    <a class="small text-gold" href="/prototype/contact.html">Enquire <i class="bi bi-arrow-right"></i></a></div></div></div><div class="col-md-6 col-lg-3"><div class="bb-card reveal"><div class="bb-card__body">
-    <span class="feature-icon mb-3"><i class="bi bi-music-note-beamed"></i></span><h5>Entertainment</h5>
-    <p class="small text-ink-soft">Live bands, DJs, MCs, cultural performances and AV production.</p>
-    <a class="small text-gold" href="/prototype/contact.html">Enquire <i class="bi bi-arrow-right"></i></a></div></div></div><div class="col-md-6 col-lg-3"><div class="bb-card reveal"><div class="bb-card__body">
-    <span class="feature-icon mb-3"><i class="bi bi-camera"></i></span><h5>Photo &amp; Film</h5>
-    <p class="small text-ink-soft">Photographers, videographers, drone coverage and same-day edits.</p>
-    <a class="small text-gold" href="/prototype/contact.html">Enquire <i class="bi bi-arrow-right"></i></a></div></div></div><div class="col-md-6 col-lg-3"><div class="bb-card reveal"><div class="bb-card__body">
-    <span class="feature-icon mb-3"><i class="bi bi-robot"></i></span><h5>AI Event Planner</h5>
-    <p class="small text-ink-soft">Instant package, venue and budget recommendations from your brief.</p>
-    <a class="small text-gold" href="/prototype/contact.html">Enquire <i class="bi bi-arrow-right"></i></a></div></div></div><div class="col-md-6 col-lg-3"><div class="bb-card reveal"><div class="bb-card__body">
-    <span class="feature-icon mb-3"><i class="bi bi-truck"></i></span><h5>Logistics &amp; Staffing</h5>
-    <p class="small text-ink-soft">Transport, rentals, ushers, bar staff and service captains.</p>
-    <a class="small text-gold" href="/prototype/contact.html">Enquire <i class="bi bi-arrow-right"></i></a></div></div></div>
+
+
+<!-- =====================================================
+     UPDATED SERVICE CARDS
+     ===================================================== -->
+
+<section class="section">
+
+  <div class="container">
+
+    <div class="row g-4">
+
+
+      <!-- =============================
+           CATERING
+           ============================= -->
+
+      <div class="col-md-6 col-lg-4">
+
+        <div class="bb-card reveal h-100 service-info-card">
+
+          <div class="bb-card__body">
+
+            <span class="feature-icon mb-3">
+              <i class="bi bi-egg-fried"></i>
+            </span>
+
+            <span class="eyebrow">
+              Core Service
+            </span>
+
+            <h4 class="mt-2">
+              Catering
+            </h4>
+
+            <p class="small text-ink-soft">
+              Create your perfect dining experience
+              with custom menus, dining styles
+              and catering add-ons.
+            </p>
+
+            <div class="d-flex flex-wrap gap-2 mb-3">
+
+              <span class="bb-badge">
+                Menus
+              </span>
+
+              <span class="bb-badge">
+                Buffet
+              </span>
+
+              <span class="bb-badge">
+                Plated
+              </span>
+
+            </div>
+
+
+            <button
+              class="btn btn-outline-forest btn-sm"
+              type="button"
+              data-service-popup="catering"
+            >
+              View Details
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- =============================
+           DECORATION
+           ============================= -->
+
+      <div class="col-md-6 col-lg-4">
+
+        <div class="bb-card reveal h-100 service-info-card">
+
+          <div class="bb-card__body">
+
+            <span class="feature-icon mb-3">
+              <i class="bi bi-palette"></i>
+            </span>
+
+            <span class="eyebrow">
+              Styling
+            </span>
+
+            <h4 class="mt-2">
+              Decoration &amp; Styling
+            </h4>
+
+            <p class="small text-ink-soft">
+              Create the atmosphere with themes,
+              stage styling, venue decoration
+              and elegant event details.
+            </p>
+
+            <div class="d-flex flex-wrap gap-2 mb-3">
+
+              <span class="bb-badge">
+                Themes
+              </span>
+
+              <span class="bb-badge">
+                Stage
+              </span>
+
+              <span class="bb-badge">
+                Décor
+              </span>
+
+            </div>
+
+
+            <button
+              class="btn btn-outline-forest btn-sm"
+              type="button"
+              data-service-popup="decoration"
+            >
+              View Details
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- =============================
+           PHOTOGRAPHY
+           ============================= -->
+
+      <div class="col-md-6 col-lg-4">
+
+        <div class="bb-card reveal h-100 service-info-card">
+
+          <div class="bb-card__body">
+
+            <span class="feature-icon mb-3">
+              <i class="bi bi-camera"></i>
+            </span>
+
+            <span class="eyebrow">
+              Media
+            </span>
+
+            <h4 class="mt-2">
+              Photography &amp; Videography
+            </h4>
+
+            <p class="small text-ink-soft">
+              Capture your event with professional
+              photography, cinematic video
+              and memorable portraits.
+            </p>
+
+            <div class="d-flex flex-wrap gap-2 mb-3">
+
+              <span class="bb-badge">
+                Photo
+              </span>
+
+              <span class="bb-badge">
+                Video
+              </span>
+
+              <span class="bb-badge">
+                Drone
+              </span>
+
+            </div>
+
+
+            <button
+              class="btn btn-outline-forest btn-sm"
+              type="button"
+              data-service-popup="photography"
+            >
+              View Details
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- =============================
+           ENTERTAINMENT
+           ============================= -->
+
+      <div class="col-md-6 col-lg-4">
+
+        <div class="bb-card reveal h-100 service-info-card">
+
+          <div class="bb-card__body">
+
+            <span class="feature-icon mb-3">
+              <i class="bi bi-music-note-beamed"></i>
+            </span>
+
+            <span class="eyebrow">
+              Atmosphere
+            </span>
+
+            <h4 class="mt-2">
+              Entertainment
+            </h4>
+
+            <p class="small text-ink-soft">
+              Choose DJs, live bands, MCs
+              and performances to create the right
+              atmosphere for your event.
+            </p>
+
+            <div class="d-flex flex-wrap gap-2 mb-3">
+
+              <span class="bb-badge">
+                DJ
+              </span>
+
+              <span class="bb-badge">
+                Live Band
+              </span>
+
+              <span class="bb-badge">
+                MC
+              </span>
+
+            </div>
+
+
+            <button
+              class="btn btn-outline-forest btn-sm"
+              type="button"
+              data-service-popup="entertainment"
+            >
+              View Details
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- =============================
+           LIGHTING & AV
+           ============================= -->
+
+      <div class="col-md-6 col-lg-4">
+
+        <div class="bb-card reveal h-100 service-info-card">
+
+          <div class="bb-card__body">
+
+            <span class="feature-icon mb-3">
+              <i class="bi bi-speaker"></i>
+            </span>
+
+            <span class="eyebrow">
+              Technical
+            </span>
+
+            <h4 class="mt-2">
+              Lighting &amp; AV
+            </h4>
+
+            <p class="small text-ink-soft">
+              Choose sound systems, lighting,
+              screens and stage equipment
+              designed for your event.
+            </p>
+
+            <div class="d-flex flex-wrap gap-2 mb-3">
+
+              <span class="bb-badge">
+                Sound
+              </span>
+
+              <span class="bb-badge">
+                Lighting
+              </span>
+
+              <span class="bb-badge">
+                Screens
+              </span>
+
+            </div>
+
+
+            <button
+              class="btn btn-outline-forest btn-sm"
+              type="button"
+              data-service-popup="lighting"
+            >
+              View Details
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- =============================
+           CAKE
+           ============================= -->
+
+      <div class="col-md-6 col-lg-4">
+
+        <div class="bb-card reveal h-100 service-info-card">
+
+          <div class="bb-card__body">
+
+            <span class="feature-icon mb-3">
+              <i class="bi bi-cake2"></i>
+            </span>
+
+            <span class="eyebrow">
+              Dessert
+            </span>
+
+            <h4 class="mt-2">
+              Cake &amp; Desserts
+            </h4>
+
+            <p class="small text-ink-soft">
+              Design a cake and dessert experience
+              that matches the style
+              and tone of your event.
+            </p>
+
+            <div class="d-flex flex-wrap gap-2 mb-3">
+
+              <span class="bb-badge">
+                Cake
+              </span>
+
+              <span class="bb-badge">
+                Dessert Bar
+              </span>
+
+              <span class="bb-badge">
+                Cupcakes
+              </span>
+
+            </div>
+
+
+            <button
+              class="btn btn-outline-forest btn-sm"
+              type="button"
+              data-service-popup="cake"
+            >
+              View Details
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- =============================
+           FLORAL DESIGN
+           ============================= -->
+
+      <div class="col-md-6 col-lg-4">
+
+        <div class="bb-card reveal h-100 service-info-card">
+
+          <div class="bb-card__body">
+
+            <span class="feature-icon mb-3">
+              <i class="bi bi-flower1"></i>
+            </span>
+
+            <span class="eyebrow">
+              Floral Design
+            </span>
+
+            <h4 class="mt-2">
+              Floral Design
+            </h4>
+
+            <p class="small text-ink-soft">
+              Bring your venue to life with
+              bouquets, arches, centerpieces
+              and coordinated floral styling.
+            </p>
+
+            <div class="d-flex flex-wrap gap-2 mb-3">
+
+              <span class="bb-badge">
+                Bouquets
+              </span>
+
+              <span class="bb-badge">
+                Arches
+              </span>
+
+              <span class="bb-badge">
+                Centerpieces
+              </span>
+
+            </div>
+
+
+            <button
+              class="btn btn-outline-forest btn-sm"
+              type="button"
+              data-service-popup="floral"
+            >
+              View Details
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+    </div>
+
   </div>
-</div></section>
-<section class="section bg-cream"><div class="container">
-  <div class="row g-5 align-items-center">
-    <div class="col-lg-6"><span class="eyebrow">Catering</span><h2 class="mt-2">Menus built around your guests</h2><hr class="rule">
-      <p class="text-ink-soft">Choose plated service, buffet, live stations or grazing tables. Every menu is tasted with you before it is signed off, with vegetarian, vegan and halal options across the board.</p>
-      <ul class="list-check d-grid gap-2">
-        <li>Complimentary tasting for bookings over 100 guests</li>
-        <li>Executive chef and service captain assigned per event</li>
-<li>Dietary matrix for every guest RSVP</li>
-        <li>Bar packages with licensed staff</li></ul>
-      <a class="btn btn-forest mt-3" href="/prototype/packages.html">See package menus</a></div>
-    <div class="col-lg-6"><img class="img-fluid rounded-4" src="/prototype/assets/img/catering.jpg" alt="Canapés" loading="lazy"></div>
+
+</section>
+
+
+<!-- =====================================================
+     SERVICE DETAILS POPUP
+     ===================================================== -->
+
+<div
+  class="modal fade"
+  id="serviceDetailsModal"
+  tabindex="-1"
+  aria-hidden="true"
+>
+
+  <div class="modal-dialog modal-dialog-centered">
+
+    <div class="modal-content service-popup">
+
+
+      <div class="modal-header border-0">
+
+        <div>
+
+          <span
+            class="eyebrow"
+            id="servicePopupCategory"
+          >
+            Service Details
+          </span>
+
+          <h3
+            class="modal-title mt-1"
+            id="servicePopupTitle"
+          >
+            Service
+          </h3>
+
+        </div>
+
+
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        >
+        </button>
+
+      </div>
+
+
+      <div class="modal-body pt-0">
+
+        <p
+          class="text-ink-soft"
+          id="servicePopupDescription"
+        >
+        </p>
+
+
+        <h6 class="mt-4 mb-3">
+          What's Included
+        </h6>
+
+
+        <ul
+          class="list-check d-grid gap-2"
+          id="servicePopupIncludes"
+        >
+        </ul>
+
+      </div>
+
+
+      <div class="modal-footer border-0">
+
+        <button
+          type="button"
+          class="btn btn-outline-forest"
+          data-bs-dismiss="modal"
+        >
+          Close
+        </button>
+
+      </div>
+
+
+    </div>
+
   </div>
-</div></section>
+
+</div>
+
+
+<!-- =====================================================
+     ORIGINAL CATERING SECTION
+     UNCHANGED
+     ===================================================== -->
+
+<section class="section bg-cream">
+
+  <div class="container">
+
+    <div class="row g-5 align-items-center">
+
+
+      <div class="col-lg-6">
+
+        <span class="eyebrow">
+          Catering
+        </span>
+
+
+        <h2 class="mt-2">
+          Menus built around your guests
+        </h2>
+
+
+        <hr class="rule">
+
+
+        <p class="text-ink-soft">
+          Choose plated service, buffet,
+          live stations or grazing tables.
+          Every menu is tasted with you before it
+          is signed off, with vegetarian,
+          vegan and halal options across the board.
+        </p>
+
+
+        <ul class="list-check d-grid gap-2">
+
+          <li>
+            Complimentary tasting for bookings
+            over 100 guests
+          </li>
+
+          <li>
+            Executive chef and service captain
+            assigned per event
+          </li>
+
+          <li>
+            Dietary matrix for every guest RSVP
+          </li>
+
+          <li>
+            Bar packages with licensed staff
+          </li>
+
+        </ul>
+
+
+        <a
+          class="btn btn-forest mt-3"
+          href="/prototype/packages.html"
+        >
+          See package menus
+        </a>
+
+      </div>
+
+
+      <div class="col-lg-6">
+
+        <img
+          class="img-fluid rounded-4"
+          src="/prototype/assets/img/catering.jpg"
+          alt="Canapés"
+          loading="lazy"
+        >
+
+      </div>
+
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =====================================================
+     FOOTER
+     UNCHANGED
+     ===================================================== -->
 
 <footer class="bb-footer">
+
   <div class="container">
+
     <div class="row g-4">
+
+
       <div class="col-lg-4">
-        <a class="navbar-brand d-block h4 mb-2" href="/prototype/index.html">Bliss &amp; Beyond</a>
-        <p class="small mb-3">AI-powered event planning and catering management for weddings, celebrations and corporate gatherings since 2014.</p>
+
+        <a
+          class="navbar-brand d-block h4 mb-2"
+          href="/prototype/index.html"
+        >
+          Bliss &amp; Beyond
+        </a>
+
+
+        <p class="small mb-3">
+          AI-powered event planning and catering
+          management for weddings, celebrations
+          and corporate gatherings since 2014.
+        </p>
+
+
         <div class="d-flex gap-3 fs-5">
-          <a href="#"><i class="bi bi-instagram"></i></a><a href="#"><i class="bi bi-facebook"></i></a>
-          <a href="#"><i class="bi bi-pinterest"></i></a><a href="#"><i class="bi bi-linkedin"></i></a>
+
+          <a href="#">
+            <i class="bi bi-instagram"></i>
+          </a>
+
+          <a href="#">
+            <i class="bi bi-facebook"></i>
+          </a>
+
+          <a href="#">
+            <i class="bi bi-pinterest"></i>
+          </a>
+
+          <a href="#">
+            <i class="bi bi-linkedin"></i>
+          </a>
+
         </div>
+
       </div>
-      <div class="col-6 col-lg-2"><h5 class="h6 mb-3">Explore</h5>
+
+
+      <div class="col-6 col-lg-2">
+
+        <h5 class="h6 mb-3">
+          Explore
+        </h5>
+
+
         <ul class="list-unstyled d-grid gap-2">
-          <li><a href="/prototype/about.html">About Us</a></li><li><a href="/prototype/services.html">Services</a></li>
-          <li><a href="/prototype/packages.html">Packages</a></li><li><a href="/prototype/venues.html">Venues</a></li>
-          <li><a href="/prototype/gallery.html">Gallery</a></li></ul></div>
-      <div class="col-6 col-lg-2"><h5 class="h6 mb-3">Account</h5>
+
+          <li>
+            <a href="/prototype/about.html">
+              About Us
+            </a>
+          </li>
+
+          <li>
+            <a href="/prototype/services.html">
+              Services
+            </a>
+          </li>
+
+          <li>
+            <a href="/prototype/packages.html">
+              Packages
+            </a>
+          </li>
+
+          <li>
+            <a href="/prototype/venues.html">
+              Venues
+            </a>
+          </li>
+
+          <li>
+            <a href="/prototype/gallery.html">
+              Gallery
+            </a>
+          </li>
+
+        </ul>
+
+      </div>
+
+
+      <div class="col-6 col-lg-2">
+
+        <h5 class="h6 mb-3">
+          Account
+        </h5>
+
+
         <ul class="list-unstyled d-grid gap-2">
-          <li><a href="/prototype/login.html">Login</a></li><li><a href="/prototype/register.html">Register</a></li>
-          <li><a href="/prototype/customer/dashboard.html">Customer Portal</a></li>
-          <li><a href="/prototype/admin/dashboard.html">Admin Panel</a></li>
-          <li><a href="/prototype/faq.html">FAQ</a></li></ul></div>
-      <div class="col-lg-4"><h5 class="h6 mb-3">Stay in touch</h5>
-        <p class="small mb-2">18 Rosewood Avenue, Colombo 05 · +94 11 234 5678 · hello@blissandbeyond.com</p>
-        <form class="d-flex gap-2" data-demo="note">
-          <input class="form-control form-control-sm" type="email" placeholder="Email address" required>
-          <button class="btn btn-gold btn-sm" type="submit">Subscribe</button>
-          <span class="d-none" data-demo-note></span>
+
+          <li>
+            <a href="/prototype/login.html">
+              Login
+            </a>
+          </li>
+
+          <li>
+            <a href="/prototype/register.html">
+              Register
+            </a>
+          </li>
+
+          <li>
+            <a href="/prototype/customer/dashboard.html">
+              Customer Portal
+            </a>
+          </li>
+
+          <li>
+            <a href="/prototype/admin/dashboard.html">
+              Admin Panel
+            </a>
+          </li>
+
+          <li>
+            <a href="/prototype/faq.html">
+              FAQ
+            </a>
+          </li>
+
+        </ul>
+
+      </div>
+
+
+      <div class="col-lg-4">
+
+        <h5 class="h6 mb-3">
+          Stay in touch
+        </h5>
+
+
+        <p class="small mb-2">
+          18 Rosewood Avenue, Colombo 05 ·
+          +94 11 234 5678 ·
+          hello@blissandbeyond.com
+        </p>
+
+
+        <form
+          class="d-flex gap-2"
+          data-demo="note"
+        >
+
+          <input
+            class="form-control form-control-sm"
+            type="email"
+            placeholder="Email address"
+            required
+          >
+
+
+          <button
+            class="btn btn-gold btn-sm"
+            type="submit"
+          >
+            Subscribe
+          </button>
+
+
+          <span
+            class="d-none"
+            data-demo-note
+          >
+          </span>
+
         </form>
-        <p class="small mt-2 mb-0 text-white-50">Prototype only — no data is stored.</p>
+
+
+        <p class="small mt-2 mb-0 text-white-50">
+          Prototype only — no data is stored.
+        </p>
+
       </div>
+
+
     </div>
-    <div class="foot-bottom d-flex flex-wrap justify-content-between gap-2">
-      <span>&copy; 2026 Bliss &amp; Beyond. Frontend prototype.</span>
-      <span>Privacy Policy · Terms of Service</span>
+
+
+    <div
+      class="foot-bottom d-flex flex-wrap justify-content-between gap-2"
+    >
+
+      <span>
+        &copy; 2026 Bliss &amp; Beyond.
+        Frontend prototype.
+      </span>
+
+      <span>
+        Privacy Policy · Terms of Service
+      </span>
+
     </div>
+
+
   </div>
+
 </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="/prototype/assets/js/main.js"></script>
+
+<!-- =====================================================
+     SCRIPTS
+     ===================================================== -->
+
+<script
+  src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+</script>
+
+<script
+  src="/prototype/assets/js/main.js">
+</script>
+
+
+<script>
+
+document.addEventListener(
+  'DOMContentLoaded',
+  function () {
+
+    const serviceDetails = {
+
+
+      /* =============================
+         CATERING
+         ============================= */
+
+      catering: {
+
+        category:
+          'Core Service',
+
+        title:
+          'Catering',
+
+        description:
+          'Create a dining experience designed around your event, guest count and preferred service style.',
+
+        includes: [
+
+          'Buffet dining',
+
+          'Plated dinner service',
+
+          'Cocktail and finger food',
+
+          'Live cooking stations',
+
+          'Beverage and dessert add-ons',
+
+          'Dietary requirement options'
+
+        ]
+
+      },
+
+
+      /* =============================
+         DECORATION
+         ============================= */
+
+      decoration: {
+
+        category:
+          'Styling',
+
+        title:
+          'Decoration & Styling',
+
+        description:
+          'Transform your venue with coordinated themes, decorative elements and event styling.',
+
+        includes: [
+
+          'Event themes',
+
+          'Stage decoration',
+
+          'Backdrop styling',
+
+          'Entrance decoration',
+
+          'Guest table styling',
+
+          'Decorative add-ons'
+
+        ]
+
+      },
+
+
+      /* =============================
+         PHOTOGRAPHY
+         ============================= */
+
+      photography: {
+
+        category:
+          'Media',
+
+        title:
+          'Photography & Videography',
+
+        description:
+          'Capture important moments of your celebration through professional photography and video coverage.',
+
+        includes: [
+
+          'Event photography',
+
+          'Portrait photography',
+
+          'Candid photography',
+
+          'Full event videography',
+
+          'Highlight videos',
+
+          'Drone coverage'
+
+        ]
+
+      },
+
+
+      /* =============================
+         ENTERTAINMENT
+         ============================= */
+
+      entertainment: {
+
+        category:
+          'Atmosphere',
+
+        title:
+          'Entertainment',
+
+        description:
+          'Create the right atmosphere with performers and entertainment selected for your celebration.',
+
+        includes: [
+
+          'DJ services',
+
+          'Live bands',
+
+          'Acoustic singers',
+
+          'MC / host',
+
+          'Dance performances',
+
+          'Traditional performances'
+
+        ]
+
+      },
+
+
+      /* =============================
+         LIGHTING
+         ============================= */
+
+      lighting: {
+
+        category:
+          'Technical',
+
+        title:
+          'Lighting & AV',
+
+        description:
+          'Professional sound, lighting and visual equipment to support ceremonies, receptions and performances.',
+
+        includes: [
+
+          'Sound systems',
+
+          'Event lighting',
+
+          'Microphones',
+
+          'Projectors and screens',
+
+          'Stage equipment',
+
+          'Technical support'
+
+        ]
+
+      },
+
+
+      /* =============================
+         CAKE
+         ============================= */
+
+      cake: {
+
+        category:
+          'Dessert',
+
+        title:
+          'Cake & Desserts',
+
+        description:
+          'Choose cakes and dessert options that complement your event style and guest experience.',
+
+        includes: [
+
+          'Event cakes',
+
+          'Dessert bars',
+
+          'Cupcakes',
+
+          'Mini desserts',
+
+          'Cake presentation',
+
+          'Dessert displays'
+
+        ]
+
+      },
+
+
+      /* =============================
+         FLORAL
+         ============================= */
+
+      floral: {
+
+        category:
+          'Floral Design',
+
+        title:
+          'Floral Design',
+
+        description:
+          'Complete floral styling for ceremonies, receptions and venue spaces.',
+
+        includes: [
+
+          'Bouquets',
+
+          'Floral arches',
+
+          'Centerpieces',
+
+          'Entrance florals',
+
+          'Stage florals',
+
+          'Table arrangements'
+
+        ]
+
+      }
+
+    };
+
+
+    const modalElement =
+      document.getElementById(
+        'serviceDetailsModal'
+      );
+
+
+    const modal =
+      new bootstrap.Modal(
+        modalElement
+      );
+
+
+    const title =
+      document.getElementById(
+        'servicePopupTitle'
+      );
+
+
+    const category =
+      document.getElementById(
+        'servicePopupCategory'
+      );
+
+
+    const description =
+      document.getElementById(
+        'servicePopupDescription'
+      );
+
+
+    const includes =
+      document.getElementById(
+        'servicePopupIncludes'
+      );
+
+
+    document
+      .querySelectorAll(
+        '[data-service-popup]'
+      )
+      .forEach(
+        function (button) {
+
+          button.addEventListener(
+            'click',
+            function () {
+
+              const key =
+                this.dataset
+                  .servicePopup;
+
+
+              const service =
+                serviceDetails[key];
+
+
+              if (!service) {
+                return;
+              }
+
+
+              category.textContent =
+                service.category;
+
+
+              title.textContent =
+                service.title;
+
+
+              description.textContent =
+                service.description;
+
+
+              includes.innerHTML =
+                service.includes
+                  .map(
+                    function (item) {
+
+                      return `
+                        <li>
+                          ${item}
+                        </li>
+                      `;
+
+                    }
+                  )
+                  .join('');
+
+
+              modal.show();
+
+            }
+          );
+
+        }
+      );
+
+  }
+);
+
+</script>
+
 
 </body>
+
 </html>

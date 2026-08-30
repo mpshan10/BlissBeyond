@@ -1085,7 +1085,9 @@ document.addEventListener("DOMContentLoaded", async function () {
       const price = Number.isFinite(numericPrice) && numericPrice > 0
         ? `Estimated from MMK ${numericPrice.toLocaleString()}`
         : "Price on request";
-      const image = venue.image || "/prototype/assets/img/venue-1.jpg";
+      const image = venue.image && venue.image.startsWith("/uploads/")
+        ? window.bbApiUrl(venue.image)
+        : (venue.image || "/prototype/assets/img/venue-1.jpg");
       return `<div class="col-md-6 col-lg-4 venue-item" data-tags="${escapeVenueHtml(tag)}" data-venue-id="${escapeVenueHtml(venue.id)}" data-city="${escapeVenueHtml(region)}" data-order="${index}" data-searchable data-venue-price="${Number.isFinite(numericPrice) && numericPrice > 0 ? numericPrice : ""}">
         <article class="bb-card reveal h-100" data-venue-card data-venue-id="${escapeVenueHtml(venue.id)}" data-venue-name="${escapeVenueHtml(venue.name)}" data-venue-type="${escapeVenueHtml(venue.type)}" data-venue-location="${escapeVenueHtml(venue.location)}" data-venue-capacity="${venue.capacity ?? ""}" data-venue-price="${Number.isFinite(numericPrice) && numericPrice > 0 ? numericPrice : ""}">
           <div class="bb-card__media" style="background-image:url('${escapeVenueHtml(image)}')"></div>

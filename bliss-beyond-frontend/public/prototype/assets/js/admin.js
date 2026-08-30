@@ -49,6 +49,12 @@
     pendingConsultationAction: null
     ,notifications: []
   };
+  let pendingVenueEditPhoto = null;
+  let pendingVenueAddPhoto = null;
+  let currentVenueEditImage = null;
+  let pendingPackagePhoto = null;
+  let currentPackageImage = null;
+  let packagePhotoPreviewUrl = null;
 
   function currentLocalPath() {
     return `${window.location.pathname}${window.location.search}${window.location.hash}`;
@@ -1387,8 +1393,9 @@
           || (state.venueAvailability === 'DISABLED' && !venue.available));
     });
     rows.innerHTML = filtered.length ? filtered.map((venue) => {
-      const image = venue.image
-        ? `<img src="${escapeHtml(venue.image)}" alt="" data-venue-image><span class="venue-admin-thumb-placeholder d-none"><i class="bi bi-building"></i></span>`
+      const imageUrl = venue.image && String(venue.image).startsWith('/uploads/') ? window.bbApiUrl(venue.image) : venue.image;
+      const image = imageUrl
+        ? `<img src="${escapeHtml(imageUrl)}" alt="" data-venue-image><span class="venue-admin-thumb-placeholder d-none"><i class="bi bi-building"></i></span>`
         : '<span class="venue-admin-thumb-placeholder"><i class="bi bi-building"></i></span>';
       const capacity = venue.capacity == null ? 'Not specified' : `${Number(venue.capacity).toLocaleString()} guests`;
       return `<tr>
@@ -1420,8 +1427,8 @@
     }
   }
 
-  function updateVenuePreview(path) {
-    const image = document.querySelector('[data-admin-venue-preview]');
+  function updateVenuePreview(path, selector = '[data-admin-venue-preview]') {
+    const image = document.querySelector(selector);
     const placeholder = image?.nextElementSibling;
     if (!image || !placeholder) return;
     const value = String(path || '').trim();
@@ -1433,7 +1440,35 @@
     }
     image.onload = () => { image.classList.remove('d-none'); placeholder.classList.add('d-none'); };
     image.onerror = () => { image.classList.add('d-none'); placeholder.classList.remove('d-none'); };
-    image.src = value;
+    image.src = value.startsWith('/uploads/') ? window.bbApiUrl(value) : value;
+  }
+
+  function validateVenuePhoto(file) {
+    if (!file) return 'Please choose an image.';
+    if (file.size === 0) return 'The selected image is empty.';
+    if (file.size > 5 * 1024 * 1024) return 'Venue image must be 5 MB or smaller.';
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type.toLowerCase())) {
+      return 'Venue image must be a JPG, PNG, or WebP image.';
+    }
+    return '';
+  }
+
+  function previewVenuePhoto(file, selector) {
+    const validationMessage = validateVenuePhoto(file);
+    if (validationMessage) {
+      updateVenuePreview('', selector);
+      setVenueMessage(validationMessage);
+      return false;
+    }
+    const previewUrl = URL.createObjectURL(file);
+    const image = document.querySelector(selector);
+    if (image) {
+      image.onload = () => URL.revokeObjectURL(previewUrl);
+      image.src = previewUrl;
+      image.classList.remove('d-none');
+      image.nextElementSibling?.classList.add('d-none');
+    }
+    return true;
   }
 
   function openVenueEditor(id) {
@@ -1446,7 +1481,10 @@
     document.querySelector('[data-admin-venue-edit-description]').value = venue.description || '';
     document.querySelector('[data-admin-venue-edit-capacity]').value = venue.capacity ?? '';
     document.querySelector('[data-admin-venue-edit-price]').value = venue.price ?? '';
-    document.querySelector('[data-admin-venue-edit-image]').value = venue.image || '';
+    pendingVenueEditPhoto = null;
+    currentVenueEditImage = venue.image || null;
+    const photoInput = document.querySelector('[data-admin-venue-edit-photo]');
+    if (photoInput) photoInput.value = '';
     document.querySelector('[data-admin-venue-edit-website]').value = venue.websiteUrl || '';
     document.querySelector('[data-admin-venue-edit-available]').value = String(Boolean(venue.available));
     updateVenuePreview(venue.image);
@@ -1477,11 +1515,18 @@
           description: document.querySelector('[data-admin-venue-edit-description]').value.trim(),
           capacity: optionalVenueNumber('[data-admin-venue-edit-capacity]'),
           price: optionalVenueNumber('[data-admin-venue-edit-price]'),
-          image: document.querySelector('[data-admin-venue-edit-image]').value.trim(),
+          image: currentVenueEditImage,
           websiteUrl: document.querySelector('[data-admin-venue-edit-website]').value.trim(),
           available: document.querySelector('[data-admin-venue-edit-available]').value === 'true'
         })
       });
+      if (pendingVenueEditPhoto) {
+        await adminFetch(`/api/admin/venues/${encodeURIComponent(id)}/photo`, {
+          method: 'POST',
+          body: (() => { const form = new FormData(); form.append('photo', pendingVenueEditPhoto); return form; })()
+        });
+      }
+      pendingVenueEditPhoto = null;
       window.bootstrap.Modal.getInstance(document.getElementById('venueEditModal'))?.hide();
       await loadAdminVenues();
       setVenueMessage('Venue updated successfully.', 'success');
@@ -1496,6 +1541,8 @@
   function openVenueCreator() {
     const form = document.querySelector('[data-admin-venue-add-form]');
     form?.reset();
+    pendingVenueAddPhoto = null;
+    updateVenuePreview('', '[data-admin-venue-add-preview]');
     document.querySelector('[data-admin-venue-add-available]').value = 'true';
     window.bootstrap.Modal.getOrCreateInstance(document.getElementById('venueAddModal')).show();
   }
@@ -1513,7 +1560,7 @@
     button.textContent = 'Adding...';
     setVenueMessage('');
     try {
-      await adminFetch('/api/admin/venues', {
+      const data = await adminFetch('/api/admin/venues', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -1523,11 +1570,18 @@
           description: document.querySelector('[data-admin-venue-add-description]').value.trim(),
           capacity: optionalVenueCreateNumber('[data-admin-venue-add-capacity]'),
           price: optionalVenueCreateNumber('[data-admin-venue-add-price]'),
-          image: document.querySelector('[data-admin-venue-add-image]').value.trim(),
+          image: null,
           websiteUrl: document.querySelector('[data-admin-venue-add-website]').value.trim(),
           available: document.querySelector('[data-admin-venue-add-available]').value === 'true'
         })
       });
+      if (pendingVenueAddPhoto && data?.id) {
+        await adminFetch(`/api/admin/venues/${encodeURIComponent(data.id)}/photo`, {
+          method: 'POST',
+          body: (() => { const form = new FormData(); form.append('photo', pendingVenueAddPhoto); return form; })()
+        });
+      }
+      pendingVenueAddPhoto = null;
       window.bootstrap.Modal.getInstance(document.getElementById('venueAddModal'))?.hide();
       await loadAdminVenues();
       setVenueMessage('Venue added successfully.', 'success');
@@ -1547,7 +1601,26 @@
     document.querySelector('[data-admin-venue-rows]')?.addEventListener('click', (event) => { const button = event.target.closest('[data-admin-venue-edit]'); if (button) openVenueEditor(button.dataset.adminVenueEdit); });
     document.querySelector('[data-admin-venue-add]')?.addEventListener('click', openVenueCreator);
     document.querySelector('[data-admin-venue-add-form]')?.addEventListener('submit', submitVenueCreate);
-    document.querySelector('[data-admin-venue-edit-image]')?.addEventListener('input', (event) => updateVenuePreview(event.target.value));
+    document.querySelector('[data-admin-venue-edit-photo]')?.addEventListener('change', (event) => {
+      const file = event.target.files?.[0] || null;
+      if (previewVenuePhoto(file, '[data-admin-venue-preview]')) {
+        pendingVenueEditPhoto = file;
+        setVenueMessage('');
+      } else {
+        pendingVenueEditPhoto = null;
+        event.target.value = '';
+      }
+    });
+    document.querySelector('[data-admin-venue-add-photo]')?.addEventListener('change', (event) => {
+      const file = event.target.files?.[0] || null;
+      if (previewVenuePhoto(file, '[data-admin-venue-add-preview]')) {
+        pendingVenueAddPhoto = file;
+        setVenueMessage('');
+      } else {
+        pendingVenueAddPhoto = null;
+        event.target.value = '';
+      }
+    });
     document.querySelector('[data-admin-venue-edit-form]')?.addEventListener('submit', submitVenueEdit);
     loadAdminVenues();
   }
@@ -1568,6 +1641,41 @@
     element.classList.toggle('d-none', !message);
   }
 
+  function resolveAdminImage(value) {
+    const raw = String(value || '').trim();
+    return raw.startsWith('/uploads/') ? window.bbApiUrl(raw) : raw;
+  }
+
+  function updatePackagePreview(value) {
+    const image = document.querySelector('[data-admin-package-preview]');
+    const placeholder = image?.nextElementSibling;
+    if (!image || !placeholder) return;
+    if (packagePhotoPreviewUrl) {
+      URL.revokeObjectURL(packagePhotoPreviewUrl);
+      packagePhotoPreviewUrl = null;
+    }
+    let source = '';
+    if (value instanceof File) {
+      packagePhotoPreviewUrl = URL.createObjectURL(value);
+      source = packagePhotoPreviewUrl;
+    } else {
+      source = resolveAdminImage(value) || '/prototype/assets/img/hero.jpg';
+    }
+    image.onload = () => { image.classList.remove('d-none'); placeholder.classList.add('d-none'); };
+    image.onerror = () => { image.classList.add('d-none'); placeholder.classList.remove('d-none'); };
+    image.src = source;
+  }
+
+  function validatePackagePhoto(file) {
+    if (!file) return 'Please choose an image.';
+    if (file.size === 0) return 'The selected image is empty.';
+    if (file.size > 5 * 1024 * 1024) return 'Package image must be 5 MB or smaller.';
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type.toLowerCase())) {
+      return 'Package image must be a JPG, PNG, or WebP image.';
+    }
+    return '';
+  }
+
   function renderAdminPackages() {
     const rows = document.querySelector('[data-admin-package-rows]');
     if (!rows) return;
@@ -1586,7 +1694,8 @@
     }
     rows.innerHTML = filtered.map((eventPackage) => {
       const services = (eventPackage.services || []).map((service) => escapeHtml(service.serviceName)).join(', ') || 'No services';
-      return `<tr><td><strong>${escapeHtml(eventPackage.name)}</strong><br><span class="small text-ink-soft">${escapeHtml(eventPackage.description || '')}</span><br><span class="small text-ink-soft">${escapeHtml(eventPackage.slug || '')}</span></td><td>${escapeHtml(eventPackage.category || '-')}</td><td>${escapeHtml(eventPackage.venue?.name || 'Venue not set')}<br><span class="small text-ink-soft">${escapeHtml(eventPackage.venue?.location || '')}</span></td><td><strong class="text-gold">${escapeHtml(formatMoney(eventPackage.finalPrice))}</strong></td><td>${escapeHtml(eventPackage.maxGuests ?? '-')}</td><td class="small">${services}</td><td><span class="status ${eventPackage.active ? 'confirmed' : 'cancelled'}">${eventPackage.active ? 'Active' : 'Inactive'}</span></td><td><button class="btn btn-outline-forest btn-sm" type="button" data-admin-package-edit="${escapeHtml(eventPackage.id)}">Edit</button></td></tr>`;
+      const image = resolveAdminImage(eventPackage.image) || '/prototype/assets/img/hero.jpg';
+      return `<tr><td><div class="d-flex align-items-center gap-3"><img class="package-admin-thumb" src="${escapeHtml(image)}" alt="" onerror="this.src='/prototype/assets/img/hero.jpg'"><div><strong>${escapeHtml(eventPackage.name)}</strong><br><span class="small text-ink-soft">${escapeHtml(eventPackage.slug || '')}</span></div></div></td><td>${escapeHtml(eventPackage.category || '-')}</td><td>${escapeHtml(eventPackage.venue?.name || 'Venue not set')}<br><span class="small text-ink-soft">${escapeHtml(eventPackage.venue?.location || '')}</span></td><td><strong class="text-gold">${escapeHtml(formatMoney(eventPackage.finalPrice))}</strong></td><td>${escapeHtml(eventPackage.maxGuests ?? '-')}</td><td class="small">${services}</td><td><span class="status ${eventPackage.active ? 'confirmed' : 'cancelled'}">${eventPackage.active ? 'Active' : 'Inactive'}</span></td><td><button class="btn btn-outline-forest btn-sm" type="button" data-admin-package-edit="${escapeHtml(eventPackage.id)}">Edit</button></td></tr>`;
     }).join('');
   }
 
@@ -1617,7 +1726,11 @@
     document.querySelector('[data-admin-package-guests]').value = eventPackage.maxGuests ?? '';
     document.querySelector('[data-admin-package-active]').value = String(Boolean(eventPackage.active));
     document.querySelector('[data-admin-package-description]').value = eventPackage.description || '';
-    document.querySelector('[data-admin-package-image]').value = eventPackage.image || '';
+    pendingPackagePhoto = null;
+    currentPackageImage = eventPackage.image || null;
+    const photoInput = document.querySelector('[data-admin-package-photo]');
+    if (photoInput) photoInput.value = '';
+    updatePackagePreview(currentPackageImage);
     renderPackageServiceEditor(eventPackage.services || []);
     window.bootstrap.Modal.getOrCreateInstance(document.getElementById('pkgAdmin')).show();
   }
@@ -1689,7 +1802,11 @@
     document.querySelector('[data-admin-package-guests]').value = '';
     document.querySelector('[data-admin-package-active]').value = 'true';
     document.querySelector('[data-admin-package-description]').value = '';
-    document.querySelector('[data-admin-package-image]').value = '';
+    pendingPackagePhoto = null;
+    currentPackageImage = null;
+    const photoInput = document.querySelector('[data-admin-package-photo]');
+    if (photoInput) photoInput.value = '';
+    updatePackagePreview('');
     syncPackageVenueDetails();
     renderPackageServiceEditor(state.services);
     window.bootstrap.Modal.getOrCreateInstance(document.getElementById('pkgAdmin')).show();
@@ -1727,7 +1844,7 @@
       document.querySelectorAll('[data-admin-package-service-inclusions]').forEach((field) => {
         serviceInclusions[field.dataset.serviceName] = field.value.split(/\r?\n/);
       });
-      await adminFetch(creating ? '/api/admin/packages' : `/api/admin/packages/${encodeURIComponent(id)}`, {
+      const savedPackage = await adminFetch(creating ? '/api/admin/packages' : `/api/admin/packages/${encodeURIComponent(id)}`, {
         method: creating ? 'POST' : 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -1738,12 +1855,21 @@
           description: document.querySelector('[data-admin-package-description]').value.trim(),
           maxGuests: Number(document.querySelector('[data-admin-package-guests]').value),
           finalPrice: Number(document.querySelector('[data-admin-package-price]').value),
-          image: document.querySelector('[data-admin-package-image]').value.trim(),
+          image: currentPackageImage,
           active: document.querySelector('[data-admin-package-active]').value === 'true',
           websiteUrl: document.querySelector('[data-admin-package-venue-website]').value.trim(),
           serviceInclusions
         })
       });
+      if (pendingPackagePhoto) {
+        const packageId = creating ? savedPackage?.id : id;
+        if (!packageId) throw new Error('The package was saved but its image could not be uploaded.');
+        const uploaded = await adminFetch(`/api/admin/packages/${encodeURIComponent(packageId)}/photo`, {
+          method: 'POST',
+          body: (() => { const form = new FormData(); form.append('photo', pendingPackagePhoto); return form; })()
+        });
+        currentPackageImage = uploaded?.image || currentPackageImage;
+      }
       window.bootstrap.Modal.getInstance(document.getElementById('pkgAdmin'))?.hide();
       await loadAdminPackages();
       setPackageMessage(creating ? 'Package created successfully.' : 'Package updated successfully.', 'success');
@@ -1765,6 +1891,26 @@
       if (button) openPackageEditor(button.dataset.adminPackageEdit);
     });
     document.querySelector('[data-admin-package-form]')?.addEventListener('submit', submitPackageEdit);
+    document.querySelector('[data-admin-package-photo]')?.addEventListener('change', (event) => {
+      const file = event.target.files?.[0] || null;
+      const validationMessage = validatePackagePhoto(file);
+      if (validationMessage) {
+        pendingPackagePhoto = null;
+        event.target.value = '';
+        updatePackagePreview(currentPackageImage);
+        setPackageMessage(validationMessage);
+        return;
+      }
+      pendingPackagePhoto = file;
+      updatePackagePreview(file);
+      setPackageMessage('');
+    });
+    document.getElementById('pkgAdmin')?.addEventListener('hidden.bs.modal', () => {
+      pendingPackagePhoto = null;
+      currentPackageImage = null;
+      if (packagePhotoPreviewUrl) URL.revokeObjectURL(packagePhotoPreviewUrl);
+      packagePhotoPreviewUrl = null;
+    });
     document.querySelector('[data-admin-package-venue-name]')?.addEventListener('change', syncPackageVenueDetails);
     document.querySelector('[data-admin-package-guests]')?.addEventListener('input', syncPackageVenueDetails);
     Promise.all([loadAdminVenues(), loadAdminPackageEditorServices()])
