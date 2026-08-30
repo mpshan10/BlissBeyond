@@ -10,15 +10,19 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class CurrentUserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ProfilePhotoStorageService profilePhotoStorageService;
 
-    public CurrentUserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public CurrentUserService(UserRepository userRepository, PasswordEncoder passwordEncoder,
+                              ProfilePhotoStorageService profilePhotoStorageService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.profilePhotoStorageService = profilePhotoStorageService;
     }
 
     public User requireCurrentUser() {
@@ -40,7 +44,24 @@ public class CurrentUserService {
     }
 
     @Transactional
+    public User updateProfilePhoto(MultipartFile photo) {
+        User user = requireCurrentUser();
+        String previousUrl = user.getProfileImageUrl();
+        ProfilePhotoStorageService.StoredPhoto stored = profilePhotoStorageService.store(user, photo);
+        try {
+            user.setProfileImageUrl(stored.publicUrl());
+            User saved = userRepository.save(user);
+            profilePhotoStorageService.deleteManagedPhoto(previousUrl);
+            return saved;
+        } catch (RuntimeException ex) {
+            profilePhotoStorageService.deleteManagedPhoto(stored.publicUrl());
+            throw ex;
+        }
+    }
+
+    @Transactional
     public void changePassword(CustomerPasswordChangeRequest request) {
+        PasswordPolicy.validate(request.newPassword());
         User user = requireCurrentUser();
         if (!passwordEncoder.matches(request.currentPassword(), user.getPassword())) {
             throw new IllegalArgumentException("Current password is incorrect.");
@@ -50,5 +71,15 @@ public class CurrentUserService {
         }
         user.setPasswordHash(passwordEncoder.encode(request.newPassword()));
         userRepository.save(user);
+        incrementSecurityVersion(user);
+    }
+
+    private void incrementSecurityVersion(User user) {
+        if (user.getSecurityVersion() == Long.MAX_VALUE) {
+            throw new IllegalStateException("Security version limit reached.");
+        }
+        if (userRepository.incrementSecurityVersion(user.getId()) != 1) {
+            throw new IllegalStateException("Unable to update account security state.");
+        }
     }
 }

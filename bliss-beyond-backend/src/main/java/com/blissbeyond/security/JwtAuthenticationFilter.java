@@ -1,5 +1,6 @@
 package com.blissbeyond.security;
 
+import com.blissbeyond.entity.User;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -81,9 +82,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             UserDetails userDetails =
                     userDetailsService.loadUserByUsername(username);
 
-            if (userDetails.isEnabled() && jwtService.isTokenValid(
-                    jwt,
-                    userDetails.getUsername())) {
+            if (userDetails instanceof User user
+                && userDetails.isEnabled()
+                && jwtService.isTokenValid(jwt, userDetails.getUsername(), user.getSecurityVersion())) {
 
                 UsernamePasswordAuthenticationToken authToken =
                         new UsernamePasswordAuthenticationToken(

@@ -57,30 +57,7 @@ public class DataSeeder {
 
             // Keep the development admin usable when a prior local row already exists.
             // Production keeps its independently managed admin credentials untouched.
-            if (!environment.acceptsProfiles(org.springframework.core.env.Profiles.of("production"))) {
-                String adminEmail = environment.getProperty(
-                    "APP_DEV_ADMIN_EMAIL",
-                    "admin@bliss.test"
-                ).trim().toLowerCase();
-                String adminPassword = environment.getProperty(
-                    "APP_DEV_ADMIN_PASSWORD",
-                    "blissadmin"
-                );
-
-                Role adminRole = roleRepository.findByName(RoleName.ROLE_ADMIN)
-                    .orElseGet(() -> roleRepository.save(new Role(RoleName.ROLE_ADMIN)));
-
-                User admin = userRepository.findByEmail(adminEmail)
-                    .orElseGet(User::new);
-                admin.setFirstName("Bliss");
-                admin.setLastName("Admin");
-                admin.setEmail(adminEmail);
-                admin.setPhone("+95 9 000 0000");
-                admin.setPasswordHash(passwordEncoder.encode(adminPassword));
-                admin.setEnabled(true);
-                admin.addRole(adminRole);
-                userRepository.save(admin);
-            }
+            seedDevelopmentAdmin(userRepository, roleRepository, passwordEncoder, environment);
 
             if (bookingRepository.count() == 0) {
 
@@ -530,6 +507,50 @@ public class DataSeeder {
             seedAddOns(addOnRepository);
             seedDiningStyles(diningStyleRepository);
         };
+    }
+
+    private void seedDevelopmentAdmin(
+        UserRepository userRepository,
+        RoleRepository roleRepository,
+        PasswordEncoder passwordEncoder,
+        Environment environment
+    ) {
+        if (environment.acceptsProfiles(org.springframework.core.env.Profiles.of("production"))) {
+            return;
+        }
+
+        String adminEmail = environment.getProperty(
+            "app.admin.email", "blissbeyond01@gmail.com"
+        ).trim().toLowerCase();
+        String adminPassword = environment.getProperty("APP_DEV_ADMIN_PASSWORD");
+        User configuredAdmin = userRepository.findByEmail(adminEmail).orElse(null);
+        boolean anyAdminExists = userRepository.findAll().stream()
+            .anyMatch(user -> user.getRoles().stream().anyMatch(role -> role.getName() == RoleName.ROLE_ADMIN));
+
+        if (configuredAdmin != null && configuredAdmin.getRoles().stream()
+            .anyMatch(role -> role.getName() == RoleName.ROLE_ADMIN)) {
+            return;
+        }
+        if (anyAdminExists) {
+            System.out.println("Skipping development Admin seeding because an existing Admin account is present.");
+            return;
+        }
+        if (adminPassword == null || adminPassword.isBlank()) {
+            System.out.println("Skipping development Admin seeding because APP_DEV_ADMIN_PASSWORD is not configured.");
+            return;
+        }
+
+        Role adminRole = roleRepository.findByName(RoleName.ROLE_ADMIN)
+            .orElseGet(() -> roleRepository.save(new Role(RoleName.ROLE_ADMIN)));
+        User admin = configuredAdmin == null ? new User() : configuredAdmin;
+        admin.setFirstName("Bliss");
+        admin.setLastName("Admin");
+        admin.setEmail(adminEmail);
+        admin.setPhone("+95 9 000 0000");
+        admin.setPasswordHash(passwordEncoder.encode(adminPassword));
+        admin.setEnabled(true);
+        admin.addRole(adminRole);
+        userRepository.save(admin);
     }
 
     // =========================================================

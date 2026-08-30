@@ -1412,7 +1412,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const packageAvailable = availabilityChecked
       ? availableVenueIds.has(String(item.venue?.id)) && Number(guestsInput.value) <= Number(item.maxGuests)
       : false;
-    window.bbSetPackagePlan({ packageId:item.id, packageSlug:item.slug, packageName:item.name, venueId:item.venue?.id, venueName:item.venue?.name, maxGuests:item.maxGuests, packageAvailable, available:packageAvailable });
+    const image = card.querySelector('.bb-card__media')?.style.backgroundImage.match(/url\(["']?([^"')]+)["']?\)/i)?.[1] || '';
+    window.bbSetPackagePlan({ packageId:item.id, packageSlug:item.slug, packageName:item.name, venueId:item.venue?.id, venueName:item.venue?.name, packageImage:image, maxGuests:item.maxGuests, packageAvailable, available:packageAvailable });
   };
   const renderStatuses = () => {
     clearAvailabilityVisibility();

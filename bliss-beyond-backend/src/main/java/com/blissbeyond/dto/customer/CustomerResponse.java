@@ -9,6 +9,7 @@ public record CustomerResponse(
     String email,
     String phone,
     String address,
+    String profileImageUrl,
     List<String> roles
 ) {
 }

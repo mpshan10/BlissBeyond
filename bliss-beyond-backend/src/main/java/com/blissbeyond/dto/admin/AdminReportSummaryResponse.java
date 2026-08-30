@@ -14,6 +14,7 @@ public record AdminReportSummaryResponse(
     List<NamedCount> eventCategories,
     List<NamedCount> topVenues,
     List<NamedCount> topPackages,
+    FinancialSummary financial,
     BigDecimal totalPaidRevenue,
     String revenueNote,
     String from,
@@ -61,6 +62,16 @@ public record AdminReportSummaryResponse(
         long paid,
         long failed,
         long refunded
+    ) {}
+
+    public record FinancialSummary(
+        BigDecimal paidRevenue,
+        BigDecimal depositPaid,
+        BigDecimal balancePaid,
+        BigDecimal outstandingAmount,
+        BigDecimal refundedAmount,
+        BigDecimal packagePaid,
+        BigDecimal customizePaid
     ) {}
 
     public record MonthlyBookingCount(String month, long bookings) {}

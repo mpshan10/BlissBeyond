@@ -26,7 +26,7 @@ public class JwtService {
 
     public JwtService(@Value("${app.security.jwt-secret}") String secret,
                       @Value("${app.security.jwt-expiration-minutes}") long expirationMinutes) {
-        this.secret = secret;
+        this.secret = validateSecret(secret);
         this.expirationMinutes = expirationMinutes;
     }
 
@@ -47,7 +47,20 @@ public class JwtService {
     }
 
     public boolean isTokenValid(String token, String username) {
-        return username.equals(extractUsername(token)) && !isTokenExpired(token);
+        return isTokenValid(token, username, null);
+    }
+
+    public boolean isTokenValid(String token, String username, Long currentSecurityVersion) {
+        try {
+            Object tokenVersion = extractClaim(token, claims -> claims.get("securityVersion"));
+            if (!(tokenVersion instanceof Number) || currentSecurityVersion == null
+                || ((Number) tokenVersion).longValue() != currentSecurityVersion) {
+                return false;
+            }
+            return username.equals(extractUsername(token)) && !isTokenExpired(token);
+        } catch (RuntimeException ex) {
+            return false;
+        }
     }
 
     public boolean isTokenExpired(String token) {
@@ -69,8 +82,24 @@ public class JwtService {
             byte[] keyBytes = digest.digest(secret.getBytes(StandardCharsets.UTF_8));
             return Keys.hmacShaKeyFor(keyBytes);
         } catch (NoSuchAlgorithmException ex) {
-            byte[] fallback = secret.getBytes(StandardCharsets.UTF_8);
-            return Keys.hmacShaKeyFor(fallback.length >= 32 ? fallback : (secret + secret + secret + secret).getBytes(StandardCharsets.UTF_8));
+            throw new IllegalStateException("Unable to initialize JWT signing key", ex);
         }
+    }
+
+    private String validateSecret(String value) {
+        String candidate = value == null ? "" : value.trim();
+        String normalized = candidate.toLowerCase();
+        if (candidate.length() < 32
+            || normalized.isBlank()
+            || normalized.contains("change-me")
+            || normalized.contains("changeme")
+            || normalized.contains("default")
+            || normalized.contains("placeholder")
+            || normalized.contains("password")) {
+            throw new IllegalStateException(
+                "JWT_SECRET must be configured with a strong, non-placeholder value of at least 32 characters."
+            );
+        }
+        return candidate;
     }
 }

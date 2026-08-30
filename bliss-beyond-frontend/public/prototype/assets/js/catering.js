@@ -709,10 +709,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const loadCatalogAvailability = async () => {
     try {
-      const response = await fetch(window.bbApiUrl('/api/services/1'), { cache: 'no-store' });
+      const response = await fetch(window.bbApiUrl('/api/services/key/catering'), { cache: 'no-store' });
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const service = await response.json();
-      const valid = Number(service?.id) === 1 && String(service?.name || '').toLowerCase() === 'catering';
+      const valid = String(service?.name || '').toLowerCase() === 'catering';
       if (!valid) throw new Error('Invalid catering catalog response');
 
       catalogAvailability = service?.available ? 'available' : 'unavailable';

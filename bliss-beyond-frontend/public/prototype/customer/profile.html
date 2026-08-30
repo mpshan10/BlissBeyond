@@ -30,13 +30,18 @@
 </nav>
 <div class="bb-shell"><aside class="bb-side"><h6>Overview</h6><a class="" href="/prototype/customer/dashboard.html">Dashboard</a><a class="active" href="/prototype/customer/profile.html">My Profile</a><h6>Plan your event</h6><a class="" href="/prototype/customer/browse-packages.html">Browse Packages</a><a class="" href="/prototype/customer/venue-selection.html">Venue Selection</a><a class="" href="/prototype/customer/ai-recommendation.html">AI Recommendation</a><a class="" href="/prototype/customer/booking.html">New Booking</a><h6>My bookings</h6><a class="" href="/prototype/customer/consultation.html">Consultation</a><a class="" href="/prototype/customer/booking-history.html">Booking History</a><a class="" href="/prototype/customer/quotation.html">Quotations</a><h6>Account</h6><a href="/prototype/login.html">Sign out</a></aside><main class="bb-main"><div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
       <div><span class="eyebrow">Customer portal</span><h1 class="h2 mt-1 mb-1">My Profile</h1>
-      <p class="small text-ink-soft mb-0">Keep your contact and event preferences up to date.</p></div><div class="d-flex gap-2"></div></div>
+      <p class="small text-ink-soft mb-0">Keep your contact details up to date.</p></div><div class="d-flex gap-2"></div></div>
 <div class="row g-4">
   <div class="col-lg-4"><div class="panel text-center"><div class="panel__body">
-    <div class="feature-icon mx-auto mb-3" style="width:88px;height:88px;font-size:2rem"><i class="bi bi-person"></i></div>
+    <div class="feature-icon mx-auto mb-3 profile-avatar" style="width:88px;height:88px;font-size:2rem" data-profile-avatar><i class="bi bi-person"></i></div>
     <h4 class="mb-0" data-profile-name>Loading profile...</h4>
-    <button class="btn btn-outline-forest btn-sm mt-3" type="button" data-profile-photo>Change photo</button>
+    <button class="btn btn-outline-forest btn-sm mt-3 mb-2" type="button" data-profile-photo>Change photo</button>
+    <input class="d-none" type="file" accept="image/jpeg,image/png,image/webp" data-profile-photo-input>
     <div class="small text-ink-soft mt-2 d-none" data-profile-photo-status role="status"></div>
+    <div class="d-flex justify-content-center gap-2 mt-2 d-none" data-profile-photo-actions>
+      <button class="btn btn-gold btn-sm" type="button" data-profile-photo-upload>Upload photo</button>
+      <button class="btn btn-link btn-sm" type="button" data-profile-photo-cancel>Cancel</button>
+    </div>
     <hr><div class="text-start small text-ink-soft d-grid gap-2">
       <div class="d-flex justify-content-between" data-profile-bookings-row><span>Bookings</span><strong data-profile-bookings-count>—</strong></div>
       <div class="d-flex justify-content-between" data-profile-quotations-row><span>Quotations</span><strong data-profile-quotations-count>—</strong></div>
@@ -44,7 +49,6 @@
   <div class="col-lg-8"><div class="panel"><div class="panel__head"><h5 class="mb-0">Account details</h5></div><div class="panel__body">
     <ul class="nav nav-pills gap-2 mb-4">
       <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#tabDetails">Details</a></li>
-      <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tabPrefs">Preferences</a></li>
       <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tabSec">Security</a></li>
     </ul>
     <div class="tab-content">
@@ -57,13 +61,6 @@
         <div class="col-12"><button class="btn btn-gold" type="submit">Save changes</button></div>
         <div class="col-12 alert d-none" data-profile-status role="alert" aria-live="polite"></div>
       </form></div>
-      <div class="tab-pane fade" id="tabPrefs"><form class="row g-3" data-demo="note">
-        <div class="col-md-6"><label class="form-label">Preferred event type</label><select class="form-select"><option>Wedding</option><option>Corporate</option></select></div>
-        <div class="col-md-6"><label class="form-label">Dietary preference</label><select class="form-select"><option>No restriction</option><option>Vegetarian</option><option>Halal</option><option>Vegan</option></select></div>
-        <div class="col-12"><label class="form-label">Style notes</label><textarea class="form-control" rows="3">Classic, candlelit, white and gold palette.</textarea></div>
-        <div class="col-12 form-check ms-2"><input class="form-check-input" type="checkbox" id="n1" checked><label class="form-check-label small" for="n1">Email me AI recommendations and offers</label></div>
-        <div class="col-12"><button class="btn btn-gold" type="submit">Update preferences</button></div>
-        <div class="col-12 alert alert-success d-none" data-demo-note>Preferences updated in the prototype view only.</div></form></div>
       <div class="tab-pane fade" id="tabSec"><form class="row g-3" data-password-form>
         <div class="col-md-6"><label class="form-label" for="currentPassword">Current password</label><input id="currentPassword" name="currentPassword" class="form-control" type="password" autocomplete="current-password" required></div>
         <div class="col-md-6"><label class="form-label" for="newPassword">New password</label><input id="newPassword" name="newPassword" class="form-control" type="password" autocomplete="new-password" minlength="8" required></div>

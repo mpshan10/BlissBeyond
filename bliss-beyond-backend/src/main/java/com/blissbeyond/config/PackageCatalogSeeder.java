@@ -36,7 +36,6 @@ public class PackageCatalogSeeder implements CommandLineRunner {
         packagesBySlug=packageRepository.findAll().stream().collect(java.util.stream.Collectors.toMap(Package::getSlug,eventPackage->eventPackage,(first,duplicate)->first));
         itemsByPackageAndOrder=itemRepository.findAll().stream().collect(java.util.stream.Collectors.toMap(item->itemKey(item.getEventPackage().getSlug(),item.getDisplayOrder()),item->item,(first,duplicate)->first));
         for(Spec s:catalog)seed(s);
-        if(packageRepository.count()!=catalog.size())throw new IllegalStateException("Package catalog must contain exactly "+catalog.size()+" rows");
     }
     private void seed(Spec s)throws Exception{
         Venue v=findVenue(s.venueName);

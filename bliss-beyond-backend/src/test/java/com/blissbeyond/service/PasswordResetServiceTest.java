@@ -55,11 +55,18 @@ class PasswordResetServiceTest {
 
     @BeforeEach
     void setUp() {
+        PasswordResetRequestDeliveryService deliveryService = new PasswordResetRequestDeliveryService(
+            passwordResetRequestRepository,
+            passwordEncoder,
+            mailService
+        );
         service = new PasswordResetService(
             userRepository,
             passwordResetRequestRepository,
             passwordEncoder,
-            mailService
+            mailService,
+            new AuthenticationThrottleService(),
+            deliveryService
         );
 
         when(userRepository.findByEmail(anyString())).thenAnswer(invocation ->
@@ -71,6 +78,7 @@ class PasswordResetServiceTest {
             usersByEmail.put(user.getEmail().toLowerCase(), user);
             return user;
         });
+        when(userRepository.incrementSecurityVersion(any())).thenReturn(1);
 
         when(passwordResetRequestRepository.findByEmailAndInvalidatedAtIsNullAndUsedAtIsNullOrderByCreatedAtDesc(anyString()))
             .thenAnswer(invocation -> {
@@ -127,8 +135,8 @@ class PasswordResetServiceTest {
 
         var unknown = service.requestOtp(new ForgotPasswordRequestOtpRequest("missing@example.com"));
 
-        assertEquals("If an account exists for this email, a verification code has been sent.", known.message());
-        assertEquals("If an account exists for this email, a verification code has been sent.", unknown.message());
+        assertEquals("If an account exists for that email, password reset instructions will be sent.", known.message());
+        assertEquals("If an account exists for that email, password reset instructions will be sent.", unknown.message());
         assertEquals(1, mailService.sendCount);
         assertEquals("maya@bliss.test", mailService.lastEmail);
         assertNotNull(firstOtp);
@@ -262,7 +270,8 @@ class PasswordResetServiceTest {
         private int sendCount = 0;
 
         CapturingMailService() {
-            super(new NoOpMailSender(), "", "");
+            super(new NoOpMailSender(), "sender@bliss.test", "smtp.bliss.test", 587,
+                "sender@bliss.test", "test-only-password", true);
         }
 
         @Override

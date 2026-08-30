@@ -19,6 +19,9 @@ run-backend.args
 .env.*
 !.env.example
 !bliss-beyond-frontend/.env.production
+application-local-secret.yml
+**/application-local-secret.yml
+**/config/application-local-secret.yml
 
 # IDE
 .vscode/

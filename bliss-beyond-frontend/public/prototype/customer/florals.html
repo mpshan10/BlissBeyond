@@ -1501,7 +1501,7 @@
 
 
 
-<body>
+<body data-catalog-service="florals">
 
 
 <main
@@ -3881,7 +3881,7 @@ document.addEventListener(
 
       const savedData = {
         serviceId: 'florals',
-        backendServiceId: 8,
+        backendServiceId: null,
         title: 'Floral Design',
         estimatedTotal: liveState.total,
         options: liveState.items.map(
@@ -4175,7 +4175,7 @@ document.addEventListener(
       try {
 
         const response = await fetch(
-          window.bbApiUrl('/api/services/8')
+          window.bbApiUrl('/api/services/key/florals')
         );
 
 
@@ -4562,6 +4562,7 @@ loadFloralAvailability();
 </script>
 
 
+<script src="/prototype/assets/js/catalog-options.js"></script>
 </body>
 
 </html>

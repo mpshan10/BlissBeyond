@@ -8,6 +8,7 @@ import com.blissbeyond.entity.Consultation;
 import com.blissbeyond.entity.ConsultationStatus;
 import com.blissbeyond.entity.Payment;
 import com.blissbeyond.entity.PaymentStatus;
+import com.blissbeyond.entity.PaymentType;
 import com.blissbeyond.entity.Quotation;
 import com.blissbeyond.entity.QuotationStatus;
 import com.blissbeyond.entity.RoleName;
@@ -69,7 +70,8 @@ public class AdminReportService {
 
     @Transactional(readOnly = true)
     public AdminReportSummaryResponse summary(LocalDate from, LocalDate to) {
-        List<Booking> bookings = bookingRepository.findAll().stream()
+        List<Booking> allBookings = bookingRepository.findAll();
+        List<Booking> bookings = allBookings.stream()
             .filter(booking -> inRange(booking.getEventDate(), from, to))
             .toList();
         List<Consultation> consultations = consultationRepository.findAll().stream()
@@ -79,8 +81,9 @@ public class AdminReportService {
             .filter(item -> inRange(item.getCreatedAt() == null ? null : item.getCreatedAt().toLocalDate(), from, to))
             .toList();
         List<Payment> payments = paymentRepository.findAll().stream()
-            .filter(item -> paymentDate(item) == null || inRange(paymentDate(item), from, to))
+            .filter(item -> inRange(paymentDate(item), from, to))
             .toList();
+        FinancialValues financial = financialValues(bookings, payments);
 
         return new AdminReportSummaryResponse(
             bookingCounts(bookings),
@@ -94,12 +97,16 @@ public class AdminReportService {
             consultationCounts(consultations),
             quotationCounts(quotations),
             paymentCounts(payments),
-            bookingTrend(bookings),
+            bookingTrend(allBookings, from, to),
             namedCounts(bookings, booking -> booking.getBookingType().name()),
             namedCounts(bookings, booking -> booking.getEvent() == null ? null : booking.getEvent().getEventType()),
             namedCounts(bookings, booking -> booking.getEvent() != null && booking.getEvent().getVenue() != null
                 ? booking.getEvent().getVenue().getName() : null),
             topPackages(bookings),
+            new AdminReportSummaryResponse.FinancialSummary(
+                financial.paidRevenue(), financial.depositPaid(), financial.balancePaid(),
+                financial.outstandingAmount(), financial.refundedAmount(),
+                financial.packagePaid(), financial.customizePaid()),
             payments.stream()
                 .filter(item -> item.getPaymentStatus() == PaymentStatus.PAID)
                 .map(Payment::getAmount)
@@ -151,16 +158,20 @@ public class AdminReportService {
         );
     }
 
-    private List<AdminReportSummaryResponse.MonthlyBookingCount> bookingTrend(List<Booking> bookings) {
+    private List<AdminReportSummaryResponse.MonthlyBookingCount> bookingTrend(List<Booking> bookings, LocalDate from, LocalDate to) {
         YearMonth current = YearMonth.now();
+        YearMonth start = from == null
+            ? (to == null ? current.minusMonths(5) : YearMonth.from(to).minusMonths(5))
+            : YearMonth.from(from);
+        YearMonth end = to == null ? current : YearMonth.from(to);
         Map<YearMonth, Long> counts = bookings.stream()
             .filter(item -> item.getCreatedAt() != null)
+            .filter(item -> inRange(item.getCreatedAt().toLocalDate(), from, to))
             .map(item -> YearMonth.from(item.getCreatedAt()))
-            .filter(month -> !month.isBefore(current.minusMonths(5)) && !month.isAfter(current))
+            .filter(month -> !month.isBefore(start) && !month.isAfter(end))
             .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
         List<AdminReportSummaryResponse.MonthlyBookingCount> result = new ArrayList<>();
-        for (int i = 5; i >= 0; i--) {
-            YearMonth month = current.minusMonths(i);
+        for (YearMonth month = start; !month.isAfter(end); month = month.plusMonths(1)) {
             result.add(new AdminReportSummaryResponse.MonthlyBookingCount(
                 month.format(MONTH_FORMAT), counts.getOrDefault(month, 0L)));
         }
@@ -193,9 +204,59 @@ public class AdminReportService {
     }
 
     private LocalDate paymentDate(Payment payment) {
-        if (payment.getPaidAt() != null) return payment.getPaidAt().toLocalDate();
-        return payment.getBooking() == null ? null : payment.getBooking().getEventDate();
+        if (payment.getPaymentStatus() == PaymentStatus.PAID || payment.getPaymentStatus() == PaymentStatus.REFUNDED) {
+            return payment.getPaidAt() == null ? null : payment.getPaidAt().toLocalDate();
+        }
+        return payment.getSubmittedAt() == null ? null : payment.getSubmittedAt().toLocalDate();
     }
+
+    private FinancialValues financialValues(List<Booking> bookings, List<Payment> payments) {
+        BigDecimal paid = sum(payments, PaymentStatus.PAID, null);
+        BigDecimal deposits = sum(payments, PaymentStatus.PAID, PaymentType.DEPOSIT);
+        BigDecimal balances = sum(payments, PaymentStatus.PAID, PaymentType.BALANCE);
+        BigDecimal refunded = sum(payments, PaymentStatus.REFUNDED, null);
+        BigDecimal packagePaid = sumByBookingType(payments, BookingType.PACKAGE);
+        BigDecimal customizePaid = sumByBookingType(payments, BookingType.CUSTOM);
+        BigDecimal outstanding = bookings.stream()
+            .filter(item -> item.getStatus() != BookingStatus.CANCELLED && item.getStatus() != BookingStatus.COMPLETED)
+            .map(item -> {
+                BigDecimal total = authoritativeTotal(item);
+                if (total == null) return BigDecimal.ZERO;
+                return total.subtract(paidForBooking(item)).max(BigDecimal.ZERO);
+            })
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+        return new FinancialValues(paid, deposits, balances, outstanding, refunded, packagePaid, customizePaid);
+    }
+
+    private BigDecimal authoritativeTotal(Booking booking) {
+        if (booking.getBookingType() == BookingType.PACKAGE) {
+            return snapshotRepository.findByBookingId(booking.getId()).map(snapshot -> snapshot.getFinalPrice()).orElse(null);
+        }
+        Quotation quotation = booking.getQuotation();
+        return quotation != null && quotation.getStatus() == QuotationStatus.ACCEPTED ? quotation.getTotal() : null;
+    }
+
+    private BigDecimal paidForBooking(Booking booking) {
+        return paymentRepository.findByBookingIdOrderByIdAsc(booking.getId()).stream()
+            .filter(item -> item.getPaymentStatus() == PaymentStatus.PAID)
+            .map(Payment::getAmount).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    private BigDecimal sumByBookingType(List<Payment> payments, BookingType type) {
+        return payments.stream().filter(item -> item.getPaymentStatus() == PaymentStatus.PAID)
+            .filter(item -> item.getBooking() != null && item.getBooking().getBookingType() == type)
+            .map(Payment::getAmount).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    private BigDecimal sum(List<Payment> payments, PaymentStatus status, PaymentType type) {
+        return payments.stream().filter(item -> item.getPaymentStatus() == status)
+            .filter(item -> type == null || item.getPaymentType() == type)
+            .map(Payment::getAmount).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    private record FinancialValues(BigDecimal paidRevenue, BigDecimal depositPaid, BigDecimal balancePaid,
+                                   BigDecimal outstandingAmount, BigDecimal refundedAmount,
+                                   BigDecimal packagePaid, BigDecimal customizePaid) {}
 
     private boolean inRange(LocalDate value, LocalDate from, LocalDate to) {
         if (from == null && to == null) return true;

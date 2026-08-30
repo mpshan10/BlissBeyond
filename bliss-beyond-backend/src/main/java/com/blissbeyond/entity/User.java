@@ -36,11 +36,17 @@ public class User extends BaseEntity implements UserDetails {
     @Column(length = 255)
     private String address;
 
+    @Column(name = "profile_image_url", length = 500)
+    private String profileImageUrl;
+
     @Column(nullable = false, length = 255)
     private String passwordHash;
 
     @Column(nullable = false)
     private boolean enabled = true;
+
+    @Column(name = "security_version", nullable = false)
+    private long securityVersion = 0L;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_roles",
@@ -91,6 +97,25 @@ public class User extends BaseEntity implements UserDetails {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public String getProfileImageUrl() {
+        return profileImageUrl;
+    }
+
+    public void setProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
+    }
+
+    public long getSecurityVersion() {
+        return securityVersion;
+    }
+
+    public void setSecurityVersion(long securityVersion) {
+        if (securityVersion < 0) {
+            throw new IllegalArgumentException("Security version cannot be negative.");
+        }
+        this.securityVersion = securityVersion;
     }
 
     @Override

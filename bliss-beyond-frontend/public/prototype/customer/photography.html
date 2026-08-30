@@ -2152,7 +2152,7 @@ body {
 
 </head>
 
-<body>
+<body data-catalog-service="photography">
 
 <nav class="navbar navbar-expand-lg bb-nav sticky-top">
   <div class="container-fluid px-3 px-lg-4">
@@ -2547,7 +2547,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const optionSelector = '[data-photo-option]';
   const continueBtn = document.querySelector('a.btn.btn-outline-forest[href="/prototype/customer/review.html"]');
   const controlSelector = `${optionSelector}, [data-photo-notes]`;
-  const BACKEND_SERVICE_URL = window.bbApiUrl('/api/services/3');
+  const BACKEND_SERVICE_URL = window.bbApiUrl('/api/services/key/photography');
   const SERVICE_UNAVAILABLE_MESSAGE = 'Photography & Videography is currently unavailable.';
 
   const escapeHtml = (value) => String(value ?? '')
@@ -2612,9 +2612,7 @@ document.addEventListener('DOMContentLoaded', function () {
       }
 
       const service = await response.json();
-      const isValidService =
-        Number(service?.id) === 3 &&
-        String(service?.name || '').trim() === 'Photography & Videography';
+      const isValidService = String(service?.name || '').trim() === 'Photography & Videography';
 
       if (!isValidService) {
         throw new Error('Unexpected service payload');
@@ -2988,5 +2986,6 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 
+<script src="/prototype/assets/js/catalog-options.js"></script>
 </body>
 </html>

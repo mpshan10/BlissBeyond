@@ -1801,7 +1801,7 @@
         <td><span class="catalog-description">${escapeHtml(service.description || 'No description')}</span></td>
         <td><strong class="text-gold">${escapeHtml(formatMoney(service.basePrice))}</strong></td>
         <td>${catalogAvailabilityBadge(service.available)}</td>
-        <td class="catalog-actions"><button class="btn btn-outline-forest btn-sm" type="button" data-service-edit="${escapeHtml(service.id)}">Edit</button></td>
+        <td class="catalog-actions"><div class="d-flex gap-1"><button class="btn btn-outline-forest btn-sm" type="button" data-service-edit="${escapeHtml(service.id)}">Edit</button>${service.id === 1 ? '' : `<button class="btn btn-gold btn-sm" type="button" data-service-manage="${escapeHtml(service.id)}">Manage</button>`}</div></td>
       </tr>`).join('') : '<tr><td colspan="5" class="catalog-empty">No services match these filters.</td></tr>';
   }
 
@@ -1871,6 +1871,59 @@
     window.bootstrap.Modal.getOrCreateInstance(document.getElementById('serviceEditModal')).show();
   }
 
+  function resetServiceOptionForm() {
+    const form = document.querySelector('[data-service-options-form]');
+    if (form) form.reset();
+    document.querySelector('[data-service-options-option-id]').value = '';
+    document.querySelector('[data-service-option-type]').value = 'PACKAGE';
+    document.querySelector('[data-service-option-billing]').value = 'FLAT';
+    document.querySelector('[data-service-option-available]').value = 'true';
+    document.querySelector('[data-service-option-order]').value = '0';
+    document.querySelector('[data-service-option-editor-title]').textContent = 'Add New Option';
+    document.querySelector('[data-service-option-submit]').textContent = 'Add Option';
+    document.querySelector('[data-service-option-editor]').classList.add('d-none');
+  }
+
+  function prepareServiceOptionAdd() {
+    resetServiceOptionForm();
+    document.querySelector('[data-service-option-editor]').classList.remove('d-none');
+  }
+
+  async function openServiceOptions(id) {
+    const service = state.services.find((item) => String(item.id) === String(id));
+    if (!service) return;
+    const options = await adminFetch(`/api/admin/services/${encodeURIComponent(id)}/options`, { method: 'GET' });
+    document.querySelector('[data-service-options-service-id]').value = service.id;
+    resetServiceOptionForm();
+    document.querySelector('[data-service-options-service-id]').value = service.id;
+    document.querySelector('[data-service-options-title]').textContent = `${service.name} Options`;
+    const rows = document.querySelector('[data-service-options-rows]');
+    rows.innerHTML = options.map((option) => `<tr><td><strong>${escapeHtml(option.name)}</strong><div class="small text-ink-soft"><code>${escapeHtml(option.optionKey)}</code></div></td><td>${escapeHtml(option.optionType)}</td><td>${escapeHtml(formatMoney(option.price))}</td><td>${option.available ? 'Enabled' : 'Disabled'}</td><td><button class="btn btn-sm btn-outline-forest" type="button" data-service-option-edit="${escapeHtml(option.id)}">Edit</button></td></tr>`).join('');
+    rows.querySelectorAll('[data-service-option-edit]').forEach((button) => button.addEventListener('click', () => {
+      const option = options.find((item) => String(item.id) === button.dataset.serviceOptionEdit); if (!option) return;
+      document.querySelector('[data-service-options-option-id]').value = option.id; document.querySelector('[data-service-option-type]').value = option.optionType; document.querySelector('[data-service-option-key]').value = option.optionKey; document.querySelector('[data-service-option-name]').value = option.name; document.querySelector('[data-service-option-price]').value = option.price; document.querySelector('[data-service-option-order]').value = option.displayOrder; document.querySelector('[data-service-option-description]').value = option.description || ''; document.querySelector('[data-service-option-billing]').value = option.billingType || 'FLAT'; document.querySelector('[data-service-option-available]').value = String(Boolean(option.available));
+      document.querySelector('[data-service-option-editor-title]').textContent = 'Edit Option';
+      document.querySelector('[data-service-option-submit]').textContent = 'Save Changes';
+      document.querySelector('[data-service-option-editor]').classList.remove('d-none');
+    }));
+    window.bootstrap.Modal.getOrCreateInstance(document.getElementById('serviceOptionsModal')).show();
+  }
+
+  async function submitServiceOption(event) {
+    event.preventDefault(); const serviceId = document.querySelector('[data-service-options-service-id]').value; const optionId = document.querySelector('[data-service-options-option-id]').value;
+    const payload = { optionType: document.querySelector('[data-service-option-type]').value.trim(), optionKey: document.querySelector('[data-service-option-key]').value.trim(), name: document.querySelector('[data-service-option-name]').value.trim(), description: document.querySelector('[data-service-option-description]').value.trim(), price: Number(document.querySelector('[data-service-option-price]').value), billingType: document.querySelector('[data-service-option-billing]').value, available: document.querySelector('[data-service-option-available]').value === 'true', displayOrder: Number(document.querySelector('[data-service-option-order]').value), metadataJson: '{}' };
+    const submit = document.querySelector('[data-service-option-submit]');
+    submit.disabled = true;
+    try {
+      await adminFetch(optionId ? `/api/admin/service-options/${optionId}` : `/api/admin/services/${serviceId}/options`, { method: optionId ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+      await openServiceOptions(serviceId); setCatalogMessage(optionId ? 'Catalog option updated successfully.' : 'Catalog option added successfully.', 'success');
+    } catch (error) {
+      setCatalogMessage(error.message || 'Unable to save this catalog option.');
+    } finally {
+      submit.disabled = false;
+    }
+  }
+
   function openDiningStyleEditor(id) {
     const style = state.diningStyles.find((item) => String(item.id) === String(id));
     if (!style) return;
@@ -1931,6 +1984,10 @@
     document.querySelector('[data-addon-availability]')?.addEventListener('change', (event) => { state.addOnAvailability = event.target.value; renderAddOnsCatalog(); });
 
     document.querySelector('[data-service-rows]')?.addEventListener('click', (event) => { const button = event.target.closest('[data-service-edit]'); if (button) openServiceEditor(button.dataset.serviceEdit); });
+    document.querySelector('[data-service-rows]')?.addEventListener('click', (event) => { const button = event.target.closest('[data-service-manage]'); if (button) openServiceOptions(button.dataset.serviceManage).catch((error) => setCatalogMessage(error.message)); });
+    document.querySelector('[data-service-option-add]')?.addEventListener('click', prepareServiceOptionAdd);
+    document.querySelector('[data-service-option-cancel]')?.addEventListener('click', resetServiceOptionForm);
+    document.getElementById('serviceOptionsModal')?.addEventListener('hidden.bs.modal', resetServiceOptionForm);
     document.querySelector('[data-dining-style-rows]')?.addEventListener('click', (event) => { const button = event.target.closest('[data-dining-style-edit]'); if (button) openDiningStyleEditor(button.dataset.diningStyleEdit); });
     document.querySelector('[data-addon-rows]')?.addEventListener('click', (event) => { const button = event.target.closest('[data-addon-edit]'); if (button) openAddOnEditor(button.dataset.addonEdit); });
 
@@ -1946,6 +2003,7 @@
       path: '/api/admin/addons', idSelector: '[data-addon-edit-id]', buttonSelector: '[data-addon-edit-save]', modalId: 'addOnEditModal', label: 'Add-on', reload: loadAddOnsCatalog,
       payload: () => ({ name: document.querySelector('[data-addon-edit-name]').value.trim(), description: document.querySelector('[data-addon-edit-description]').value.trim(), billingType: document.querySelector('[data-addon-edit-billing]').value, price: Number(document.querySelector('[data-addon-edit-price]').value), available: document.querySelector('[data-addon-edit-available]').value === 'true' })
     }));
+    document.querySelector('[data-service-options-form]')?.addEventListener('submit', submitServiceOption);
 
     Promise.allSettled([loadServicesCatalog(), loadDiningStylesCatalog(), loadAddOnsCatalog()]).then((results) => {
       if (results.some((result) => result.status === 'rejected')) setCatalogMessage('Some catalog data could not be loaded. Please try again.');
@@ -1988,7 +2046,7 @@
       upcomingRows.innerHTML = upcoming.length
         ? upcoming.map((booking) => `
           <tr>
-            <td><strong>${escapeHtml(booking.eventType || 'Event')}</strong><div class="small text-ink-soft">${escapeHtml(booking.bookingReference || '')}</div></td>
+            <td><a href="/prototype/admin/bookings.html?bookingId=${encodeURIComponent(booking.bookingId)}"><strong>${escapeHtml(booking.eventType || 'Event')}</strong></a><div class="small text-ink-soft">${escapeHtml(booking.bookingReference || '')}</div></td>
             <td>${escapeHtml(booking.customerName || 'Customer')}</td>
             <td>${escapeHtml(booking.venueName || 'Venue not set')}</td>
             <td>${escapeHtml(formatDate(booking.eventDate))}</td>
@@ -2003,7 +2061,7 @@
       recentRows.innerHTML = recent.length
         ? recent.map((booking) => `
           <tr>
-            <td><strong>${escapeHtml(booking.bookingReference || `BK-${booking.bookingId}`)}</strong></td>
+            <td><a href="/prototype/admin/bookings.html?bookingId=${encodeURIComponent(booking.bookingId)}"><strong>${escapeHtml(booking.bookingReference || `BK-${booking.bookingId}`)}</strong></a></td>
             <td>${escapeHtml(booking.customerName || 'Customer')}</td>
             <td>${escapeHtml(booking.eventType || 'Event')}</td>
             <td>${escapeHtml(booking.venueName || 'Venue not set')}</td>
@@ -2025,6 +2083,22 @@
     if (secondary) {
       secondary.textContent = `Rejected: ${count('REJECTED')} | Expired: ${count('EXPIRED')}`;
     }
+  }
+
+  function renderDashboardPayments(payments) {
+    const count = (status) => payments.filter((payment) => payment.paymentStatus === status).length;
+    ['PENDING', 'PAID', 'FAILED', 'REFUNDED'].forEach((status) => {
+      const element = document.querySelector(`[data-admin-payment-summary-count="${status}"]`);
+      if (element) element.textContent = String(count(status));
+    });
+    const total = document.querySelector('[data-admin-payment-summary-total]');
+    if (total) total.textContent = `${payments.length} payment records`;
+    const rows = document.querySelector('[data-admin-recent-payment-rows]');
+    if (!rows) return;
+    const recent = payments.slice(0, 5);
+    rows.innerHTML = recent.length
+      ? recent.map((payment) => `<tr><td><a href="/prototype/admin/payments.html?paymentId=${encodeURIComponent(payment.paymentId)}">PAY-${String(payment.paymentId).padStart(4, '0')}</a><div class="small text-ink-soft">${escapeHtml(statusLabel(payment.paymentType || 'PAYMENT'))}</div></td><td><a href="/prototype/admin/bookings.html?bookingId=${encodeURIComponent(payment.bookingId)}">${escapeHtml(payment.bookingReference || `BK-${payment.bookingId}`)}</a><div class="small text-ink-soft">${escapeHtml(payment.customerName || 'Customer')}</div></td><td>${escapeHtml(formatMoney(payment.amount))}<div class="small text-ink-soft">${escapeHtml(payment.paymentMethod || 'Method not recorded')}</div></td><td><span class="status ${statusClass(payment.paymentStatus)}">${escapeHtml(statusLabel(payment.paymentStatus || 'UNKNOWN'))}</span><div class="small text-ink-soft">${escapeHtml(formatDateTime(payment.paidAt || payment.submittedAt || payment.createdAt))}</div></td></tr>`).join('')
+      : '<tr><td colspan="4" class="text-center py-4 text-ink-soft">No recent payments.</td></tr>';
   }
 
   function renderDashboardConsultations(consultations) {
@@ -2095,6 +2169,17 @@
         }
       },
       {
+        name: 'payments',
+        path: '/api/admin/payments',
+        success: renderDashboardPayments,
+        failure: () => {
+          const total = document.querySelector('[data-admin-payment-summary-total]');
+          const rows = document.querySelector('[data-admin-recent-payment-rows]');
+          if (total) total.textContent = 'Payment data is unavailable.';
+          if (rows) rows.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-ink-soft">Unable to load payments.</td></tr>';
+        }
+      },
+      {
         name: 'consultations',
         path: '/api/admin/consultations',
         success: renderDashboardConsultations,
@@ -2162,10 +2247,13 @@
     const resources = summary.resources || {};
     const consultations = summary.consultations || {};
     const quotations = summary.quotations || {};
+    const financial = summary.financial || {};
     setReportValue('bookings.total', bookings.total);
     setReportValue('bookings.confirmed', bookings.confirmed);
     setReportValue('resources.customers', resources.customers);
     setReportValue('totalPaidRevenue', formatMoney(summary.totalPaidRevenue));
+    ['depositPaid', 'balancePaid', 'outstandingAmount', 'refundedAmount', 'packagePaid', 'customizePaid']
+      .forEach((key) => setReportValue(`financial.${key}`, formatMoney(financial[key])));
     setReportValue('resources.packages', resources.packages);
     setReportValue('resources.venues', resources.venues);
     setReportValue('consultations.total', consultations.total);
@@ -2185,6 +2273,10 @@
     renderReportList('[data-report-top-venues]', summary.topVenues || [], 'No venue data available');
     renderReportList('[data-report-top-packages]', summary.topPackages || [], 'No package data available');
     renderBookingTrend(summary.bookingTrend || []);
+    const period = document.querySelector('[data-report-period]');
+    if (period) period.textContent = summary.from || summary.to
+      ? `Reporting period: ${summary.from || 'Any date'} to ${summary.to || 'Any date'}. Metric dates follow the definitions below.`
+      : 'All available records; metric dates follow the definitions below.';
   }
 
   async function initReportsPage() {
@@ -2192,19 +2284,38 @@
     const loading = document.querySelector('[data-admin-report-loading]');
     const content = document.querySelector('[data-admin-report-content]');
     const message = document.querySelector('[data-admin-report-message]');
-    try {
-      const summary = await adminFetch('/api/admin/reports/summary', { method: 'GET' });
+    const fromInput = document.querySelector('[data-report-from]');
+    const toInput = document.querySelector('[data-report-to]');
+    const loadReport = async () => {
+      const from = fromInput?.value || '';
+      const to = toInput?.value || '';
+      if (from && to && from > to) {
+        if (message) { message.textContent = 'The From date must be on or before the To date.'; message.classList.remove('d-none'); }
+        return;
+      }
+      message?.classList.add('d-none');
+      loading?.classList.remove('d-none');
+      content?.classList.add('d-none');
+      const params = new URLSearchParams();
+      if (from) params.set('from', from);
+      if (to) params.set('to', to);
+      try {
+        const summary = await adminFetch(`/api/admin/reports/summary${params.toString() ? `?${params}` : ''}`, { method: 'GET' });
       renderReportSummary(summary);
       loading?.classList.add('d-none');
       content?.classList.remove('d-none');
-    } catch (error) {
+      } catch (error) {
       loading?.classList.add('d-none');
       content?.classList.add('d-none');
       if (message) {
-        message.textContent = 'Unable to load report data.';
+        message.textContent = error.message || 'Unable to load report data.';
         message.classList.remove('d-none');
       }
-    }
+      }
+    };
+    document.querySelector('[data-report-apply]')?.addEventListener('click', loadReport);
+    document.querySelector('[data-report-clear]')?.addEventListener('click', () => { if (fromInput) fromInput.value = ''; if (toInput) toInput.value = ''; void loadReport(); });
+    void loadReport();
   }
 
   function renderAdminNotifications(list) {

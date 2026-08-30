@@ -69,7 +69,23 @@ document.addEventListener('DOMContentLoaded', () => {
   const serviceCards = [...root.querySelectorAll('[data-service-card]')];
   const toggles = [...root.querySelectorAll('[data-service-toggle]')];
 
-  const getBackendId = (card) => card.dataset.backendServiceId || '';
+  const serviceNamesByKey = {
+    catering: 'Catering',
+    decoration: 'Decoration & Styling',
+    photography: 'Photography & Videography',
+    entertainment: 'Entertainment',
+    'lighting-av': 'Lighting & AV',
+    cake: 'Cake & Desserts',
+    florals: 'Floral Design'
+  };
+
+  const getBackendRecord = (card) => {
+    const key = card.dataset.serviceId || '';
+    const expectedName = serviceNamesByKey[key];
+    return [...backendCatalog.values()].find((record) =>
+      expectedName && String(record.name || '').trim().toLowerCase() === expectedName.toLowerCase()
+    ) || backendCatalog.get(card.dataset.backendServiceId || '');
+  };
 
   const formatPrice = (value, perGuest = false) => {
     const amount = Number(value || 0);
@@ -95,8 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const applyBackendDataToCard = (card) => {
-    const backendId = getBackendId(card);
-    const record = backendCatalog.get(backendId);
+    const record = getBackendRecord(card);
     const titleEl = card.querySelector('.service-card__title');
     const metaEl = card.querySelector('.service-card__meta');
     const descEl = card.querySelector('.service-card__body p.small.text-ink-soft.mb-3');
@@ -123,8 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const syncCards = () => {
     serviceCards.forEach((card) => {
-      const backendId = getBackendId(card);
-      const record = backendCatalog.get(backendId);
+      const record = getBackendRecord(card);
       if (backendLoaded && record) {
         applyBackendDataToCard(card);
       } else {

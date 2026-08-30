@@ -1869,7 +1869,7 @@ body{
 
 </head>
 
-<body>
+<body data-catalog-service="lighting-av">
 
 <main class="container py-5" data-simple-service-page>
 
@@ -2963,7 +2963,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function checkBackendAvailability() {
     try {
-      const response = await fetch(window.bbApiUrl('/api/services/5'), {
+      const response = await fetch(window.bbApiUrl('/api/services/key/lighting-av'), {
         cache: 'no-store'
       });
 
@@ -3268,5 +3268,6 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 
+<script src="/prototype/assets/js/catalog-options.js"></script>
 </body>
 </html>

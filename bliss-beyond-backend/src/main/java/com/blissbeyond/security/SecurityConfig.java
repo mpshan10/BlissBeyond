@@ -68,6 +68,7 @@ public class SecurityConfig {
                     "/api/packages",
                     "/api/packages/**",
                     "/api/public/**",
+                    "/uploads/profile-photos/**",
                     "/actuator/health",
                     "/error"
                 ).permitAll()

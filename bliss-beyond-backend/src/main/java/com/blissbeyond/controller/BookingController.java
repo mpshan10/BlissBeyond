@@ -3,6 +3,7 @@ package com.blissbeyond.controller;
 import com.blissbeyond.dto.booking.BookingCreateRequest;
 import com.blissbeyond.dto.booking.BookingResponse;
 import com.blissbeyond.entity.Booking;
+import com.blissbeyond.entity.BookingType;
 import com.blissbeyond.entity.Event;
 import com.blissbeyond.entity.Quotation;
 import com.blissbeyond.exception.ForbiddenActionException;
@@ -11,6 +12,7 @@ import com.blissbeyond.repository.BookingRepository;
 import com.blissbeyond.repository.QuotationRepository;
 import com.blissbeyond.service.BookingService;
 import com.blissbeyond.service.EventService;
+import com.blissbeyond.service.QuotationService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.math.BigDecimal;
 import java.time.LocalTime;
 
 @RestController
@@ -32,12 +35,15 @@ public class BookingController {
     private final EventService eventService;
     private final QuotationRepository quotationRepository;
     private final BookingRepository bookingRepository;
+    private final QuotationService quotationService;
 
-    public BookingController(BookingService bookingService, EventService eventService, QuotationRepository quotationRepository, BookingRepository bookingRepository) {
+    public BookingController(BookingService bookingService, EventService eventService, QuotationRepository quotationRepository,
+                             BookingRepository bookingRepository, QuotationService quotationService) {
         this.bookingService = bookingService;
         this.eventService = eventService;
         this.quotationRepository = quotationRepository;
         this.bookingRepository = bookingRepository;
+        this.quotationService = quotationService;
     }
 
     @GetMapping
@@ -58,6 +64,11 @@ public class BookingController {
         LocalTime startTime = parseTime(request.startTime());
         LocalTime endTime = parseTime(request.endTime());
         Booking booking = bookingService.create(event, quotation, startTime, endTime, request.services());
+        if (booking.getBookingType() == BookingType.CUSTOM && booking.getQuotation() == null) {
+            Quotation draft = quotationService.createDraft(event, BigDecimal.ZERO, BigDecimal.ZERO, null);
+            booking.setQuotation(draft);
+            booking = bookingRepository.save(booking);
+        }
         return ResponseEntity.status(HttpStatus.CREATED).body(map(booking));
     }
 

@@ -9,11 +9,16 @@ import com.blissbeyond.dto.auth.ForgotPasswordVerifyOtpResponse;
 import com.blissbeyond.entity.PasswordResetRequest;
 import com.blissbeyond.entity.User;
 import com.blissbeyond.exception.ForbiddenActionException;
+import com.blissbeyond.exception.EmailDeliveryUnavailableException;
+import com.blissbeyond.exception.TooManyRequestsException;
 import com.blissbeyond.repository.PasswordResetRequestRepository;
 import com.blissbeyond.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.mail.MailException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -25,6 +30,9 @@ import java.util.List;
 
 @Service
 public class PasswordResetService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(PasswordResetService.class);
+    private static final String GENERIC_REQUEST_MESSAGE =
+        "If an account exists for that email, password reset instructions will be sent.";
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
     private static final int OTP_LENGTH = 6;
     private static final int MAX_OTP_ATTEMPTS = 5;
@@ -35,39 +43,52 @@ public class PasswordResetService {
     private final PasswordResetRequestRepository passwordResetRequestRepository;
     private final PasswordEncoder passwordEncoder;
     private final PasswordResetEmailService passwordResetEmailService;
+    private final AuthenticationThrottleService authenticationThrottleService;
+    private final PasswordResetRequestDeliveryService passwordResetRequestDeliveryService;
 
     public PasswordResetService(UserRepository userRepository,
                                 PasswordResetRequestRepository passwordResetRequestRepository,
                                 PasswordEncoder passwordEncoder,
-                                PasswordResetEmailService passwordResetEmailService) {
+                                PasswordResetEmailService passwordResetEmailService,
+                                AuthenticationThrottleService authenticationThrottleService,
+                                PasswordResetRequestDeliveryService passwordResetRequestDeliveryService) {
         this.userRepository = userRepository;
         this.passwordResetRequestRepository = passwordResetRequestRepository;
         this.passwordEncoder = passwordEncoder;
         this.passwordResetEmailService = passwordResetEmailService;
+        this.authenticationThrottleService = authenticationThrottleService;
+        this.passwordResetRequestDeliveryService = passwordResetRequestDeliveryService;
     }
 
-    @Transactional
     public ForgotPasswordRequestOtpResponse requestOtp(ForgotPasswordRequestOtpRequest request) {
         String email = normalizeEmail(request.email());
-        User user = userRepository.findByEmail(email).orElse(null);
-        String otp = generateOtp();
-
-        invalidateActiveRequests(email);
-
-        if (user != null) {
-            PasswordResetRequest passwordResetRequest = new PasswordResetRequest();
-            passwordResetRequest.setUser(user);
-            passwordResetRequest.setEmail(email);
-            passwordResetRequest.setOtpHash(passwordEncoder.encode(otp));
-            passwordResetRequest.setOtpAttemptCount(0);
-            passwordResetRequest.setOtpExpiresAt(LocalDateTime.now().plusMinutes(OTP_EXPIRY_MINUTES));
-            passwordResetRequestRepository.save(passwordResetRequest);
-            passwordResetEmailService.sendOtp(email, otp);
+        if (!authenticationThrottleService.passwordResetRequestAllowed(email)) {
+            throw new TooManyRequestsException(
+                "Too many password reset requests. Please try again later."
+            );
+        }
+        if (!passwordResetEmailService.isEnabled()) {
+            throw new EmailDeliveryUnavailableException(
+                "Password reset email delivery is not configured. Please contact support."
+            );
         }
 
-        return new ForgotPasswordRequestOtpResponse(
-            "If an account exists for this email, a verification code has been sent."
-        );
+        User user = userRepository.findByEmail(email).orElse(null);
+        String otp = generateOtp();
+        if (user != null) {
+            try {
+                passwordResetRequestDeliveryService.createAndDeliver(
+                    user, email, otp, LocalDateTime.now().plusMinutes(OTP_EXPIRY_MINUTES)
+                );
+            } catch (MailException ex) {
+                LOGGER.error("Password reset email delivery failed");
+            }
+        } else {
+            // Bound the easiest timing difference without adding sleeps or sending mail to unknown addresses.
+            passwordEncoder.encode(otp);
+        }
+
+        return new ForgotPasswordRequestOtpResponse(GENERIC_REQUEST_MESSAGE);
     }
 
     @Transactional
@@ -112,6 +133,7 @@ public class PasswordResetService {
     @Transactional
     public ForgotPasswordResetResponse resetPassword(ForgotPasswordResetRequest request) {
         String email = normalizeEmail(request.email());
+        PasswordPolicy.validate(request.newPassword());
         if (!request.newPassword().equals(request.confirmPassword())) {
             throw new IllegalArgumentException("Passwords do not match.");
         }
@@ -140,6 +162,7 @@ public class PasswordResetService {
 
         user.setPasswordHash(passwordEncoder.encode(request.newPassword()));
         userRepository.save(user);
+        incrementSecurityVersion(user);
 
         passwordResetRequest.setUsedAt(LocalDateTime.now());
         passwordResetRequestRepository.save(passwordResetRequest);
@@ -196,5 +219,14 @@ public class PasswordResetService {
 
     private String normalizeEmail(String email) {
         return email == null ? "" : email.trim().toLowerCase();
+    }
+
+    private void incrementSecurityVersion(User user) {
+        if (user.getSecurityVersion() == Long.MAX_VALUE) {
+            throw new IllegalStateException("Security version limit reached.");
+        }
+        if (userRepository.incrementSecurityVersion(user.getId()) != 1) {
+            throw new IllegalStateException("Unable to update account security state.");
+        }
     }
 }

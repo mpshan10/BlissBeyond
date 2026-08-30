@@ -47,6 +47,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PutMapping;
+import com.blissbeyond.dto.admin.AdminServiceCatalogOptionRequest;
+import com.blissbeyond.dto.service.ServiceCatalogOptionResponse;
 
 import java.util.List;
 import java.time.LocalDate;
@@ -67,6 +69,7 @@ public class AdminController {
     private final AdminPackageService adminPackageService;
     private final AdminReportService adminReportService;
     private final AdminBookingDetailService adminBookingDetailService;
+    private final com.blissbeyond.service.ServiceCatalogOptionService serviceCatalogOptionService;
 
     public AdminController(FoodRepository foodRepository,
                            EventRepository eventRepository,
@@ -78,7 +81,8 @@ public class AdminController {
                            AdminVenueService adminVenueService,
                            AdminPackageService adminPackageService,
                            AdminReportService adminReportService,
-                           AdminBookingDetailService adminBookingDetailService) {
+                           AdminBookingDetailService adminBookingDetailService,
+                           com.blissbeyond.service.ServiceCatalogOptionService serviceCatalogOptionService) {
         this.foodRepository = foodRepository;
         this.eventRepository = eventRepository;
         this.bookingService = bookingService;
@@ -90,6 +94,7 @@ public class AdminController {
         this.adminPackageService = adminPackageService;
         this.adminReportService = adminReportService;
         this.adminBookingDetailService = adminBookingDetailService;
+        this.serviceCatalogOptionService = serviceCatalogOptionService;
     }
 
     @GetMapping("/customers")
@@ -183,6 +188,22 @@ public class AdminController {
         @Valid @RequestBody AdminServiceUpdateRequest request
     ) {
         return adminCatalogService.updateService(id, request);
+    }
+
+    @GetMapping("/services/{serviceId}/options")
+    public List<ServiceCatalogOptionResponse> serviceOptions(@PathVariable Long serviceId) {
+        return serviceCatalogOptionService.admin(serviceId);
+    }
+
+    @PostMapping("/services/{serviceId}/options")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ServiceCatalogOptionResponse createServiceOption(@PathVariable Long serviceId, @Valid @RequestBody AdminServiceCatalogOptionRequest request) {
+        return serviceCatalogOptionService.create(serviceId, request);
+    }
+
+    @PutMapping("/service-options/{optionId}")
+    public ServiceCatalogOptionResponse updateServiceOption(@PathVariable Long optionId, @Valid @RequestBody AdminServiceCatalogOptionRequest request) {
+        return serviceCatalogOptionService.update(optionId, request);
     }
 
     @GetMapping("/dining-styles")

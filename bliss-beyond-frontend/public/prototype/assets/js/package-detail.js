@@ -1,6 +1,6 @@
 (function () {
   const venueStrip = document.querySelector('.venue-strip');
-  const packageHeading = document.querySelector('header.hero h1');
+  const packageHeading = document.querySelector('[data-package-title], header.hero h1');
   if (!venueStrip || !packageHeading) return;
 
   const configuredApiBase = '__BB_API_BASE_URL__';
@@ -13,6 +13,17 @@
       : configuredApiBase.replace(/\/+$/, ''));
   const apiUrl = (path) => window.bbApiUrl ? window.bbApiUrl(path) : `${apiBase}${path}`;
   const packageSlug = document.body.dataset.packageSlug;
+  const packageImage = document.querySelector('[data-package-image]');
+  const fallbackImage = '/prototype/assets/img/venue-1.jpg';
+  const resolveImage = (value) => {
+    const raw = String(value || '').trim();
+    if (!raw) return '';
+    if (/^https?:\/\//i.test(raw) || raw.startsWith('/')) return raw;
+    const normalized = raw.replace(/^\.\//, '').replace(/^\/+/, '');
+    if (normalized.startsWith('prototype/')) return `/${normalized}`;
+    if (normalized.startsWith('assets/')) return `/prototype/${normalized}`;
+    return `/prototype/assets/img/${normalized}`;
+  };
 
   const normalize = (value) => String(value || '')
     .toLowerCase()
@@ -27,11 +38,11 @@
     const guests = Number(value);
     return Number.isFinite(guests) ? `PACKAGE: UP TO ${new Intl.NumberFormat('en-US').format(guests)} GUESTS` : 'Guest limit not set';
   };
-  const formatVenueCapacity = (value) => {
+  const formatCapacityValue = (value) => {
     const capacity = Number(value);
     return Number.isFinite(capacity) && capacity > 0
-      ? `VENUE: UP TO ${new Intl.NumberFormat('en-US').format(capacity)} GUESTS`
-      : '';
+      ? `Up to ${new Intl.NumberFormat('en-US').format(capacity)} Guests`
+      : 'Capacity not set';
   };
   const categoryLabel = (value) => String(value || '')
     .toLowerCase()
@@ -45,6 +56,26 @@
     const icon = element.querySelector('i');
     if (icon) element.replaceChildren(icon, document.createTextNode(` ${value}`));
     else element.textContent = value;
+  };
+  const setPackageImage = (current) => {
+    if (!packageImage) return;
+    let storedImage = '';
+    try {
+      const plan = JSON.parse(window.sessionStorage.getItem('bb_package_plan') || '{}');
+      storedImage = plan.packageSlug === current.slug ? plan.packageImage : '';
+    } catch (error) {
+      storedImage = '';
+    }
+    const image = resolveImage(current.image) || resolveImage(storedImage);
+    packageImage.alt = `${current.name || 'Package'} package image`;
+    packageImage.classList.remove('is-fallback');
+    packageImage.onerror = () => {
+      packageImage.onerror = null;
+      packageImage.src = fallbackImage;
+      packageImage.classList.add('is-fallback');
+    };
+    packageImage.src = image || fallbackImage;
+    if (!image) packageImage.classList.add('is-fallback');
   };
   const configureBookingLinks = (current) => {
     let plan = {};
@@ -81,6 +112,30 @@
     const key = normalize(value);
     return key === 'soundlightingav' ? 'lightingav' : key;
   };
+  const serviceCards = [...document.querySelectorAll('.service-card')];
+  serviceCards.forEach((card) => { card.hidden = true; });
+  const closeServiceCard = (card) => {
+    const toggle = card.querySelector('.service-head');
+    const panel = card.querySelector('.service-panel');
+    if (!toggle || !panel) return;
+    toggle.setAttribute('aria-expanded', 'false');
+    card.classList.remove('is-open');
+    panel.hidden = true;
+  };
+  serviceCards.forEach((card) => {
+    const toggle = card.querySelector('.service-head');
+    const panel = card.querySelector('.service-panel');
+    if (!toggle || !panel) return;
+    toggle.addEventListener('click', () => {
+      const isOpen = toggle.getAttribute('aria-expanded') === 'true';
+      serviceCards.forEach((otherCard) => {
+        if (otherCard !== card) closeServiceCard(otherCard);
+      });
+      toggle.setAttribute('aria-expanded', String(!isOpen));
+      card.classList.toggle('is-open', !isOpen);
+      panel.hidden = isOpen;
+    });
+  });
 
   const showUnavailable = () => {
     packageHeading.textContent = 'Package unavailable';
@@ -99,74 +154,70 @@
   const renderPackage = (current) => {
     const venue = current.venue || {};
     const guests = formatGuests(current.maxGuests);
-    const venueCapacity = formatVenueCapacity(venue.capacity);
     const category = categoryLabel(current.category);
     const venueName = venue.name || 'Venue not set';
     const venueLocation = venue.location || 'Location not set';
 
     packageHeading.textContent = current.name || packageHeading.textContent;
+    setPackageImage(current);
+    setElementText('[data-package-breadcrumb]', current.name || 'Package');
     setElementText('.hero-copy', current.description || '');
     const badges = document.querySelectorAll('.hero-badge');
     if (badges[0]) badges[0].textContent = `${category} package`;
     if (badges[1]) badges[1].textContent = venueLocation;
-    setIconText(document.querySelectorAll('.hero-detail')[0], venueName);
-    setIconText(document.querySelectorAll('.hero-detail')[1], guests);
+    setElementText('[data-hero-venue-capacity]', formatCapacityValue(venue.capacity));
+    setElementText('[data-hero-package-capacity]', formatCapacityValue(current.maxGuests));
+    setElementText('[data-hero-venue]', venueName);
+    setElementText('[data-hero-location]', venueLocation);
     setElementText('.price-card .price', formatMoney(current.finalPrice));
     setElementText('.price-card small', guests);
     setElementText('#venue-title', venueName);
-    setElementText('.venue-content p', [venueLocation, venueCapacity, guests].filter(Boolean).join(' | '));
-    setElementText('.venue-content p', `${venueLocation} · ${venueCapacity} · ${guests}`);
     setElementText('#cta-title', current.name || '');
     setElementText('.final-cta p', `${formatMoney(current.finalPrice)} · ${guests}`);
 
-    document.querySelectorAll('.benefit').forEach((benefit) => {
-      const label = benefit.querySelector('span')?.textContent?.toLowerCase() || '';
-      const value = benefit.querySelector('strong');
-      if (!value) return;
-      if (label.includes('package guest allowance')) value.textContent = Number(current.maxGuests).toLocaleString('en-US');
-      if (label.includes('celebration location')) value.textContent = venueLocation;
-      if (label.includes('services included')) value.textContent = String((current.services || []).length);
-    });
-
-    const serviceCards = [...document.querySelectorAll('.service-card')];
-    (current.services || []).forEach((service) => {
-      const card = serviceCards.find((item) => serviceKey(item.querySelector('h3')?.textContent) === serviceKey(service.serviceName));
+    setElementText('.venue-content p', venueLocation);
+    serviceCards.forEach((card) => { card.hidden = true; closeServiceCard(card); });
+    const renderedServiceKeys = new Set();
+    (Array.isArray(current.services) ? current.services : []).forEach((service) => {
+      const currentServiceKey = serviceKey(service?.serviceName);
+      if (!currentServiceKey || renderedServiceKeys.has(currentServiceKey)) return;
+      const card = serviceCards.find((item) => serviceKey(item.querySelector('.service-title')?.textContent) === serviceKey(service.serviceName));
       if (!card) return;
-      const heading = card.querySelector('h3');
+      renderedServiceKeys.add(currentServiceKey);
+      card.hidden = false;
+      const heading = card.querySelector('.service-title');
       const list = card.querySelector('.package-inclusions');
       if (heading) heading.textContent = service.serviceName;
       if (list) {
-        list.innerHTML = (service.inclusions || []).map(() =>
+        const inclusions = Array.isArray(service.inclusions)
+          ? service.inclusions.filter((item) => typeof item === 'string' && item.trim())
+          : [];
+        list.innerHTML = (inclusions.length ? inclusions : ['Included in this package.']).map(() =>
           `<li><i class="bi bi-check2" aria-hidden="true"></i><span></span></li>`
         ).join('');
         [...list.querySelectorAll('li span')].forEach((item, index) => {
-          item.textContent = service.inclusions[index];
+          item.textContent = inclusions[index] || 'Included in this package.';
         });
       }
     });
+    const inclusionEmpty = document.querySelector('.inclusion-empty');
+    if (inclusionEmpty) inclusionEmpty.hidden = serviceCards.every((card) => card.hidden);
 
     const websiteUrl = String(venue.websiteUrl || '').trim();
     const validWebsite = /^https?:\/\/.+/i.test(websiteUrl);
+    const venueUrl = validWebsite ? websiteUrl : '';
+    const websiteStatus = document.querySelector('[data-venue-website-status]');
+    if (websiteStatus) websiteStatus.hidden = Boolean(venueUrl);
     document.querySelectorAll('.hero-actions a, .venue-strip a').forEach((link) => {
       if (!/view venue/i.test(link.textContent || '')) return;
-      link.hidden = !validWebsite;
-      if (validWebsite) {
-        link.href = websiteUrl;
+      link.hidden = !venueUrl;
+      if (venueUrl) {
+        link.href = venueUrl;
         link.target = '_blank';
         link.rel = 'noopener noreferrer';
       }
     });
     document.querySelector('[data-dynamic-venue-website]')?.remove();
-    if (validWebsite) {
-      const link = document.createElement('a');
-      link.className = 'btn btn-gold';
-      link.href = websiteUrl;
-      link.target = '_blank';
-      link.rel = 'noopener noreferrer';
-      link.dataset.dynamicVenueWebsite = 'true';
-      link.textContent = 'Visit Hotel Website';
-      venueStrip.appendChild(link);
-    }
 
     document.body.dataset.packageActive = String(Boolean(current.active));
     configureBookingLinks(current);

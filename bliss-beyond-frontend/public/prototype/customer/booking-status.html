@@ -34,10 +34,7 @@
     <a class="" href="/prototype/customer/dashboard.html">Dashboard</a>
     <a class="" href="/prototype/customer/profile.html">My Profile</a>
     <h6>Plan your event</h6>
-    <a class="" href="/prototype/customer/browse-packages.html">Browse Packages</a>
-    
     <a class="" href="/prototype/customer/venue-selection.html">Venue Selection</a>
-    <a class="" href="/prototype/customer/ai-recommendation.html">AI Recommendation</a>
     <a class="" href="/prototype/customer/booking.html">New Booking</a>
     <h6>My bookings</h6>
     <a class="" href="/prototype/customer/consultation.html">Consultation</a>
@@ -57,12 +54,21 @@
       <div class="d-flex gap-2">
         <a class="btn btn-outline-forest btn-sm d-none" href="/prototype/customer/quotation.html" data-booking-quotation-link>View quotation</a>
         <a class="btn btn-gold btn-sm d-none" href="/prototype/customer/payment.html" data-booking-pay-button>Pay deposit</a>
+        <button class="btn btn-outline-danger btn-sm d-none" type="button" data-booking-cancel-button>Cancel Booking</button>
+      </div>
+    </div>
+
+    <div class="booking-cancelled-notice d-none mb-4" role="status" data-booking-cancelled-notice>
+      <div class="booking-cancelled-notice__icon" aria-hidden="true"><i class="bi bi-shield-x"></i></div>
+      <div>
+        <div class="booking-cancelled-notice__title">This booking has already been cancelled.</div>
+        <div class="booking-cancelled-notice__text">No further changes can be made to this booking.</div>
       </div>
     </div>
 
     <div class="row g-3 mb-4">
       <div class="col-6 col-lg-3">
-        <div class="stat-card reveal">
+        <div class="stat-card booking-status-card reveal" data-booking-status-card>
           <div class="d-flex justify-content-between align-items-start">
             <div>
               <div class="stat-label">Booking status</div>
@@ -149,15 +155,16 @@
             </ul>
           </div>
         </div>
-        <div class="panel">
-          <div class="panel__head"><h5 class="mb-0">Catering details</h5></div>
-          <div class="panel__body" data-booking-catering>
-            <p class="text-ink-soft mb-0">Loading catering details...</p>
-          </div>
-        </div>
       </div>
     </div>
   </main>
+</div>
+<div class="modal fade" id="bookingCancelModal" tabindex="-1" aria-labelledby="bookingCancelTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered"><div class="modal-content">
+    <div class="modal-header"><h2 class="modal-title h5" id="bookingCancelTitle">Cancel this booking?</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Keep booking"></button></div>
+    <div class="modal-body">This action will cancel your booking. Please confirm before continuing.</div>
+    <div class="modal-footer d-block"><div class="small text-danger mb-3 d-none" role="alert" data-booking-cancel-error></div><div class="d-flex justify-content-end gap-2"><button type="button" class="btn btn-outline-forest" data-bs-dismiss="modal">Keep Booking</button><button type="button" class="btn btn-danger" data-booking-cancel-confirm>Cancel Booking</button></div></div>
+  </div></div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="/prototype/assets/js/main.js"></script>

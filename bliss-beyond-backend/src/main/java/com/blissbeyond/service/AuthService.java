@@ -12,11 +12,13 @@ import com.blissbeyond.entity.RoleName;
 import com.blissbeyond.entity.User;
 import com.blissbeyond.exception.DuplicateResourceException;
 import com.blissbeyond.exception.ForbiddenActionException;
+import com.blissbeyond.exception.TooManyRequestsException;
 import com.blissbeyond.repository.RoleRepository;
 import com.blissbeyond.repository.UserRepository;
 import com.blissbeyond.security.JwtService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -37,6 +39,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
+    private final AuthenticationThrottleService authenticationThrottleService;
     private final String googleClientId;
 
     public AuthService(UserRepository userRepository,
@@ -44,18 +47,22 @@ public class AuthService {
                        PasswordEncoder passwordEncoder,
                        AuthenticationManager authenticationManager,
                        JwtService jwtService,
+                       AuthenticationThrottleService authenticationThrottleService,
                        @Value("${app.google.client-id:}") String googleClientId) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
+        this.authenticationThrottleService = authenticationThrottleService;
         this.googleClientId = googleClientId == null ? "" : googleClientId.trim();
     }
 
     @Transactional
     public AuthResponse register(RegisterRequest request) {
-        if (userRepository.existsByEmail(request.email())) {
+        String email = normalizeEmail(request.email());
+        PasswordPolicy.validate(request.password());
+        if (userRepository.existsByEmail(email)) {
             throw new DuplicateResourceException("Email is already registered");
         }
 
@@ -65,7 +72,7 @@ public class AuthService {
         User user = new User();
         user.setFirstName(request.firstName());
         user.setLastName(request.lastName());
-        user.setEmail(request.email().toLowerCase());
+        user.setEmail(email);
         user.setPhone(request.phone());
         user.setPasswordHash(passwordEncoder.encode(request.password()));
         user.setRoles(new HashSet<>(Set.of(customerRole)));
@@ -75,12 +82,24 @@ public class AuthService {
     }
 
     public AuthResponse login(LoginRequest request) {
-        authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(request.email().toLowerCase(), request.password())
-        );
-        User user = userRepository.findByEmail(request.email().toLowerCase())
-            .orElseThrow(() -> new ForbiddenActionException("Invalid credentials"));
-        return issueToken(user);
+        String email = normalizeEmail(request.email());
+        if (!authenticationThrottleService.loginAllowed(email)) {
+            throw new TooManyRequestsException(
+                "Too many unsuccessful sign-in attempts. Please try again later."
+            );
+        }
+        try {
+            authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(email, request.password())
+            );
+            User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new BadCredentialsException("Invalid credentials"));
+            authenticationThrottleService.clearLoginFailures(email);
+            return issueToken(user);
+        } catch (AuthenticationException ex) {
+            authenticationThrottleService.recordLoginFailure(email);
+            throw new BadCredentialsException("Invalid credentials");
+        }
     }
 
     @Transactional
@@ -152,7 +171,11 @@ public class AuthService {
         String token = jwtService.generateToken(
             user.getEmail(),
             roles,
-            Map.of("userId", user.getId(), "email", user.getEmail())
+            Map.of(
+                "userId", user.getId(),
+                "email", user.getEmail(),
+                "securityVersion", user.getSecurityVersion()
+            )
         );
         return new AuthResponse(
             token,
@@ -162,5 +185,9 @@ public class AuthService {
             user.getFirstName() + " " + user.getLastName(),
             roles
         );
+    }
+
+    private String normalizeEmail(String email) {
+        return email == null ? "" : email.trim().toLowerCase();
     }
 }

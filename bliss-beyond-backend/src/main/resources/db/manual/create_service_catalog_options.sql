@@ -1,0 +1,21 @@
+CREATE TABLE IF NOT EXISTS service_catalog_options (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    service_id BIGINT NOT NULL,
+    option_type VARCHAR(40) NOT NULL,
+    option_key VARCHAR(120) NOT NULL,
+    name VARCHAR(160) NOT NULL,
+    description VARCHAR(1000) NULL,
+    price DECIMAL(12,2) NOT NULL DEFAULT 0.00,
+    billing_type VARCHAR(30) NOT NULL DEFAULT 'FLAT',
+    available BOOLEAN NOT NULL DEFAULT TRUE,
+    display_order INT NOT NULL DEFAULT 0,
+    metadata_json JSON NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    CONSTRAINT fk_service_catalog_options_service FOREIGN KEY (service_id) REFERENCES services(id),
+    CONSTRAINT uq_service_catalog_option_key UNIQUE (service_id, option_key),
+    INDEX idx_service_catalog_options_service (service_id),
+    INDEX idx_service_catalog_options_available (service_id, available),
+    INDEX idx_service_catalog_options_order (service_id, display_order)
+);

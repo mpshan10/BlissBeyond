@@ -1673,7 +1673,7 @@ body{
 
 </head>
 
-<body>
+<body data-catalog-service="entertainment">
 
 <nav class="navbar navbar-expand-lg bb-nav sticky-top">
   <div class="container-fluid px-3 px-lg-4">
@@ -2370,7 +2370,7 @@ document.addEventListener('DOMContentLoaded', function(){
   const timePicker = document.querySelector('[data-time-picker]');
   const timeDisplay = timePicker?.querySelector('[data-time-display]');
   const timeButtons = timePicker ? timePicker.querySelectorAll('[data-hour], [data-minute], [data-period]') : [];
-  const availabilityUrl = window.bbApiUrl('/api/services/4');
+  const availabilityUrl = window.bbApiUrl('/api/services/key/entertainment');
   const availabilityMessage = 'Entertainment is currently unavailable.';
 
   function selected(group){
@@ -2470,9 +2470,7 @@ document.addEventListener('DOMContentLoaded', function(){
       }
 
       const service = await response.json();
-      const isValid =
-        Number(service?.id) === BACKEND_SERVICE_ID &&
-        String(service?.name || '').trim() === SERVICE_TITLE;
+      const isValid = String(service?.name || '').trim() === SERVICE_TITLE;
 
       if (!isValid) {
         throw new Error('Unexpected entertainment catalog payload');
@@ -3212,5 +3210,6 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 
+<script src="/prototype/assets/js/catalog-options.js"></script>
 </body>
 </html>

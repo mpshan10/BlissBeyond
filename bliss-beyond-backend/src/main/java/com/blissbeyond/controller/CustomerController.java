@@ -2,6 +2,7 @@ package com.blissbeyond.controller;
 
 import com.blissbeyond.dto.booking.CustomerBookingDetailResponse;
 import com.blissbeyond.dto.booking.CustomerBookingSummaryResponse;
+import com.blissbeyond.dto.booking.BookingResponse;
 import com.blissbeyond.dto.customer.CustomerResponse;
 import com.blissbeyond.dto.customer.CustomerProfileUpdateRequest;
 import com.blissbeyond.dto.customer.CustomerPasswordChangeRequest;
@@ -26,10 +27,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.http.MediaType;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.access.prepost.PreAuthorize;
 
@@ -71,6 +77,11 @@ public class CustomerController {
         return toCustomerResponse(currentUserService.updateProfile(request));
     }
 
+    @PostMapping(value = "/profile/photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public CustomerResponse updateProfilePhoto(@RequestPart("photo") MultipartFile photo) {
+        return toCustomerResponse(currentUserService.updateProfilePhoto(photo));
+    }
+
     @PutMapping("/password")
     public Map<String, String> changePassword(@jakarta.validation.Valid @org.springframework.web.bind.annotation.RequestBody CustomerPasswordChangeRequest request) {
         currentUserService.changePassword(request);
@@ -79,7 +90,7 @@ public class CustomerController {
 
     private CustomerResponse toCustomerResponse(User user) {
         List<String> roles = user.getRoles().stream().map(role -> role.getName().name()).toList();
-        return new CustomerResponse(user.getId(), user.getFirstName(), user.getLastName(), user.getEmail(), user.getPhone(), user.getAddress(), roles);
+        return new CustomerResponse(user.getId(), user.getFirstName(), user.getLastName(), user.getEmail(), user.getPhone(), user.getAddress(), user.getProfileImageUrl(), roles);
     }
 
     @GetMapping("/events")
@@ -95,6 +106,18 @@ public class CustomerController {
     @GetMapping("/bookings/{id}")
     public CustomerBookingDetailResponse booking(@PathVariable Long id) {
         return bookingService.requireOwnedBookingDetail(id);
+    }
+
+    @PatchMapping("/bookings/{id}/cancel")
+    public BookingResponse cancelBooking(@PathVariable Long id) {
+        Booking booking = bookingService.cancelOwnedBooking(id);
+        return new BookingResponse(
+            booking.getId(), booking.getCustomer() == null ? null : booking.getCustomer().getId(),
+            booking.getEvent() == null ? null : booking.getEvent().getId(),
+            booking.getQuotation() == null ? null : booking.getQuotation().getId(), booking.getVenueId(),
+            booking.getEventDate(), booking.getStartTime(), booking.getEndTime(),
+            booking.getStatus() == null ? null : booking.getStatus().name(), booking.getCreatedAt(), booking.getConfirmedAt()
+        );
     }
 
     @org.springframework.web.bind.annotation.PostMapping("/bookings/{bookingId}/payments")

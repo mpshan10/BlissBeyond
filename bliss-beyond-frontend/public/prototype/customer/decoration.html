@@ -2454,7 +2454,7 @@ body{
 
 </head>
 
-<body>
+<body data-catalog-service="decoration">
 
 <!-- =========================================================
      NAVIGATION
@@ -4482,7 +4482,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
       const response =
         await fetch(
-          window.bbApiUrl('/api/services/2'),
+          window.bbApiUrl('/api/services/key/decoration'),
           {
             cache:'no-store'
           }
@@ -4970,5 +4970,6 @@ document.addEventListener('DOMContentLoaded', function () {
 </script>
 
 
+<script src="/prototype/assets/js/catalog-options.js"></script>
 </body>
 </html>

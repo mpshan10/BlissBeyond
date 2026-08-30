@@ -120,6 +120,16 @@
 
       <div class="col-xl-4">
         <div class="panel mb-4">
+          <div class="panel__head"><h5 class="mb-0">Payment Summary</h5><a class="small" href="/prototype/admin/payments.html">View payments</a></div>
+          <div class="panel__body d-grid gap-2 small">
+            <div class="d-flex justify-content-between"><span>Pending</span><strong data-admin-payment-summary-count="PENDING">-</strong></div>
+            <div class="d-flex justify-content-between"><span>Paid</span><strong data-admin-payment-summary-count="PAID">-</strong></div>
+            <div class="d-flex justify-content-between"><span>Failed</span><strong data-admin-payment-summary-count="FAILED">-</strong></div>
+            <div class="d-flex justify-content-between"><span>Refunded</span><strong data-admin-payment-summary-count="REFUNDED">-</strong></div>
+            <div class="small text-ink-soft mt-1" data-admin-payment-summary-total>Loading payment summary...</div>
+          </div>
+        </div>
+        <div class="panel mb-4">
           <div class="panel__head"><h5 class="mb-0">Quotation Summary</h5></div>
           <div class="panel__body d-grid gap-3">
             <div class="d-flex justify-content-between align-items-center"><span>Draft</span><strong data-admin-quotation-count="DRAFT">-</strong></div>
@@ -141,6 +151,11 @@
               <li>Loading...</li>
             </ul>
           </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel__head"><h5 class="mb-0">Recent Payments</h5><span class="bb-badge">Latest 5</span></div>
+          <div class="panel__body"><div class="table-responsive"><table class="table table-sm align-middle"><thead><tr><th>Payment</th><th>Booking / Customer</th><th>Amount</th><th>Status</th></tr></thead><tbody data-admin-recent-payment-rows><tr><td colspan="4" class="text-center py-4 text-ink-soft">Loading...</td></tr></tbody></table></div></div>
         </div>
       </div>
     </div>

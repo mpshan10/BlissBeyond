@@ -15,6 +15,7 @@ import com.blissbeyond.entity.MenuSelection;
 import com.blissbeyond.entity.ServiceCustomization;
 import com.blissbeyond.entity.ServiceEntity;
 import com.blissbeyond.entity.Quotation;
+import com.blissbeyond.entity.QuotationStatus;
 import com.blissbeyond.entity.User;
 import com.blissbeyond.entity.Payment;
 import com.blissbeyond.entity.PaymentStatus;
@@ -40,8 +41,6 @@ import com.blissbeyond.repository.ConsultationRepository;
 import com.blissbeyond.validation.EventTimeValidator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -57,8 +56,6 @@ import java.util.Objects;
 
 @Service
 public class BookingService {
-    private static final Logger log = LoggerFactory.getLogger(BookingService.class);
-
     private final BookingRepository bookingRepository;
     private final EventRepository eventRepository;
     private final CurrentUserService currentUserService;
@@ -75,6 +72,7 @@ public class BookingService {
     private final NotificationService notificationService;
     private final PaymentRepository paymentRepository;
     private final ConsultationRepository consultationRepository;
+    private final CustomizeServicePricing customizeServicePricing;
 
     public BookingService(
         BookingRepository bookingRepository,
@@ -92,7 +90,8 @@ public class BookingService {
         PackageBookingSnapshotRepository packageBookingSnapshotRepository,
         NotificationService notificationService,
         PaymentRepository paymentRepository,
-        ConsultationRepository consultationRepository
+        ConsultationRepository consultationRepository,
+        CustomizeServicePricing customizeServicePricing
     ) {
         this.bookingRepository = bookingRepository;
         this.eventRepository = eventRepository;
@@ -110,6 +109,7 @@ public class BookingService {
         this.notificationService = notificationService;
         this.paymentRepository = paymentRepository;
         this.consultationRepository = consultationRepository;
+        this.customizeServicePricing = customizeServicePricing;
     }
 
     public List<Booking> listMine() {
@@ -220,10 +220,23 @@ public class BookingService {
     @Transactional
     public Booking cancelBooking(Long id) {
         Booking booking = requireBooking(id);
-        if (booking.getStatus() == BookingStatus.CONFIRMED
-            && paymentRepository.findByBookingIdOrderByIdAsc(id).stream()
+        return cancelBookingIfAllowed(booking, true);
+    }
+
+    @Transactional
+    public Booking cancelOwnedBooking(Long id) {
+        return cancelBookingIfAllowed(requireOwnedBooking(id), false);
+    }
+
+    private Booking cancelBookingIfAllowed(Booking booking, boolean enforcePaymentReview) {
+        if (enforcePaymentReview && booking.getStatus() == BookingStatus.CONFIRMED
+            && paymentRepository.findByBookingIdOrderByIdAsc(booking.getId()).stream()
                 .anyMatch(payment -> payment.getPaymentStatus() == PaymentStatus.PAID)) {
             throw new IllegalArgumentException("Confirmed paid bookings cannot be cancelled directly. Payment/refund review is required.");
+        }
+        if (booking.getStatus() != BookingStatus.PENDING && booking.getStatus() != BookingStatus.AWAITING_DEPOSIT
+            && booking.getStatus() != BookingStatus.CONFIRMED) {
+            throw new IllegalArgumentException("This booking cannot be cancelled.");
         }
         return transitionBookingStatus(booking, BookingStatus.CANCELLED);
     }
@@ -261,35 +274,31 @@ public class BookingService {
           eventServiceRepository.deleteByEventId(event.getId());
         }
 
-        Set<Long> seenServiceIds = new HashSet<>();
-        boolean missingFoodMapping = false;
-
+        Set<String> seenServices = new HashSet<>();
         for (BookingServiceSelectionRequest selection : selectedServices) {
             if (selection == null) {
                 continue;
             }
 
             Long backendServiceId = selection.backendServiceId();
-            if (backendServiceId == null || backendServiceId <= 0) {
-                throw new IllegalArgumentException("Selected service is missing a valid backend service ID");
+            String serviceKey = selection.serviceKey() == null ? "" : selection.serviceKey().trim().toLowerCase();
+            if ((backendServiceId == null || backendServiceId <= 0) && serviceKey.isBlank()) {
+                throw new IllegalArgumentException("Selected service is missing a valid service key");
             }
-            if (!seenServiceIds.add(backendServiceId)) {
-                throw new IllegalArgumentException("Duplicate service selection found for service ID " + backendServiceId);
+            if (!seenServices.add(serviceKey.isBlank() ? "id:" + backendServiceId : "key:" + serviceKey)) {
+                throw new IllegalArgumentException("Duplicate service selection found");
             }
 
-            ServiceEntity service = serviceRepository.findById(backendServiceId)
-                .orElseThrow(() -> new ResourceNotFoundException("Service not found"));
+            ServiceEntity service = resolveSelectedService(selection, backendServiceId);
             if (!service.isAvailable()) {
                 throw new IllegalArgumentException(service.getName() + " is currently unavailable.");
             }
 
             JsonNode customization = selection.customization();
-            BigDecimal estimatedTotal = backendServiceId == 1L
+            BigDecimal estimatedTotal = customizeServicePricing.isCateringKey(selection.serviceKey())
+                || ((selection.serviceKey() == null || selection.serviceKey().isBlank()) && backendServiceId == 1L)
                 ? calculateTrustedCateringTotal(event, customization)
-                : selection.estimatedTotal();
-            if (estimatedTotal == null || estimatedTotal.compareTo(BigDecimal.ZERO) < 0) {
-                throw new IllegalArgumentException("Invalid estimated total for " + service.getName());
-            }
+                : customizeServicePricing.calculate(selection.serviceKey(), customization).total();
 
             EventService eventService = new EventService();
             eventService.setEvent(event);
@@ -309,15 +318,32 @@ public class BookingService {
                 serviceCustomization.setEstimatedTotal(estimatedTotal);
                 serviceCustomizationRepository.save(serviceCustomization);
 
-                if (backendServiceId == 1L) {
-                    missingFoodMapping = persistMenuSelections(event, customization) || missingFoodMapping;
+                if (customizeServicePricing.isCateringKey(selection.serviceKey())
+                    || ((selection.serviceKey() == null || selection.serviceKey().isBlank()) && backendServiceId == 1L)) {
+                    persistMenuSelections(event, customization);
                 }
             }
         }
+    }
 
-        if (missingFoodMapping) {
-            log.info("Catering menu selections were saved without backend food rows because no reliable food IDs were provided.");
+    private ServiceEntity resolveSelectedService(BookingServiceSelectionRequest selection, Long backendServiceId) {
+        String key = selection.serviceKey() == null ? "" : selection.serviceKey().trim().toLowerCase();
+        String serviceName = switch (key) {
+            case "catering" -> "Catering";
+            case "decoration" -> "Decoration & Styling";
+            case "photography" -> "Photography & Videography";
+            case "entertainment" -> "Entertainment";
+            case "lighting-av" -> "Lighting & AV";
+            case "cake" -> "Cake & Desserts";
+            case "florals" -> "Floral Design";
+            default -> null;
+        };
+        if (serviceName != null) {
+            return serviceRepository.findByNameIgnoreCase(serviceName)
+                .orElseThrow(() -> new ResourceNotFoundException("Service not found"));
         }
+        return serviceRepository.findById(backendServiceId)
+            .orElseThrow(() -> new ResourceNotFoundException("Service not found"));
     }
 
     private BigDecimal calculateTrustedCateringTotal(Event event, JsonNode customization) {
@@ -342,6 +368,7 @@ public class BookingService {
 
         BigDecimal guests = BigDecimal.valueOf(event.getGuestCount());
         BigDecimal total = diningStyle.getPricePerGuest().multiply(guests);
+        total = total.add(calculateTrustedFoodTotal(customization, event.getGuestCount()));
         JsonNode addons = customization.get("addons");
         Set<Long> seenAddonIds = new HashSet<>();
 
@@ -383,6 +410,36 @@ public class BookingService {
         return total;
     }
 
+    private BigDecimal calculateTrustedFoodTotal(JsonNode customization, int guestCount) {
+        JsonNode foods = customization.get("foods");
+        if (foods == null || foods.isNull()) {
+            return BigDecimal.ZERO;
+        }
+        if (!foods.isArray()) {
+            throw new IllegalArgumentException("Please select valid Catering food items.");
+        }
+
+        BigDecimal guests = BigDecimal.valueOf(guestCount);
+        BigDecimal total = BigDecimal.ZERO;
+        Set<Long> seenFoodIds = new HashSet<>();
+        for (JsonNode foodNode : foods) {
+            Long foodId = extractFoodId(foodNode);
+            if (foodId == null || !seenFoodIds.add(foodId)) {
+                throw new IllegalArgumentException(foodId == null
+                    ? "Please select valid Catering food items."
+                    : "Duplicate Catering food selected: " + foodId);
+            }
+
+            Food food = foodRepository.findById(foodId)
+                .orElseThrow(() -> new IllegalArgumentException("Please select valid Catering food items."));
+            if (!food.isAvailable()) {
+                throw new IllegalArgumentException("Selected food is currently unavailable: " + food.getName());
+            }
+            total = total.add(food.getPricePerGuest().multiply(guests));
+        }
+        return total;
+    }
+
     private DiningStyle resolveDiningStyle(JsonNode customization) {
         JsonNode styleNode = customization.get("style");
         JsonNode idNode = styleNode != null && styleNode.isObject()
@@ -417,33 +474,31 @@ public class BookingService {
         }
     }
 
-    private boolean persistMenuSelections(Event event, JsonNode customization) {
+    private void persistMenuSelections(Event event, JsonNode customization) {
         JsonNode foods = customization.get("foods");
-        if (foods == null || !foods.isArray()) {
-            return false;
+        if (foods == null || foods.isNull()) {
+            return;
+        }
+        if (!foods.isArray()) {
+            throw new IllegalArgumentException("Please select valid Catering food items.");
         }
 
-        boolean missingMapping = false;
+        Set<Long> seenFoodIds = new HashSet<>();
         for (JsonNode foodNode : foods) {
             Long foodId = extractFoodId(foodNode);
-            if (foodId == null) {
-                missingMapping = true;
-                continue;
+            if (foodId == null || !seenFoodIds.add(foodId)) {
+                throw new IllegalArgumentException(foodId == null
+                    ? "Please select valid Catering food items."
+                    : "Duplicate Catering food selected: " + foodId);
             }
 
-            Food food = foodRepository.findById(foodId).orElse(null);
-            if (food == null) {
-                missingMapping = true;
-                continue;
-            }
+            Food food = foodRepository.findById(foodId)
+                .orElseThrow(() -> new IllegalArgumentException("Please select valid Catering food items."));
             if (!food.isAvailable()) {
                 throw new IllegalArgumentException("Selected food is currently unavailable: " + food.getName());
             }
 
-            int quantity = extractQuantity(foodNode, event);
-            if (quantity <= 0) {
-                quantity = Math.max(1, event.getGuestCount() == null ? 1 : event.getGuestCount());
-            }
+            int quantity = Math.max(1, event.getGuestCount() == null ? 1 : event.getGuestCount());
 
             MenuSelection selection = new MenuSelection();
             selection.setEvent(event);
@@ -453,7 +508,6 @@ public class BookingService {
             menuSelectionRepository.save(selection);
         }
 
-        return missingMapping;
     }
 
     private Long extractFoodId(JsonNode foodNode) {
@@ -473,20 +527,6 @@ public class BookingService {
             return value > 0 ? value : null;
         }
         return null;
-    }
-
-    private int extractQuantity(JsonNode foodNode, Event event) {
-        if (foodNode != null) {
-            JsonNode quantityNode = foodNode.get("quantity");
-            if (quantityNode != null && quantityNode.canConvertToInt()) {
-                int quantity = quantityNode.asInt();
-                if (quantity > 0) {
-                    return quantity;
-                }
-            }
-        }
-
-        return Math.max(1, event.getGuestCount() == null ? 1 : event.getGuestCount());
     }
 
     private Booking transitionBookingStatus(Long id, BookingStatus targetStatus) {
@@ -758,13 +798,26 @@ public class BookingService {
 
     private CustomerBookingDetailResponse.PaymentSummary paymentSummary(Booking booking) {
         List<Payment> payments = paymentRepository.findByBookingIdOrderByIdAsc(booking.getId());
-        BigDecimal total = payments.stream().map(Payment::getAmount).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal total = paymentAuthoritativeTotal(booking);
         BigDecimal paid = payments.stream().filter(item -> item.getPaymentStatus() == PaymentStatus.PAID)
             .map(Payment::getAmount).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
         Payment latest = payments.isEmpty() ? null : payments.get(payments.size() - 1);
         return new CustomerBookingDetailResponse.PaymentSummary(
             latest == null || latest.getPaymentStatus() == null ? null : latest.getPaymentStatus().name(),
             total, paid, total.subtract(paid).max(BigDecimal.ZERO));
+    }
+
+    private BigDecimal paymentAuthoritativeTotal(Booking booking) {
+        if (booking.getBookingType() == BookingType.PACKAGE) {
+            return packageBookingSnapshotRepository.findByBookingId(booking.getId())
+                .map(PackageBookingSnapshot::getFinalPrice)
+                .orElseThrow(() -> new IllegalArgumentException("Historical package price is unavailable."));
+        }
+        Quotation quotation = booking.getQuotation();
+        if (quotation != null && quotation.getStatus() == QuotationStatus.ACCEPTED && quotation.getTotal() != null) {
+            return quotation.getTotal();
+        }
+        return BigDecimal.ZERO;
     }
 
     private CustomerBookingDetailResponse.QuotationSummary quotationSummary(Booking booking) {

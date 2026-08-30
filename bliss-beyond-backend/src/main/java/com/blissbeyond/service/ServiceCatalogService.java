@@ -29,6 +29,22 @@ public class ServiceCatalogService {
             .orElseThrow(() -> new ResourceNotFoundException("Service not found")));
     }
 
+    public ServiceResponse getByKey(String key) {
+        String name = switch (key == null ? "" : key.trim().toLowerCase()) {
+            case "catering" -> "Catering";
+            case "decoration" -> "Decoration & Styling";
+            case "photography" -> "Photography & Videography";
+            case "entertainment" -> "Entertainment";
+            case "lighting-av" -> "Lighting & AV";
+            case "cake" -> "Cake & Desserts";
+            case "florals", "floral" -> "Floral Design";
+            default -> throw new ResourceNotFoundException("Service not found");
+        };
+        return map(serviceRepository.findByNameIgnoreCase(name)
+            .filter(ServiceEntity::isAvailable)
+            .orElseThrow(() -> new ResourceNotFoundException("Service not found")));
+    }
+
     public ServiceEntity findEntity(Long id) {
         return serviceRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Service not found"));
     }

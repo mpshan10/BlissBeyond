@@ -49,8 +49,11 @@ public class AdminCatalogService {
     @Transactional
     public ServiceResponse updateService(Long id, AdminServiceUpdateRequest request) {
         ServiceEntity service = requireService(id);
+        String requestedName = request.name().trim();
+        if (!service.getName().equals(requestedName)) {
+            throw new IllegalArgumentException("Main service names are permanent and cannot be changed.");
+        }
         rejectDuplicateServiceName(id, request.name());
-        service.setName(request.name().trim());
         service.setDescription(trimToNull(request.description()));
         service.setBasePrice(request.basePrice());
         service.setAvailable(request.available());

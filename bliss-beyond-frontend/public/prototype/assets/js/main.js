@@ -9,8 +9,6 @@ const BB_API_BASE_URL = isLocalFrontend
     : "https://blissbeyond.onrender.com";
 
 window.BB_API_BASE_URL = BB_API_BASE_URL;
-const configuredGoogleClientId = "__BB_GOOGLE_CLIENT_ID__";
-window.BB_GOOGLE_CLIENT_ID = configuredGoogleClientId.startsWith("__") ? "" : configuredGoogleClientId;
 window.bbApiUrl = (path) => `${BB_API_BASE_URL}${path}`;
 
 const bbNativeFetch = window.fetch.bind(window);
@@ -18,17 +16,29 @@ window.bbApiFetch = async (input, options = {}) => {
   const requestUrl = typeof input === 'string' ? input : input?.url || '';
   const method = String(options.method || input?.method || 'GET').toUpperCase();
   const isBackendRequest = requestUrl.startsWith(`${BB_API_BASE_URL}/api/`);
-  const canRetryNetworkFailure = ['GET', 'HEAD', 'OPTIONS'].includes(method)
-    || requestUrl.endsWith('/api/auth/login');
-  const maxAttempts = isBackendRequest && !isLocalFrontend ? 2 : 1;
+  const isReadOnlyMethod = ['GET', 'HEAD', 'OPTIONS'].includes(method);
+  const maxAttempts = isBackendRequest && isReadOnlyMethod && !isLocalFrontend ? 2 : 1;
+  const uncertainMutationError = (status) => {
+    const error = new Error("We couldn't confirm whether this request completed. Please refresh and check the current status before trying again.");
+    if (status) error.status = status;
+    error.mutationOutcomeUnknown = true;
+    return error;
+  };
 
   for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
     try {
       const response = await bbNativeFetch(input, options);
       const retryableStatus = [502, 503, 504].includes(response.status);
-      if (!retryableStatus || attempt === maxAttempts) return response;
+      if (!retryableStatus) return response;
+      if (!isReadOnlyMethod) throw uncertainMutationError(response.status);
+      if (attempt === maxAttempts) return response;
     } catch (error) {
-      if (!canRetryNetworkFailure || attempt === maxAttempts) throw error;
+      if (error?.mutationOutcomeUnknown) throw error;
+      if (!isBackendRequest || isReadOnlyMethod) {
+        if (attempt === maxAttempts) throw error;
+      } else {
+        throw uncertainMutationError();
+      }
     }
 
     await new Promise((resolve) => window.setTimeout(resolve, 1500));
@@ -2089,6 +2099,8 @@ async function bbRenderCustomerBookingStatus() {
   const bookingId = Number(params.get('id') || params.get('bookingId') || 0);
   const titleEl = root.querySelector('[data-booking-title]');
   const subtitleEl = root.querySelector('[data-booking-subtitle]');
+  const cancelledNoticeEl = root.querySelector('[data-booking-cancelled-notice]');
+  const statusCardEl = root.querySelector('[data-booking-status-card]');
   const refEl = root.querySelector('[data-booking-ref]');
   const statusEl = root.querySelector('[data-booking-status-value]');
   const statusNoteEl = root.querySelector('[data-booking-status-note]');
@@ -2103,10 +2115,14 @@ async function bbRenderCustomerBookingStatus() {
   const priceSummaryEl = root.querySelector('[data-booking-price-summary]');
   const paymentEl = root.querySelector('[data-booking-payment]');
   const consultationsEl = root.querySelector('[data-booking-consultations]');
-  const cateringEl = root.querySelector('[data-booking-catering]');
   const timelineEl = root.querySelector('[data-booking-timeline]');
   const quotationLink = root.querySelector('[data-booking-quotation-link]');
   const payButton = root.querySelector('[data-booking-pay-button]');
+  const cancelButton = root.querySelector('[data-booking-cancel-button]');
+  const cancelConfirm = root.querySelector('[data-booking-cancel-confirm]') || document.querySelector('[data-booking-cancel-confirm]');
+  const cancelError = root.querySelector('[data-booking-cancel-error]') || document.querySelector('[data-booking-cancel-error]');
+  const cancelModal = document.getElementById('bookingCancelModal');
+  let currentBooking = null;
 
   const setError = (message, title = 'Booking not found.') => {
     if (titleEl) titleEl.textContent = title;
@@ -2119,14 +2135,11 @@ async function bbRenderCustomerBookingStatus() {
     if (priceSummaryEl) priceSummaryEl.innerHTML = '<p class="text-ink-soft mb-0">No price summary available.</p>';
     if (paymentEl) paymentEl.innerHTML = '<p class="text-ink-soft mb-0">No payment information available.</p>';
     if (consultationsEl) consultationsEl.innerHTML = '<p class="text-ink-soft mb-0">No quotation or consultation information available.</p>';
-    if (cateringEl) cateringEl.innerHTML = '<p class="text-ink-soft mb-0">No catering details available.</p>';
     if (timelineEl) timelineEl.innerHTML = '<li><strong>Booking details unavailable</strong><br><span class="small text-ink-soft">Select a booking from My Bookings.</span></li>';
     if (quotationLink) quotationLink.classList.add('d-none');
-    if (payButton) {
-      const awaitingDeposit = String(booking.status || '').toUpperCase() === 'AWAITING_DEPOSIT';
-      payButton.href = `/prototype/customer/payment.html?bookingId=${encodeURIComponent(booking.id)}`;
-      payButton.classList.toggle('d-none', !awaitingDeposit);
-    }
+    if (cancelButton) cancelButton.classList.add('d-none');
+    if (payButton) payButton.classList.add('d-none');
+    if (cancelledNoticeEl) cancelledNoticeEl.classList.add('d-none');
   };
 
   const renderTimeline = (booking) => {
@@ -2134,7 +2147,7 @@ async function bbRenderCustomerBookingStatus() {
     const status = String(booking.status || '').toUpperCase();
     const stage = { PENDING: 0, AWAITING_DEPOSIT: 1, CONFIRMED: 2, COMPLETED: 3 }[status];
     if (status === 'CANCELLED') {
-      timelineEl.innerHTML = '<li class="done"><strong>Booking cancelled</strong><br><span class="small text-ink-soft">This booking has been cancelled.</span></li>';
+      timelineEl.innerHTML = '<li class="done cancelled"><strong>Booking cancelled</strong><br><span class="small text-ink-soft">This booking has been cancelled.</span></li>';
       return;
     }
     const stageItems = [
@@ -2146,6 +2159,43 @@ async function bbRenderCustomerBookingStatus() {
     timelineEl.innerHTML = stageItems.map((item) => `<li class="${item.done ? 'done' : ''}"><strong>${bbEscapeHtml(item.label)}</strong><br><span class="small text-ink-soft">${bbEscapeHtml(item.detail)}</span></li>`).join('');
   };
 
+  const canCancelBooking = (booking) => {
+    const status = String(booking?.status || '').toUpperCase();
+    if (!['PENDING', 'AWAITING_DEPOSIT', 'CONFIRMED'].includes(status)) return false;
+    return true;
+  };
+
+  cancelButton?.addEventListener('click', () => {
+    if (cancelError) {
+      cancelError.textContent = '';
+      cancelError.classList.add('d-none');
+    }
+    if (cancelModal && window.bootstrap) bootstrap.Modal.getOrCreateInstance(cancelModal).show();
+  });
+
+  cancelConfirm?.addEventListener('click', async () => {
+    if (!currentBooking || !canCancelBooking(currentBooking)) return;
+    cancelConfirm.disabled = true;
+    cancelConfirm.textContent = 'Cancelling...';
+    try {
+      await bbFetchCustomerJson(window.bbApiUrl(`/api/customer/bookings/${currentBooking.id}/cancel`), { method: 'PATCH' });
+      if (cancelModal && window.bootstrap) bootstrap.Modal.getOrCreateInstance(cancelModal).hide();
+      window.location.reload();
+      return;
+    } catch (error) {
+      const message = error?.message || 'This booking could not be cancelled.';
+      if (cancelError) {
+        cancelError.textContent = message;
+        cancelError.classList.remove('d-none');
+      } else if (statusNoteEl) {
+        statusNoteEl.textContent = message;
+      }
+    } finally {
+      cancelConfirm.disabled = false;
+      cancelConfirm.textContent = 'Cancel Booking';
+    }
+  });
+
   const renderOverview = (booking) => {
     if (!overviewEl) return;
     const isPackageBooking = String(booking.bookingType || '').toUpperCase() === 'PACKAGE' || booking.packageId != null;
@@ -2154,37 +2204,21 @@ async function bbRenderCustomerBookingStatus() {
     const venuePriceLabel = Number.isFinite(venuePrice) && venuePrice > 0
       ? bbFormatMmkDisplay(venuePrice)
       : 'Price on request';
-    overviewEl.innerHTML = `
-      <div class="row g-3">
-        <div class="col-md-6">
-          <div class="stat-label">Event</div>
-          <div class="fw-semibold">${bbEscapeHtml(booking.event?.eventType || 'Event')}</div>
-          <div class="small text-ink-soft">${bbEscapeHtml(booking.event?.guestCount ?? '')} guests</div>
-        </div>
-        <div class="col-md-6">
-          <div class="stat-label">Venue</div>
-          <div class="fw-semibold">${bbEscapeHtml(venue.name || 'Venue not set')}</div>
-          <div class="small text-ink-soft">${bbEscapeHtml(venue.location || 'Location unavailable')}</div>
-        </div>
-        <div class="col-md-6">
-          <div class="stat-label">Venue hire estimate</div>
-          <div class="fw-semibold text-gold">${bbEscapeHtml(isPackageBooking ? 'Included in package' : venuePriceLabel)}</div>
-          <div class="small text-ink-soft">${isPackageBooking ? 'Included in the persisted package price.' : 'One venue charge; not multiplied by guests.'}</div>
-        </div>
-        <div class="col-md-4">
-          <div class="stat-label">Event date</div>
-          <div class="fw-semibold">${bbEscapeHtml(bbFormatDateDisplay(booking.eventDate))}</div>
-        </div>
-        <div class="col-md-4">
-          <div class="stat-label">Start time</div>
-          <div class="fw-semibold">${bbEscapeHtml(bbFormatTimeDisplay(booking.startTime))}</div>
-        </div>
-        <div class="col-md-4">
-          <div class="stat-label">End time</div>
-          <div class="fw-semibold">${bbEscapeHtml(bbFormatTimeDisplay(booking.endTime))}</div>
-        </div>
-      </div>
-    `;
+    const detailCard = (icon, label, value, secondary = '') => `
+      <article class="booking-detail-card">
+        <div class="booking-detail-card__icon" aria-hidden="true"><i class="bi ${icon}"></i></div>
+        <div class="stat-label">${label}</div>
+        <div class="booking-detail-card__value">${value}</div>
+        ${secondary ? `<div class="booking-detail-card__secondary">${secondary}</div>` : ''}
+      </article>`;
+    overviewEl.innerHTML = `<div class="booking-details-grid">
+      ${detailCard('bi-calendar-event', 'Event', bbEscapeHtml(booking.event?.eventType || 'Event'), `${bbEscapeHtml(booking.event?.guestCount ?? '')} guests`)}
+      ${detailCard('bi-building', 'Venue', bbEscapeHtml(venue.name || 'Venue not set'), bbEscapeHtml(venue.location || 'Location unavailable'))}
+      ${detailCard('bi-gem', 'Venue hire estimate', bbEscapeHtml(isPackageBooking ? 'Included in package' : venuePriceLabel), bbEscapeHtml(isPackageBooking ? 'Included in the persisted package price.' : 'One venue charge; not multiplied by guests.'))}
+      ${detailCard('bi-calendar3', 'Event date', bbEscapeHtml(bbFormatDateDisplay(booking.eventDate)))}
+      ${detailCard('bi-clock', 'Start time', bbEscapeHtml(bbFormatTimeDisplay(booking.startTime)))}
+      ${detailCard('bi-clock-history', 'End time', bbEscapeHtml(bbFormatTimeDisplay(booking.endTime)))}
+    </div>`;
   };
 
   const renderServices = (booking) => {
@@ -2198,11 +2232,6 @@ async function bbRenderCustomerBookingStatus() {
       return;
     }
     servicesEl.innerHTML = services.map((service) => bbRenderBookingServiceCard(service)).join('');
-  };
-
-  const renderCatering = (booking) => {
-    if (!cateringEl) return;
-    cateringEl.innerHTML = booking.catering ? bbRenderBookingCatering(booking.catering) : '<p class="text-ink-soft mb-0">No catering details were saved for this booking.</p>';
   };
 
   const renderPriceSummary = (booking) => {
@@ -2254,7 +2283,7 @@ async function bbRenderCustomerBookingStatus() {
     if (!paymentEl) return;
     const payment = booking.payment;
     if (!payment) { paymentEl.innerHTML = '<p class="text-ink-soft mb-0">No payment records are associated with this booking.</p>'; return; }
-    paymentEl.innerHTML = `<div class="row g-3"><div class="col-6"><div class="stat-label">Status</div><strong>${bbEscapeHtml(payment.status ? bbPrettyKey(payment.status) : 'Not recorded')}</strong></div><div class="col-6"><div class="stat-label">Paid</div><strong>${bbEscapeHtml(bbFormatMmkDisplay(payment.paidAmount))}</strong></div><div class="col-6"><div class="stat-label">Recorded amount</div><strong>${bbEscapeHtml(bbFormatMmkDisplay(payment.totalAmount))}</strong></div><div class="col-6"><div class="stat-label">Remaining</div><strong>${bbEscapeHtml(bbFormatMmkDisplay(payment.remainingAmount))}</strong></div></div>${String(booking.status || '').toUpperCase() === 'AWAITING_DEPOSIT' ? '<p class="small text-ink-soft mt-3 mb-0">Your booking is approved and awaiting the required deposit. Use the existing payment page when payment is enabled for this booking.</p>' : ''}`;
+    paymentEl.innerHTML = `<div class="row g-3"><div class="col-6"><div class="stat-label">Status</div><strong>${bbEscapeHtml(payment.status ? bbPrettyKey(payment.status) : 'Not recorded')}</strong></div><div class="col-6"><div class="stat-label">Total Paid</div><strong>${bbEscapeHtml(bbFormatMmkDisplay(payment.paidAmount))}</strong></div><div class="col-6"><div class="stat-label">Booking Total</div><strong>${bbEscapeHtml(bbFormatMmkDisplay(payment.totalAmount))}</strong></div><div class="col-6"><div class="stat-label">Remaining Balance</div><strong>${bbEscapeHtml(bbFormatMmkDisplay(payment.remainingAmount))}</strong></div></div>${String(booking.status || '').toUpperCase() === 'AWAITING_DEPOSIT' ? '<p class="small text-ink-soft mt-3 mb-0">Your booking is approved and awaiting the required deposit. Use the existing payment page when payment is enabled for this booking.</p>' : ''}`;
   };
 
   const renderConsultations = (booking) => {
@@ -2280,9 +2309,12 @@ async function bbRenderCustomerBookingStatus() {
       method: 'GET'
     });
     if (!booking) return;
+    currentBooking = booking;
 
     const statusLabel = bbBookingStatusLabel(booking.status);
     const statusClass = bbBookingStatusClass(booking.status);
+    const bookingStatus = String(booking.status || '').toUpperCase();
+    const isCancelled = bookingStatus === 'CANCELLED';
     const isPackageBooking = String(booking.bookingType || '').toUpperCase() === 'PACKAGE' || booking.packageId != null;
     const serviceSubtotal = Number(booking.estimatedTotal || 0);
     const venuePrice = isPackageBooking ? Number(booking.venue?.price) : NaN;
@@ -2302,7 +2334,15 @@ async function bbRenderCustomerBookingStatus() {
     if (subtitleEl) subtitleEl.textContent = `${eventLabel} at ${venueLabel}, ${eventDateLabel}.`;
     if (refEl) refEl.textContent = refLabel;
     if (statusEl) statusEl.textContent = statusLabel;
-    if (statusNoteEl) statusNoteEl.textContent = booking.confirmedAt ? `Confirmed ${bbFormatDateDisplay(booking.confirmedAt)}` : 'Still in progress';
+    if (cancelledNoticeEl) cancelledNoticeEl.classList.toggle('d-none', !isCancelled);
+    if (statusCardEl) statusCardEl.classList.toggle('is-cancelled', isCancelled);
+    if (statusNoteEl) statusNoteEl.textContent = isCancelled
+      ? 'This booking is no longer active.'
+      : (booking.confirmedAt
+          ? `Confirmed ${bbFormatDateDisplay(booking.confirmedAt)}`
+          : (!isPackageBooking && bookingStatus === 'PENDING'
+              ? 'Pending quotation preparation'
+              : 'Still in progress'));
     if (guestEl) guestEl.textContent = booking.event?.guestCount ?? booking.guestCount ?? '--';
     if (guestNoteEl) guestNoteEl.textContent = booking.event?.guestCount ? 'Confirmed guest count' : 'Guest count not yet set';
     if (totalEl) totalEl.textContent = estimatedTotal;
@@ -2320,13 +2360,13 @@ async function bbRenderCustomerBookingStatus() {
       }
     }
     if (payButton) payButton.classList.add('d-none');
+    if (cancelButton) cancelButton.classList.toggle('d-none', !canCancelBooking(booking));
 
     renderOverview(booking);
     renderServices(booking);
     renderPriceSummary(booking);
     renderPayment(booking);
     renderConsultations(booking);
-    renderCatering(booking);
     renderTimeline(booking);
   } catch (error) {
     const status = error?.status;
@@ -2654,7 +2694,7 @@ function bbInitForgotPasswordPage() {
       clearOtp();
       showStage('verify');
       startCooldown();
-      setStatus('If an account exists for this email, a verification code has been sent.', 'success');
+      setStatus('If an account exists for that email, password reset instructions will be sent.', 'success');
     } catch (error) {
       setStatus(error.message || 'Unable to send verification code right now.');
     } finally {
@@ -2681,7 +2721,7 @@ function bbInitForgotPasswordPage() {
       bbWritePasswordResetFlow(resetFlow);
       clearOtp();
       startCooldown();
-      setStatus('A fresh verification code has been sent.', 'success');
+      setStatus('If an account exists for that email, password reset instructions will be sent.', 'success');
     } catch (error) {
       setStatus(error.message || 'Unable to resend the verification code right now.');
     } finally {
@@ -3434,57 +3474,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  const googleButtons = [...document.querySelectorAll('[data-google-signin]')];
-  if (googleButtons.length) {
-    const googleForm = googleButtons[0].closest('form');
-    const googleStatus = googleForm?.querySelector('[data-auth-status]');
-    const setGoogleStatus = (message) => {
-      if (!googleStatus) return;
-      googleStatus.className = 'col-12 alert alert-danger';
-      googleStatus.textContent = message;
-      googleStatus.classList.remove('d-none');
-    };
-    const continueWithGoogle = () => {
-      if (!window.BB_GOOGLE_CLIENT_ID) {
-        setGoogleStatus('Google sign-in is not configured. Please use email and password.');
-        return;
-      }
-      if (!window.google?.accounts?.id) {
-        setGoogleStatus('Google authentication is unavailable. Please try again.');
-        return;
-      }
-      window.google.accounts.id.initialize({
-        client_id: window.BB_GOOGLE_CLIENT_ID,
-        callback: async ({ credential }) => {
-          if (!credential) {
-            setGoogleStatus('Google sign-in was cancelled.');
-            return;
-          }
-          try {
-            const response = await fetch(window.bbApiUrl('/api/auth/google'), {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-              body: JSON.stringify({ credential })
-            });
-            const data = await response.json().catch(() => null);
-            if (!response.ok) throw new Error(data?.message || 'Unable to sign in with this Google account.');
-            const remember = Boolean(googleForm?.querySelector('[name="remember"]')?.checked);
-            bbSetAuth(data, remember);
-            const redirectTarget = bbResolveAuthRedirect(googleForm?.dataset.authSuccess || '/prototype/customer/dashboard.html');
-            bbClearAuthReturnUrl();
-            window.location.replace(redirectTarget);
-          } catch (error) {
-            setGoogleStatus(error.message || 'Google authentication failed. Please try again.');
-          }
-        }
-      });
-      window.google.accounts.id.prompt((notification) => {
-        if (notification.isDismissedMoment?.()) setGoogleStatus('Google sign-in was cancelled.');
-      });
-    };
-    googleButtons.forEach((button) => button.addEventListener('click', continueWithGoogle));
-  }
-
   document.querySelectorAll('form[data-profile-form]').forEach((form) => {
     const firstNameInput = form.querySelector('[name="firstName"]');
     const lastNameInput = form.querySelector('[name="lastName"]');
@@ -3494,6 +3483,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const submitBtn = form.querySelector('button[type="submit"]');
     const statusEl = form.querySelector('[data-profile-status]');
     const photoButton = document.querySelector('[data-profile-photo]');
+    const photoInput = document.querySelector('[data-profile-photo-input]');
+    const photoAvatar = document.querySelector('[data-profile-avatar]');
+    const photoActions = document.querySelector('[data-profile-photo-actions]');
+    const photoUploadButton = document.querySelector('[data-profile-photo-upload]');
+    const photoCancelButton = document.querySelector('[data-profile-photo-cancel]');
     const photoStatusEl = document.querySelector('[data-profile-photo-status]');
     const nameEl = document.querySelector('[data-profile-name]') || document.querySelector('.bb-main h4.mb-0');
 
@@ -3511,6 +3505,20 @@ document.addEventListener('DOMContentLoaded', () => {
       if (phoneInput) phoneInput.value = profile.phone || '';
       if (addressInput) addressInput.value = profile.address || '';
       if (nameEl) nameEl.textContent = [profile.firstName, profile.lastName].filter(Boolean).join(' ') || 'Profile';
+      if (photoAvatar) {
+        photoAvatar.replaceChildren();
+        if (profile.profileImageUrl) {
+          const image = document.createElement('img');
+          image.src = new URL(profile.profileImageUrl, window.bbApiUrl('/')).toString();
+          image.alt = `${profile.firstName || 'Customer'} profile photo`;
+          image.className = 'profile-avatar__image';
+          photoAvatar.appendChild(image);
+        } else {
+          const icon = document.createElement('i');
+          icon.className = 'bi bi-person';
+          photoAvatar.appendChild(icon);
+        }
+      }
       bbApplyCustomerProfile(profile);
     };
 
@@ -3543,10 +3551,77 @@ document.addEventListener('DOMContentLoaded', () => {
       ]);
     })();
 
-    photoButton?.addEventListener('click', () => {
+    let selectedPhoto = null;
+    let previewUrl = null;
+    const showPhotoStatus = (message, variant = 'soft') => {
       if (!photoStatusEl) return;
-      photoStatusEl.textContent = 'Profile photo upload will be available soon.';
-      photoStatusEl.classList.remove('d-none');
+      photoStatusEl.textContent = message;
+      photoStatusEl.className = `small mt-2 ${variant === 'danger' ? 'text-danger' : 'text-ink-soft'}`;
+    };
+    const clearPhotoSelection = () => {
+      selectedPhoto = null;
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      previewUrl = null;
+      if (photoInput) photoInput.value = '';
+      photoActions?.classList.add('d-none');
+    };
+    const previewPhoto = (file) => {
+      if (!file || !['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+        showPhotoStatus('Choose a JPG, PNG, or WebP image.', 'danger');
+        clearPhotoSelection();
+        return;
+      }
+      if (file.size === 0 || file.size > 5 * 1024 * 1024) {
+        showPhotoStatus('Profile photo must be between 1 byte and 5 MB.', 'danger');
+        clearPhotoSelection();
+        return;
+      }
+      selectedPhoto = file;
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      previewUrl = URL.createObjectURL(file);
+      if (photoAvatar) {
+        photoAvatar.replaceChildren();
+        const image = document.createElement('img');
+        image.src = previewUrl;
+        image.alt = 'Selected profile photo preview';
+        image.className = 'profile-avatar__image';
+        photoAvatar.appendChild(image);
+      }
+      photoActions?.classList.remove('d-none');
+      showPhotoStatus('Preview ready. Upload to save this photo.', 'soft');
+    };
+
+    photoButton?.addEventListener('click', () => photoInput?.click());
+    photoInput?.addEventListener('change', () => previewPhoto(photoInput.files?.[0]));
+    photoCancelButton?.addEventListener('click', async () => {
+      clearPhotoSelection();
+      try {
+        const profile = await bbFetchCustomerJson(window.bbApiUrl('/api/customer/me'), { method: 'GET' });
+        if (profile) populate(profile);
+      } catch (error) {
+        showPhotoStatus('Unable to restore the saved photo.', 'danger');
+      }
+    });
+    photoUploadButton?.addEventListener('click', async () => {
+      if (!selectedPhoto) return;
+      photoUploadButton.disabled = true;
+      photoUploadButton.textContent = 'Uploading...';
+      const body = new FormData();
+      body.append('photo', selectedPhoto);
+      try {
+        const profile = await bbFetchCustomerJson(window.bbApiUrl('/api/customer/profile/photo'), {
+          method: 'POST',
+          body
+        });
+        clearPhotoSelection();
+        populate(profile);
+        showPhotoStatus('Profile photo updated.', 'soft');
+      } catch (error) {
+        showPhotoStatus(error.message || 'Unable to upload your profile photo.', 'danger');
+      } finally {
+        photoUploadButton.disabled = false;
+        photoUploadButton.textContent = 'Upload photo';
+      }
     });
 
     form.addEventListener('submit', async (event) => {
@@ -3687,10 +3762,11 @@ document.addEventListener('DOMContentLoaded', () => {
           ? (cateringData || serviceData[item.id] || {})
           : (serviceData[item.id] || {});
         const backendServiceId = Number(stored?.backendServiceId || 0);
+        const serviceKey = String(item?.id || '').trim();
         const estimatedTotal = Number(item?.estimatedTotal || stored?.estimatedTotal || 0);
 
-        if (!Number.isFinite(backendServiceId) || backendServiceId <= 0) {
-          throw new Error(`Selected service ${item?.title || item?.id || 'service'} is missing a valid backend ID.`);
+        if (!serviceKey) {
+          throw new Error(`Selected service ${item?.title || 'service'} is missing a valid service key.`);
         }
 
         if (!Number.isFinite(estimatedTotal) || estimatedTotal < 0) {
@@ -3698,8 +3774,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         return {
-          backendServiceId,
-          serviceKey: item?.id || '',
+          backendServiceId: Number.isFinite(backendServiceId) && backendServiceId > 0 ? backendServiceId : null,
+          serviceKey,
           estimatedTotal,
           customization: stored || null
         };
@@ -3946,7 +4022,7 @@ document.addEventListener('DOMContentLoaded', () => {
         window.sessionStorage.setItem('bbLatestEvent', JSON.stringify(eventData));
         window.sessionStorage.setItem('bbLatestBooking', JSON.stringify(bookingData));
         clearCustomizeBookingDraft();
-        setStatus('Booking saved successfully. Redirecting...', 'success');
+        setStatus('Booking saved. Your quotation is pending preparation. Redirecting...', 'success');
         window.setTimeout(() => {
           if (bookingData?.id) {
             const redirectUrl = new URL(successHref, window.location.origin);

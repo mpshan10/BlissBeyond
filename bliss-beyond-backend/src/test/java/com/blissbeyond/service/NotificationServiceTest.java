@@ -48,7 +48,7 @@ class NotificationServiceTest {
             "BOOKING", 42L, "/prototype/admin/bookings.html", "BOOKING_CREATED:42");
 
         ArgumentCaptor<Long> recipientCaptor = ArgumentCaptor.forClass(Long.class);
-        verify(notificationRepository, times(2)).insertIfAbsent(recipientCaptor.capture(), isNull(),
+        verify(notificationRepository, times(2)).insertIfAbsent(recipientCaptor.capture(), eq(10L),
             eq("BOOKING_CREATED"), eq("New Booking Request"), eq("A booking was submitted."),
             eq("BOOKING"), eq(42L), eq("/prototype/admin/bookings.html"), anyString(), any());
         assertEquals(List.of(20L, 21L), recipientCaptor.getAllValues());
