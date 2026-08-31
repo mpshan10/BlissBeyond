@@ -85,6 +85,7 @@ function bbWrite(key, value) {
     window.sessionStorage.setItem(key, JSON.stringify(value));
     return true;
   } catch (error) {
+    try { bbClearAuth(); } catch (cleanupError) { /* Storage may be blocked entirely. */ }
     return false;
   }
 }
@@ -1021,21 +1022,25 @@ async function bbRenderCustomerPayment() {
 function bbSetAuth(auth, remember = false) {
   if (!auth?.token) return false;
 
-  bbClearAuth();
+  try {
+    bbClearAuth();
 
-  const storage = remember ? window.localStorage : window.sessionStorage;
-  const user = {
-    userId: auth.userId ?? null,
-    email: auth.email || '',
-    fullName: auth.fullName || '',
-    roles: Array.isArray(auth.roles) ? auth.roles : [],
-    tokenType: auth.tokenType || 'Bearer'
-  };
+    const storage = remember ? window.localStorage : window.sessionStorage;
+    const user = {
+      userId: auth.userId ?? null,
+      email: auth.email || '',
+      fullName: auth.fullName || '',
+      roles: Array.isArray(auth.roles) ? auth.roles : [],
+      tokenType: auth.tokenType || 'Bearer'
+    };
 
-  storage.setItem(BB_AUTH_KEYS.token, auth.token);
-  storage.setItem(BB_AUTH_KEYS.user, JSON.stringify(user));
-  storage.setItem(BB_AUTH_KEYS.mode, remember ? 'local' : 'session');
-  return true;
+    storage.setItem(BB_AUTH_KEYS.token, auth.token);
+    storage.setItem(BB_AUTH_KEYS.user, JSON.stringify(user));
+    storage.setItem(BB_AUTH_KEYS.mode, remember ? 'local' : 'session');
+    return Boolean(storage.getItem(BB_AUTH_KEYS.token));
+  } catch (error) {
+    return false;
+  }
 }
 
 function bbClearAuth() {
@@ -3548,7 +3553,9 @@ document.addEventListener('DOMContentLoaded', () => {
             throw new Error(data?.message || 'Unable to create your account right now.');
           }
 
-          bbSetAuth(data, false);
+          if (!bbSetAuth(data, false)) {
+            throw new Error('We could not save your sign-in on this device. Please check your browser storage settings and try again.');
+          }
           const redirectTarget = bbResolveAuthRedirect(defaultRedirect);
           bbClearAuthReturnUrl();
           setStatus('Account created successfully. Redirecting...', 'success');
@@ -3588,7 +3595,9 @@ document.addEventListener('DOMContentLoaded', () => {
           throw new Error(data?.message || 'Invalid email or password.');
         }
 
-        bbSetAuth(data, remember);
+        if (!bbSetAuth(data, remember)) {
+          throw new Error('We could not save your sign-in on this device. Please check your browser storage settings and try again.');
+        }
         const redirectTarget = bbResolveAuthRedirect(defaultRedirect);
         bbClearAuthReturnUrl();
         setStatus('Signed in successfully. Redirecting...', 'success');
