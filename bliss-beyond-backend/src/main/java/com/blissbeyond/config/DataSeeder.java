@@ -484,15 +484,10 @@ public class DataSeeder {
                 )
             );
 
-            if (foodRepository.count() == 0) {
-
+            List<Food> existingFoods = foodRepository.findAll();
+            if (existingFoods.isEmpty()) {
                 foodRepository.saveAll(foodCatalog);
-
             } else {
-
-                List<Food> existingFoods =
-                    foodRepository.findAll();
-
                 for (Food food : foodCatalog) {
                     upsertFood(
                         foodRepository,
@@ -800,20 +795,15 @@ public class DataSeeder {
         VenueRepository venueRepository
     ) {
 
-        if (venueRepository.count() == 0) {
-
+        List<Venue> existingVenues = venueRepository.findAll();
+        if (existingVenues.isEmpty()) {
             List<Venue> venueCatalog =
                 buildVenueCatalog();
 
             applyVenuePrices(venueCatalog);
 
-            venueRepository.saveAll(
-                venueCatalog
-            );
+            existingVenues = venueRepository.saveAll(venueCatalog);
         }
-
-        List<Venue> existingVenues =
-            venueRepository.findAll();
 
         /*
          * These extra venues are required by

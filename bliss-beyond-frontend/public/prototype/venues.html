@@ -1107,9 +1107,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   async function loadBackendVenueCatalog() {
     try {
-      const response = await fetch(window.bbApiUrl("/api/venues"));
-      if (!response.ok) throw new Error(`Venue catalog request failed: ${response.status}`);
-      const venues = await response.json();
+      const venues = await window.bbFetchReadOnlyJson(window.bbApiUrl("/api/venues"));
       renderBackendVenueCatalog(venues);
     } catch (error) {
       const fallbackCapacities = {
@@ -1770,6 +1768,45 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   await loadBackendVenueCatalog();
 
+  let pendingVenue = null;
+  let pendingVenueNext = "/prototype/customer/services.html";
+  const eventTypeModal = document.getElementById("eventTypeModal");
+  const eventTypeForm = document.getElementById("eventTypeForm");
+  const eventTypeContinue = document.getElementById("eventTypeContinue");
+  const eventTypeVenueName = document.querySelector("[data-event-type-venue]");
+  const getStoredEventType = () => {
+    try {
+      const raw = window.sessionStorage.getItem("bb_event_context");
+      return raw ? JSON.parse(raw)?.eventType || "" : "";
+    } catch (error) {
+      return "";
+    }
+  };
+  const openEventTypeModal = (venue, next) => {
+    pendingVenue = venue;
+    pendingVenueNext = next;
+    document.querySelector("[data-event-type-venue]").textContent = venue.name;
+    const currentType = getStoredEventType();
+    document.querySelectorAll("#eventTypeForm input[name=eventType]").forEach((input) => {
+      input.checked = input.value === currentType;
+    });
+    document.getElementById("eventTypeContinue").disabled = !currentType;
+    bootstrap.Modal.getOrCreateInstance(document.getElementById("eventTypeModal")).show();
+  };
+  document.addEventListener("change", (event) => {
+    if (event.target.name !== "eventType" || !event.target.closest("#eventTypeForm")) return;
+    document.getElementById("eventTypeContinue").disabled = !document.querySelector("#eventTypeForm input[name=eventType]:checked");
+  });
+  document.addEventListener("click", (event) => {
+    if (!event.target.closest("#eventTypeContinue")) return;
+    const selected = document.querySelector("#eventTypeForm input[name=eventType]:checked")?.value;
+    if (!selected || !pendingVenue) return;
+    if (window.bbSetEventContext) window.bbSetEventContext({ eventType: selected });
+    if (window.bbSetVenue) window.bbSetVenue(pendingVenue);
+    bootstrap.Modal.getOrCreateInstance(document.getElementById("eventTypeModal")).hide();
+    window.location.href = pendingVenueNext;
+  });
+
   // Venue selection
   venueItems.forEach(function (item) {
     const card =
@@ -1871,8 +1908,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             .defaultHref ||
           "/prototype/customer/services.html";
 
-        window.location.href =
-          next;
+        openEventTypeModal(venue, next);
       }
     );
   });
@@ -1950,6 +1986,14 @@ document.addEventListener("DOMContentLoaded", async function () {
   setAvailabilityStatus("");
 });
 </script>
+<div class="modal fade" id="eventTypeModal" tabindex="-1" aria-labelledby="eventTypeModalTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered"><div class="modal-content">
+    <div class="modal-header"><div><span class="eyebrow">Custom booking</span><h2 class="modal-title h4 mt-1 mb-0" id="eventTypeModalTitle">What are you celebrating?</h2></div><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
+    <div class="modal-body"><p class="small text-ink-soft mb-1">Selected venue</p><p class="fw-semibold mb-4" data-event-type-venue>Selected venue</p><form id="eventTypeForm"><fieldset><legend class="form-label">Choose event type</legend><div class="d-grid gap-2">
+      <label class="event-type-option"><input type="radio" name="eventType" value="Wedding"> <span>Wedding</span></label><label class="event-type-option"><input type="radio" name="eventType" value="Engagement"> <span>Engagement</span></label><label class="event-type-option"><input type="radio" name="eventType" value="Corporate"> <span>Corporate</span></label><label class="event-type-option"><input type="radio" name="eventType" value="Graduation"> <span>Graduation</span></label><label class="event-type-option"><input type="radio" name="eventType" value="Anniversary"> <span>Anniversary</span></label><label class="event-type-option"><input type="radio" name="eventType" value="Birthday"> <span>Birthday</span></label>
+    </div></fieldset></form></div><div class="modal-footer"><button type="button" class="btn btn-outline-forest" data-bs-dismiss="modal">Cancel</button><button type="button" class="btn btn-gold" id="eventTypeContinue" disabled>Continue Booking</button></div>
+  </div></div>
+</div>
 
 </body>
 </html>

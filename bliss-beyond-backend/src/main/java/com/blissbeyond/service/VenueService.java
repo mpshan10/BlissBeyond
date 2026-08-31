@@ -14,6 +14,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class VenueService {
@@ -35,10 +36,12 @@ public class VenueService {
     public List<VenueResponse> findAvailableVenues(LocalDate date, LocalTime startTime, LocalTime endTime, Integer guests) {
         validateAvailabilityRequest(date, startTime, endTime, guests);
 
+        Set<Long> bookedVenueIds = bookingRepository.findBookedVenueIdsForSlot(
+            date, startTime, endTime, ACTIVE_BOOKING_STATUSES);
         return venueRepository.findAll().stream()
             .filter(Venue::isAvailable)
             .filter(venue -> venue.getCapacity() != null && venue.getCapacity() >= guests)
-            .filter(venue -> isAvailableForSlot(venue.getId(), date, startTime, endTime, null))
+            .filter(venue -> !bookedVenueIds.contains(venue.getId()))
             .map(this::map)
             .toList();
     }

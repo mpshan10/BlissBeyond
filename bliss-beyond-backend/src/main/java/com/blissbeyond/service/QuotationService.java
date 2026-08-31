@@ -26,6 +26,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class QuotationService {
@@ -60,14 +64,24 @@ public class QuotationService {
 
     @Transactional(readOnly = true)
     public List<AdminQuotationSummaryResponse> listAdminSummaries() {
-        return quotationRepository.findAllByOrderByIdDesc().stream()
+        List<Quotation> quotations = quotationRepository.findAllByOrderByIdDesc();
+        Set<Long> eventIds = quotations.stream()
+            .map(Quotation::getEvent)
+            .filter(java.util.Objects::nonNull)
+            .map(Event::getId)
+            .filter(java.util.Objects::nonNull)
+            .collect(Collectors.toSet());
+        Map<Long, Booking> bookingsByEventId = bookingRepository.findAllByEventIdIn(eventIds).stream()
+            .collect(Collectors.toMap(booking -> booking.getEvent().getId(), Function.identity(), (first, second) -> first));
+
+        return quotations.stream()
             .filter(quotation -> {
                 Booking booking = quotation.getEvent() == null
-                    ? null
-                    : bookingRepository.findByEventId(quotation.getEvent().getId()).orElse(null);
+                    ? null : bookingsByEventId.get(quotation.getEvent().getId());
                 return booking == null || booking.getBookingType() != BookingType.PACKAGE;
             })
-            .map(this::toAdminSummary)
+            .map(quotation -> toAdminSummary(quotation, quotation.getEvent() == null
+                ? null : bookingsByEventId.get(quotation.getEvent().getId())))
             .toList();
     }
 
@@ -317,11 +331,10 @@ public class QuotationService {
         return notes.trim();
     }
 
-    private AdminQuotationSummaryResponse toAdminSummary(Quotation quotation) {
+    private AdminQuotationSummaryResponse toAdminSummary(Quotation quotation, Booking booking) {
         Event event = quotation.getEvent();
         User customer = event != null ? event.getCustomer() : null;
         Venue venue = event != null ? event.getVenue() : null;
-        Booking booking = event != null ? bookingRepository.findByEventId(event.getId()).orElse(null) : null;
         var snapshot = packageSnapshot(booking);
         return new AdminQuotationSummaryResponse(
             quotation.getId(),

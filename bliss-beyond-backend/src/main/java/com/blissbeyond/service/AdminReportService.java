@@ -99,7 +99,10 @@ public class AdminReportService {
             paymentCounts(payments),
             bookingTrend(allBookings, from, to),
             namedCounts(bookings, booking -> booking.getBookingType().name()),
-            namedCounts(bookings, booking -> booking.getEvent() == null ? null : booking.getEvent().getEventType()),
+            namedCounts(bookings.stream()
+                .filter(booking -> booking.getStatus() != BookingStatus.CANCELLED)
+                .map(booking -> booking.getEvent() == null ? null : canonicalEventType(booking.getEvent().getEventType()))
+                .toList()),
             namedCounts(bookings, booking -> booking.getEvent() != null && booking.getEvent().getVenue() != null
                 ? booking.getEvent().getVenue().getName() : null),
             topPackages(bookings),
@@ -188,6 +191,20 @@ public class AdminReportService {
             .sorted(Map.Entry.<String, Long>comparingByValue().reversed().thenComparing(Map.Entry::getKey))
             .map(item -> new AdminReportSummaryResponse.NamedCount(item.getKey(), item.getValue()))
             .toList();
+    }
+
+    private List<AdminReportSummaryResponse.NamedCount> namedCounts(List<String> names) {
+        return names.stream()
+            .filter(name -> name != null && !name.isBlank())
+            .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
+            .entrySet().stream()
+            .sorted(Map.Entry.<String, Long>comparingByValue().reversed().thenComparing(Map.Entry::getKey))
+            .map(item -> new AdminReportSummaryResponse.NamedCount(item.getKey(), item.getValue()))
+            .toList();
+    }
+
+    private String canonicalEventType(String value) {
+        return EventTypeCatalog.isCanonical(value) ? value.trim() : null;
     }
 
     private List<AdminReportSummaryResponse.NamedCount> topPackages(List<Booking> bookings) {

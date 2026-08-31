@@ -78,6 +78,8 @@ public class SecurityConfig {
                     "/actuator/health",
                     "/error"
                 ).permitAll()
+                .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/contact-enquiries")
+                .hasRole("CUSTOMER")
                 .requestMatchers(
                     org.springframework.http.HttpMethod.OPTIONS,
                     "/**"

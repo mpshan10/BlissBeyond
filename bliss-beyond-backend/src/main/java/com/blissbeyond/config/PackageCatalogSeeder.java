@@ -56,7 +56,30 @@ public class PackageCatalogSeeder implements CommandLineRunner {
             p=packageRepository.save(p);
             packagesBySlug.put(s.slug,p);
         }
-        for(ItemSpec i:s.items){ServiceEntity service=findService(i.serviceName);String itemKey=itemKey(s.slug,i.displayOrder);PackageServiceItem item=itemsByPackageAndOrder.getOrDefault(itemKey,new PackageServiceItem());item.setEventPackage(p);item.setService(service);item.setDisplayOrder(i.displayOrder);item.setInclusionJson(objectMapper.writeValueAsString(i.inclusions));item=itemRepository.save(item);itemsByPackageAndOrder.put(itemKey,item);}
+        for(ItemSpec i:s.items){
+            ServiceEntity service=findService(i.serviceName);
+            String itemKey=itemKey(s.slug,i.displayOrder);
+            String inclusionJson=objectMapper.writeValueAsString(i.inclusions);
+            PackageServiceItem item=itemsByPackageAndOrder.get(itemKey);
+            if(item==null){
+                item=new PackageServiceItem();
+                item.setEventPackage(p);
+                item.setService(service);
+                item.setDisplayOrder(i.displayOrder);
+                item.setInclusionJson(inclusionJson);
+                item=itemRepository.save(item);
+                itemsByPackageAndOrder.put(itemKey,item);
+            } else if(!Objects.equals(item.getEventPackage().getId(),p.getId())
+                || !Objects.equals(item.getService().getId(),service.getId())
+                || !Objects.equals(item.getDisplayOrder(),i.displayOrder)
+                || !Objects.equals(item.getInclusionJson(),inclusionJson)){
+                item.setEventPackage(p);
+                item.setService(service);
+                item.setDisplayOrder(i.displayOrder);
+                item.setInclusionJson(inclusionJson);
+                itemRepository.save(item);
+            }
+        }
     }
     private Venue findVenue(String name){
         Venue venue=venuesByName.get(normalize(name));

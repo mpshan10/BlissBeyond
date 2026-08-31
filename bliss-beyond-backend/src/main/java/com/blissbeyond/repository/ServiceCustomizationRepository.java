@@ -8,5 +8,6 @@ import java.util.List;
 
 public interface ServiceCustomizationRepository extends JpaRepository<ServiceCustomization, Long> {
     List<ServiceCustomization> findByEventServiceId(Long eventServiceId);
+    List<ServiceCustomization> findByEventServiceIdIn(Collection<Long> eventServiceIds);
     void deleteByEventServiceIdIn(Collection<Long> eventServiceIds);
 }

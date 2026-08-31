@@ -61,7 +61,7 @@ public class PackageBookingService {
 
         Event event = new Event();
         event.setCustomer(customer);
-        event.setEventType(eventPackage.getCategory().name());
+        event.setEventType(EventTypeCatalog.canonicalize(eventPackage.getCategory().name()));
         event.setEventDate(request.eventDate());
         event.setGuestCount(request.guestCount());
         event.setSpecialRequirements(normalize(request.specialRequests()));

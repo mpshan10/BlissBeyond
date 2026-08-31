@@ -1481,9 +1481,7 @@ document.addEventListener('DOMContentLoaded', function () {
   };
   const loadCatalog = async () => {
     try {
-      const response = await fetch(apiUrl('/api/packages'));
-      if (!response.ok) throw new Error(`Package catalog request failed: ${response.status}`);
-      const data = await response.json();
+      const data = await window.bbFetchReadOnlyJson(apiUrl('/api/packages'));
       if (!Array.isArray(data)) throw new Error('Invalid package catalog response');
       catalog = data.filter(item => item && item.active === true);
       catalogBySlug = new Map(catalog.map(item => [item.slug, item]));

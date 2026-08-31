@@ -697,7 +697,7 @@ document.addEventListener('DOMContentLoaded', () => {
       suggestion = '2 Savouries · 2 Desserts · 4 Drinks';
     } else if (style === 'Live Cooking Stations') {
       suggestion = '2 Appetizers · 2 Live Stations · 2 Desserts · 3 Drinks';
-    } else if (eventType === 'Corporate Event') {
+    } else if (eventType === 'Corporate') {
       suggestion = '2 Appetizers · 2 Main Courses · 2 Side Dishes · 2 Drinks';
     } else if (guests >= 200) {
       suggestion = '3 Appetizers · 4 Main Courses · 3 Side Dishes · 3 Desserts · 4 Drinks';

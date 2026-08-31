@@ -161,6 +161,35 @@ function bbSetCatering(data) {
   bbWrite(BB_STATE_KEYS.catering, data);
 }
 
+function bbHasGenuineServiceSelection(item, details = {}) {
+  const serviceId = String(item?.id || details?.serviceId || '').trim().toLowerCase();
+  const itemTotal = Number(item?.estimatedTotal || 0);
+  const detailTotal = Number(details?.estimatedTotal || 0);
+  if ((Number.isFinite(itemTotal) && itemTotal > 0)
+    || (Number.isFinite(detailTotal) && detailTotal > 0)) return true;
+
+  if (serviceId === 'catering') {
+    return ['foods', 'addons', 'cuisines', 'dietary'].some((key) => (
+      Array.isArray(details?.[key]) && details[key].length > 0
+    )) || Boolean(
+      details?.styleKey
+      || (details?.style && typeof details.style === 'object' && details.style.backendDiningStyleId)
+      || (typeof details?.style === 'string' && details.style.trim() && details.style !== 'Buffet')
+    );
+  }
+
+  const hasMeaningfulValue = (value) => {
+    if (Array.isArray(value)) return value.some(hasMeaningfulValue);
+    if (!value || typeof value !== 'object') return Boolean(String(value ?? '').trim());
+    return Object.entries(value).some(([key, child]) => {
+      if (['serviceId', 'title', 'backendServiceId', 'estimatedTotal'].includes(key)) return false;
+      return hasMeaningfulValue(child);
+    });
+  };
+
+  return ['options', 'selections', 'summary', 'customization'].some((key) => hasMeaningfulValue(details?.[key]));
+}
+
 function bbGetPackagePlan() {
   return bbRead(BB_STATE_KEYS.packagePlan) || {};
 }
@@ -345,7 +374,7 @@ async function bbRefreshPublicAuthNav() {
   }
 
   try {
-    const profile = await bbFetchJson(window.bbApiUrl('/api/customer/me'), { method: 'GET' });
+    const profile = await bbGetCustomerProfile();
     bbRenderPublicAuthNav(auth, profile);
   } catch (error) {
     if (error.status === 401 || error.status === 403) {
@@ -429,7 +458,7 @@ function bbInitCustomerSidebar() {
 async function bbRefreshCustomerHeader() {
   if (!window.location.pathname.startsWith('/prototype/customer/') || !bbGetAuthToken()) return;
   try {
-    const profile = await bbFetchCustomerJson(window.bbApiUrl('/api/customer/me'), { method: 'GET' });
+    const profile = await bbGetCustomerProfile();
     bbApplyCustomerProfile(profile);
   } catch (error) {
     // Cached authentication display remains available when the profile API is offline.
@@ -461,7 +490,7 @@ async function bbRenderCustomerDashboard() {
   const load = (url) => bbFetchCustomerJson(url, { method: 'GET' }).catch(() => null);
 
   const [profile, bookings, quotations, consultations, payments] = await Promise.all([
-    load(window.bbApiUrl('/api/customer/me')),
+    bbGetCustomerProfile(),
     load(window.bbApiUrl('/api/customer/bookings')),
     load(window.bbApiUrl('/api/customer/quotations')),
     load(window.bbApiUrl('/api/customer/consultations')),
@@ -1122,6 +1151,66 @@ async function bbFetchJson(url, options = {}) {
   return data;
 }
 
+const BB_READ_ONLY_CACHE_TTL_MS = 30_000;
+const bbReadOnlyCache = new Map();
+
+function bbFetchReadOnlyJson(url, options = {}, ttl = BB_READ_ONLY_CACHE_TTL_MS) {
+  const key = String(url);
+  const cached = bbReadOnlyCache.get(key);
+  if (cached?.value !== undefined && cached.expiresAt > Date.now()) {
+    return Promise.resolve(cached.value);
+  }
+  if (cached?.promise) return cached.promise;
+
+  const promise = bbFetchJson(url, options)
+    .then((value) => {
+      bbReadOnlyCache.set(key, { value, expiresAt: Date.now() + ttl });
+      return value;
+    })
+    .finally(() => {
+      const current = bbReadOnlyCache.get(key);
+      if (current?.promise === promise) bbReadOnlyCache.delete(key);
+    });
+  bbReadOnlyCache.set(key, { promise });
+  return promise;
+}
+
+let bbCustomerProfileCache = null;
+let bbCustomerProfileToken = '';
+let bbCustomerProfileCachedAt = 0;
+let bbCustomerProfilePromise = null;
+
+function bbClearCustomerProfileCache() {
+  bbCustomerProfileCache = null;
+  bbCustomerProfileToken = '';
+  bbCustomerProfileCachedAt = 0;
+  bbCustomerProfilePromise = null;
+}
+
+function bbGetCustomerProfile({ force = false } = {}) {
+  const token = bbGetAuthToken();
+  if (!token) return Promise.resolve(null);
+  if (!force && bbCustomerProfileCache && bbCustomerProfileToken === token
+    && Date.now() - bbCustomerProfileCachedAt < BB_READ_ONLY_CACHE_TTL_MS) {
+    return Promise.resolve(bbCustomerProfileCache);
+  }
+  if (!force && bbCustomerProfilePromise && bbCustomerProfileToken === token) {
+    return bbCustomerProfilePromise;
+  }
+
+  bbCustomerProfileToken = token;
+  bbCustomerProfilePromise = bbFetchCustomerJson(window.bbApiUrl('/api/customer/me'), { method: 'GET' })
+    .then((profile) => {
+      bbCustomerProfileCache = profile;
+      bbCustomerProfileCachedAt = Date.now();
+      return profile;
+    })
+    .finally(() => {
+      bbCustomerProfilePromise = null;
+    });
+  return bbCustomerProfilePromise;
+}
+
 async function bbFetchCustomerJson(url, options = {}) {
   const response = await fetch(url, {
     ...options,
@@ -1150,6 +1239,7 @@ async function bbFetchCustomerJson(url, options = {}) {
 
 function bbClearNotificationUi() {
   bbNotificationState = [];
+  bbNotificationUnreadLoaded = false;
   document.querySelectorAll('[data-notification-count]').forEach((badge) => {
     badge.hidden = true;
     badge.textContent = '';
@@ -1200,24 +1290,48 @@ function bbRenderNotifications(list, state = bbNotificationState) {
     </li>`).join('');
 }
 
+let bbNotificationListPromise = null;
+let bbNotificationUnreadPromise = null;
+let bbNotificationUnreadLoaded = false;
+
+function bbLoadCustomerNotificationUnreadCount() {
+  if (bbNotificationUnreadLoaded) return Promise.resolve(0);
+  if (bbNotificationUnreadPromise) return bbNotificationUnreadPromise;
+  bbNotificationUnreadPromise = bbFetchCustomerJson(window.bbApiUrl('/api/notifications/unread-count'), { method: 'GET' })
+    .then((unreadCount) => {
+      bbNotificationBadgeCount(Number(unreadCount) || 0);
+      bbNotificationUnreadLoaded = true;
+      return unreadCount;
+    })
+    .catch(() => {
+      bbNotificationBadgeCount(0);
+      return 0;
+    })
+    .finally(() => {
+      bbNotificationUnreadPromise = null;
+    });
+  return bbNotificationUnreadPromise;
+}
+
 async function bbLoadCustomerNotifications() {
   const list = document.querySelector('[data-notification-list]');
   if (!list) return;
+  if (bbNotificationListPromise) return bbNotificationListPromise;
   list.innerHTML = '<li class="text-ink-soft">Loading notifications...</li>';
-  try {
-    const [data, unreadCount] = await Promise.all([
-      bbFetchCustomerJson(window.bbApiUrl('/api/notifications?limit=20'), { method: 'GET' }),
-      bbFetchCustomerJson(window.bbApiUrl('/api/notifications/unread-count'), { method: 'GET' })
-    ]);
-    bbNotificationState = Array.isArray(data) ? data : [];
-    bbNotificationBadgeCount(Number(unreadCount) || 0);
-    bbRenderNotifications(list);
-  } catch (error) {
-    bbNotificationState = [];
-    bbNotificationBadgeCount(0);
-    list.innerHTML = '<li class="text-ink-soft">Unable to load notifications.</li>';
-    console.warn('Customer notifications unavailable.');
-  }
+  bbNotificationListPromise = (async () => {
+    try {
+      const data = await bbFetchCustomerJson(window.bbApiUrl('/api/notifications?limit=20'), { method: 'GET' });
+      bbNotificationState = Array.isArray(data) ? data : [];
+      bbRenderNotifications(list);
+    } catch (error) {
+      bbNotificationState = [];
+      list.innerHTML = '<li class="text-ink-soft">Unable to load notifications.</li>';
+      console.warn('Customer notifications unavailable.');
+    } finally {
+      bbNotificationListPromise = null;
+    }
+  })();
+  return bbNotificationListPromise;
 }
 
 function bbInitCustomerNotifications() {
@@ -1283,7 +1397,7 @@ function bbInitCustomerNotifications() {
     }
   });
   modal.querySelector('.modal-body')?.appendChild(markAll);
-  void bbLoadCustomerNotifications();
+  void bbLoadCustomerNotificationUnreadCount();
 }
 
 function bbNormalizeVenueName(name) {
@@ -1294,7 +1408,7 @@ async function bbFindVenueIdByName(name) {
   const target = bbNormalizeVenueName(name);
   if (!target) return null;
 
-  const venues = await bbFetchJson(window.bbApiUrl('/api/venues'), {
+  const venues = await bbFetchReadOnlyJson(window.bbApiUrl('/api/venues'), {
     method: 'GET',
     headers: {}
   });
@@ -1776,9 +1890,13 @@ function bbRenderBookingDraftSummary(form = null) {
 
   const venue = typeof bbGetVenue === 'function' ? bbGetVenue() || {} : {};
   const eventContext = typeof bbGetEventContext === 'function' ? bbGetEventContext() : {};
-  const selectedServices = typeof bbGetSelectedServices === 'function' ? bbGetSelectedServices() : [];
+  const storedSelectedServices = typeof bbGetSelectedServices === 'function' ? bbGetSelectedServices() : [];
   const serviceData = typeof bbGetServiceData === 'function' ? bbGetServiceData() : {};
   const catering = typeof bbGetCatering === 'function' ? bbGetCatering() || serviceData.catering || null : serviceData.catering || null;
+  const selectedServices = storedSelectedServices.filter((item) => bbHasGenuineServiceSelection(
+    item,
+    item?.id === 'catering' ? (catering || {}) : (serviceData[item?.id] || {})
+  ));
 
   const eventType = bookingForm.querySelector('[name="eventType"]')?.value?.trim() || eventContext?.eventType || 'Not specified';
   const guests = Number(bookingForm.querySelector('[name="guests"]')?.value || eventContext?.guests || 0);
@@ -1791,10 +1909,17 @@ function bbRenderBookingDraftSummary(form = null) {
   const serviceTotal = serviceItems.reduce((sum, item) => sum + Number(item?.estimatedTotal || 0), 0);
   const venueTotal = Number(venue.rate || venue.price || 0);
   const cateringItem = selectedServices.find((item) => item?.id === 'catering');
-  const cateringTotal = Number(catering?.estimatedTotal ?? cateringItem?.estimatedTotal ?? 0);
+  const cateringTotal = bbHasGenuineServiceSelection({
+    id: 'catering',
+    estimatedTotal: catering?.estimatedTotal ?? cateringItem?.estimatedTotal
+  }, catering || {})
+    ? Number(catering?.estimatedTotal ?? cateringItem?.estimatedTotal ?? 0)
+    : 0;
   const estimatedTotal = venueTotal + serviceTotal + cateringTotal;
   const displayServiceItems = selectedServices.filter((item) => item?.id).slice();
-  if (catering && !displayServiceItems.some((item) => item.id === 'catering')) {
+  if (catering
+    && bbHasGenuineServiceSelection({ id: 'catering', estimatedTotal: cateringTotal }, catering)
+    && !displayServiceItems.some((item) => item.id === 'catering')) {
     displayServiceItems.unshift({ id: 'catering', title: 'Catering', estimatedTotal: cateringTotal });
   }
 
@@ -3077,6 +3202,7 @@ window.bbGetServiceData = bbGetServiceData;
 window.bbSetServiceData = bbSetServiceData;
 window.bbGetCatering = bbGetCatering;
 window.bbSetCatering = bbSetCatering;
+window.bbHasGenuineServiceSelection = bbHasGenuineServiceSelection;
 window.bbGetPackagePlan = bbGetPackagePlan;
 window.bbSetPackagePlan = bbSetPackagePlan;
 window.bbGetBookingMode = bbGetBookingMode;
@@ -3085,6 +3211,7 @@ window.clearCustomizeBookingDraft = clearCustomizeBookingDraft;
 window.clearPackageBookingDraft = clearPackageBookingDraft;
 window.bbGetAuth = bbGetAuth;
 window.bbGetAuthToken = bbGetAuthToken;
+window.bbGetCustomerProfile = bbGetCustomerProfile;
 window.bbGetAuthUser = bbGetAuthUser;
 window.bbSetAuth = bbSetAuth;
 window.bbClearAuth = bbClearAuth;
@@ -3094,6 +3221,7 @@ window.bbClearAuthReturnUrl = bbClearAuthReturnUrl;
 window.bbResolveAuthRedirect = bbResolveAuthRedirect;
 window.bbAuthHeaders = bbAuthHeaders;
 window.bbFetchJson = bbFetchJson;
+window.bbFetchReadOnlyJson = bbFetchReadOnlyJson;
 window.bbNormalizeVenueName = bbNormalizeVenueName;
 window.bbFindVenueIdByName = bbFindVenueIdByName;
 window.bbRequireAuth = bbRequireAuth;
@@ -3118,7 +3246,7 @@ async function bbInitHomePackages() {
     'business-excellence': '/prototype/assets/img/corp2.jpg'
   };
   try {
-    const packages = await bbFetchJson(window.bbApiUrl('/api/packages'), { headers: { Accept: 'application/json' } });
+    const packages = await bbFetchReadOnlyJson(window.bbApiUrl('/api/packages'), { headers: { Accept: 'application/json' } });
     const activePackages = Array.isArray(packages) ? packages.filter((item) => item && item.active !== false) : [];
     const featured = Object.entries(preferredSlugs).map(([category, slug]) => (
       activePackages.find((item) => item.category === category && item.slug === slug)
@@ -3166,7 +3294,7 @@ async function bbInitHomeVenues() {
   };
 
   try {
-    const venues = await bbFetchJson(window.bbApiUrl('/api/venues'), { headers: { Accept: 'application/json' } });
+    const venues = await bbFetchReadOnlyJson(window.bbApiUrl('/api/venues'), { headers: { Accept: 'application/json' } });
     const activeVenues = Array.isArray(venues) ? venues.filter((item) => item && item.available !== false) : [];
     const featured = preferredIds.map((id) => activeVenues.find((item) => Number(item.id) === id)).filter(Boolean);
     if (featured.length !== 3) throw new Error('Featured venue catalog is incomplete.');
@@ -3530,7 +3658,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     (async () => {
       try {
-        const profile = await bbFetchCustomerJson(window.bbApiUrl('/api/customer/me'), { method: 'GET' });
+        const profile = await bbGetCustomerProfile();
         if (profile) populate(profile);
       } catch (error) {
         setStatus('Unable to load your profile. Please try again.', 'danger');
@@ -3600,7 +3728,7 @@ document.addEventListener('DOMContentLoaded', () => {
     photoCancelButton?.addEventListener('click', async () => {
       clearPhotoSelection();
       try {
-        const profile = await bbFetchCustomerJson(window.bbApiUrl('/api/customer/me'), { method: 'GET' });
+        const profile = await bbGetCustomerProfile();
         if (profile) populate(profile);
       } catch (error) {
         showPhotoStatus('Unable to restore the saved photo.', 'danger');
@@ -3757,9 +3885,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const guestsInput = form.querySelector('[name="guests"]');
     const requestsInput = form.querySelector('[name="specialRequests"]');
     const buildServiceSelectionsPayload = () => {
-      const selectedServices = typeof bbGetSelectedServices === 'function' ? bbGetSelectedServices() : [];
+      const storedSelectedServices = typeof bbGetSelectedServices === 'function' ? bbGetSelectedServices() : [];
       const serviceData = typeof bbGetServiceData === 'function' ? bbGetServiceData() : {};
       const cateringData = typeof bbGetCatering === 'function' ? bbGetCatering() : null;
+      const selectedServices = storedSelectedServices.filter((item) => bbHasGenuineServiceSelection(
+        item,
+        item?.id === 'catering' ? (cateringData || {}) : (serviceData[item?.id] || {})
+      ));
 
       return selectedServices.map((item) => {
         const stored = item?.id === 'catering'
@@ -3944,7 +4076,11 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      const eventType = eventTypeInput?.value?.trim() || 'Wedding';
+    const eventType = eventTypeInput?.value?.trim() || '';
+    if (!eventType) {
+      setStatus('Please select an event type before confirming your booking.', 'danger');
+      return;
+    }
       const eventDate = dateInput?.value || '';
       const guestCount = Number(guestsInput?.value || 0);
       const startTime = timeInput?.value || '';

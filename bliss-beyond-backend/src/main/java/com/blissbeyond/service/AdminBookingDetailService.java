@@ -26,7 +26,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class AdminBookingDetailService {
@@ -125,15 +128,23 @@ public class AdminBookingDetailService {
     private AdminBookingDetailResponse.CustomizeDetails customizeDetails(Booking booking, Quotation quotation) {
         List<AdminBookingDetailResponse.CustomizeService> services = new ArrayList<>();
         List<AdminBookingDetailResponse.PriceLine> breakdown = new ArrayList<>();
-        for (EventService eventService : eventServiceRepository.findByEventId(booking.getEvent().getId())) {
+        List<EventService> eventServices = eventServiceRepository.findByEventId(booking.getEvent().getId());
+        Map<Long, com.blissbeyond.entity.ServiceCustomization> customizationsByEventServiceId = eventServices.isEmpty()
+            ? Map.of()
+            : customizationRepository
+                .findByEventServiceIdIn(eventServices.stream().map(EventService::getId).filter(Objects::nonNull).toList())
+                .stream()
+                .collect(Collectors.toMap(item -> item.getEventService().getId(), Function.identity(), (first, second) -> first));
+        for (EventService eventService : eventServices) {
             if (!eventService.isSelected()) continue;
             var service = eventService.getService();
-            JsonNode customization = customizationRepository.findByEventServiceId(eventService.getId()).stream()
-                .findFirst().map(item -> parse(item.getPayloadJson())).orElse(parse(eventService.getCustomizationJson()));
+            var customization = customizationsByEventServiceId.get(eventService.getId());
+            JsonNode customizationJson = customization == null
+                ? parse(eventService.getCustomizationJson()) : parse(customization.getPayloadJson());
             BigDecimal price = eventService.getEstimatedTotal();
             services.add(new AdminBookingDetailResponse.CustomizeService(
                 eventService.getId(), eventService.getServiceNameSnapshot() != null
-                    ? eventService.getServiceNameSnapshot() : (service == null ? null : service.getName()), price, true, customization));
+                    ? eventService.getServiceNameSnapshot() : (service == null ? null : service.getName()), price, true, customizationJson));
             if (price != null) breakdown.add(new AdminBookingDetailResponse.PriceLine(
                 eventService.getServiceNameSnapshot() != null ? eventService.getServiceNameSnapshot() : (service == null ? null : service.getName()), price));
         }

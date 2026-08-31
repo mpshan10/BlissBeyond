@@ -2416,6 +2416,7 @@
     renderReportList('[data-report-booking-statuses]', statusRows, 'No booking data available');
     renderReportList('[data-report-booking-types]', summary.bookingTypes || [], 'No booking data available');
     renderReportList('[data-report-event-categories]', summary.eventCategories || [], 'No booking data available');
+    renderEventTypeChart(summary.eventCategories || []);
     renderReportList('[data-report-top-venues]', summary.topVenues || [], 'No venue data available');
     renderReportList('[data-report-top-packages]', summary.topPackages || [], 'No package data available');
     renderBookingTrend(summary.bookingTrend || []);
@@ -2423,6 +2424,32 @@
     if (period) period.textContent = summary.from || summary.to
       ? `Reporting period: ${summary.from || 'Any date'} to ${summary.to || 'Any date'}. Metric dates follow the definitions below.`
       : 'All available records; metric dates follow the definitions below.';
+  }
+
+  function renderEventTypeChart(items) {
+    const chart = document.querySelector('[data-report-event-doughnut]');
+    const legend = document.querySelector('[data-report-event-legend]');
+    if (!chart || !legend) return;
+    const colors = ['#b98b3d', '#235447', '#8f5f4a', '#7b8f84', '#d2aa67', '#435b72'];
+    const validItems = items.filter((item) => Number(item.bookingCount) > 0);
+    const total = validItems.reduce((sum, item) => sum + Number(item.bookingCount), 0);
+    if (!total) {
+      chart.style.background = '#eee';
+      legend.innerHTML = '<span class="text-ink-soft">No event type data available.</span>';
+      return;
+    }
+    let cursor = 0;
+    const segments = validItems.map((item, index) => {
+      const start = cursor;
+      cursor += (Number(item.bookingCount) / total) * 360;
+      return `${colors[index % colors.length]} ${start}deg ${cursor}deg`;
+    });
+    chart.style.background = `conic-gradient(${segments.join(', ')})`;
+    legend.innerHTML = validItems.map((item, index) => {
+      const count = Number(item.bookingCount);
+      const percent = Math.round((count / total) * 100);
+      return `<div class="report-event-legend-item" title="${escapeHtml(item.name)}: ${count} events (${percent}%)"><span class="report-event-legend-swatch" style="background:${colors[index % colors.length]}"></span><span>${escapeHtml(item.name)}</span><strong class="ms-auto">${count}</strong></div>`;
+    }).join('');
   }
 
   async function initReportsPage() {

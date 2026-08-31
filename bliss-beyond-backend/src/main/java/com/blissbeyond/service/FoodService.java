@@ -77,7 +77,8 @@ public class FoodService {
 
     @Transactional(readOnly = true)
     public FoodResponse getFood(Long id) {
-        Food food = foodRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Food not found"));
+        Food food = foodRepository.findWithCuisineAndCategoryById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Food not found"));
         return new FoodResponse(
             food.getId(),
             food.getName(),

@@ -79,7 +79,7 @@ public class EventService {
     }
 
     private void apply(EventRequest request, Event event) {
-        event.setEventType(request.eventType());
+        event.setEventType(EventTypeCatalog.requireValid(request.eventType()));
         event.setEventDate(request.eventDate());
         event.setGuestCount(request.guestCount());
         event.setBudget(request.budget());

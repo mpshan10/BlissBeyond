@@ -29,9 +29,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const venue = typeof bbGetVenue === 'function' ? bbGetVenue() : {};
   const eventContext = typeof bbGetEventContext === 'function' ? bbGetEventContext() : {};
-  const selectedServices = typeof bbGetSelectedServices === 'function' ? bbGetSelectedServices() : [];
+  const storedSelectedServices = typeof bbGetSelectedServices === 'function' ? bbGetSelectedServices() : [];
   const catering = typeof bbGetCatering === 'function' ? bbGetCatering() : null;
   const serviceData = typeof bbGetServiceData === 'function' ? bbGetServiceData() : {};
+  const isGenuineService = (item) => typeof bbHasGenuineServiceSelection === 'function'
+    && bbHasGenuineServiceSelection(item, item?.id === 'catering' ? (catering || serviceData[item.id] || {}) : (serviceData[item.id] || {}));
+  const selectedServices = storedSelectedServices.filter(isGenuineService);
 
   if (venueEl) venueEl.textContent = venue?.name || 'Selected venue';
   if (typeEl) typeEl.textContent = eventContext?.eventType || 'Wedding';
@@ -64,7 +67,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const totals = [];
   const venueHire = Number(venue?.price ?? venue?.rate ?? 0);
   if (venueHire > 0) totals.push(venueHire);
-  if (catering?.estimatedTotal) totals.push(Number(catering.estimatedTotal));
+  if (isGenuineService({ id: 'catering', estimatedTotal: catering?.estimatedTotal }, catering || {})) {
+    totals.push(Number(catering?.estimatedTotal || 0));
+  }
   selectedServices.forEach((item) => {
     if (item.id !== 'catering' && item.estimatedTotal) totals.push(Number(item.estimatedTotal));
   });
