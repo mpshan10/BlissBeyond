@@ -2916,3 +2916,41 @@ a:hover {
         border-radius: 10px;
     }
 }
+
+.report-secondary-grid {
+    flex: 0 0 100%;
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+    align-items: start;
+}
+
+.report-secondary-card--categories {
+    grid-column: 1;
+    grid-row: 1;
+}
+
+.report-secondary-card--venues {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+}
+
+.report-secondary-card--packages {
+    grid-column: 1;
+    grid-row: 2;
+}
+
+@media (max-width: 767.98px) {
+    .report-secondary-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .report-secondary-card--categories,
+    .report-secondary-card--venues,
+    .report-secondary-card--packages {
+        grid-column: auto;
+        grid-row: auto;
+    }
+}

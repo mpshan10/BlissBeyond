@@ -19,13 +19,8 @@ class ProductionConfigurationValidatorTest {
             .withProperty("spring.datasource.url", "jdbc:mysql://localhost/test")
             .withProperty("spring.datasource.username", "test-user")
             .withProperty("spring.datasource.password", "test-password")
-            .withProperty("spring.mail.host", "smtp.gmail.com")
-            .withProperty("spring.mail.port", "587")
-            .withProperty("spring.mail.username", "blissbeyond01@gmail.com")
-            .withProperty("spring.mail.password", "test-only-app-password")
-            .withProperty("spring.mail.properties.mail.smtp.auth", "true")
-            .withProperty("spring.mail.properties.mail.smtp.starttls.enable", "true")
-            .withProperty("app.mail.from", "blissbeyond01@gmail.com");
+            .withProperty("app.mail.resend.api-key", "test-only-api-key")
+            .withProperty("app.mail.resend.from", "onboarding@resend.dev");
 
         assertDoesNotThrow(() -> ProductionConfigurationValidator.validate(environment));
     }

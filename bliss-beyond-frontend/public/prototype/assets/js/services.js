@@ -97,6 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const toggle = card.querySelector('[data-service-toggle]');
     const customize = card.querySelector('a[href*="/prototype/customer/"]');
     const shouldAllow = Boolean(available && (venueAllowedServices.includes(card.dataset.serviceId)));
+    card.classList.toggle('d-none', !shouldAllow);
     card.classList.toggle('is-unavailable', !shouldAllow);
     if (toggle) {
       toggle.disabled = !shouldAllow;
@@ -142,8 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (backendLoaded && record) {
         applyBackendDataToCard(card);
       } else {
-        const fallbackAllowed = venueAllowedServices.includes(card.dataset.serviceId);
-        applyCardAvailability(card, fallbackAllowed);
+        applyCardAvailability(card, false);
       }
     });
   };

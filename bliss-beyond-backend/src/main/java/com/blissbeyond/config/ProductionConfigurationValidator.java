@@ -35,21 +35,8 @@ public class ProductionConfigurationValidator
         require(environment, "spring.datasource.url", "DB_URL", missing);
         require(environment, "spring.datasource.username", "DB_USERNAME", missing);
         require(environment, "spring.datasource.password", "DB_PASSWORD", missing);
-        require(environment, "spring.mail.host", "MAIL_HOST", missing);
-        require(environment, "spring.mail.username", "MAIL_USERNAME", missing);
-        require(environment, "spring.mail.password", "MAIL_PASSWORD", missing);
-        require(environment, "app.mail.from", "MAIL_FROM", missing);
-
-        int port = environment.getProperty("spring.mail.port", Integer.class, 0);
-        if (port <= 0 || port > 65535) {
-            missing.add("MAIL_PORT");
-        }
-        if (!environment.getProperty("spring.mail.properties.mail.smtp.auth", Boolean.class, false)) {
-            missing.add("MAIL_SMTP_AUTH=true");
-        }
-        if (!environment.getProperty("spring.mail.properties.mail.smtp.starttls.enable", Boolean.class, false)) {
-            missing.add("MAIL_SMTP_STARTTLS=true");
-        }
+        require(environment, "app.mail.resend.api-key", "RESEND_API_KEY", missing);
+        require(environment, "app.mail.resend.from", "RESEND_FROM", missing);
 
         if (!missing.isEmpty()) {
             throw new IllegalStateException(
