@@ -152,7 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
     serviceCards.forEach((card) => {
       const id = card.dataset.serviceId;
       const checked = toggles.some((input) => input.value === id && input.checked);
-      card.classList.toggle('selected', checked);
+
     });
   };
 
@@ -166,19 +166,18 @@ document.addEventListener('DOMContentLoaded', () => {
     if (summaryEl) {
       summaryEl.innerHTML = selected.length
         ? selected.map((item) => `
-          <li>
-            <span><i class="bi bi-check2-circle"></i>${item.title}</span>
-            <span class="d-flex align-items-center gap-2">
-              <strong>${item.estimatedTotal ? bbMoney(item.estimatedTotal) : ''}</strong>
-              <button class="btn btn-link btn-sm p-0 text-gold" type="button" data-service-remove="${item.id}">Remove</button>
-            </span>
+          <li class="service-summary-row">
+            <span class="service-summary-name"><i class="bi bi-check2-circle"></i>${item.title}</span>
+            <span class="service-summary-price"><strong>${item.estimatedTotal ? bbMoney(item.estimatedTotal) : ''}</strong></span>
           </li>`).join('')
         : '<li class="text-ink-soft">No services selected yet.</li>';
     }
 
     if (totalEl) {
       const total = selected.reduce((sum, item) => sum + Number(item.estimatedTotal || 0), 0);
-      totalEl.textContent = bbMoney(total);
+      totalEl.textContent = typeof bbFormatMmkDisplay === 'function'
+        ? bbFormatMmkDisplay(total)
+        : `MMK ${Math.round(total).toLocaleString()}`;
     }
 
     countEls.forEach((el) => {
@@ -252,17 +251,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (typeof window.bbSetBookingMode === 'function') window.bbSetBookingMode('CUSTOM');
     window.location.href = '/prototype/customer/review.html';
   }));
-
-  summaryEl?.addEventListener('click', (event) => {
-    const remove = event.target.closest('[data-service-remove]');
-    if (!remove) return;
-    const serviceId = remove.dataset.serviceRemove;
-    const toggle = toggles.find((input) => input.value === serviceId);
-    if (toggle) {
-      toggle.checked = false;
-      persist();
-    }
-  });
 
   const venueSummary = root.querySelector('[data-event-venue]');
   const serviceSummary = root.querySelector('[data-services-summary]');

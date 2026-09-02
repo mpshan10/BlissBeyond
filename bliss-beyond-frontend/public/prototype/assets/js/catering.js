@@ -22,7 +22,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const recommendationMenu = root.querySelector('[data-recommendation-menu]');
   const saveBtn = root.querySelector('[data-save-catering]');
   const continueBtns = [...root.querySelectorAll('[data-continue-review]')];
-  const continueBtn = continueBtns[0] || null;
   const recommendBtn = root.querySelector('[data-add-recommended]');
   const notesInput = root.querySelector('[data-notes]');
   const eventTypeSelect = root.querySelector('[data-catering-event]');
@@ -248,7 +247,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const target = addonGroups[groupName];
     if (!target) return;
 
-    const groupItems = addons.filter((item) => item.group === groupName);
+    const groupItems = addons.filter((item) => item.group === groupName
+      && (addonCatalogState !== 'ready' || item.backendAddonId));
     target.innerHTML = groupItems.map((item) => {
       const selectable = addonCatalogState !== 'ready' || item.available !== false;
       return `
@@ -733,7 +733,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
       const catalog = await response.json();
-      if (!Array.isArray(catalog) || catalog.length !== 8) {
+      if (!Array.isArray(catalog) || !catalog.length) {
         throw new Error('Invalid dining-style catalog response');
       }
 
@@ -772,11 +772,20 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
       const catalog = await response.json();
-      if (!Array.isArray(catalog) || catalog.length < addons.length) {
+      if (!Array.isArray(catalog) || !catalog.length) {
         throw new Error('Invalid add-on catalog response');
       }
 
-      const byName = new Map(catalog.map((addon) => [String(addon.name || '').trim(), addon]));
+      const usableCatalog = catalog.filter((addon) => Number.isInteger(Number(addon?.id))
+        && Number(addon.id) > 0
+        && String(addon.name || '').trim()
+        && String(addon.billingType || '').trim()
+        && Number.isFinite(Number(addon.price)));
+      if (usableCatalog.length !== catalog.length) {
+        throw new Error('One or more add-ons are malformed');
+      }
+
+      const byName = new Map(usableCatalog.map((addon) => [String(addon.name).trim(), addon]));
       addons.forEach((addon) => {
         const backendAddon = byName.get(addon.name);
         addon.backendAddonId = backendAddon?.id || null;
@@ -790,9 +799,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
 
-      if (addons.some((addon) => !addon.backendAddonId)) {
+      if (!addons.some((addon) => addon.backendAddonId)) {
         throw new Error('One or more active add-ons are not mapped');
       }
+      state.addons = state.addons.filter((id) => addons.some((addon) => addon.id === id && addon.backendAddonId));
       addonCatalogState = 'ready';
     } catch (error) {
       addonCatalogState = 'failed';
@@ -962,12 +972,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 1200);
   });
 
-  continueBtn?.addEventListener('click', (event) => {
+  continueBtns.forEach((button) => button.addEventListener('click', (event) => {
     event.preventDefault();
     const result = persist();
     if (!result) return;
     window.location.href = '/prototype/customer/review.html';
-  });
+  }));
 
   refreshRecommendationCopy();
   calculate();

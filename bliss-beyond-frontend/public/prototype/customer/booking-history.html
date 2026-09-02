@@ -44,19 +44,19 @@
     <h6>Account</h6>
     <a href="/prototype/login.html">Sign out</a>
   </aside>
-  <main class="bb-main" data-booking-history-page>
-    <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
+  <main class="bb-main booking-history-page" data-booking-history-page>
+    <div class="booking-history-header d-flex flex-wrap justify-content-between align-items-end gap-3">
       <div>
         <span class="eyebrow">Customer portal</span>
         <h1 class="h2 mt-1 mb-1">Booking History</h1>
-        <p class="small text-ink-soft mb-0">Every persisted booking in one place.</p>
+        <p class="small text-ink-soft mb-0">View and track all your event bookings.</p>
       </div>
       <div class="d-flex gap-2">
         <button class="btn btn-outline-forest btn-sm">Export CSV</button>
       </div>
     </div>
 
-    <div class="panel">
+    <div class="panel booking-history-card">
       <div class="panel__head">
         <div class="input-group" style="max-width:320px">
           <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
@@ -76,8 +76,8 @@
         </select>
       </div>
       <div class="panel__body" id="bhTable" data-booking-history-list>
-        <div class="table-responsive">
-          <table class="table align-middle ">
+        <div class="table-responsive booking-history-table-wrap">
+          <table class="table booking-history-table align-middle">
             <thead>
               <tr>
                 <th>Ref / Type</th>
@@ -88,7 +88,7 @@
                 <th>Total</th>
                 <th>Payment</th>
                 <th>Status</th>
-                <th></th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody data-booking-history-body>

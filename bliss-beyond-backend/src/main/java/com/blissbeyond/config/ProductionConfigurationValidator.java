@@ -35,8 +35,6 @@ public class ProductionConfigurationValidator
         require(environment, "spring.datasource.url", "DB_URL", missing);
         require(environment, "spring.datasource.username", "DB_USERNAME", missing);
         require(environment, "spring.datasource.password", "DB_PASSWORD", missing);
-        require(environment, "app.mail.resend.api-key", "RESEND_API_KEY", missing);
-        require(environment, "app.mail.resend.from", "RESEND_FROM", missing);
 
         if (!missing.isEmpty()) {
             throw new IllegalStateException(

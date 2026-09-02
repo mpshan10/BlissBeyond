@@ -869,9 +869,10 @@ async function bbRenderCustomerPayment() {
         const canPay = ['Awaiting Deposit', 'Balance Due'].includes(status);
         const reference = booking.ref || `BK-${String(booking.id || '').padStart(4, '0')}`;
         const amount = summary ? bbFormatMmkDisplay(summary.nextPaymentAmount || summary.depositRequired || 0) : 'Not available';
+        const venueName = booking.venueName || booking.venue?.name || 'Venue not set';
         return `<div class="border rounded-4 p-3 d-flex flex-wrap justify-content-between align-items-center gap-3">
           <div><div class="d-flex flex-wrap align-items-center gap-2"><strong>${bbEscapeHtml(reference)}</strong><span class="badge text-bg-light">${bbEscapeHtml(bookingTypeLabel(booking))}</span></div>
-          <div class="small text-ink-soft">${bbEscapeHtml(booking.event?.eventType || 'Event')} · ${bbEscapeHtml(bbFormatDateDisplay(booking.eventDate))} · ${bbEscapeHtml(booking.venue?.name || 'Venue not set')}</div>
+          <div class="small text-ink-soft">${bbEscapeHtml(booking.event?.eventType || booking.eventType || 'Event')} · ${bbEscapeHtml(bbFormatDateDisplay(booking.eventDate))} · ${bbEscapeHtml(venueName)}</div>
           <div class="small mt-1">${bbEscapeHtml(status)}${canPay ? ` · Deposit ${bbEscapeHtml(amount)}` : ''}</div></div>
           <a class="btn ${canPay ? 'btn-gold' : 'btn-outline-forest'} btn-sm" href="/prototype/customer/payment.html?bookingId=${encodeURIComponent(booking.id)}">${canPay ? (status === 'Balance Due' ? 'Pay Balance' : 'Pay Deposit') : 'View Payment'}</a>
         </div>`;
@@ -959,7 +960,8 @@ async function bbRenderCustomerPayment() {
   const renderBookingContext = (booking) => {
     if (!bookingContext) return;
     const type = String(booking.bookingType || '').toUpperCase() === 'PACKAGE' ? 'Package' : 'Customize';
-    bookingContext.textContent = `${booking.ref || `BK-${booking.id}`} · ${type} · ${booking.event?.eventType || 'Event'} · ${bbFormatDateDisplay(booking.eventDate)} · ${booking.venue?.name || 'Venue not set'}`;
+    const venueName = booking.venueName || booking.venue?.name || 'Venue not set';
+    bookingContext.textContent = `${booking.ref || `BK-${booking.id}`} · ${type} · ${booking.event?.eventType || booking.eventType || 'Event'} · ${bbFormatDateDisplay(booking.eventDate)} · ${venueName}`;
   };
 
   const loadSummary = async () => bbFetchCustomerJson(window.bbApiUrl(`/api/customer/bookings/${encodeURIComponent(bookingId)}/payment-summary`), { method: 'GET' });
@@ -2201,15 +2203,15 @@ async function bbRenderCustomerBookingHistory() {
 
       return `
         <tr class="align-middle" data-searchable data-type="${bbEscapeHtml(type)}" data-status="${bbEscapeHtml(String(booking.status || '').toLowerCase())}" data-searchable-text="${bbEscapeHtml(searchText)}">
-          <td class="fw-semibold">${bbEscapeHtml(ref)}<div class="small text-ink-soft">${type === 'PACKAGE' ? 'Package' : 'Customize'} · Created ${bbEscapeHtml(bbFormatDateDisplay(booking.createdAt))}</div></td>
-          <td>${bbEscapeHtml(eventLabel)}</td>
-          <td>${bbEscapeHtml(venueLabel)}</td>
-          <td>${bbEscapeHtml(dateLabel)}</td>
-          <td>${bbEscapeHtml(booking.guestCount ?? '')}</td>
-          <td class="fw-semibold">${bbEscapeHtml(totalLabel)}</td>
-          <td><span class="status ${bbEscapeHtml(bbBookingStatusClass(booking.paymentStatus))}">${bbEscapeHtml(paymentLabel)}</span><div class="small text-ink-soft">Paid ${bbEscapeHtml(bbFormatMmkDisplay(booking.paidAmount || 0))}</div></td>
-          <td><span class="status ${bbEscapeHtml(statusClass)}">${bbEscapeHtml(statusLabel)}</span></td>
-          <td><a class="btn btn-outline-forest btn-sm" href="/prototype/customer/booking-status.html?id=${encodeURIComponent(booking.id)}">Track</a></td>
+          <td data-label="Ref / Type"><span class="booking-history-ref">${bbEscapeHtml(ref)}</span><div class="booking-history-meta">${type === 'PACKAGE' ? 'Package' : 'Customize'} · Created ${bbEscapeHtml(bbFormatDateDisplay(booking.createdAt))}</div></td>
+          <td data-label="Event" class="booking-history-text">${bbEscapeHtml(eventLabel)}</td>
+          <td data-label="Venue" class="booking-history-text">${bbEscapeHtml(venueLabel)}</td>
+          <td data-label="Date">${bbEscapeHtml(dateLabel)}</td>
+          <td data-label="Guests">${bbEscapeHtml(booking.guestCount ?? '')}</td>
+          <td data-label="Total" class="booking-history-total">${bbEscapeHtml(totalLabel)}</td>
+          <td data-label="Payment"><span class="status ${bbEscapeHtml(bbBookingStatusClass(booking.paymentStatus))}">${bbEscapeHtml(paymentLabel)}</span><div class="booking-history-meta">Paid ${bbEscapeHtml(bbFormatMmkDisplay(booking.paidAmount || 0))}</div></td>
+          <td data-label="Status"><span class="status ${bbEscapeHtml(statusClass)}">${bbEscapeHtml(statusLabel)}</span></td>
+          <td data-label="Action" class="booking-history-action"><a class="btn btn-outline-forest btn-sm" href="/prototype/customer/booking-status.html?id=${encodeURIComponent(booking.id)}">Track</a></td>
         </tr>
       `;
     }).join('');
@@ -2250,6 +2252,7 @@ async function bbRenderCustomerBookingStatus() {
   const paymentEl = root.querySelector('[data-booking-payment]');
   const consultationsEl = root.querySelector('[data-booking-consultations]');
   const timelineEl = root.querySelector('[data-booking-timeline]');
+  const consultationLink = root.querySelector('[data-booking-consultation-link]');
   const quotationLink = root.querySelector('[data-booking-quotation-link]');
   const payButton = root.querySelector('[data-booking-pay-button]');
   const cancelButton = root.querySelector('[data-booking-cancel-button]');
@@ -2271,6 +2274,7 @@ async function bbRenderCustomerBookingStatus() {
     if (consultationsEl) consultationsEl.innerHTML = '<p class="text-ink-soft mb-0">No quotation or consultation information available.</p>';
     if (timelineEl) timelineEl.innerHTML = '<li><strong>Booking details unavailable</strong><br><span class="small text-ink-soft">Select a booking from My Bookings.</span></li>';
     if (quotationLink) quotationLink.classList.add('d-none');
+    if (consultationLink) consultationLink.classList.add('d-none');
     if (cancelButton) cancelButton.classList.add('d-none');
     if (payButton) payButton.classList.add('d-none');
     if (cancelledNoticeEl) cancelledNoticeEl.classList.add('d-none');
@@ -2492,6 +2496,11 @@ async function bbRenderCustomerBookingStatus() {
       } else {
         quotationLink.classList.add('d-none');
       }
+    }
+    if (consultationLink) {
+      const consultationEligible = !['CANCELLED', 'COMPLETED'].includes(bookingStatus);
+      consultationLink.href = `/prototype/customer/consultation.html?bookingId=${encodeURIComponent(booking.id)}`;
+      consultationLink.classList.toggle('d-none', !consultationEligible);
     }
     if (payButton) payButton.classList.add('d-none');
     if (cancelButton) cancelButton.classList.toggle('d-none', !canCancelBooking(booking));
@@ -3101,7 +3110,10 @@ function bbInitSimpleServicePage(config = {}) {
 
   if (titleEl && config.title) titleEl.textContent = config.title;
   if (contextEl) {
-    contextEl.textContent = `${eventContext.eventType || 'Wedding'} Â· ${eventContext.eventDate || '20 December 2026'} Â· ${bbPluralGuests(eventContext.guests || 150)}`;
+    const eventDate = eventContext.eventDate
+      ? bbFormatDateDisplay(eventContext.eventDate)
+      : '20 Dec 2026';
+    contextEl.textContent = `${eventContext.eventType || 'Wedding'} \u00B7 ${eventDate} \u00B7 ${bbPluralGuests(eventContext.guests || 150)}`;
   }
   if (venueEl) venueEl.textContent = venue.name || 'Selected venue';
 

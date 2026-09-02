@@ -54,10 +54,21 @@ document.addEventListener('DOMContentLoaded', () => {
       ? selectedServices.map((item) => {
         const details = serviceData[item.id] || {};
         const total = Number(item.estimatedTotal || details.estimatedTotal || 0);
-        const source = details.summary?.foods || details.options || details.selections || details.summary || [];
-        const sub = Array.isArray(source)
-          ? source.map((value) => value?.name || value?.label || value?.title || value).filter(Boolean)
-          : [source].filter(Boolean);
+        const itemName = (value) => typeof value === 'object' && value !== null
+          ? value.name || value.label || value.title
+          : value;
+        const sub = item.id === 'catering'
+          ? [
+              itemName(details.style),
+              ...(Array.isArray(details.foods) ? details.foods.map(itemName) : []),
+              ...(Array.isArray(details.addons) ? details.addons.map(itemName) : [])
+            ].map((value) => String(value || '').trim()).filter(Boolean)
+          : (() => {
+              const source = details.summary?.foods || details.options || details.selections || details.summary || [];
+              return (Array.isArray(source) ? source.map(itemName) : [source])
+                .map((value) => String(value || '').trim())
+                .filter(Boolean);
+            })();
         const detailHtml = sub.length ? `<small>${escapeHtml(sub.join(' · '))}</small>` : '';
         return `<li class="review-service-row"><i class="bi bi-check2-circle review-service-row__icon" aria-hidden="true"></i><span class="review-service-row__info"><strong>${escapeHtml(item.title || item.id)}</strong>${detailHtml}</span><strong class="review-service-row__price">${escapeHtml(total ? bbMoney(total) : 'MMK 0')}</strong></li>`;
       }).join('')

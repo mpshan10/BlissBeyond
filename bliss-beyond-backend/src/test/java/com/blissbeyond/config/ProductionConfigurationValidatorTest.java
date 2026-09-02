@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ProductionConfigurationValidatorTest {
     @Test
-    void rejectsMissingDatabaseAndMailConfiguration() {
+    void rejectsMissingDatabaseConfiguration() {
         assertThrows(IllegalStateException.class,
             () -> ProductionConfigurationValidator.validate(new MockEnvironment()));
     }
@@ -18,9 +18,7 @@ class ProductionConfigurationValidatorTest {
         MockEnvironment environment = new MockEnvironment()
             .withProperty("spring.datasource.url", "jdbc:mysql://localhost/test")
             .withProperty("spring.datasource.username", "test-user")
-            .withProperty("spring.datasource.password", "test-password")
-            .withProperty("app.mail.resend.api-key", "test-only-api-key")
-            .withProperty("app.mail.resend.from", "onboarding@resend.dev");
+            .withProperty("spring.datasource.password", "test-password");
 
         assertDoesNotThrow(() -> ProductionConfigurationValidator.validate(environment));
     }

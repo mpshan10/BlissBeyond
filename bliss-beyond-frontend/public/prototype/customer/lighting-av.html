@@ -1867,6 +1867,33 @@ body{
 }
 </style>
 
+<style>
+/* Keep the service-page header compact without changing the shared button system. */
+[data-simple-service-page] .service-page-header__actions {
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+[data-simple-service-page] .service-page-header__actions .btn {
+  min-height: 40px !important;
+  padding: .55rem .9rem !important;
+  line-height: 1.2 !important;
+  white-space: nowrap;
+}
+
+@media (max-width: 767.98px) {
+  [data-simple-service-page] .service-page-header {
+    align-items: flex-start !important;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  [data-simple-service-page] .service-page-header__actions {
+    width: 100%;
+  }
+}
+</style>
+
 </head>
 
 <body data-catalog-service="lighting-av">
@@ -1874,7 +1901,7 @@ body{
 <main class="container py-5" data-simple-service-page>
 
   <!-- HEADER -->
-  <div class="d-flex justify-content-between align-items-end mb-4">
+  <div class="d-flex justify-content-between align-items-end mb-4 service-page-header">
 
     <div>
       <span class="eyebrow">
@@ -1890,7 +1917,7 @@ body{
       </p>
     </div>
 
-    <div class="d-flex gap-2">
+    <div class="d-flex gap-2 service-page-header__actions">
 
       <a class="btn btn-outline-forest btn-sm"
          data-service-back

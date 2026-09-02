@@ -89,6 +89,52 @@
 [data-services-page] .service-card__body > .d-flex.justify-content-between.align-items-center:last-child {
   padding-top: 0.55rem;
 }
+
+/* Keep the calculated total readable and anchored to the right edge. */
+[data-services-page] .workflow-summary .services-total-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-width: 0;
+  gap: 1rem;
+}
+
+[data-services-page] .workflow-summary .services-total-row > span {
+  min-width: 0;
+  flex: 0 1 auto;
+}
+
+[data-services-page] .workflow-summary .services-total-row > [data-services-total] {
+  flex: 0 0 auto;
+  max-width: 100%;
+  margin-left: auto;
+  text-align: right;
+  white-space: nowrap;
+}
+
+[data-services-page] .workflow-summary .service-summary-row {
+  align-items: flex-start;
+}
+
+[data-services-page] .workflow-summary .service-summary-name {
+  min-width: 0;
+  flex: 1 1 auto;
+  overflow-wrap: anywhere;
+}
+
+[data-services-page] .workflow-summary .service-summary-price {
+  flex: 0 0 auto;
+  margin-left: auto;
+  text-align: right;
+  white-space: nowrap;
+}
+
+[data-services-page] .workflow-summary .pricing-box {
+  box-sizing: border-box;
+  max-width: 100%;
+  overflow: hidden;
+}
 </style>
 
 </head>
@@ -359,7 +405,7 @@
               <li class="text-ink-soft">No services selected yet.</li>
             </ul>
             <div class="pricing-box mb-3">
-              <div class="pricing-row"><span>TOTAL</span><strong class="bb-price" data-services-total>$0</strong></div>
+              <div class="pricing-row services-total-row"><span>TOTAL</span><strong class="bb-price" data-services-total>MMK 0</strong></div>
             </div>
             <div class="d-grid gap-2">
               <button class="btn btn-gold" type="button" data-save-services>Save Services</button>
