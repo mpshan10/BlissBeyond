@@ -15,20 +15,20 @@ document.addEventListener('DOMContentLoaded', () => {
   const saveBtn = root.querySelector('[data-save-services]');
   const dateStatus = root.querySelector('[data-services-date-status]');
 
-  const eventContext = typeof bbGetEventContext === 'function' ? bbGetEventContext() : {};
+  const eventContext = typeof bbRead === 'function' ? bbRead('bb_event_context') || {} : {};
   const venue = typeof bbGetVenue === 'function' ? bbGetVenue() : {};
   const serviceData = typeof bbGetServiceData === 'function' ? bbGetServiceData() : {};
   const currentGuestCount = Number(eventContext?.guests || eventContext?.guestCount || 0);
   const savedCatering = typeof bbGetCatering === 'function' ? bbGetCatering() : null;
   let currentServices = typeof bbGetSelectedServices === 'function' ? bbGetSelectedServices() : [];
 
-  // Catering totals are guest-dependent, so discard only stale catering work.
-  if (savedCatering && Number(savedCatering.guestCount || 0) !== currentGuestCount) {
-    if (typeof bbSetCatering === 'function') bbSetCatering(null);
-    serviceData.catering = null;
-    currentServices = currentServices.filter((item) => item.id !== 'catering');
-    if (typeof bbSetSelectedServices === 'function') bbSetSelectedServices(currentServices);
-    if (typeof bbSetServiceData === 'function') bbSetServiceData('catering', null);
+  // Catering keeps its selections but always follows the current Event guest count.
+  if (savedCatering && currentGuestCount > 0 && typeof window.bbNormalizeCateringGuestCount === 'function') {
+    const normalizedCatering = window.bbNormalizeCateringGuestCount(savedCatering, currentGuestCount, true);
+    serviceData.catering = normalizedCatering;
+    currentServices = currentServices.map((item) => item.id === 'catering'
+      ? { ...item, estimatedTotal: normalizedCatering.estimatedTotal ?? item.estimatedTotal }
+      : item);
   }
   const venueAllowedServices = Array.isArray(venue?.services) && venue.services.length
     ? venue.services

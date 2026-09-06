@@ -6077,8 +6077,8 @@ input[data-dining-style]:checked::before{
         <div class="col-lg-8">
           <div class="workflow-meta">
             <span class="bb-badge gold" data-catering-type>Wedding</span>
-            <span class="bb-badge" data-catering-guests-display>150 Guests</span>
-            <input type="hidden" id="cateringGuestCount" data-catering-guests value="150">
+            <span class="bb-badge" data-catering-guests-display>Not selected</span>
+            <input type="hidden" id="cateringGuestCount" data-catering-guests value="">
             <span class="bb-badge" data-catering-date>20 December 2026</span>
           </div>
         </div>
@@ -6288,7 +6288,7 @@ input[data-dining-style]:checked::before{
                 <div class="catering-summary-icon"><i class="bi bi-people"></i></div>
                 <div class="catering-summary-content">
                   <span class="catering-summary-label">Guests</span>
-                  <strong data-estimated-guests>150</strong>
+                  <strong data-estimated-guests>Not selected</strong>
                 </div>
               </li>
 
@@ -7576,10 +7576,6 @@ document.addEventListener('DOMContentLoaded', function () {
   guestSelect.addEventListener('change', function () {
     guestData.textContent = this.value + ' Guests';
 
-    // Update common guest-count storage keys used by prototype pages.
-    sessionStorage.setItem('bbCateringGuests', this.value);
-    localStorage.setItem('bbCateringGuests', this.value);
-
     // Let existing catering logic recalculate if it listens for changes.
     guestData.dispatchEvent(new Event('change', { bubbles: true }));
     window.dispatchEvent(new CustomEvent('bb:catering-guests-changed', {
@@ -7667,21 +7663,12 @@ document.addEventListener('DOMContentLoaded', function () {
 document.addEventListener('DOMContentLoaded', function () {
 
   function readSelectedEventContext() {
-    if (typeof window.bbGetEventContext === 'function') {
-      const context = window.bbGetEventContext();
-      if (context) return context;
-    }
-
     try {
       const raw = sessionStorage.getItem('bb_event_context');
       if (raw) return JSON.parse(raw);
     } catch (error) {}
 
-    return {
-      eventType: sessionStorage.getItem('bbEventType') || 'Wedding',
-      eventDate: sessionStorage.getItem('bbEventDate') || '2026-12-20',
-      guests: Number(sessionStorage.getItem('bbEventGuests') || 150)
-    };
+    return {};
   }
 
   function formatEventDate(value) {
@@ -7705,9 +7692,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const context = readSelectedEventContext();
 
     return {
-      eventType: context.eventType || context.type || 'Wedding',
-      eventDate: context.eventDate || context.date || '2026-12-20',
-      guests: Number(context.guests || context.guestCount || 150)
+      eventType: context.eventType || context.type || '',
+      eventDate: context.eventDate || context.date || '',
+      guests: Number(context.guests ?? context.guestCount)
     };
   };
 
@@ -7743,13 +7730,15 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     }
 
-    if (guestSelect) {
+    if (guestSelect && Number.isInteger(event.guests) && event.guests > 0) {
       guestSelect.value = String(event.guests);
       guestSelect.dispatchEvent(new Event('change', { bubbles: true }));
     }
 
     if (guestData) {
-      guestData.textContent = event.guests + ' Guests';
+      guestData.textContent = Number.isInteger(event.guests) && event.guests > 0
+        ? event.guests + ' Guests'
+        : 'Not selected';
     }
   }, 0);
 });
@@ -7840,7 +7829,7 @@ window.addEventListener('load', function () {
     /* If catering.js listens to custom guest changes, ask it to recalculate
        from the now-empty selection without selecting anything. */
     window.dispatchEvent(new CustomEvent('bb:catering-guests-changed', {
-      detail: { guests: Number(guestSelect?.value || 150) }
+      detail: { guests: Number(guestSelect?.value || 0) }
     }));
 
   }, 250);
@@ -8003,7 +7992,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function getGuests() {
     return Number(
-      document.getElementById('cateringGuestCount')?.value || 150
+      document.getElementById('cateringGuestCount')?.value || 0
     );
   }
 
@@ -8252,7 +8241,7 @@ window.addEventListener('load', function () {
     };
 
     function guests() {
-      return Number(document.getElementById('cateringGuestCount')?.value || 150);
+      return Number(document.getElementById('cateringGuestCount')?.value || 0);
     }
 
     function money(n) {
@@ -8445,7 +8434,7 @@ window.addEventListener('load', function () {
       Number(value || 0).toLocaleString('en-US') + ' MMK';
 
     const guests = () =>
-      Number(document.getElementById('cateringGuestCount')?.value || 150);
+      Number(document.getElementById('cateringGuestCount')?.value || 0);
 
     function setRowVisible(el, visible) {
       const row = el?.closest('.catering-summary-item');

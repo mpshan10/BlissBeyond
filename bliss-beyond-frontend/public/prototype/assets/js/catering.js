@@ -5,8 +5,15 @@ document.addEventListener('DOMContentLoaded', () => {
   if (!root) return;
 
   const venue = typeof bbGetVenue === 'function' ? bbGetVenue() : {};
-  const eventContext = typeof bbGetEventContext === 'function' ? bbGetEventContext() : {};
-  const stored = typeof bbGetCatering === 'function' ? bbGetCatering() : null;
+  const eventContext = typeof bbRead === 'function' ? bbRead('bb_event_context') || {} : {};
+  const eventGuestCount = Number(eventContext.guests ?? eventContext.guestCount);
+  const authoritativeGuestCount = Number.isInteger(eventGuestCount) && eventGuestCount > 0
+    ? eventGuestCount
+    : 0;
+  let stored = typeof bbGetCatering === 'function' ? bbGetCatering() : null;
+  if (stored && authoritativeGuestCount && typeof window.bbNormalizeCateringGuestCount === 'function') {
+    stored = window.bbNormalizeCateringGuestCount(stored, authoritativeGuestCount, true);
+  }
 
   const foodGrid = root.querySelector('[data-food-grid]');
   const summaryEl = root.querySelector('[data-catering-summary]');
@@ -200,7 +207,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const state = {
     eventType: eventContext.eventType || 'Wedding',
-    guestCount: Number(eventContext.guests || 150),
+    guestCount: authoritativeGuestCount,
     style: 'Buffet',
     cuisines: [],
     dietary: [],
@@ -211,7 +218,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (stored) {
     state.eventType = stored.eventType || state.eventType;
-    state.guestCount = Number(stored.guestCount || state.guestCount);
     state.style = typeof stored.style === 'object'
       ? stored.style?.key || stored.style?.name || stored.style?.label || stored.style?.value || state.style
       : stored.style || state.style;
@@ -223,7 +229,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   if (eventTypeSelect) eventTypeSelect.value = state.eventType;
-  if (guestInput) guestInput.value = state.guestCount;
+  if (guestInput) guestInput.value = state.guestCount || '';
   if (notesInput) notesInput.value = state.notes;
 
   const dietKey = (label) => {
@@ -336,7 +342,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const calculate = () => {
-    const guestCount = Number(guestInput?.value || state.guestCount || 150);
+    const guestCount = Number(guestInput?.value || state.guestCount || 0);
     const style = styleInputs.find((input) => input.checked)?.value || '';
     const selectedFoods = foods.filter((food) => state.foods.includes(food.id));
     const selectedAddons = addons.filter((addon) => state.addons.includes(addon.id));
@@ -552,6 +558,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const payload = calculate();
+    if (!Number.isInteger(payload.guestCount) || payload.guestCount <= 0) {
+      if (statusEl) statusEl.textContent = 'Select a valid event guest count before saving Catering.';
+      return null;
+    }
     const invalidFoods = validateFoodSelection(payload.foods);
     if (invalidFoods.length) {
       if (statusEl) {
@@ -624,8 +634,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     bbSetEventContext({
-      eventType: payload.eventType,
-      guests: payload.guestCount
+      eventType: payload.eventType
     });
 
     bbSetServiceData('catering', {
@@ -689,7 +698,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const refreshRecommendationCopy = () => {
     if (!recommendationCopy || !recommendationMenu) return;
 
-    const guests = Number(guestInput?.value || state.guestCount || 150);
+    const guests = Number(guestInput?.value || state.guestCount || 0);
     const eventType = eventTypeSelect?.value || state.eventType || 'Wedding';
     const style = styleInputs.find((input) => input.checked)?.value || 'Buffet';
     const cuisines = cuisineChecks.filter((input) => input.checked).map((input) => input.value);

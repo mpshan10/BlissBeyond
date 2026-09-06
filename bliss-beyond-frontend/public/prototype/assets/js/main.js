@@ -162,6 +162,69 @@ function bbSetCatering(data) {
   bbWrite(BB_STATE_KEYS.catering, data);
 }
 
+function bbValidGuestCount(value) {
+  const guests = Number(value);
+  return Number.isInteger(guests) && guests > 0 ? guests : null;
+}
+
+function bbRecalculateCateringTotal(catering, guestCount) {
+  const guests = bbValidGuestCount(guestCount);
+  if (!catering || !guests) return null;
+
+  const style = typeof catering.style === 'object' && catering.style !== null
+    ? catering.style
+    : catering.diningStyle;
+  const stylePrice = Number(style?.pricePerGuest);
+  const foods = Array.isArray(catering.foods) ? catering.foods : [];
+  const addons = Array.isArray(catering.addons) ? catering.addons : [];
+  if (!Number.isFinite(stylePrice)
+    || foods.some((food) => !Number.isFinite(Number(food?.pricePerGuest)))
+    || addons.some((addon) => !Number.isFinite(Number(addon?.price)))) {
+    return null;
+  }
+
+  const foodTotal = foods.reduce((sum, food) => sum + Number(food.pricePerGuest) * guests, 0);
+  const addonTotal = addons.reduce((sum, addon) => {
+    const billingType = String(addon.billingType || addon.pricingType || 'PER_GUEST')
+      .replace(/([a-z])([A-Z])/g, '$1_$2')
+      .replace(/-/g, '_')
+      .toUpperCase();
+    if (billingType === 'FLAT') return sum + Number(addon.price);
+    if (billingType === 'PER_UNIT') {
+      const quantity = Number(addon.quantity);
+      return Number.isInteger(quantity) && quantity > 0 ? sum + Number(addon.price) * quantity : sum;
+    }
+    return sum + Number(addon.price) * guests;
+  }, 0);
+  return stylePrice * guests + foodTotal + addonTotal;
+}
+
+function bbNormalizeCateringGuestCount(catering, eventGuestCount, persist = false) {
+  const guests = bbValidGuestCount(eventGuestCount);
+  if (!catering || !guests) return catering;
+
+  const normalized = { ...catering, guestCount: guests };
+  const recalculatedTotal = bbRecalculateCateringTotal(normalized, guests);
+  if (recalculatedTotal !== null) normalized.estimatedTotal = recalculatedTotal;
+
+  if (persist) {
+    bbSetCatering(normalized);
+    const serviceData = bbGetServiceData();
+    if (serviceData.catering) {
+      bbSetServiceData('catering', { ...serviceData.catering, ...normalized });
+    }
+    const services = bbGetSelectedServices();
+    if (services.some((service) => service?.id === 'catering')) {
+      bbSetSelectedServices(services.map((service) => service?.id === 'catering'
+        ? { ...service, estimatedTotal: normalized.estimatedTotal ?? service.estimatedTotal }
+        : service));
+    }
+  }
+  return normalized;
+}
+
+window.bbNormalizeCateringGuestCount = bbNormalizeCateringGuestCount;
+
 function bbHasGenuineServiceSelection(item, details = {}) {
   const serviceId = String(item?.id || details?.serviceId || '').trim().toLowerCase();
   const itemTotal = Number(item?.estimatedTotal || 0);
@@ -1896,10 +1959,10 @@ function bbRenderBookingDraftSummary(form = null) {
   const summaryBody = bookingForm.closest('[data-booking-confirmation-page]')?.querySelector('.booking-summary-panel .panel__body');
 
   const venue = typeof bbGetVenue === 'function' ? bbGetVenue() || {} : {};
-  const eventContext = typeof bbGetEventContext === 'function' ? bbGetEventContext() : {};
+  const eventContext = bbRead(BB_STATE_KEYS.event) || {};
   const storedSelectedServices = typeof bbGetSelectedServices === 'function' ? bbGetSelectedServices() : [];
   const serviceData = typeof bbGetServiceData === 'function' ? bbGetServiceData() : {};
-  const catering = typeof bbGetCatering === 'function' ? bbGetCatering() || serviceData.catering || null : serviceData.catering || null;
+  let catering = typeof bbGetCatering === 'function' ? bbGetCatering() || serviceData.catering || null : serviceData.catering || null;
   const selectedServices = storedSelectedServices.filter((item) => bbHasGenuineServiceSelection(
     item,
     item?.id === 'catering' ? (catering || {}) : (serviceData[item?.id] || {})
@@ -1911,6 +1974,7 @@ function bbRenderBookingDraftSummary(form = null) {
   const startTime = bookingForm.querySelector('[name="startTime"]')?.value || eventContext?.eventTime || '';
   const endTime = bookingForm.querySelector('[name="endTime"]')?.value || eventContext?.endTime || '';
   const specialRequests = bookingForm.querySelector('[name="specialRequests"]')?.value?.trim() || eventContext?.specialRequirements || '';
+  catering = bbNormalizeCateringGuestCount(catering, guests, true);
 
   const serviceItems = selectedServices.filter((item) => item?.id && item.id !== 'catering');
   const serviceTotal = serviceItems.reduce((sum, item) => sum + Number(item?.estimatedTotal || 0), 0);
@@ -2032,7 +2096,7 @@ function bbRenderBookingDraftSummary(form = null) {
   const cateringSummaryHtml = catering
     ? [
         `<li class="d-flex justify-content-between gap-3"><span>Catering style</span><strong>${bbEscapeHtml(cateringStyle || 'Not set')}</strong></li>`,
-        `<li class="d-flex justify-content-between gap-3"><span>Guests</span><strong>${bbEscapeHtml(Number(catering.guestCount || guests).toLocaleString())}</strong></li>`,
+        `<li class="d-flex justify-content-between gap-3"><span>Guests</span><strong>${bbEscapeHtml(Number(guests).toLocaleString())}</strong></li>`,
         `<li class="d-flex justify-content-between gap-3"><span>Selected foods</span><strong>${bbEscapeHtml((catering.foods || []).length ? catering.foods.map((food) => food.name || food).join(', ') : 'None selected')}</strong></li>`,
         `<li class="d-flex justify-content-between gap-3"><span>Add-ons</span><strong>${bbEscapeHtml((catering.addons || []).length ? catering.addons.map((addon) => addon.name || addon).join(', ') : 'None selected')}</strong></li>`,
         `<li class="d-flex justify-content-between gap-3"><span>Dietary requirements</span><strong>${bbEscapeHtml((catering.dietary || []).length ? catering.dietary.join(', ') : 'None selected')}</strong></li>`,
@@ -3905,10 +3969,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const endTimeInput = form.querySelector('[name="endTime"]');
     const guestsInput = form.querySelector('[name="guests"]');
     const requestsInput = form.querySelector('[name="specialRequests"]');
-    const buildServiceSelectionsPayload = () => {
+    const buildServiceSelectionsPayload = (eventGuestCount) => {
       const storedSelectedServices = typeof bbGetSelectedServices === 'function' ? bbGetSelectedServices() : [];
       const serviceData = typeof bbGetServiceData === 'function' ? bbGetServiceData() : {};
-      const cateringData = typeof bbGetCatering === 'function' ? bbGetCatering() : null;
+      const storedCatering = typeof bbGetCatering === 'function'
+        ? bbGetCatering() || serviceData.catering || null
+        : serviceData.catering || null;
+      const cateringData = bbNormalizeCateringGuestCount(storedCatering, eventGuestCount, true);
       const selectedServices = storedSelectedServices.filter((item) => bbHasGenuineServiceSelection(
         item,
         item?.id === 'catering' ? (cateringData || {}) : (serviceData[item?.id] || {})
@@ -3920,7 +3987,9 @@ document.addEventListener('DOMContentLoaded', () => {
           : (serviceData[item.id] || {});
         const backendServiceId = Number(stored?.backendServiceId || 0);
         const serviceKey = String(item?.id || '').trim();
-        const estimatedTotal = Number(item?.estimatedTotal || stored?.estimatedTotal || 0);
+        const estimatedTotal = Number(item?.id === 'catering'
+          ? (stored?.estimatedTotal ?? item?.estimatedTotal ?? 0)
+          : (item?.estimatedTotal ?? stored?.estimatedTotal ?? 0));
 
         if (!serviceKey) {
           throw new Error(`Selected service ${item?.title || 'service'} is missing a valid service key.`);
@@ -3953,7 +4022,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const prefillFromState = () => {
-      const eventContext = bbGetEventContext();
+      const eventContext = bbRead(BB_STATE_KEYS.event) || {};
       const storedVenue = bbGetVenue() || {};
       const legacyVenue = bbRead('bbVenueEventDetails') || {};
       const packagePlan = bbGetPackagePlan();
@@ -4112,6 +4181,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const venueName = storedVenue.name || venueInput?.value?.trim() || '';
       let createdEventId = null;
 
+      if (!bbValidGuestCount(guestCount)) {
+        setStatus('A valid event guest count is required before confirming your booking.', 'danger');
+        return;
+      }
+
       const validTime = (value) => /^\d{2}:\d{2}$/.test(value)
         && Number(value.slice(0, 2)) <= 23
         && Number(value.slice(3, 5)) <= 59;
@@ -4159,14 +4233,13 @@ document.addEventListener('DOMContentLoaded', () => {
           venueId
         };
 
+        const serviceSelections = buildServiceSelectionsPayload(guestCount);
         const eventData = await bbFetchJson(window.bbApiUrl('/api/events'), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(eventPayload)
         });
         createdEventId = eventData.id;
-
-        const serviceSelections = buildServiceSelectionsPayload();
 
         const bookingData = await bbFetchJson(window.bbApiUrl('/api/bookings'), {
           method: 'POST',

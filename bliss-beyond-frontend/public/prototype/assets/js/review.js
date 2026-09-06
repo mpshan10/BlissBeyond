@@ -28,10 +28,14 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   const venue = typeof bbGetVenue === 'function' ? bbGetVenue() : {};
-  const eventContext = typeof bbGetEventContext === 'function' ? bbGetEventContext() : {};
+  const eventContext = typeof bbRead === 'function' ? bbRead('bb_event_context') || {} : {};
+  const eventGuestCount = Number(eventContext?.guests ?? eventContext?.guestCount);
   const storedSelectedServices = typeof bbGetSelectedServices === 'function' ? bbGetSelectedServices() : [];
-  const catering = typeof bbGetCatering === 'function' ? bbGetCatering() : null;
   const serviceData = typeof bbGetServiceData === 'function' ? bbGetServiceData() : {};
+  const storedCatering = typeof bbGetCatering === 'function' ? bbGetCatering() || serviceData.catering || null : serviceData.catering || null;
+  const catering = typeof window.bbNormalizeCateringGuestCount === 'function'
+    ? window.bbNormalizeCateringGuestCount(storedCatering, eventGuestCount, true)
+    : storedCatering;
   const isGenuineService = (item) => typeof bbHasGenuineServiceSelection === 'function'
     && bbHasGenuineServiceSelection(item, item?.id === 'catering' ? (catering || serviceData[item.id] || {}) : (serviceData[item.id] || {}));
   const selectedServices = storedSelectedServices.filter(isGenuineService);
@@ -47,13 +51,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const formatTime = typeof bbFormatTimeDisplay === 'function' ? bbFormatTimeDisplay : (value) => value;
     timeEl.textContent = start && end ? `${formatTime(start)} - ${formatTime(end)}` : 'Time not selected';
   }
-  if (guestsEl) guestsEl.textContent = `${Number(eventContext?.guests || 150).toLocaleString()} Guests`;
+  if (guestsEl) guestsEl.textContent = Number.isInteger(eventGuestCount) && eventGuestCount > 0
+    ? `${eventGuestCount.toLocaleString()} Guests`
+    : 'Guests not selected';
 
   if (servicesEl) {
     servicesEl.innerHTML = selectedServices.length
       ? selectedServices.map((item) => {
-        const details = serviceData[item.id] || {};
-        const total = Number(item.estimatedTotal || details.estimatedTotal || 0);
+        const details = item.id === 'catering' ? (catering || {}) : (serviceData[item.id] || {});
+        const total = Number(item.id === 'catering'
+          ? (details.estimatedTotal ?? item.estimatedTotal ?? 0)
+          : (item.estimatedTotal ?? details.estimatedTotal ?? 0));
         const itemName = (value) => typeof value === 'object' && value !== null
           ? value.name || value.label || value.title
           : value;
