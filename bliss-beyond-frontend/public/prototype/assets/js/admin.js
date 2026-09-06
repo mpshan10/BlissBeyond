@@ -2383,7 +2383,7 @@
     container.innerHTML = items.map((item) => {
       const count = Number(item.bookings) || 0;
       const height = Math.max(4, Math.round((count / max) * 100));
-      return `<div class="flex-fill text-center d-flex flex-column justify-content-end h-100"><div class="small text-ink-soft mb-1">${count}</div><div style="height:${height}%;background:linear-gradient(180deg,var(--bb-gold),var(--bb-green));border-radius:6px 6px 0 0" title="${escapeHtml(item.month)}: ${count} bookings"></div><span class="small text-ink-soft mt-1">${escapeHtml(item.month)}</span></div>`;
+      return `<div class="flex-fill text-center d-flex flex-column justify-content-end h-100"><div class="small text-ink-soft mb-1">${count}</div><div style="height:${height}%;background:#5B6F8C;border-radius:6px 6px 0 0" title="${escapeHtml(item.month)}: ${count} bookings"></div><span class="small text-ink-soft mt-1">${escapeHtml(item.month)}</span></div>`;
     }).join('');
   }
 

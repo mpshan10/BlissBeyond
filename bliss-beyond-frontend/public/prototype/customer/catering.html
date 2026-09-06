@@ -6077,22 +6077,8 @@ input[data-dining-style]:checked::before{
         <div class="col-lg-8">
           <div class="workflow-meta">
             <span class="bb-badge gold" data-catering-type>Wedding</span>
-            <span class="bb-badge d-inline-flex align-items-center gap-1">
-              <select id="cateringGuestCount"
-                      class="border-0 bg-transparent p-0"
-                      style="width:auto; min-width:58px; font-size:14px; color:inherit; outline:none;"
-                      aria-label="Number of guests">
-                <option value="50">50 Guests</option>
-                <option value="100">100 Guests</option>
-                <option value="150" selected>150 Guests</option>
-                <option value="200">200 Guests</option>
-                <option value="250">250 Guests</option>
-                <option value="300">300 Guests</option>
-                <option value="400">400 Guests</option>
-                <option value="500">500 Guests</option>
-              </select>
-              <span class="d-none" data-catering-guests>150 Guests</span>
-            </span>
+            <span class="bb-badge" data-catering-guests-display>150 Guests</span>
+            <input type="hidden" id="cateringGuestCount" data-catering-guests value="150">
             <span class="bb-badge" data-catering-date>20 December 2026</span>
           </div>
         </div>
@@ -7071,14 +7057,14 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   const diningStyleImages = {
-    "Buffet": "/prototype/assets/img/catering/buffet.jpg",
-    "Plated Dinner": "/prototype/assets/img/catering/plated-dinner.jpg",
-    "Cocktail / Finger Food": "/prototype/assets/img/catering/finger-food.jpg",
-    "Family Style": "/prototype/assets/img/catering/family-style.jpg",
-    "Live Cooking Stations": "/prototype/assets/img/catering/live-cooking.jpg",
-    "Set Menu": "/prototype/assets/img/catering/set-menu.jpg",
-    "High Tea / Afternoon Reception": "/prototype/assets/img/catering/high-tea.jpg",
-    "Traditional Food": "/prototype/assets/img/catering/traditional-food.jpg"
+    "Buffet": "/prototype/assets/img/catering2.jpg",
+    "Plated Dinner": "/prototype/assets/img/catering3.jpg",
+    "Cocktail / Finger Food": "/prototype/assets/img/catering4.jpg",
+    "Family Style": "/prototype/assets/img/catering5.jpg",
+    "Live Cooking Stations": "/prototype/assets/img/catering6.jpg",
+    "Set Menu": "/prototype/assets/img/catering7.jpg",
+    "High Tea / Afternoon Reception": "/prototype/assets/img/catering8.jpg",
+    "Traditional Food": "/prototype/assets/img/catering9.jpg"
   };
 
   // Explore now changes the URL and opens a full-page detail view.
@@ -7358,27 +7344,27 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
   const addonImages = {
-    "soft-drinks-package": "/prototype/assets/img/catering/soft-drinks.jpg",
-    "fresh-juice-package": "/prototype/assets/img/catering/fresh-juice.jpg",
-    "mocktail-package": "/prototype/assets/img/catering/mocktails.jpg",
-    "premium-beverage-package": "/prototype/assets/img/catering/premium-beverages.jpg",
-    "coffee-tea-package": "/prototype/assets/img/catering/coffee-tea.jpg",
-    "dessert-station": "/prototype/assets/img/catering/dessert-station.jpg",
-    "premium-dessert-bar": "/prototype/assets/img/catering/premium-dessert-bar.jpg",
-    "chocolate-fountain": "/prototype/assets/img/catering/chocolate-fountain.jpg",
-    "mini-pastries": "/prototype/assets/img/catering/mini-pastries.jpg",
-    "macaron-station": "/prototype/assets/img/catering/macaron-station.jpg",
-    "ice-cream-station": "/prototype/assets/img/catering/ice-cream-station.jpg",
-    "live-chef-station": "/prototype/assets/img/catering/live-chef.jpg",
-    "sushi-station": "/prototype/assets/img/catering/sushi.jpg",
-    "carving-station": "/prototype/assets/img/catering/carving.jpg",
-    "cheese-board": "/prototype/assets/img/catering/cheese-board.jpg",
-    "seafood-station": "/prototype/assets/img/catering/seafood.jpg",
-    "late-night-snack-station": "/prototype/assets/img/catering/late-night-snacks.jpg",
-    "mohinga-station": "/prototype/assets/img/catering/mohinga.jpg",
-    "shan-noodle-station": "/prototype/assets/img/catering/shan-noodles.jpg",
-    "traditional-snack-station": "/prototype/assets/img/catering/traditional-snacks.jpg",
-    "traditional-dessert-station": "/prototype/assets/img/catering/traditional-desserts.jpg"
+    "soft-drinks-package": "/prototype/assets/img/catering10.jpg",
+    "fresh-juice-package": "/prototype/assets/img/catering11.jpg",
+    "mocktail-package": "/prototype/assets/img/catering12.jpg",
+    "premium-beverage-package": "/prototype/assets/img/catering13.jpg",
+    "coffee-tea-package": "/prototype/assets/img/catering14.jpg",
+    "dessert-station": "/prototype/assets/img/catering15.jpg",
+    "premium-dessert-bar": "/prototype/assets/img/catering16.jpg",
+    "chocolate-fountain": "/prototype/assets/img/catering17.jpg",
+    "mini-pastries": "/prototype/assets/img/catering18.jpg",
+    "macaron-station": "/prototype/assets/img/catering19.jpg",
+    "ice-cream-station": "/prototype/assets/img/catering20.jpg",
+    "live-chef-station": "/prototype/assets/img/catering21.jpg",
+    "sushi-station": "/prototype/assets/img/catering22.jpg",
+    "carving-station": "/prototype/assets/img/catering23.jpg",
+    "cheese-board": "/prototype/assets/img/catering24.jpg",
+    "seafood-station": "/prototype/assets/img/catering25.jpg",
+    "late-night-snack-station": "/prototype/assets/img/catering26.jpg",
+    "mohinga-station": "/prototype/assets/img/catering27.jpg",
+    "shan-noodle-station": "/prototype/assets/img/catering28.jpg",
+    "traditional-snack-station": "/prototype/assets/img/catering29.jpg",
+    "traditional-dessert-station": "/prototype/assets/img/catering30.jpg"
   };
 
   const addonCardSummaries = {
@@ -7583,7 +7569,7 @@ document.addEventListener('DOMContentLoaded', function () {
 <script>
 document.addEventListener('DOMContentLoaded', function () {
   const guestSelect = document.getElementById('cateringGuestCount');
-  const guestData = document.querySelector('[data-catering-guests]');
+  const guestData = document.querySelector('[data-catering-guests-display]');
 
   if (!guestSelect || !guestData) return;
 
@@ -7739,7 +7725,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const typeEl = document.querySelector('[data-catering-type]');
     const dateEl = document.querySelector('[data-catering-date]');
     const guestSelect = document.getElementById('cateringGuestCount');
-    const guestData = document.querySelector('[data-catering-guests]');
+    const guestData = document.querySelector('[data-catering-guests-display]');
 
     if (typeEl) {
       typeEl.textContent = event.eventType;
@@ -7758,17 +7744,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     if (guestSelect) {
-      const guests = String(event.guests);
-      const exists = [...guestSelect.options].some(option => option.value === guests);
-
-      if (!exists) {
-        const option = document.createElement('option');
-        option.value = guests;
-        option.textContent = guests + ' Guests';
-        guestSelect.appendChild(option);
-      }
-
-      guestSelect.value = guests;
+      guestSelect.value = String(event.guests);
       guestSelect.dispatchEvent(new Event('change', { bubbles: true }));
     }
 

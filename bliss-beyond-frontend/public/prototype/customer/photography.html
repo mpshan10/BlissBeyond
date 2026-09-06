@@ -2627,7 +2627,9 @@ document.addEventListener('DOMContentLoaded', function () {
         setStatus('');
       }
     } catch (error) {
-      console.info('Photography catalog unavailable; using frontend fallback.');
+      console.info('Photography catalog unavailable; customer controls remain locked.');
+      setAvailabilityState(false);
+      setStatus(SERVICE_UNAVAILABLE_MESSAGE);
     }
   }
 

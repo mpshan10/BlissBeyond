@@ -2486,7 +2486,9 @@ document.addEventListener('DOMContentLoaded', function(){
         setStatus(availabilityMessage);
       }
     } catch (error) {
-      console.info('Entertainment catalog unavailable; using frontend fallback.');
+      console.info('Entertainment catalog unavailable; customer controls remain locked.');
+      setEntertainmentAvailability(false);
+      setStatus(availabilityMessage);
     }
   }
 

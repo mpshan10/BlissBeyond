@@ -248,7 +248,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!target) return;
 
     const groupItems = addons.filter((item) => item.group === groupName
-      && (addonCatalogState !== 'ready' || item.backendAddonId));
+      && (addonCatalogState !== 'ready' || (item.backendAddonId && item.backendAvailable !== false)));
     target.innerHTML = groupItems.map((item) => {
       const selectable = addonCatalogState !== 'ready' || item.available !== false;
       return `
@@ -284,7 +284,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const categoryOk = categoryValue === 'all' || food.category === categoryValue;
       const dietOk = dietValue === 'all' || Boolean(food[dietKey(dietValue)]);
       const searchOk = !query || [food.name, food.description, food.cuisine, food.category].join(' ').toLowerCase().includes(query);
-      return food.available && cuisineOk && chipCuisineOk && categoryOk && dietOk && searchOk;
+      return isFoodSelectable(food) && cuisineOk && chipCuisineOk && categoryOk && dietOk && searchOk;
     });
 
     if (!foodGrid) return;
@@ -337,7 +337,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const calculate = () => {
     const guestCount = Number(guestInput?.value || state.guestCount || 150);
-    const style = styleInputs.find((input) => input.checked)?.value || 'Buffet';
+    const style = styleInputs.find((input) => input.checked)?.value || '';
     const selectedFoods = foods.filter((food) => state.foods.includes(food.id));
     const selectedAddons = addons.filter((addon) => state.addons.includes(addon.id));
     const invalidFoods = validateFoodSelection(selectedFoods);
@@ -565,6 +565,10 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       return null;
     }
+    if (!payload.diningStyle) {
+      if (statusEl) statusEl.textContent = 'Please choose an available dining style before saving.';
+      return null;
+    }
 
     state.eventType = payload.eventType;
     state.guestCount = payload.guestCount;
@@ -718,9 +722,11 @@ document.addEventListener('DOMContentLoaded', () => {
       catalogAvailability = service?.available ? 'available' : 'unavailable';
       applyAvailabilityState();
     } catch (error) {
-      catalogAvailability = 'fallback';
+      // Do not reopen the static catalog when the master service is missing
+      // or unavailable on a direct customer-page visit.
+      catalogAvailability = 'unavailable';
       applyAvailabilityState();
-      console.log('Catering catalog unavailable; using frontend fallback.');
+      console.log('Catering catalog unavailable; customer controls remain locked.');
     }
   };
 
@@ -738,22 +744,56 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       const unmatched = [];
+      const availableStyles = new Map(
+        catalog
+          .filter((style) => style && style.available === true)
+          .map((style) => [String(style.name), style])
+      );
       catalog.forEach((style) => {
-        const input = styleInputs.find((candidate) => candidate.value === style.name);
-        if (!input) {
+        if (!styleInputs.some((candidate) => candidate.value === style.name)) {
           unmatched.push(style.name);
+        }
+      });
+      const setDiningStyleCardVisibility = (card, visible) => {
+        if (!card) return;
+        card.hidden = !visible;
+        card.classList.toggle('d-none', !visible);
+        if (visible) {
+          card.style.removeProperty('display');
+        } else {
+          // The page's card layout uses !important display rules.
+          card.style.setProperty('display', 'none', 'important');
+        }
+      };
+      styleInputs.forEach((input) => {
+        const style = availableStyles.get(input.value);
+        // The radio is inside a nested label; always hide the outer card.
+        const card = input.closest('.choice-card') || input.closest('label') || input.parentElement;
+        if (!style) {
+          input.checked = false;
+          input.disabled = true;
+          card?.classList.add('d-none');
+          setDiningStyleCardVisibility(card, false);
+          card?.setAttribute('aria-hidden', 'true');
           return;
         }
 
         input.dataset.backendDiningStyleId = String(style.id);
         input.dataset.styleKey = style.key;
-        input.dataset.catalogAvailable = String(style.available !== false);
-        input.disabled = style.available === false;
+        input.dataset.catalogAvailable = 'true';
+        input.disabled = false;
+        card?.classList.remove('d-none');
+        setDiningStyleCardVisibility(card, true);
+        card?.removeAttribute('aria-hidden');
         stylePrices[style.name] = Number(style.pricePerGuest || 0);
 
-        const priceEl = input.closest('.choice-card')?.querySelector('.text-gold');
+        const priceEl = card?.querySelector('.text-gold');
         if (priceEl) priceEl.textContent = `${formatMoney(style.pricePerGuest)} / guest`;
       });
+
+      if (!availableStyles.has(state.style)) {
+        state.style = '';
+      }
 
       if (unmatched.length) throw new Error(`Unmatched dining styles: ${unmatched.join(', ')}`);
       diningStyleCatalogState = 'ready';
@@ -802,7 +842,9 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!addons.some((addon) => addon.backendAddonId)) {
         throw new Error('One or more active add-ons are not mapped');
       }
-      state.addons = state.addons.filter((id) => addons.some((addon) => addon.id === id && addon.backendAddonId));
+      state.addons = state.addons.filter((id) => addons.some((addon) => (
+        addon.id === id && addon.backendAddonId && addon.backendAvailable !== false
+      )));
       addonCatalogState = 'ready';
     } catch (error) {
       addonCatalogState = 'failed';
@@ -866,6 +908,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
       foodCatalogWarnings = warnings;
       foodCatalogState = 'ready';
+      state.foods = state.foods.filter((id) => {
+        const food = foods.find((item) => item.id === id);
+        return food && isFoodSelectable(food);
+      });
       if (warnings.length) {
         console.warn('Catering food catalog integrity warnings:', warnings);
       }

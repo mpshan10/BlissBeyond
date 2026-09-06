@@ -2071,39 +2071,39 @@ function bbRenderBookingDraftSummary(form = null) {
 
   const lines = [
     `
-      <div class="d-flex justify-content-between mb-2">
+      <div class="booking-summary-row">
         <span class="booking-custom-summary-label">Venue</span>
-        <strong>${bbEscapeHtml(venue?.name || 'Selected venue')}</strong>
+        <strong class="booking-summary-value">${bbEscapeHtml(venue?.name || 'Selected venue')}</strong>
       </div>
     `,
     `
-      <div class="d-flex justify-content-between mb-2">
+      <div class="booking-summary-row">
         <span class="booking-custom-summary-label">Event</span>
-        <strong>${bbEscapeHtml(eventType)} · ${bbEscapeHtml(Number(guests || 0).toLocaleString())} guests</strong>
+        <strong class="booking-summary-value">${bbEscapeHtml(eventType)} · ${bbEscapeHtml(Number(guests || 0).toLocaleString())} guests</strong>
       </div>
     `,
     eventDate ? `
-      <div class="d-flex justify-content-between mb-2">
+      <div class="booking-summary-row">
         <span class="booking-custom-summary-label">Date</span>
-        <strong>${bbEscapeHtml(bbFormatDateDisplay(eventDate))}</strong>
+        <strong class="booking-summary-value">${bbEscapeHtml(bbFormatDateDisplay(eventDate))}</strong>
       </div>
     ` : '',
     `
-      <div class="d-flex justify-content-between mb-2">
+      <div class="booking-summary-row">
         <span class="booking-custom-summary-label">Time</span>
-        <strong>${startTime ? bbEscapeHtml(bbFormatTimeDisplay(startTime)) : 'Not specified'}${endTime ? ` – ${bbEscapeHtml(bbFormatTimeDisplay(endTime))}` : ''}</strong>
+        <strong class="booking-summary-value">${startTime ? bbEscapeHtml(bbFormatTimeDisplay(startTime)) : 'Not specified'}${endTime ? ` – ${bbEscapeHtml(bbFormatTimeDisplay(endTime))}` : ''}</strong>
       </div>
     `,
     `
-      <div class="d-flex justify-content-between mb-2">
+      <div class="booking-summary-row">
         <span class="booking-custom-summary-label">Venue Price</span>
-        <strong>${venueTotal ? bbFormatMmkDisplay(venueTotal) : 'MMK 0'}</strong>
+        <strong class="booking-summary-value booking-summary-value--numeric">${venueTotal ? bbFormatMmkDisplay(venueTotal) : 'MMK 0'}</strong>
       </div>
     `,
     `
-      <div class="d-flex justify-content-between mb-2">
+      <div class="booking-summary-row">
         <span class="booking-custom-summary-label">Services Total</span>
-        <strong>${displayServiceItems.length ? bbFormatMmkDisplay(serviceTotal + cateringTotal) : 'None selected'}</strong>
+        <strong class="booking-summary-value booking-summary-value--numeric">${displayServiceItems.length ? bbFormatMmkDisplay(serviceTotal + cateringTotal) : 'None selected'}</strong>
       </div>
     `,
     `
@@ -2117,7 +2117,7 @@ function bbRenderBookingDraftSummary(form = null) {
   summaryBody.innerHTML = `
     ${lines}
     <hr>
-    <div class="d-flex justify-content-between align-items-center">
+    <div class="booking-summary-total-row">
       <span class="booking-custom-summary-label">TOTAL</span>
       <span class="bb-price">${bbFormatMmkDisplay(estimatedTotal)}</span>
     </div>
@@ -2342,17 +2342,17 @@ async function bbRenderCustomerBookingStatus() {
     const venuePriceLabel = Number.isFinite(venuePrice) && venuePrice > 0
       ? bbFormatMmkDisplay(venuePrice)
       : 'Price on request';
-    const detailCard = (icon, label, value, secondary = '') => `
+    const detailCard = (icon, label, value, secondary = '', valueClass = '') => `
       <article class="booking-detail-card">
         <div class="booking-detail-card__icon" aria-hidden="true"><i class="bi ${icon}"></i></div>
         <div class="stat-label">${label}</div>
-        <div class="booking-detail-card__value">${value}</div>
+        <div class="booking-detail-card__value ${valueClass}">${value}</div>
         ${secondary ? `<div class="booking-detail-card__secondary">${secondary}</div>` : ''}
       </article>`;
     overviewEl.innerHTML = `<div class="booking-details-grid">
       ${detailCard('bi-calendar-event', 'Event', bbEscapeHtml(booking.event?.eventType || 'Event'), `${bbEscapeHtml(booking.event?.guestCount ?? '')} guests`)}
       ${detailCard('bi-building', 'Venue', bbEscapeHtml(venue.name || 'Venue not set'), bbEscapeHtml(venue.location || 'Location unavailable'))}
-      ${detailCard('bi-gem', 'Venue hire estimate', bbEscapeHtml(isPackageBooking ? 'Included in package' : venuePriceLabel), bbEscapeHtml(isPackageBooking ? 'Included in the persisted package price.' : 'One venue charge; not multiplied by guests.'))}
+      ${detailCard('bi-gem', 'Venue hire estimate', bbEscapeHtml(isPackageBooking ? 'Included in package' : venuePriceLabel), bbEscapeHtml(isPackageBooking ? 'Included in the persisted package price.' : 'One venue charge; not multiplied by guests.'), 'numeric-value')}
       ${detailCard('bi-calendar3', 'Event date', bbEscapeHtml(bbFormatDateDisplay(booking.eventDate)))}
       ${detailCard('bi-clock', 'Start time', bbEscapeHtml(bbFormatTimeDisplay(booking.startTime)))}
       ${detailCard('bi-clock-history', 'End time', bbEscapeHtml(bbFormatTimeDisplay(booking.endTime)))}

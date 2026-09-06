@@ -4535,10 +4535,11 @@ document.addEventListener('DOMContentLoaded', function () {
     }catch(error){
 
       console.log(
-        'Decoration catalog unavailable; using frontend fallback.'
+        'Decoration catalog unavailable; customer controls remain locked.'
       );
 
-      isCatalogAvailable = true;
+      isCatalogAvailable = false;
+      setStatus('Decoration & Styling is currently unavailable.');
 
       syncAvailabilityUI();
 

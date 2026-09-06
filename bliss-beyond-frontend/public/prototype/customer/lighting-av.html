@@ -3012,8 +3012,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
       applyAvailabilityState(data?.available !== false);
     } catch (error) {
-      console.log('Lighting & AV catalog unavailable; using frontend fallback.');
-      applyAvailabilityState(true);
+      console.log('Lighting & AV catalog unavailable; customer controls remain locked.');
+      applyAvailabilityState(false);
     }
   }
 

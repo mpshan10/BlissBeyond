@@ -3588,10 +3588,11 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     } catch (error) {
       console.error(
-        'Cake service catalog unavailable; using the existing page fallback.'
+        'Cake service catalog unavailable; customer controls remain locked.'
       );
-      backendServiceAvailable = true;
+      backendServiceAvailable = false;
       syncCakeActionState();
+      setRecommendationText('Cake & Desserts is currently unavailable.');
     }
   })();
 

@@ -4229,10 +4229,10 @@ document.addEventListener(
 
       } catch (error) {
 
-        backendAvailability = 'fallback';
-        console.warn('Floral catalog unavailable; using frontend fallback.');
-        setFloralStatus('', false);
-        setFloralControlsDisabled(false);
+        backendAvailability = 'unavailable';
+        console.warn('Floral catalog unavailable; customer controls remain locked.');
+        setFloralStatus('Floral Design is currently unavailable.', true);
+        setFloralControlsDisabled(true);
         refreshSaveButtonState();
 
       }
