@@ -237,9 +237,9 @@ public class ConsultationService {
         return consultations.stream()
             .filter(consultation -> BLOCKING_STATUSES.contains(consultation.getStatus()))
             .filter(consultation -> excludedId == null || !excludedId.equals(consultation.getId()))
-            .filter(consultation -> consultation.getPlanner() == null
-                || consultation.getPlanner().isBlank()
-                || consultation.getPlanner().equals(requestedPlanner))
+            .filter(consultation -> consultation.getPlanner() != null
+                && !consultation.getPlanner().isBlank()
+                && consultation.getPlanner().equals(requestedPlanner))
             .anyMatch(existing -> existing.getStartTime().isBefore(requestedEnd)
                 && existing.getEndTime().isAfter(requestedStart));
     }

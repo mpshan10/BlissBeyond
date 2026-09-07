@@ -37,7 +37,9 @@ import java.util.Set;
 public class PaymentService {
     private static final BigDecimal DEPOSIT_PERCENTAGE = new BigDecimal("0.30");
     private static final BigDecimal DEPOSIT_PERCENTAGE_DISPLAY = new BigDecimal("30");
-    private static final Set<String> METHODS = Set.of("BANK_TRANSFER", "KBZPAY", "WAVEPAY", "CASH");
+    private static final Set<String> METHODS = Set.of(
+        "BANK_TRANSFER", "KBZ_BANK", "AYA_BANK", "CB_BANK", "KBZPAY", "WAVEPAY", "CASH"
+    );
     private static final Set<PaymentStatus> REFERENCE_BLOCKING_STATUSES = Set.of(PaymentStatus.PENDING, PaymentStatus.PAID);
 
     private final BookingRepository bookingRepository;

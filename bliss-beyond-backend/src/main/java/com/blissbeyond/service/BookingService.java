@@ -777,7 +777,7 @@ public class BookingService {
                 venue != null ? venue.getId() : booking.getVenueId(),
                 venue != null ? venue.getName() : null,
                 venue != null ? venue.getLocation() : null,
-                booking.getBookingType() == BookingType.PACKAGE && venue != null ? venue.getPrice() : null
+                venue != null ? venue.getPrice() : null
             ),
             booking.getEventDate(),
             booking.getStartTime(),

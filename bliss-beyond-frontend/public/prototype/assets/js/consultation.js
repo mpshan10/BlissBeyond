@@ -13,7 +13,9 @@
 
   function setStatus(element, message, kind) {
     element.textContent = message;
-    element.className = `col-12 alert alert-${kind}`;
+    const noticeKind = kind === 'danger' ? 'error' : kind;
+    element.className = `col-12 alert bb-notice bb-notice--${noticeKind}`;
+    element.setAttribute('aria-live', noticeKind === 'error' || noticeKind === 'warning' ? 'assertive' : 'polite');
   }
 
   function renderPlanners(select, planners) {
@@ -116,6 +118,15 @@
       }
     }
 
+    function resetConsultationForm() {
+      form.reset();
+      plannerInput.value = '';
+      dateInput.value = '';
+      notesInput.value = '';
+      selectedStart = '';
+      slotsEl.innerHTML = '<span class="small text-ink-soft">Choose a planner and date to see available times.</span>';
+    }
+
     async function loadConsultations() {
       try {
         const data = await bbFetchCustomerJson(`${API_BASE}/api/customer/consultations`);
@@ -166,7 +177,7 @@
         return;
       }
       submitButton.disabled = true;
-      setStatus(statusEl, 'Booking consultation...', 'info');
+      setStatus(statusEl, 'Booking consultation. Please wait while we process your request.', 'info');
       try {
         await bbFetchCustomerJson(`${API_BASE}/api/customer/consultations`, {
           method: 'POST',
@@ -181,9 +192,9 @@
             notes: notesInput.value
           })
         });
-        setStatus(statusEl, 'Your consultation has been scheduled.', 'success');
+        resetConsultationForm();
+        setStatus(statusEl, 'Consultation booked. Your consultation request has been scheduled successfully.', 'success');
         await loadConsultations();
-        await loadSlots();
       } catch (error) {
         const message = error?.status === 409
           ? 'That consultation time is no longer available. Please choose another time.'

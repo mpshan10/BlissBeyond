@@ -5,6 +5,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.blissbeyond.repository.ServiceCatalogOptionRepository;
 import com.blissbeyond.repository.ServiceRepository;
+import com.blissbeyond.entity.ServiceCatalogOption;
+import com.blissbeyond.entity.ServiceEntity;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -54,20 +56,6 @@ public class CustomizeServicePricing {
         option("drone-photography", "220000"), option("pre-event-shoot", "180000"),
         option("photo-album", "120000"), option("digital-gallery", "80000"),
         option("instant-photo-printing", "150000"), option("photo-booth", "200000")
-    );
-
-    private static final Map<String, Option> ENTERTAINMENT_PERFORMERS = options(
-        option("dj", "350000"), option("live-band", "650000"), option("acoustic-singer", "300000"),
-        option("mc-host", "250000"), option("myanmar-traditional-performance", "450000"),
-        option("dance-performance", "400000"), option("violinist", "280000"),
-        option("traditional-music-ensemble", "500000")
-    );
-    private static final Map<String, Option> ENTERTAINMENT_ADDONS = options(
-        option("karaoke-setup", "180000"), option("interactive-games", "150000"),
-        option("led-dance-floor", "300000"), option("special-entrance-music", "100000")
-    );
-    private static final Map<String, Option> ENTERTAINMENT_DURATION = options(
-        option("4 hours", "0"), option("6 hours", "100000"), option("8 hours", "180000")
     );
 
     private static final Map<String, Option> LIGHTING = options(
@@ -143,26 +131,24 @@ public class CustomizeServicePricing {
 
     private BigDecimal entertainment(JsonNode root) {
         JsonNode selections = object(root, "selections");
-        List<JsonNode> performers = array(selections, "performers");
-        if (performers.isEmpty()) throw new IllegalArgumentException("Please select a primary entertainment option.");
-        BigDecimal total = sumObjects(performers, ENTERTAINMENT_PERFORMERS, "Unknown entertainment option.");
-        total = total.add(sumObjects(array(selections, "addOns"), ENTERTAINMENT_ADDONS, "Unknown entertainment add-on."));
-        JsonNode duration = selections.get("duration");
-        if (duration != null && !duration.isNull()) {
-            total = total.add(price(ENTERTAINMENT_DURATION, requiredId(duration, "Invalid entertainment duration."), "Unknown entertainment duration."));
-        }
-        JsonNode startTime = selections.get("startTime");
-        if (startTime != null && !startTime.isNull()) {
-            String value = requiredId(startTime, "Invalid entertainment start time.");
-            if (!value.matches("(?:[01]\\d|2[0-3]):[0-5]\\d")) throw new IllegalArgumentException("Invalid entertainment start time.");
-            int hour = Integer.parseInt(value.substring(0, 2));
-            total = total.add(BigDecimal.valueOf(hour >= 21 ? 100000 : hour > 18 ? 50000 : 0));
-        }
-        JsonNode count = selections.get("performerCount");
-        if (count != null && !count.isNull()) {
-            int value = integerValue(count, "Invalid performer count.");
-            if (value < 1 || value > 100) throw new IllegalArgumentException("Invalid performer count.");
-            total = total.add(BigDecimal.valueOf(Math.max(0, value - 1) * 100000L));
+        List<JsonNode> selected = new ArrayList<>();
+        selected.addAll(array(selections, "performers"));
+        selected.addAll(array(selections, "addOns"));
+        if (selected.isEmpty()) throw new IllegalArgumentException("Please select at least one entertainment option.");
+        if (catalogOptionRepository == null || serviceRepository == null) throw new IllegalArgumentException("Entertainment catalog is unavailable.");
+
+        ServiceEntity service = serviceRepository.findByNameIgnoreCase("Entertainment")
+            .orElseThrow(() -> new IllegalArgumentException("Entertainment catalog is unavailable."));
+        BigDecimal total = BigDecimal.ZERO;
+        Set<String> seen = new HashSet<>();
+        for (JsonNode value : selected) {
+            String optionKey = requiredId(value, "Unknown entertainment option.");
+            if (!seen.add(optionKey)) throw new IllegalArgumentException("Duplicate option selected: " + optionKey);
+            ServiceCatalogOption option = catalogOptionRepository.findByServiceAndOptionKey(service, optionKey)
+                .filter(candidate -> candidate.isAvailable())
+                .filter(candidate -> !"DURATION".equalsIgnoreCase(candidate.getOptionType()))
+                .orElseThrow(() -> new IllegalArgumentException("Unknown entertainment option."));
+            total = total.add(option.getPrice());
         }
         return total;
     }
@@ -233,7 +219,6 @@ public class CustomizeServicePricing {
     private String serviceNameFor(Map<String, Option> catalog) {
         if (catalog == DECORATION) return "Decoration & Styling";
         if (catalog == PHOTOGRAPHY) return "Photography & Videography";
-        if (catalog == ENTERTAINMENT_PERFORMERS || catalog == ENTERTAINMENT_ADDONS || catalog == ENTERTAINMENT_DURATION) return "Entertainment";
         if (catalog == LIGHTING) return "Lighting & AV";
         if (catalog == CAKE) return "Cake & Desserts";
         if (catalog == FLORAL) return "Floral Design";

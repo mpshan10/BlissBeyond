@@ -77,17 +77,13 @@
         <div class="panel"><div class="panel__head"><h5 class="mb-0">Payment Requests</h5></div><div class="panel__body" data-payment-records><p class="text-ink-soft mb-0">No payment requests yet.</p></div></div>
       </div>
       <div class="col-lg-5">
-        <div class="panel mb-4"><div class="panel__head"><h5 class="mb-0">Next Step</h5></div><div class="panel__body">
-          <p class="text-ink-soft" data-payment-next-message>Payment requests remain pending until payment confirmation is available.</p>
-          <div class="small text-ink-soft mt-3" data-payment-pending-message></div>
-        </div></div>
         <div class="panel d-none" data-payment-submit-panel>
           <div class="panel__head"><h5 class="mb-0" data-payment-submit-title>Pay Deposit</h5></div>
           <div class="panel__body">
             <form data-payment-submit-form novalidate>
               <div class="d-flex justify-content-between align-items-center mb-3"><span class="text-ink-soft">Amount due</span><strong class="bb-price" data-payment-submit-amount>MMK 0</strong></div>
-              <div class="mb-3"><label class="form-label" for="customerPaymentMethod">Payment method</label><select class="form-select" id="customerPaymentMethod" data-payment-method required><option value="">Select a payment method</option><option value="BANK_TRANSFER">Bank Transfer</option><option value="KBZPAY">KBZPay</option><option value="WAVEPAY">WavePay</option><option value="CASH">Cash</option></select></div>
-              <div class="mb-3"><label class="form-label" for="customerPaymentReference">Transaction / Reference Number <span class="text-ink-soft">(optional)</span></label><input class="form-control" id="customerPaymentReference" data-payment-reference maxlength="120" autocomplete="off" placeholder="Enter your payment reference"></div>
+              <div class="mb-3"><label class="form-label" for="customerPaymentMethod">Payment method</label><select class="form-select" id="customerPaymentMethod" data-payment-method required><option value="">Select a payment method</option><option value="KBZ_BANK">KBZ Bank Transfer</option><option value="AYA_BANK">AYA Bank Transfer</option><option value="CB_BANK">CB Bank Transfer</option><option value="KBZPAY">KBZPay</option><option value="WAVEPAY">WavePay</option><option value="CASH">Cash</option></select></div>
+              <div class="mb-3" data-payment-reference-field><label class="form-label" for="customerPaymentReference">Transaction / Reference Number</label><input class="form-control" id="customerPaymentReference" data-payment-reference maxlength="120" autocomplete="off" placeholder="Enter your transaction or reference number"></div>
               <div class="alert alert-danger d-none" data-payment-submit-error></div>
               <button class="btn btn-gold w-100" type="submit" data-payment-submit>Submit Deposit Payment</button>
             </form>

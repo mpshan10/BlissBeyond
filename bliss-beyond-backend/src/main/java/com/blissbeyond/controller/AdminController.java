@@ -18,8 +18,15 @@ import com.blissbeyond.dto.admin.AdminPackageCreateRequest;
 import com.blissbeyond.dto.admin.AdminReportSummaryResponse;
 import com.blissbeyond.dto.admin.AdminBookingDetailResponse;
 import com.blissbeyond.dto.addon.AddOnResponse;
+import com.blissbeyond.dto.addon.CateringAddonIncludedItemResponse;
 import com.blissbeyond.dto.booking.BookingResponse;
 import com.blissbeyond.dto.diningstyle.DiningStyleResponse;
+import com.blissbeyond.dto.diningstyle.DiningStyleMenuCategoryResponse;
+import com.blissbeyond.dto.diningstyle.DiningStyleMenuItemResponse;
+import com.blissbeyond.dto.diningstyle.DiningStyleMenuResponse;
+import com.blissbeyond.dto.admin.AdminDiningStyleMenuCategoryRequest;
+import com.blissbeyond.dto.admin.AdminDiningStyleMenuItemRequest;
+import com.blissbeyond.dto.admin.AdminCateringAddonIncludedItemRequest;
 import com.blissbeyond.dto.service.ServiceResponse;
 import com.blissbeyond.dto.venue.VenueResponse;
 import com.blissbeyond.entity.*;
@@ -33,6 +40,8 @@ import com.blissbeyond.service.AdminVenueService;
 import com.blissbeyond.service.AdminPackageService;
 import com.blissbeyond.service.AdminReportService;
 import com.blissbeyond.service.AdminBookingDetailService;
+import com.blissbeyond.service.DiningStyleMenuService;
+import com.blissbeyond.service.CateringAddonIncludedItemService;
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.http.HttpStatus;
@@ -73,6 +82,8 @@ public class AdminController {
     private final AdminReportService adminReportService;
     private final AdminBookingDetailService adminBookingDetailService;
     private final com.blissbeyond.service.ServiceCatalogOptionService serviceCatalogOptionService;
+    private final DiningStyleMenuService diningStyleMenuService;
+    private final CateringAddonIncludedItemService cateringAddonIncludedItemService;
 
     public AdminController(FoodRepository foodRepository,
                            EventRepository eventRepository,
@@ -85,7 +96,9 @@ public class AdminController {
                            AdminPackageService adminPackageService,
                            AdminReportService adminReportService,
                            AdminBookingDetailService adminBookingDetailService,
-                           com.blissbeyond.service.ServiceCatalogOptionService serviceCatalogOptionService) {
+                           com.blissbeyond.service.ServiceCatalogOptionService serviceCatalogOptionService,
+                           DiningStyleMenuService diningStyleMenuService,
+                           CateringAddonIncludedItemService cateringAddonIncludedItemService) {
         this.foodRepository = foodRepository;
         this.eventRepository = eventRepository;
         this.bookingService = bookingService;
@@ -98,6 +111,8 @@ public class AdminController {
         this.adminReportService = adminReportService;
         this.adminBookingDetailService = adminBookingDetailService;
         this.serviceCatalogOptionService = serviceCatalogOptionService;
+        this.diningStyleMenuService = diningStyleMenuService;
+        this.cateringAddonIncludedItemService = cateringAddonIncludedItemService;
     }
 
     @GetMapping("/customers")
@@ -235,6 +250,45 @@ public class AdminController {
         return adminCatalogService.updateDiningStyle(id, request);
     }
 
+    @GetMapping("/dining-styles/{styleId}/menu")
+    public DiningStyleMenuResponse diningStyleMenu(@PathVariable Long styleId) {
+        return diningStyleMenuService.admin(styleId);
+    }
+
+    @PostMapping("/dining-styles/{styleId}/menu-categories")
+    @ResponseStatus(HttpStatus.CREATED)
+    public DiningStyleMenuCategoryResponse createDiningStyleMenuCategory(
+        @PathVariable Long styleId,
+        @Valid @RequestBody AdminDiningStyleMenuCategoryRequest request
+    ) {
+        return diningStyleMenuService.createCategory(styleId, request);
+    }
+
+    @PutMapping("/dining-style-menu-categories/{categoryId}")
+    public DiningStyleMenuCategoryResponse updateDiningStyleMenuCategory(
+        @PathVariable Long categoryId,
+        @Valid @RequestBody AdminDiningStyleMenuCategoryRequest request
+    ) {
+        return diningStyleMenuService.updateCategory(categoryId, request);
+    }
+
+    @PostMapping("/dining-style-menu-categories/{categoryId}/items")
+    @ResponseStatus(HttpStatus.CREATED)
+    public DiningStyleMenuItemResponse createDiningStyleMenuItem(
+        @PathVariable Long categoryId,
+        @Valid @RequestBody AdminDiningStyleMenuItemRequest request
+    ) {
+        return diningStyleMenuService.createItem(categoryId, request);
+    }
+
+    @PutMapping("/dining-style-menu-items/{itemId}")
+    public DiningStyleMenuItemResponse updateDiningStyleMenuItem(
+        @PathVariable Long itemId,
+        @Valid @RequestBody AdminDiningStyleMenuItemRequest request
+    ) {
+        return diningStyleMenuService.updateItem(itemId, request);
+    }
+
     @GetMapping("/addons")
     public List<AddOnResponse> addOns() {
         return adminCatalogService.listAddOns();
@@ -246,6 +300,28 @@ public class AdminController {
         @Valid @RequestBody AdminAddOnUpdateRequest request
     ) {
         return adminCatalogService.updateAddOn(id, request);
+    }
+
+    @GetMapping("/addons/{addonId}/included-items")
+    public List<CateringAddonIncludedItemResponse> addonIncludedItems(@PathVariable Long addonId) {
+        return cateringAddonIncludedItemService.admin(addonId);
+    }
+
+    @PostMapping("/addons/{addonId}/included-items")
+    @ResponseStatus(HttpStatus.CREATED)
+    public CateringAddonIncludedItemResponse createAddonIncludedItem(
+        @PathVariable Long addonId,
+        @Valid @RequestBody AdminCateringAddonIncludedItemRequest request
+    ) {
+        return cateringAddonIncludedItemService.create(addonId, request);
+    }
+
+    @PutMapping("/addon-included-items/{itemId}")
+    public CateringAddonIncludedItemResponse updateAddonIncludedItem(
+        @PathVariable Long itemId,
+        @Valid @RequestBody AdminCateringAddonIncludedItemRequest request
+    ) {
+        return cateringAddonIncludedItemService.update(itemId, request);
     }
 
     @GetMapping("/events")

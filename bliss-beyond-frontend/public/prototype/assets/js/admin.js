@@ -35,6 +35,8 @@
     addOnQuery: '',
     addOnBillingType: 'ALL',
     addOnAvailability: 'ALL',
+    addonIncludedItems: [],
+    addonIncludedAddonId: null,
     venues: [],
     venueQuery: '',
     venueType: 'ALL',
@@ -1966,7 +1968,7 @@
         <td><code>${escapeHtml(style.key)}</code></td>
         <td><strong class="text-gold">${escapeHtml(formatMoney(style.pricePerGuest))}</strong></td>
         <td>${catalogAvailabilityBadge(style.available)}</td>
-        <td class="catalog-actions"><button class="btn btn-outline-forest btn-sm" type="button" data-dining-style-edit="${escapeHtml(style.id)}">Edit</button></td>
+        <td class="catalog-actions"><div class="d-flex gap-1"><button class="btn btn-outline-forest btn-sm" type="button" data-dining-style-edit="${escapeHtml(style.id)}">Edit</button><button class="btn btn-gold btn-sm" type="button" data-dining-style-manage="${escapeHtml(style.id)}">Manage Menu</button></div></td>
       </tr>`).join('') : '<tr><td colspan="5" class="catalog-empty">No dining styles match these filters.</td></tr>';
   }
 
@@ -1987,7 +1989,7 @@
         <td>${escapeHtml(billingTypeLabel(addOn.billingType))}</td>
         <td><strong class="text-gold">${escapeHtml(formatMoney(addOn.price))}</strong></td>
         <td>${catalogAvailabilityBadge(addOn.available)}</td>
-        <td class="catalog-actions"><button class="btn btn-outline-forest btn-sm" type="button" data-addon-edit="${escapeHtml(addOn.id)}">Edit</button></td>
+        <td class="catalog-actions"><div class="d-flex gap-1"><button class="btn btn-outline-forest btn-sm" type="button" data-addon-edit="${escapeHtml(addOn.id)}">Edit</button><button class="btn btn-gold btn-sm" type="button" data-addon-manage-included="${escapeHtml(addOn.id)}">Manage Included Items</button></div></td>
       </tr>`).join('') : '<tr><td colspan="5" class="catalog-empty">No add-ons match these filters.</td></tr>';
   }
 
@@ -2082,6 +2084,66 @@
     window.bootstrap.Modal.getOrCreateInstance(document.getElementById('diningStyleEditModal')).show();
   }
 
+  let diningStyleMenuStyleId = null;
+  let diningStyleMenuState = null;
+
+  function renderDiningStyleMenu() {
+    const container = document.querySelector('[data-dining-style-menu-categories]');
+    if (!container) return;
+    const categories = diningStyleMenuState?.categories || [];
+    container.innerHTML = categories.length ? categories.map((category) => `
+      <section class="border rounded-3 p-3 mb-3" data-menu-category="${escapeHtml(category.id)}">
+        <form class="row g-2 align-items-end mb-3" data-menu-category-form data-category-id="${escapeHtml(category.id)}">
+          <div class="col-md-5"><label class="form-label small">Category</label><input class="form-control form-control-sm" name="name" maxlength="120" required value="${escapeHtml(category.name)}"></div>
+          <div class="col-md-2"><label class="form-label small">Order</label><input class="form-control form-control-sm" name="displayOrder" type="number" min="0" value="${escapeHtml(category.displayOrder)}"></div>
+          <div class="col-md-2"><label class="form-label small">Status</label><select class="form-select form-select-sm" name="available"><option value="true" ${category.available ? 'selected' : ''}>Enabled</option><option value="false" ${category.available ? '' : 'selected'}>Disabled</option></select></div>
+          <div class="col-md-3 d-flex gap-2"><button class="btn btn-outline-forest btn-sm" type="submit">Save Category</button><button class="btn btn-outline-secondary btn-sm" type="button" data-menu-add-item="${escapeHtml(category.id)}">Add Item</button></div>
+        </form>
+        <div class="table-responsive"><table class="table table-sm mb-0"><thead><tr><th>Item</th><th style="width:120px">Order</th><th style="width:140px">Status</th><th style="width:140px"></th></tr></thead><tbody>${(category.items || []).map((item) => `
+          <tr><td colspan="4"><form class="row g-2 align-items-end" data-menu-item-form data-item-id="${escapeHtml(item.id)}"><div class="col-md-6"><input class="form-control form-control-sm" name="name" maxlength="160" required value="${escapeHtml(item.name)}"></div><div class="col-md-2"><input class="form-control form-control-sm" name="displayOrder" type="number" min="0" value="${escapeHtml(item.displayOrder)}"></div><div class="col-md-2"><select class="form-select form-select-sm" name="available"><option value="true" ${item.available ? 'selected' : ''}>Enabled</option><option value="false" ${item.available ? '' : 'selected'}>Disabled</option></select></div><div class="col-md-2"><button class="btn btn-outline-forest btn-sm w-100" type="submit">Save</button></div></form></td></tr>`).join('')}</tbody></table></div>
+      </section>`).join('') : '<div class="catalog-empty">No menu categories yet.</div>';
+  }
+
+  async function loadDiningStyleMenu(styleId) {
+    diningStyleMenuStyleId = styleId;
+    diningStyleMenuState = await adminFetch(`/api/admin/dining-styles/${encodeURIComponent(styleId)}/menu`, { method: 'GET' });
+    const style = state.diningStyles.find((item) => String(item.id) === String(styleId));
+    document.querySelector('[data-dining-style-menu-title]').textContent = `${style?.name || 'Dining Style'} Menu`;
+    renderDiningStyleMenu();
+  }
+
+  function openDiningStyleMenu(id) {
+    loadDiningStyleMenu(id).then(() => window.bootstrap.Modal.getOrCreateInstance(document.getElementById('diningStyleMenuModal')).show()).catch((error) => setCatalogMessage(error.message || 'Unable to load this menu.'));
+  }
+
+  async function submitDiningStyleMenuForm(event) {
+    event.preventDefault();
+    const form = event.target;
+    const data = new FormData(form);
+    const categoryId = form.dataset.categoryId;
+    const itemId = form.dataset.itemId;
+    const payload = { name: String(data.get('name') || '').trim(), displayOrder: Number(data.get('displayOrder') || 0), available: data.get('available') === 'true' };
+    if (!payload.name) return;
+    const path = itemId ? `/api/admin/dining-style-menu-items/${encodeURIComponent(itemId)}` : `/api/admin/dining-style-menu-categories/${encodeURIComponent(categoryId)}`;
+    await adminFetch(path, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+    await loadDiningStyleMenu(diningStyleMenuStyleId);
+  }
+
+  async function addDiningStyleCategory() {
+    const name = window.prompt('Category name');
+    if (!name?.trim() || !diningStyleMenuStyleId) return;
+    await adminFetch(`/api/admin/dining-styles/${encodeURIComponent(diningStyleMenuStyleId)}/menu-categories`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: name.trim(), displayOrder: (diningStyleMenuState?.categories || []).length, available: true }) });
+    await loadDiningStyleMenu(diningStyleMenuStyleId);
+  }
+
+  async function addDiningStyleItem(categoryId) {
+    const name = window.prompt('Menu item name');
+    if (!name?.trim()) return;
+    const category = diningStyleMenuState?.categories?.find((item) => String(item.id) === String(categoryId));
+    await adminFetch(`/api/admin/dining-style-menu-categories/${encodeURIComponent(categoryId)}/items`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: name.trim(), displayOrder: (category?.items || []).length, available: true }) });
+    await loadDiningStyleMenu(diningStyleMenuStyleId);
+  }
+
   function openAddOnEditor(id) {
     const addOn = state.addOns.find((item) => String(item.id) === String(id));
     if (!addOn) return;
@@ -2092,6 +2154,51 @@
     document.querySelector('[data-addon-edit-price]').value = addOn.price ?? '';
     document.querySelector('[data-addon-edit-available]').value = String(Boolean(addOn.available));
     window.bootstrap.Modal.getOrCreateInstance(document.getElementById('addOnEditModal')).show();
+  }
+
+  async function loadAddonIncludedItems(addonId) {
+    const addOn = state.addOns.find((item) => String(item.id) === String(addonId));
+    if (!addOn) return;
+    state.addonIncludedAddonId = addOn.id;
+    document.querySelector('[data-addon-included-title]').textContent = `Manage Included Items: ${addOn.name}`;
+    document.querySelector('[data-addon-included-message]').textContent = 'Loading included items...';
+    window.bootstrap.Modal.getOrCreateInstance(document.getElementById('addonIncludedItemsModal')).show();
+    state.addonIncludedItems = await adminFetch(`/api/admin/addons/${encodeURIComponent(addOn.id)}/included-items`, { method: 'GET' });
+    renderAddonIncludedItems();
+  }
+
+  function renderAddonIncludedItems() {
+    const container = document.querySelector('[data-addon-included-items]');
+    if (!container) return;
+    document.querySelector('[data-addon-included-message]').textContent = `${state.addonIncludedItems.length} item(s) configured.`;
+    container.innerHTML = state.addonIncludedItems.length ? state.addonIncludedItems.map((item) => `
+      <form class="border rounded-3 p-3" data-addon-included-form data-item-id="${escapeHtml(item.id)}">
+        <div class="row g-2 align-items-end"><div class="col-md-6"><label class="form-label small">Name</label><input class="form-control" required maxlength="160" data-addon-included-name value="${escapeHtml(item.name)}"></div><div class="col-md-2"><label class="form-label small">Order</label><input class="form-control" type="number" min="0" data-addon-included-order value="${escapeHtml(item.displayOrder ?? 0)}"></div><div class="col-md-2"><label class="form-label small">Status</label><select class="form-select" data-addon-included-available><option value="true" ${item.available ? 'selected' : ''}>Enabled</option><option value="false" ${!item.available ? 'selected' : ''}>Disabled</option></select></div><div class="col-md-2"><button class="btn btn-outline-forest w-100" type="submit">Save</button></div></div>
+      </form>`).join('') : '<div class="catalog-empty">No included items configured.</div>';
+  }
+
+  async function saveAddonIncludedItem(event) {
+    event.preventDefault();
+    const form = event.target.closest('[data-addon-included-form]');
+    const button = form.querySelector('button[type="submit"]');
+    button.disabled = true;
+    try {
+      await adminFetch(`/api/admin/addon-included-items/${encodeURIComponent(form.dataset.itemId)}`, {
+        method: 'PUT', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: form.querySelector('[data-addon-included-name]').value.trim(), displayOrder: Number(form.querySelector('[data-addon-included-order]').value || 0), available: form.querySelector('[data-addon-included-available]').value === 'true' })
+      });
+      await loadAddonIncludedItems(state.addonIncludedAddonId);
+    } finally { button.disabled = false; }
+  }
+
+  async function addAddonIncludedItem() {
+    const name = window.prompt('Included item name');
+    if (!name?.trim() || !state.addonIncludedAddonId) return;
+    await adminFetch(`/api/admin/addons/${encodeURIComponent(state.addonIncludedAddonId)}/included-items`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: name.trim(), displayOrder: state.addonIncludedItems.length, available: true })
+    });
+    await loadAddonIncludedItems(state.addonIncludedAddonId);
   }
 
   async function submitCatalogEdit(event, config) {
@@ -2134,8 +2241,13 @@
     document.querySelector('[data-service-option-add]')?.addEventListener('click', prepareServiceOptionAdd);
     document.querySelector('[data-service-option-cancel]')?.addEventListener('click', resetServiceOptionForm);
     document.getElementById('serviceOptionsModal')?.addEventListener('hidden.bs.modal', resetServiceOptionForm);
-    document.querySelector('[data-dining-style-rows]')?.addEventListener('click', (event) => { const button = event.target.closest('[data-dining-style-edit]'); if (button) openDiningStyleEditor(button.dataset.diningStyleEdit); });
-    document.querySelector('[data-addon-rows]')?.addEventListener('click', (event) => { const button = event.target.closest('[data-addon-edit]'); if (button) openAddOnEditor(button.dataset.addonEdit); });
+    document.querySelector('[data-dining-style-rows]')?.addEventListener('click', (event) => { const button = event.target.closest('[data-dining-style-edit]'); if (button) openDiningStyleEditor(button.dataset.diningStyleEdit); const manage = event.target.closest('[data-dining-style-manage]'); if (manage) openDiningStyleMenu(manage.dataset.diningStyleManage); });
+    document.querySelector('[data-dining-style-menu-categories]')?.addEventListener('submit', (event) => submitDiningStyleMenuForm(event).catch((error) => setCatalogMessage(error.message || 'Unable to save menu changes.')));
+    document.querySelector('[data-dining-style-menu-categories]')?.addEventListener('click', (event) => { const button = event.target.closest('[data-menu-add-item]'); if (button) addDiningStyleItem(button.dataset.menuAddItem).catch((error) => setCatalogMessage(error.message || 'Unable to add menu item.')); });
+    document.querySelector('[data-dining-style-menu-add-category]')?.addEventListener('click', () => addDiningStyleCategory().catch((error) => setCatalogMessage(error.message || 'Unable to add menu category.')));
+    document.querySelector('[data-addon-rows]')?.addEventListener('click', (event) => { const button = event.target.closest('[data-addon-edit]'); if (button) openAddOnEditor(button.dataset.addonEdit); const manage = event.target.closest('[data-addon-manage-included]'); if (manage) loadAddonIncludedItems(manage.dataset.addonManageIncluded).catch((error) => setCatalogMessage(error.message || 'Unable to load included items.')); });
+    document.querySelector('[data-addon-included-items]')?.addEventListener('submit', (event) => saveAddonIncludedItem(event).catch((error) => setCatalogMessage(error.message || 'Unable to save included item.')));
+    document.querySelector('[data-addon-included-add]')?.addEventListener('click', () => addAddonIncludedItem().catch((error) => setCatalogMessage(error.message || 'Unable to add included item.')));
 
     document.querySelector('[data-service-edit-form]')?.addEventListener('submit', (event) => submitCatalogEdit(event, {
       path: '/api/admin/services', idSelector: '[data-service-edit-id]', buttonSelector: '[data-service-edit-save]', modalId: 'serviceEditModal', label: 'Service', reload: loadServicesCatalog,

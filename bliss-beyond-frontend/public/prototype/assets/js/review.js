@@ -39,6 +39,16 @@ document.addEventListener('DOMContentLoaded', () => {
   const isGenuineService = (item) => typeof bbHasGenuineServiceSelection === 'function'
     && bbHasGenuineServiceSelection(item, item?.id === 'catering' ? (catering || serviceData[item.id] || {}) : (serviceData[item.id] || {}));
   const selectedServices = storedSelectedServices.filter(isGenuineService);
+  const displayServiceItems = selectedServices.filter((item) => item?.id).slice();
+  if (catering
+    && isGenuineService({ id: 'catering', estimatedTotal: catering.estimatedTotal })
+    && !displayServiceItems.some((item) => item.id === 'catering')) {
+    displayServiceItems.unshift({
+      id: 'catering',
+      title: 'Catering',
+      estimatedTotal: catering.estimatedTotal
+    });
+  }
 
   if (venueEl) venueEl.textContent = venue?.name || 'Selected venue';
   if (typeEl) typeEl.textContent = eventContext?.eventType || 'Wedding';
@@ -56,8 +66,8 @@ document.addEventListener('DOMContentLoaded', () => {
     : 'Guests not selected';
 
   if (servicesEl) {
-    servicesEl.innerHTML = selectedServices.length
-      ? selectedServices.map((item) => {
+    servicesEl.innerHTML = displayServiceItems.length
+      ? displayServiceItems.map((item) => {
         const details = item.id === 'catering' ? (catering || {}) : (serviceData[item.id] || {});
         const total = Number(item.id === 'catering'
           ? (details.estimatedTotal ?? item.estimatedTotal ?? 0)

@@ -903,6 +903,42 @@ a:hover {
     gap: 1rem;
 }
 
+.bb-skeleton {
+    display: inline-block;
+    min-height: .8rem;
+    border-radius: 999px;
+    background: linear-gradient(90deg, rgba(185, 140, 63, .12), rgba(185, 140, 63, .24), rgba(185, 140, 63, .12));
+    background-size: 220% 100%;
+    animation: bbSkeletonShimmer 1.35s ease-in-out infinite;
+}
+
+.bb-skeleton--line {
+    width: 72%;
+    margin-bottom: .65rem;
+}
+
+.bb-skeleton-card {
+    min-height: 5.5rem;
+}
+
+.bb-skeleton-stack {
+    display: grid;
+    gap: .75rem;
+}
+
+.bb-skeleton-stack > .bb-skeleton {
+    width: 68%;
+}
+
+@keyframes bbSkeletonShimmer {
+    0% { background-position: 100% 0; }
+    100% { background-position: -100% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .bb-skeleton { animation: none; }
+}
+
 [data-booking-status-page] [data-booking-services] > .booking-service-card {
     height: 100%;
     margin-bottom: 0 !important;
@@ -914,6 +950,35 @@ a:hover {
 
 [data-booking-status-page] [data-booking-services] > .booking-service-card > .small {
     flex: 1 1 auto;
+}
+
+[data-booking-status-page] .booking-service-card__details {
+    display: grid;
+    gap: .45rem;
+}
+
+[data-booking-status-page] .booking-service-card__detail {
+    display: grid;
+    grid-template-columns: minmax(7rem, 34%) minmax(0, 1fr);
+    gap: .75rem;
+    margin: 0;
+}
+
+[data-booking-status-page] .booking-service-card__detail dt {
+    color: var(--bb-ink-soft);
+    font-weight: 400;
+}
+
+[data-booking-status-page] .booking-service-card__detail dd {
+    margin: 0;
+    color: var(--bb-ink);
+}
+
+@media (max-width: 575.98px) {
+    [data-booking-status-page] .booking-service-card__detail {
+        grid-template-columns: 1fr;
+        gap: .1rem;
+    }
 }
 
 @media (max-width: 767.98px) {
@@ -1236,6 +1301,91 @@ a:hover {
 .status.completed {
     background: rgba(60, 75, 69, 0.12);
     color: var(--bb-ink-soft);
+}
+
+/* Shared customer-facing notice treatment; Bootstrap alert classes remain as
+   compatibility hooks for existing status helpers and accessibility markup. */
+.bb-notice,
+.alert {
+    --bb-notice-border: rgba(21, 82, 69, 0.2);
+    --bb-notice-background: #f3f7f1;
+    --bb-notice-ink: var(--bb-ink);
+    --bb-notice-accent: var(--bb-green-600);
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: .75rem;
+    margin-bottom: 1rem;
+    padding: .9rem 1rem .9rem 3.35rem;
+    overflow: hidden;
+    border: 1px solid var(--bb-notice-border);
+    border-radius: 16px;
+    background: var(--bb-notice-background);
+    color: var(--bb-notice-ink);
+    box-shadow: 0 8px 20px rgba(34, 48, 40, .045);
+    line-height: 1.45;
+    animation: bbNoticeIn .22s ease both;
+}
+
+.bb-notice::before,
+.alert::before {
+    content: 'i';
+    position: absolute;
+    top: .82rem;
+    left: 1rem;
+    display: grid;
+    width: 1.65rem;
+    height: 1.65rem;
+    place-items: center;
+    border: 1px solid color-mix(in srgb, var(--bb-notice-accent) 35%, transparent);
+    border-radius: 50%;
+    color: var(--bb-notice-accent);
+    font-family: Georgia, serif;
+    font-size: .95rem;
+    font-weight: 700;
+}
+
+.bb-notice--success,
+.alert-success {
+    --bb-notice-border: rgba(21, 82, 69, .25);
+    --bb-notice-background: #eef6ee;
+    --bb-notice-accent: var(--bb-green-600);
+}
+
+.bb-notice--success::before,
+.alert-success::before { content: '✓'; }
+
+.bb-notice--warning,
+.alert-warning {
+    --bb-notice-border: rgba(185, 140, 63, .32);
+    --bb-notice-background: #fbf5e9;
+    --bb-notice-accent: #8d6a26;
+}
+
+.bb-notice--warning::before,
+.alert-warning::before { content: '!'; }
+
+.bb-notice--error,
+.alert-danger {
+    --bb-notice-border: rgba(157, 59, 50, .25);
+    --bb-notice-background: #fff2f0;
+    --bb-notice-accent: #8f4039;
+}
+
+.bb-notice--error::before,
+.alert-danger::before { content: '×'; }
+
+.bb-notice a,
+.alert a { color: var(--bb-notice-accent); font-weight: 700; }
+
+@keyframes bbNoticeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .bb-notice,
+    .alert { animation: none; }
 }
 
 
