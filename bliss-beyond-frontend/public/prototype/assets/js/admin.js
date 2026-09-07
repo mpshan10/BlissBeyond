@@ -59,6 +59,9 @@
   let pendingPackagePhoto = null;
   let currentPackageImage = null;
   let packagePhotoPreviewUrl = null;
+  let adminNotificationLoadPromise = null;
+  let adminNotificationsLoadedAt = 0;
+  const ADMIN_NOTIFICATION_CACHE_TTL_MS = 30_000;
 
   function currentLocalPath() {
     return `${window.location.pathname}${window.location.search}${window.location.hash}`;
@@ -254,6 +257,18 @@
     }
   }
 
+  function isBookingFullyPaid(booking) {
+    const total = Number(booking.estimatedTotal);
+    const paid = Number(booking.paidAmount);
+    return Number.isFinite(total) && Number.isFinite(paid) && paid >= total;
+  }
+
+  function hasBookingEnded(booking) {
+    if (!booking.eventDate || !booking.endTime) return false;
+    const end = new Date(`${booking.eventDate}T${booking.endTime}`);
+    return !Number.isNaN(end.getTime()) && end.getTime() < Date.now();
+  }
+
   function actionButtons(booking) {
     const id = escapeHtml(booking.bookingId);
     const buttons = [];
@@ -266,7 +281,10 @@
         buttons.push('<span class="booking-actions-empty">Awaiting quotation acceptance</span>');
       }
     }
-    if (booking.bookingStatus === 'CONFIRMED') {
+    const canComplete = booking.bookingStatus === 'CONFIRMED'
+      && isBookingFullyPaid(booking)
+      && hasBookingEnded(booking);
+    if (canComplete) {
       buttons.push(`<button class="btn btn-outline-forest btn-sm" type="button" data-booking-action="complete" data-booking-id="${id}">Complete</button>`);
     }
     const paidConfirmed = booking.bookingStatus === 'CONFIRMED' && Number(booking.paidAmount || 0) > 0;
@@ -528,7 +546,7 @@
       const destination = [payment.destinationProvider, payment.destinationAccountName, payment.destinationAccountNumber]
         .filter(Boolean)
         .join(' · ');
-      const method = [payment.paymentMethod, destination, payment.destinationInstructions, payment.transactionReference].filter(Boolean);
+      const method = [payment.paymentMethod, destination, payment.transactionReference].filter(Boolean);
       const action = payment.paymentStatus === 'PENDING'
         ? `<div class="d-flex flex-wrap gap-2"><button class="btn btn-gold btn-sm" type="button" data-payment-confirm data-payment-id="${escapeHtml(payment.paymentId)}">Confirm</button><button class="btn btn-outline-danger btn-sm" type="button" data-payment-reject data-payment-id="${escapeHtml(payment.paymentId)}">Reject</button></div>`
         : '<span class="small text-ink-soft">No actions</span>';
@@ -1257,10 +1275,18 @@
       buttons.push(`<button class="btn btn-gold btn-sm" type="button" data-consultation-schedule="${id}">Schedule</button>`);
       buttons.push(`<button class="btn btn-outline-danger btn-sm" type="button" data-consultation-action="cancel" data-consultation-id="${id}">Cancel</button>`);
     } else if (consultation.status === 'SCHEDULED') {
-      buttons.push(`<button class="btn btn-gold btn-sm" type="button" data-consultation-action="complete" data-consultation-id="${id}">Complete</button>`);
+      if (hasConsultationEnded(consultation)) {
+        buttons.push(`<button class="btn btn-gold btn-sm" type="button" data-consultation-action="complete" data-consultation-id="${id}">Complete</button>`);
+      }
       buttons.push(`<button class="btn btn-outline-danger btn-sm" type="button" data-consultation-action="cancel" data-consultation-id="${id}">Cancel</button>`);
     }
     return `<div class="consultation-actions">${buttons.join('')}</div>`;
+  }
+
+  function hasConsultationEnded(consultation) {
+    if (!consultation.consultationDate || !consultation.endTime) return false;
+    const end = new Date(`${consultation.consultationDate}T${consultation.endTime}`);
+    return !Number.isNaN(end.getTime()) && end.getTime() < Date.now();
   }
 
   function renderConsultations() {
@@ -2700,23 +2726,12 @@
     const loading = document.querySelector('[data-admin-report-loading]');
     const content = document.querySelector('[data-admin-report-content]');
     const message = document.querySelector('[data-admin-report-message]');
-    const fromInput = document.querySelector('[data-report-from]');
-    const toInput = document.querySelector('[data-report-to]');
     const loadReport = async () => {
-      const from = fromInput?.value || '';
-      const to = toInput?.value || '';
-      if (from && to && from > to) {
-        if (message) { message.textContent = 'The From date must be on or before the To date.'; message.classList.remove('d-none'); }
-        return;
-      }
       message?.classList.add('d-none');
       loading?.classList.remove('d-none');
       content?.classList.add('d-none');
-      const params = new URLSearchParams();
-      if (from) params.set('from', from);
-      if (to) params.set('to', to);
       try {
-        const summary = await adminFetch(`/api/admin/reports/summary${params.toString() ? `?${params}` : ''}`, { method: 'GET' });
+        const summary = await adminFetch('/api/admin/reports/summary', { method: 'GET' });
       renderReportSummary(summary);
       loading?.classList.add('d-none');
       content?.classList.remove('d-none');
@@ -2729,8 +2744,6 @@
       }
       }
     };
-    document.querySelector('[data-report-apply]')?.addEventListener('click', loadReport);
-    document.querySelector('[data-report-clear]')?.addEventListener('click', () => { if (fromInput) fromInput.value = ''; if (toInput) toInput.value = ''; void loadReport(); });
     void loadReport();
   }
 
@@ -2742,21 +2755,36 @@
   }
 
   async function loadAdminNotifications(list, badge) {
-    if (list) list.innerHTML = '<li class="text-ink-soft">Loading notifications...</li>';
-    try {
-      const [data, unreadCount] = await Promise.all([
-        adminFetch('/api/notifications?limit=20', { method: 'GET' }),
-        adminFetch('/api/notifications/unread-count', { method: 'GET' })
-      ]);
-      state.notifications = Array.isArray(data) ? data : [];
-      const unread = Number(unreadCount) || 0;
-      badge.textContent = unread > 99 ? '99+' : unread > 0 ? String(unread) : '';
-      badge.hidden = unread === 0;
+    if (adminNotificationLoadPromise) return adminNotificationLoadPromise;
+    if (adminNotificationsLoadedAt && Date.now() - adminNotificationsLoadedAt < ADMIN_NOTIFICATION_CACHE_TTL_MS) {
       renderAdminNotifications(list);
-    } catch (error) {
-      state.notifications = [];
-      badge.hidden = true;
-      if (list) list.innerHTML = '<li class="text-ink-soft">Unable to load notifications.</li>';
+      return;
+    }
+
+    if (list) list.innerHTML = '<li class="text-ink-soft">Loading notifications...</li>';
+    const request = (async () => {
+      try {
+        const [data, unreadCount] = await Promise.all([
+          adminFetch('/api/notifications?limit=20', { method: 'GET' }),
+          adminFetch('/api/notifications/unread-count', { method: 'GET' })
+        ]);
+        state.notifications = Array.isArray(data) ? data : [];
+        const unread = Number(unreadCount) || 0;
+        badge.textContent = unread > 99 ? '99+' : unread > 0 ? String(unread) : '';
+        badge.hidden = unread === 0;
+        adminNotificationsLoadedAt = Date.now();
+        renderAdminNotifications(list);
+      } catch (error) {
+        state.notifications = [];
+        badge.hidden = true;
+        if (list) list.innerHTML = '<li class="text-ink-soft">Unable to load notifications.</li>';
+      }
+    })();
+    adminNotificationLoadPromise = request;
+    try {
+      await request;
+    } finally {
+      if (adminNotificationLoadPromise === request) adminNotificationLoadPromise = null;
     }
   }
 

@@ -115,7 +115,10 @@
     return key === 'soundlightingav' ? 'lightingav' : key;
   };
   const serviceCards = [...document.querySelectorAll('.service-card')];
-  serviceCards.forEach((card) => { card.hidden = true; });
+  serviceCards.forEach((card) => {
+    card.hidden = true;
+    card.style.removeProperty('--service-image');
+  });
   const closeServiceCard = (card) => {
     const toggle = card.querySelector('.service-head');
     const panel = card.querySelector('.service-panel');
@@ -182,7 +185,11 @@
     setElementText('[data-cta-summary]', `${formatMoney(current.finalPrice)} · ${guests}`);
 
     setElementText('.venue-content p', `${venueLocation} · ${formatCapacityValue(venue.capacity)}`);
-    serviceCards.forEach((card) => { card.hidden = true; closeServiceCard(card); });
+    serviceCards.forEach((card) => {
+      card.hidden = true;
+      card.style.removeProperty('--service-image');
+      closeServiceCard(card);
+    });
     const renderedServiceKeys = new Set();
     (Array.isArray(current.services) ? current.services : []).forEach((service) => {
       const currentServiceKey = serviceKey(service?.serviceName);
@@ -190,6 +197,8 @@
       const card = serviceCards.find((item) => serviceKey(item.querySelector('.service-title')?.textContent) === serviceKey(service.serviceName));
       if (!card) return;
       renderedServiceKeys.add(currentServiceKey);
+      const image = card.dataset.serviceImage;
+      if (image) card.style.setProperty('--service-image', `url("${image}")`);
       card.hidden = false;
       const heading = card.querySelector('.service-title');
       const list = card.querySelector('.package-inclusions');

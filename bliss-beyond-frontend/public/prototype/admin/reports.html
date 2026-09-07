@@ -11,6 +11,9 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 <link href="/prototype/assets/css/style.css" rel="stylesheet">
 <style>html:not(.bb-admin-authorized) body { visibility: hidden; }.report-event-doughnut{width:156px;height:156px;border-radius:50%;background:#eee;position:relative}.report-event-doughnut::after{content:"";position:absolute;inset:30px;border-radius:50%;background:#fffdf8}.report-event-legend-item{display:flex;align-items:center;gap:.5rem}.report-event-legend-swatch{width:10px;height:10px;border-radius:50%;flex:0 0 auto}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
 </head>
 <body data-admin-page data-admin-reports-page>
 <nav class="navbar bb-nav sticky-top"><div class="container-fluid px-3 px-lg-4">
@@ -19,7 +22,7 @@
 </div></nav>
 <div class="bb-shell"><aside class="bb-side"><h6>Overview</h6><a href="/prototype/admin/dashboard.html">Dashboard</a><h6>Catalogue</h6><a href="/prototype/admin/customers.html">Customers</a><a href="/prototype/admin/packages.html">Packages</a><a href="/prototype/admin/venues.html">Venues</a><a href="/prototype/admin/services.html">Services</a><h6>Operations</h6><a href="/prototype/admin/bookings.html">Bookings</a><a href="/prototype/admin/consultations.html">Consultations</a><a href="/prototype/admin/quotations.html">Quotations</a><a href="/prototype/admin/payments.html">Payments</a><a class="active" href="/prototype/admin/reports.html">Reports</a><h6>Account</h6><a href="/prototype/login.html">Sign out</a></aside>
 <main class="bb-main">
-  <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4"><div><span class="eyebrow">Admin console</span><h1 class="h2 mt-1 mb-1">Reports Dashboard</h1><p class="small text-ink-soft mb-0">Live totals from your bookings and operations data</p></div><div class="d-flex flex-wrap gap-2 align-items-end"><div><label class="form-label small mb-1" for="reportFrom">From</label><input class="form-control form-control-sm" id="reportFrom" type="date" data-report-from></div><div><label class="form-label small mb-1" for="reportTo">To</label><input class="form-control form-control-sm" id="reportTo" type="date" data-report-to></div><button class="btn btn-forest btn-sm" type="button" data-report-apply>Apply</button><button class="btn btn-outline-secondary btn-sm" type="button" data-report-clear>Clear</button><button class="btn btn-gold btn-sm" type="button" onclick="window.print()">Print report</button></div></div>
+  <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4"><div><span class="eyebrow">Admin console</span><h1 class="h2 mt-1 mb-1">Reports Dashboard</h1><p class="small text-ink-soft mb-0">Live totals from your bookings and operations data</p></div><div class="d-flex flex-wrap gap-2 align-items-end"><button class="btn btn-gold btn-sm" type="button" onclick="window.print()">Print report</button></div></div>
   <div class="alert alert-warning d-none" data-admin-report-message></div>
   <div class="small text-ink-soft mb-3" data-report-period>All available records; metric dates follow the definitions below.</div>
   <div class="alert alert-info" data-admin-report-loading>Loading report data...</div>

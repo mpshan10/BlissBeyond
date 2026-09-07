@@ -361,6 +361,17 @@ function bbGetAuthUser() {
   return bbGetAuth()?.user || null;
 }
 
+function bbIsCustomerPortalPage() {
+  if (!window.location.pathname.startsWith('/prototype/customer/')) return false;
+  if (document.querySelector('[data-public-header]')) return false;
+  if (document.body?.dataset.packageSlug) return false;
+  return !['/prototype/customer/index.html', '/prototype/customer/gallery.html'].includes(window.location.pathname);
+}
+
+function bbHasRole(role) {
+  return Array.isArray(bbGetAuthUser()?.roles) && bbGetAuthUser().roles.includes(role);
+}
+
 function bbAuthTokenIsExpired(token) {
   try {
     const payload = JSON.parse(atob(String(token).split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
@@ -421,8 +432,9 @@ function bbRenderPublicAuthNav(auth, profile = null) {
 }
 
 async function bbRefreshPublicAuthNav() {
-  if (window.location.pathname.startsWith('/prototype/customer/')
-    || window.location.pathname.startsWith('/prototype/admin/')) return;
+  if ((window.location.pathname.startsWith('/prototype/customer/')
+    || window.location.pathname.startsWith('/prototype/admin/'))
+    && !document.querySelector('[data-public-header]')) return;
 
   const auth = bbGetAuth();
   if (!auth || bbAuthTokenIsExpired(auth.token)) {
@@ -471,7 +483,7 @@ function bbApplyCustomerProfile(profile) {
 }
 
 function bbInitCustomerSidebar() {
-  if (!window.location.pathname.startsWith('/prototype/customer/')) return;
+  if (!bbIsCustomerPortalPage() || !bbHasRole('ROLE_CUSTOMER')) return;
 
   const sidebars = document.querySelectorAll('.bb-side');
   if (!sidebars.length) return;
@@ -520,7 +532,7 @@ function bbInitCustomerSidebar() {
 }
 
 async function bbRefreshCustomerHeader() {
-  if (!window.location.pathname.startsWith('/prototype/customer/') || !bbGetAuthToken()) return;
+  if (!bbIsCustomerPortalPage() || !bbHasRole('ROLE_CUSTOMER') || !bbGetAuthToken()) return;
   try {
     const profile = await bbGetCustomerProfile();
     bbApplyCustomerProfile(profile);
@@ -1264,6 +1276,7 @@ function bbSetPasswordResetCooldownUntil(value) {
 function bbResolveAuthRedirect(fallback = '/prototype/customer/dashboard.html') {
   const roles = bbGetAuthUser()?.roles || [];
   const isAdmin = roles.includes('ROLE_ADMIN');
+  const isCustomer = roles.includes('ROLE_CUSTOMER');
   const roleFallback = isAdmin ? '/prototype/admin/dashboard.html' : fallback;
   const returnUrl = bbGetAuthReturnUrl();
   if (!returnUrl) return roleFallback;
@@ -1277,9 +1290,13 @@ function bbResolveAuthRedirect(fallback = '/prototype/customer/dashboard.html') 
     if (target.pathname === '/prototype/login.html' || target.pathname === '/prototype/register.html') {
       return roleFallback;
     }
+    if (target.pathname.startsWith('/prototype/customer/') && isAdmin) {
+      return '/prototype/admin/dashboard.html';
+    }
     if (target.pathname.startsWith('/prototype/admin/') && !isAdmin) {
       return '/prototype/customer/dashboard.html';
     }
+    if (!isAdmin && !isCustomer) return roleFallback;
     return safePath;
   } catch (error) {
     return roleFallback;
@@ -2724,7 +2741,35 @@ async function bbRenderCustomerBookingStatus() {
   }
 }
 
+function bbRequireCustomerRole() {
+  const auth = bbGetAuth();
+  const target = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+  const redirect = (url, preserveReturnUrl = false) => {
+    document.documentElement.style.visibility = 'hidden';
+    if (preserveReturnUrl) bbSetAuthReturnUrl(target);
+    window.location.replace(url);
+    return true;
+  };
+
+  if (!auth || bbAuthTokenIsExpired(auth.token)) {
+    if (auth) bbClearAuth();
+    return redirect(`/prototype/login.html?returnUrl=${encodeURIComponent(target)}`, true);
+  }
+
+  if (bbHasRole('ROLE_ADMIN')) {
+    return redirect('/prototype/admin/dashboard.html');
+  }
+
+  if (!bbHasRole('ROLE_CUSTOMER')) {
+    bbClearAuth();
+    return redirect(`/prototype/login.html?returnUrl=${encodeURIComponent(target)}`, true);
+  }
+
+  return false;
+}
+
 function bbRequireAuth() {
+  if (bbIsCustomerPortalPage()) return bbRequireCustomerRole();
   if (bbGetAuth()) return false;
 
   const target = `${window.location.pathname}${window.location.search}${window.location.hash}`;
@@ -3449,6 +3494,7 @@ window.bbFetchReadOnlyJson = bbFetchReadOnlyJson;
 window.bbNormalizeVenueName = bbNormalizeVenueName;
 window.bbFindVenueIdByName = bbFindVenueIdByName;
 window.bbRequireAuth = bbRequireAuth;
+window.bbRequireCustomerRole = bbRequireCustomerRole;
 window.bbInitPackageWorkflow = bbInitPackageWorkflow;
 window.bbVenueServices = bbVenueServices;
 window.bbInitSimpleServicePage = bbInitSimpleServicePage;
@@ -3565,6 +3611,8 @@ async function bbInitHomeVenues() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  if (bbIsCustomerPortalPage() && bbRequireCustomerRole()) return;
+
   if ('IntersectionObserver' in window) {
     const io = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
@@ -3726,6 +3774,11 @@ document.addEventListener('DOMContentLoaded', () => {
           setStatus('Please complete your name details.', 'danger');
           return;
         }
+        if (!phone) {
+          setStatus('Please enter your phone number.', 'danger');
+          phoneInput?.focus();
+          return;
+        }
 
         if (!passwordStrong) {
           setStatus('Please create a stronger password that meets all requirements.', 'danger');
@@ -3749,7 +3802,7 @@ document.addEventListener('DOMContentLoaded', () => {
           firstName,
           lastName,
           email,
-          phone: phone || null,
+          phone,
           password
         };
 
