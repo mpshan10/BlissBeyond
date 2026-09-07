@@ -11,6 +11,7 @@ import com.blissbeyond.entity.BookingStatus;
 import com.blissbeyond.entity.Event;
 import com.blissbeyond.entity.PackageBookingSnapshot;
 import com.blissbeyond.entity.Payment;
+import com.blissbeyond.entity.PaymentAccount;
 import com.blissbeyond.entity.PaymentStatus;
 import com.blissbeyond.entity.PaymentType;
 import com.blissbeyond.entity.Quotation;
@@ -37,9 +38,6 @@ import java.util.Set;
 public class PaymentService {
     private static final BigDecimal DEPOSIT_PERCENTAGE = new BigDecimal("0.30");
     private static final BigDecimal DEPOSIT_PERCENTAGE_DISPLAY = new BigDecimal("30");
-    private static final Set<String> METHODS = Set.of(
-        "BANK_TRANSFER", "KBZ_BANK", "AYA_BANK", "CB_BANK", "KBZPAY", "WAVEPAY", "CASH"
-    );
     private static final Set<PaymentStatus> REFERENCE_BLOCKING_STATUSES = Set.of(PaymentStatus.PENDING, PaymentStatus.PAID);
 
     private final BookingRepository bookingRepository;
@@ -48,22 +46,29 @@ public class PaymentService {
     private final BookingService bookingService;
     private final NotificationService notificationService;
     private final PackageBookingSnapshotRepository snapshotRepository;
+    private final PaymentAccountService paymentAccountService;
 
     public PaymentService(BookingRepository bookingRepository, PaymentRepository paymentRepository,
                           CurrentUserService currentUserService, BookingService bookingService,
-                          NotificationService notificationService, PackageBookingSnapshotRepository snapshotRepository) {
+                          NotificationService notificationService, PackageBookingSnapshotRepository snapshotRepository,
+                          PaymentAccountService paymentAccountService) {
         this.bookingRepository = bookingRepository;
         this.paymentRepository = paymentRepository;
         this.currentUserService = currentUserService;
         this.bookingService = bookingService;
         this.notificationService = notificationService;
         this.snapshotRepository = snapshotRepository;
+        this.paymentAccountService = paymentAccountService;
     }
 
     @Transactional
     public Payment createNextPayment(Long bookingId, CustomerPaymentSubmissionRequest request) {
         Booking booking = requireOwnedBookingForUpdate(bookingId);
-        String method = normalizeOptional(request == null ? null : request.paymentMethod());
+        Long paymentAccountId = request == null ? null : request.paymentAccountId();
+        PaymentAccount account = paymentAccountId == null ? null : paymentAccountService.requireAvailable(paymentAccountId);
+        String method = account == null
+            ? normalizeOptional(request == null ? null : request.paymentMethod())
+            : account.getPaymentMethod();
         String reference = normalizeOptional(request == null ? null : request.transactionReference());
         validatePaymentDetails(method, reference);
         PaymentCalculation calculation = calculate(booking);
@@ -83,6 +88,13 @@ public class PaymentService {
         payment.setAmount(calculation.nextPaymentAmount());
         payment.setPaymentStatus(PaymentStatus.PENDING);
         payment.setPaymentMethod(method);
+        if (account != null) {
+            payment.setPaymentAccount(account);
+            payment.setDestinationProviderSnapshot(account.getProviderName());
+            payment.setDestinationAccountNameSnapshot(account.getAccountName());
+            payment.setDestinationAccountNumberSnapshot(account.getAccountNumber());
+            payment.setDestinationInstructionsSnapshot(account.getInstructions());
+        }
         payment.setTransactionReference(reference);
         payment.setSubmittedAt(LocalDateTime.now());
         Payment saved = paymentRepository.save(payment);
@@ -110,12 +122,21 @@ public class PaymentService {
         return new PaymentResponse(payment.getId(), payment.getBooking() == null ? null : payment.getBooking().getId(),
             payment.getPaymentType() == null ? null : payment.getPaymentType().name(), payment.getAmount(),
             payment.getPaymentStatus() == null ? null : payment.getPaymentStatus().name(), payment.getPaymentMethod(),
+            payment.getPaymentAccount() == null ? null : payment.getPaymentAccount().getId(),
+            payment.getDestinationProviderSnapshot(), payment.getDestinationAccountNameSnapshot(),
+            payment.getDestinationAccountNumberSnapshot(), payment.getDestinationInstructionsSnapshot(),
             payment.getTransactionReference(), payment.getPaidAt(), payment.getSubmittedAt(), payment.getRejectedAt(), payment.getAdminNote());
     }
 
     @Transactional(readOnly = true)
     public List<AdminPaymentResponse> listAdminPayments() {
         return paymentRepository.findAllByOrderByIdDesc().stream().map(this::toAdminResponse).toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<PaymentResponse> listCustomerPayments() {
+        Long customerId = currentUserService.requireCurrentUser().getId();
+        return paymentRepository.findByBookingCustomerId(customerId).stream().map(this::toResponse).toList();
     }
 
     @Transactional
@@ -133,7 +154,9 @@ public class PaymentService {
         } else if (booking.getStatus() != BookingStatus.CONFIRMED || !hasPaidDeposit(booking.getId())) {
             throw new IllegalArgumentException("Balance confirmation requires a confirmed booking with a paid deposit.");
         }
-        String method = normalizeOptional(request == null ? null : request.paymentMethod());
+        String method = payment.getPaymentAccount() == null
+            ? normalizeOptional(request == null ? null : request.paymentMethod())
+            : payment.getPaymentMethod();
         String reference = normalizeOptional(request == null ? null : request.transactionReference());
         if (method == null) method = payment.getPaymentMethod();
         if (reference == null) reference = payment.getTransactionReference();
@@ -183,19 +206,27 @@ public class PaymentService {
         return new AdminPaymentResponse(payment.getId(), booking == null ? null : booking.getId(), booking == null ? null : String.format("BK-%04d", booking.getId()),
             customer == null ? null : customer.getId(), customerName, customer == null ? null : customer.getEmail(), event == null ? null : event.getId(),
             event == null ? null : event.getEventType(), venue == null ? null : venue.getName(), payment.getPaymentType() == null ? null : payment.getPaymentType().name(),
-            payment.getAmount(), payment.getPaymentStatus() == null ? null : payment.getPaymentStatus().name(), payment.getPaymentMethod(), payment.getTransactionReference(),
+            payment.getAmount(), payment.getPaymentStatus() == null ? null : payment.getPaymentStatus().name(), payment.getPaymentMethod(),
+            payment.getPaymentAccount() == null ? null : payment.getPaymentAccount().getId(),
+            payment.getDestinationProviderSnapshot(), payment.getDestinationAccountNameSnapshot(),
+            payment.getDestinationAccountNumberSnapshot(), payment.getDestinationInstructionsSnapshot(),
+            payment.getTransactionReference(),
             payment.getPaidAt(), payment.getSubmittedAt(), payment.getRejectedAt(), payment.getAdminNote(), quotation == null ? null : quotation.getId(),
             quotation == null ? null : quotation.getTotal(), booking == null || booking.getBookingType() == null ? null : booking.getBookingType().name(),
             booking == null || booking.getStatus() == null ? null : booking.getStatus().name(), payment.getSubmittedAt());
     }
 
     private void validatePaymentDetails(String method, String reference) {
-        if (method == null || !METHODS.contains(method)) throw new IllegalArgumentException("Choose a valid payment method.");
+        if (method == null || !PaymentAccountService.SUPPORTED_METHODS.contains(method)) throw new IllegalArgumentException("Choose a valid payment method.");
         if (!"CASH".equals(method) && (reference == null || reference.isBlank())) throw new IllegalArgumentException("Transaction reference is required for electronic payments.");
     }
 
     private void rejectDuplicateReference(String reference, Long currentPaymentId) {
         if (reference == null) return;
+        if (currentPaymentId == null && paymentRepository.existsByTransactionReferenceIgnoreCaseAndPaymentStatusIn(reference, REFERENCE_BLOCKING_STATUSES)) {
+            throw new DuplicateResourceException("This transaction reference is already in use.");
+        }
+        if (currentPaymentId == null) return;
         boolean duplicate = paymentRepository.findAllByOrderByIdDesc().stream().anyMatch(payment ->
             !payment.getId().equals(currentPaymentId) && payment.getTransactionReference() != null
                 && payment.getTransactionReference().equalsIgnoreCase(reference) && REFERENCE_BLOCKING_STATUSES.contains(payment.getPaymentStatus()));

@@ -19,6 +19,10 @@ public class Payment extends BaseEntity {
     @JoinColumn(name = "booking_id", nullable = false)
     private Booking booking;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "payment_account_id")
+    private PaymentAccount paymentAccount;
+
     @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal amount;
 
@@ -48,8 +52,22 @@ public class Payment extends BaseEntity {
     @Column(name = "admin_note", length = 1000)
     private String adminNote;
 
+    @Column(name = "destination_provider_snapshot", length = 100)
+    private String destinationProviderSnapshot;
+
+    @Column(name = "destination_account_name_snapshot", length = 160)
+    private String destinationAccountNameSnapshot;
+
+    @Column(name = "destination_account_number_snapshot", length = 120)
+    private String destinationAccountNumberSnapshot;
+
+    @Column(name = "destination_instructions_snapshot", length = 1000)
+    private String destinationInstructionsSnapshot;
+
     public Booking getBooking() { return booking; }
     public void setBooking(Booking booking) { this.booking = booking; }
+    public PaymentAccount getPaymentAccount() { return paymentAccount; }
+    public void setPaymentAccount(PaymentAccount paymentAccount) { this.paymentAccount = paymentAccount; }
     public BigDecimal getAmount() { return amount; }
     public void setAmount(BigDecimal amount) { this.amount = amount; }
     public PaymentType getPaymentType() { return paymentType; }
@@ -68,4 +86,12 @@ public class Payment extends BaseEntity {
     public void setRejectedAt(LocalDateTime rejectedAt) { this.rejectedAt = rejectedAt; }
     public String getAdminNote() { return adminNote; }
     public void setAdminNote(String adminNote) { this.adminNote = adminNote; }
+    public String getDestinationProviderSnapshot() { return destinationProviderSnapshot; }
+    public void setDestinationProviderSnapshot(String value) { destinationProviderSnapshot = value; }
+    public String getDestinationAccountNameSnapshot() { return destinationAccountNameSnapshot; }
+    public void setDestinationAccountNameSnapshot(String value) { destinationAccountNameSnapshot = value; }
+    public String getDestinationAccountNumberSnapshot() { return destinationAccountNumberSnapshot; }
+    public void setDestinationAccountNumberSnapshot(String value) { destinationAccountNumberSnapshot = value; }
+    public String getDestinationInstructionsSnapshot() { return destinationInstructionsSnapshot; }
+    public void setDestinationInstructionsSnapshot(String value) { destinationInstructionsSnapshot = value; }
 }
