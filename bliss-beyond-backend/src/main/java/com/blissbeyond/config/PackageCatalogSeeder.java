@@ -38,24 +38,24 @@ public class PackageCatalogSeeder implements CommandLineRunner {
         for(Spec s:catalog)seed(s);
     }
     private void seed(Spec s)throws Exception{
+        Package p=packagesBySlug.get(s.slug);
+        if(p!=null)return;
+
         Venue v=findVenue(s.venueName);
         if(s.maxGuests<=0||s.finalPrice.signum()<=0)throw new IllegalStateException("Invalid package values: "+s.slug);
         if(v.getCapacity()!=null&&s.maxGuests>v.getCapacity())throw new IllegalStateException("Package guest limit exceeds venue capacity: "+s.slug);
-        Package p=packagesBySlug.get(s.slug);
-        if (p == null) {
-            p = new Package();
-            p.setSlug(s.slug);
-            p.setName(s.name);
-            p.setCategory(s.category);
-            p.setDescription(s.description);
-            p.setVenue(v);
-            p.setMaxGuests(s.maxGuests);
-            p.setFinalPrice(s.finalPrice);
-            p.setImage(null);
-            p.setActive(true);
-            p=packageRepository.save(p);
-            packagesBySlug.put(s.slug,p);
-        }
+        p = new Package();
+        p.setSlug(s.slug);
+        p.setName(s.name);
+        p.setCategory(s.category);
+        p.setDescription(s.description);
+        p.setVenue(v);
+        p.setMaxGuests(s.maxGuests);
+        p.setFinalPrice(s.finalPrice);
+        p.setImage(null);
+        p.setActive(true);
+        p=packageRepository.save(p);
+        packagesBySlug.put(s.slug,p);
         for(ItemSpec i:s.items){
             ServiceEntity service=findService(i.serviceName);
             String itemKey=itemKey(s.slug,i.displayOrder);
