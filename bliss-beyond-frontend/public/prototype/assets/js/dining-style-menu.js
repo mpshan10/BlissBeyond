@@ -1,7 +1,9 @@
 (function () {
   'use strict';
 
-  const apiBase = (window.bbApiUrl || '').replace(/\/$/, '');
+  const apiUrl = (path) => typeof window.bbApiUrl === 'function'
+    ? window.bbApiUrl(path)
+    : path;
   const imageByStyle = {
     'Buffet': '/prototype/assets/img/catering2.jpg',
     'Plated Dinner': '/prototype/assets/img/catering3.jpg',
@@ -15,10 +17,13 @@
   const escapeHtml = window.bbCateringEscapeHtml || ((value) => String(value || '').replace(/[&<>"']/g, (character) => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
   }[character])));
-  const requestJson = (path) => fetch(`${apiBase}${path}`, { credentials: 'include' }).then((response) => {
-    if (!response.ok) throw new Error(`Request failed (${response.status})`);
-    return response.json();
-  });
+  const requestJson = (path) => {
+    const request = window.bbFetchJson;
+    if (typeof request !== 'function') {
+      return Promise.reject(new Error('Catering details are temporarily unavailable.'));
+    }
+    return request(apiUrl(path), { method: 'GET' });
+  };
 
   let stylesPromise;
   const loadStyles = () => {

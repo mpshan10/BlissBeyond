@@ -676,6 +676,76 @@ a:hover {
     white-space: nowrap;
 }
 
+[data-payment-page] .payment-destination-card {
+    margin-bottom: 1rem;
+    padding: 1rem 1.1rem;
+    border: 1px solid rgba(184, 139, 58, 0.35);
+    border-radius: 0.9rem;
+    background: linear-gradient(135deg, #fffdf8 0%, #f7f1e5 100%);
+    box-shadow: 0 0.35rem 1rem rgba(42, 56, 43, 0.05);
+}
+
+[data-payment-page] .payment-destination-card__eyebrow {
+    display: block;
+    color: var(--bb-gold);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+}
+
+[data-payment-page] .payment-destination-card__provider {
+    margin: 0.25rem 0 0.8rem;
+    color: var(--bb-green);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.35rem;
+}
+
+[data-payment-page] .payment-destination-card__details > div {
+    display: grid;
+    grid-template-columns: minmax(7rem, 0.8fr) minmax(0, 1.2fr);
+    gap: 0.8rem;
+    padding: 0.45rem 0;
+    border-top: 1px solid rgba(42, 56, 43, 0.09);
+}
+
+[data-payment-page] .payment-destination-card__details dt {
+    color: var(--bb-ink-soft);
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+[data-payment-page] .payment-destination-card__details dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+    color: var(--bb-green);
+    font-weight: 600;
+}
+
+[data-admin-payment-accounts] .payment-account-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 1rem;
+    border: 1px solid rgba(42, 56, 43, 0.13);
+    border-radius: 0.9rem;
+    background: #fffdf8;
+}
+
+[data-admin-payment-accounts] .payment-account-card.is-unavailable {
+    background: #f4f1e9;
+    opacity: 0.82;
+}
+
+[data-admin-payment-accounts] .payment-account-card__details {
+    flex: 1;
+    margin: 0.75rem 0 1rem;
+    color: var(--bb-ink-soft);
+    font-size: 0.86rem;
+    overflow-wrap: anywhere;
+}
+
 @media (max-width: 575.98px) {
     [data-payment-page] .payment-due-highlight {
         align-items: flex-start;
@@ -687,6 +757,11 @@ a:hover {
         flex-basis: 2.45rem;
         width: 2.45rem;
         height: 2.45rem;
+    }
+
+    [data-payment-page] .payment-destination-card__details > div {
+        grid-template-columns: 1fr;
+        gap: 0.15rem;
     }
 }
 

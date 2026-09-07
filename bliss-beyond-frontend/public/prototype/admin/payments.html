@@ -67,6 +67,16 @@
 
     <div class="alert alert-danger d-none" data-admin-payment-message role="alert" aria-live="polite"></div>
 
+    <div class="panel mb-4" data-admin-payment-accounts>
+      <div class="panel__head d-flex flex-wrap align-items-center justify-content-between gap-3">
+        <div><h2 class="h5 mb-1">Payment Destinations</h2><p class="small text-ink-soft mb-0">Manage the transfer details shown to customers.</p></div>
+        <button class="btn btn-gold btn-sm" type="button" data-payment-account-add><i class="bi bi-plus-lg me-1"></i>Add Destination</button>
+      </div>
+      <div class="panel__body">
+        <div class="row g-3" data-payment-account-list><div class="col-12 text-center text-ink-soft py-4">Loading payment destinations...</div></div>
+      </div>
+    </div>
+
     <div class="panel">
       <div class="panel__head d-flex flex-wrap gap-2">
         <div class="input-group" style="max-width:360px">
@@ -92,6 +102,31 @@
       </div>
     </div>
   </main>
+</div>
+
+<div class="modal fade" id="paymentAccountModal" tabindex="-1" aria-labelledby="paymentAccountModalTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg"><div class="modal-content">
+    <form data-payment-account-form>
+      <div class="modal-header">
+        <h5 class="modal-title" id="paymentAccountModalTitle" data-payment-account-modal-title>Add Payment Destination</h5>
+        <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-danger d-none" data-payment-account-error></div>
+        <div class="row g-3">
+          <div class="col-md-6"><label class="form-label" for="paymentAccountKey">Account key</label><input class="form-control" id="paymentAccountKey" data-payment-account-key maxlength="80" pattern="[a-z0-9][a-z0-9-]*" placeholder="kbz-main" required><div class="form-text">Lowercase letters, numbers, and hyphens only.</div></div>
+          <div class="col-md-6"><label class="form-label" for="paymentAccountMethod">Payment method</label><select class="form-select" id="paymentAccountMethod" data-payment-account-method required><option value="">Choose method</option><option value="KBZ_BANK">KBZ Bank</option><option value="AYA_BANK">AYA Bank</option><option value="CB_BANK">CB Bank</option><option value="KBZPAY">KBZPay</option><option value="WAVEPAY">WavePay</option><option value="CASH">Cash</option></select></div>
+          <div class="col-md-6"><label class="form-label" for="paymentAccountProvider">Provider name</label><input class="form-control" id="paymentAccountProvider" data-payment-account-provider maxlength="100" required></div>
+          <div class="col-md-6"><label class="form-label" for="paymentAccountName">Account name</label><input class="form-control" id="paymentAccountName" data-payment-account-name maxlength="160"></div>
+          <div class="col-md-6"><label class="form-label" for="paymentAccountNumber">Account / phone number</label><input class="form-control" id="paymentAccountNumber" data-payment-account-number maxlength="120"></div>
+          <div class="col-md-6"><label class="form-label" for="paymentAccountOrder">Display order</label><input class="form-control" id="paymentAccountOrder" data-payment-account-order type="number" min="0" value="0" required></div>
+          <div class="col-12"><label class="form-label" for="paymentAccountInstructions">Customer instructions</label><textarea class="form-control" id="paymentAccountInstructions" data-payment-account-instructions maxlength="1000" rows="3"></textarea></div>
+          <div class="col-12"><div class="form-check"><input class="form-check-input" id="paymentAccountAvailable" data-payment-account-available type="checkbox" checked><label class="form-check-label" for="paymentAccountAvailable">Available to customers</label></div></div>
+        </div>
+      </div>
+      <div class="modal-footer"><button class="btn btn-outline-secondary" type="button" data-bs-dismiss="modal">Cancel</button><button class="btn btn-gold" type="submit" data-payment-account-save>Save Destination</button></div>
+    </form>
+  </div></div>
 </div>
 
 <div class="modal fade" id="paymentConfirmModal" tabindex="-1" aria-labelledby="paymentConfirmModalTitle" aria-hidden="true">

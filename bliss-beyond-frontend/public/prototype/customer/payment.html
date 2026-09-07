@@ -82,7 +82,17 @@
           <div class="panel__body">
             <form data-payment-submit-form novalidate>
               <div class="d-flex justify-content-between align-items-center mb-3"><span class="text-ink-soft">Amount due</span><strong class="bb-price" data-payment-submit-amount>MMK 0</strong></div>
-              <div class="mb-3"><label class="form-label" for="customerPaymentMethod">Payment method</label><select class="form-select" id="customerPaymentMethod" data-payment-method required><option value="">Select a payment method</option><option value="KBZ_BANK">KBZ Bank Transfer</option><option value="AYA_BANK">AYA Bank Transfer</option><option value="CB_BANK">CB Bank Transfer</option><option value="KBZPAY">KBZPay</option><option value="WAVEPAY">WavePay</option><option value="CASH">Cash</option></select></div>
+              <div class="mb-3"><label class="form-label" for="customerPaymentMethod">Payment method and destination</label><select class="form-select" id="customerPaymentMethod" data-payment-method required disabled><option value="">Loading payment destinations...</option></select></div>
+              <div class="payment-destination-card d-none" data-payment-destination aria-live="polite">
+                <span class="payment-destination-card__eyebrow" data-payment-destination-method></span>
+                <h6 class="payment-destination-card__provider" data-payment-destination-provider></h6>
+                <dl class="payment-destination-card__details mb-0">
+                  <div class="d-none" data-payment-destination-name-row><dt>Account name</dt><dd data-payment-destination-name></dd></div>
+                  <div class="d-none" data-payment-destination-number-row><dt data-payment-destination-number-label>Account number</dt><dd data-payment-destination-number></dd></div>
+                  <div class="d-none" data-payment-destination-instructions-row><dt>Instructions</dt><dd data-payment-destination-instructions></dd></div>
+                </dl>
+              </div>
+              <div class="alert alert-warning d-none" data-payment-destinations-empty>No payment destination is currently available. Please contact Bliss &amp; Beyond or try again later.</div>
               <div class="mb-3" data-payment-reference-field><label class="form-label" for="customerPaymentReference">Transaction / Reference Number</label><input class="form-control" id="customerPaymentReference" data-payment-reference maxlength="120" autocomplete="off" placeholder="Enter your transaction or reference number"></div>
               <div class="alert alert-danger d-none" data-payment-submit-error></div>
               <button class="btn btn-gold w-100" type="submit" data-payment-submit>Submit Deposit Payment</button>

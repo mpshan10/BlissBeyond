@@ -870,11 +870,14 @@ async function bbRenderCustomerPayment() {
   const paymentMethod = root.querySelector('[data-payment-method]');
   const paymentReference = root.querySelector('[data-payment-reference]');
   const paymentReferenceField = root.querySelector('[data-payment-reference-field]');
+  const paymentDestination = root.querySelector('[data-payment-destination]');
+  const paymentDestinationsEmpty = root.querySelector('[data-payment-destinations-empty]');
   const submitError = root.querySelector('[data-payment-submit-error]');
   const records = root.querySelector('[data-payment-records]');
   const bookingContext = root.querySelector('[data-payment-booking-context]');
   const submitTitle = root.querySelector('[data-payment-submit-title]');
   let currentBooking = null;
+  let paymentAccounts = [];
   const show = (element, visible) => element?.classList.toggle('d-none', !visible);
   const setMessage = (element, value) => {
     if (element) element.textContent = value || '';
@@ -900,18 +903,74 @@ async function bbRenderCustomerPayment() {
     CASH: 'Cash'
   })[String(value || '').trim().toUpperCase()] || 'Payment method recorded';
 
-  const updatePaymentReferenceRequirement = () => {
-    const method = paymentMethod?.value || '';
-    const isCash = method === 'CASH';
-    if (paymentReference) {
-      paymentReference.required = Boolean(method) && !isCash;
-      paymentReference.disabled = isCash;
-      if (isCash) paymentReference.value = '';
-    }
-    show(paymentReferenceField, !isCash);
+  const paymentGroupLabel = (method) => {
+    if (['KBZ_BANK', 'AYA_BANK', 'CB_BANK', 'BANK_TRANSFER'].includes(method)) return 'Bank Transfer';
+    if (['KBZPAY', 'WAVEPAY'].includes(method)) return 'Mobile Payments';
+    return 'Other';
   };
 
-  paymentMethod?.addEventListener('change', updatePaymentReferenceRequirement);
+  const selectedPaymentAccount = () => {
+    const id = Number(paymentMethod?.value);
+    return Number.isInteger(id) ? paymentAccounts.find((account) => Number(account.id) === id) || null : null;
+  };
+
+  const renderDestination = () => {
+    const account = selectedPaymentAccount();
+    show(paymentDestination, Boolean(account));
+    if (!account || !paymentDestination) return;
+    const method = String(account.paymentMethod || '').toUpperCase();
+    const assign = (selector, value) => setMessage(paymentDestination.querySelector(selector), value);
+    assign('[data-payment-destination-method]', method === 'CASH' ? 'Cash payment' : paymentMethodLabel(method));
+    assign('[data-payment-destination-provider]', account.providerName || paymentMethodLabel(method));
+    assign('[data-payment-destination-name]', account.accountName);
+    assign('[data-payment-destination-number]', account.accountNumber);
+    assign('[data-payment-destination-number-label]', ['KBZPAY', 'WAVEPAY'].includes(method) ? 'Phone / account number' : 'Account number');
+    assign('[data-payment-destination-instructions]', account.instructions);
+    show(paymentDestination.querySelector('[data-payment-destination-name-row]'), Boolean(account.accountName));
+    show(paymentDestination.querySelector('[data-payment-destination-number-row]'), Boolean(account.accountNumber));
+    show(paymentDestination.querySelector('[data-payment-destination-instructions-row]'), Boolean(account.instructions));
+  };
+
+  const renderPaymentAccounts = (accounts) => {
+    paymentAccounts = Array.isArray(accounts) ? accounts : [];
+    if (!paymentMethod) return;
+    paymentMethod.innerHTML = '<option value="">Select a payment destination</option>';
+    ['Bank Transfer', 'Mobile Payments', 'Other'].forEach((groupName) => {
+      const groupAccounts = paymentAccounts.filter((account) => paymentGroupLabel(String(account.paymentMethod || '').toUpperCase()) === groupName);
+      if (!groupAccounts.length) return;
+      const group = document.createElement('optgroup');
+      group.label = groupName;
+      groupAccounts.forEach((account) => {
+        const option = document.createElement('option');
+        option.value = String(account.id);
+        option.textContent = account.providerName || paymentMethodLabel(account.paymentMethod);
+        group.appendChild(option);
+      });
+      paymentMethod.appendChild(group);
+    });
+    paymentMethod.disabled = paymentAccounts.length === 0;
+    show(paymentDestinationsEmpty, paymentAccounts.length === 0);
+    if (submitButton) submitButton.disabled = paymentAccounts.length === 0;
+    renderDestination();
+    updatePaymentReferenceRequirement();
+  };
+
+  const updatePaymentReferenceRequirement = () => {
+    const method = String(selectedPaymentAccount()?.paymentMethod || '').toUpperCase();
+    const hasMethod = Boolean(method);
+    const isCash = method === 'CASH';
+    if (paymentReference) {
+      paymentReference.required = hasMethod && !isCash;
+      paymentReference.disabled = !hasMethod || isCash;
+      if (isCash) paymentReference.value = '';
+    }
+    show(paymentReferenceField, hasMethod && !isCash);
+  };
+
+  paymentMethod?.addEventListener('change', () => {
+    renderDestination();
+    updatePaymentReferenceRequirement();
+  });
   updatePaymentReferenceRequirement();
 
   const bookingTypeLabel = (booking) => String(booking?.bookingType || '').toUpperCase() === 'PACKAGE' ? 'Package' : 'Customize';
@@ -1031,7 +1090,10 @@ async function bbRenderCustomerPayment() {
       records.innerHTML = payments.length ? payments.map((payment) => {
         const status = String(payment.paymentStatus || '').toUpperCase();
         const type = String(payment.paymentType || 'PAYMENT').toUpperCase();
-        const details = [paymentMethodLabel(payment.paymentMethod), payment.transactionReference, payment.submittedAt ? `Submitted ${bbFormatDateDisplay(payment.submittedAt)}` : '', payment.paidAt ? `Paid ${bbFormatDateDisplay(payment.paidAt)}` : '', payment.rejectedAt ? `Rejected ${bbFormatDateDisplay(payment.rejectedAt)}` : '', payment.adminNote]
+        const destination = [payment.destinationProvider, payment.destinationAccountName, payment.destinationAccountNumber]
+          .filter(Boolean)
+          .join(' · ');
+        const details = [paymentMethodLabel(payment.paymentMethod), destination, payment.destinationInstructions, payment.transactionReference, payment.submittedAt ? `Submitted ${bbFormatDateDisplay(payment.submittedAt)}` : '', payment.paidAt ? `Paid ${bbFormatDateDisplay(payment.paidAt)}` : '', payment.rejectedAt ? `Rejected ${bbFormatDateDisplay(payment.rejectedAt)}` : '', payment.adminNote]
           .filter(Boolean)
           .join(' · ');
         return `<div class="d-flex flex-wrap justify-content-between gap-3 border-bottom py-3"><div><strong>${bbEscapeHtml(type)}</strong><div class="small text-ink-soft">${bbEscapeHtml(details || 'Payment request')}</div></div><div class="text-md-end"><strong>${bbEscapeHtml(bbFormatMmkDisplay(payment.amount))}</strong><div class="small"><span class="status ${status.toLowerCase()}">${bbEscapeHtml(status || 'UNKNOWN')}</span></div></div></div>`;
@@ -1049,11 +1111,13 @@ async function bbRenderCustomerPayment() {
   const loadSummary = async () => bbFetchCustomerJson(window.bbApiUrl(`/api/customer/bookings/${encodeURIComponent(bookingId)}/payment-summary`), { method: 'GET' });
 
   try {
-    const [summary, booking] = await Promise.all([
+    const [summary, booking, accounts] = await Promise.all([
       loadSummary(),
-      bbFetchCustomerJson(window.bbApiUrl(`/api/customer/bookings/${encodeURIComponent(bookingId)}`), { method: 'GET' })
+      bbFetchCustomerJson(window.bbApiUrl(`/api/customer/bookings/${encodeURIComponent(bookingId)}`), { method: 'GET' }),
+      bbFetchCustomerJson(window.bbApiUrl('/api/customer/payment-accounts'), { method: 'GET' }).catch(() => [])
     ]);
     currentBooking = booking;
+    renderPaymentAccounts(accounts);
     renderBookingContext(booking);
     render(summary);
   } catch (requestError) {
@@ -1072,10 +1136,11 @@ async function bbRenderCustomerPayment() {
   submitForm?.addEventListener('submit', async (event) => {
     event.preventDefault();
     setSubmitError('');
-    const method = paymentMethod?.value || '';
+    const account = selectedPaymentAccount();
+    const method = String(account?.paymentMethod || '').toUpperCase();
     const reference = paymentReference?.value.trim() || '';
-    if (!method) {
-      setSubmitError('Please select a payment method.');
+    if (!account) {
+      setSubmitError(paymentAccounts.length ? 'Please select a payment destination.' : 'No payment destination is currently available.');
       paymentMethod?.focus();
       return;
     }
@@ -1093,16 +1158,17 @@ async function bbRenderCustomerPayment() {
       await bbFetchCustomerJson(window.bbApiUrl(`/api/customer/bookings/${encodeURIComponent(bookingId)}/payments`), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify({ paymentMethod: method, transactionReference: reference || null })
+        body: JSON.stringify({ paymentAccountId: account.id, transactionReference: reference || null })
       });
       render(await loadSummary());
       setMessage(message, 'Deposit Submitted · Awaiting Verification');
       show(message, true);
     } catch (requestError) {
       const status = requestError?.status;
-      setSubmitError(status === 409 ? 'A payment request is already awaiting verification.' : status === 400 ? 'This booking is not currently eligible for payment.' : 'Payment could not be submitted.');
+      const unavailableDestination = status === 400 && /destination|payment method/i.test(requestError?.message || '');
+      setSubmitError(status === 409 ? 'A payment request is already awaiting verification.' : unavailableDestination ? requestError.message : status === 400 ? 'This booking is not currently eligible for payment.' : 'Payment could not be submitted.');
     } finally {
-      submitButton.disabled = false;
+      submitButton.disabled = paymentAccounts.length === 0;
       submitButton.textContent = originalText;
     }
   });

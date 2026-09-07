@@ -16,6 +16,8 @@
     paymentStatus: 'ALL',
     paymentType: 'ALL',
     pendingPayment: null,
+    paymentAccounts: [],
+    currentPaymentAccount: null,
     quotations: [],
     quotationQuery: '',
     quotationStatus: 'ALL',
@@ -523,7 +525,10 @@
     }
 
     tbody.innerHTML = filtered.map((payment) => {
-      const method = [payment.paymentMethod, payment.transactionReference].filter(Boolean);
+      const destination = [payment.destinationProvider, payment.destinationAccountName, payment.destinationAccountNumber]
+        .filter(Boolean)
+        .join(' · ');
+      const method = [payment.paymentMethod, destination, payment.destinationInstructions, payment.transactionReference].filter(Boolean);
       const action = payment.paymentStatus === 'PENDING'
         ? `<div class="d-flex flex-wrap gap-2"><button class="btn btn-gold btn-sm" type="button" data-payment-confirm data-payment-id="${escapeHtml(payment.paymentId)}">Confirm</button><button class="btn btn-outline-danger btn-sm" type="button" data-payment-reject data-payment-id="${escapeHtml(payment.paymentId)}">Reject</button></div>`
         : '<span class="small text-ink-soft">No actions</span>';
@@ -571,7 +576,9 @@
     document.querySelector('[data-payment-modal-booking]').textContent = payment.bookingReference || `Booking #${payment.bookingId}`;
     document.querySelector('[data-payment-modal-type]').textContent = `${payment.bookingType === 'PACKAGE' ? 'Package' : 'Customize'} · ${statusLabel(payment.paymentType)}`;
     document.querySelector('[data-payment-modal-amount]').textContent = formatMoney(payment.amount);
-    document.querySelector('[data-payment-method]').value = payment.paymentMethod || '';
+    const methodInput = document.querySelector('[data-payment-method]');
+    methodInput.value = payment.paymentMethod || '';
+    methodInput.readOnly = Boolean(payment.paymentAccountId);
     document.querySelector('[data-payment-reference]').value = payment.transactionReference || '';
     window.bootstrap.Modal.getOrCreateInstance(document.getElementById('paymentConfirmModal')).show();
   }
@@ -640,6 +647,118 @@
     finally { button.disabled = false; state.pendingPayment = null; }
   }
 
+  function setPaymentAccountError(message) {
+    const element = document.querySelector('[data-payment-account-error]');
+    if (!element) return;
+    element.textContent = message || '';
+    element.classList.toggle('d-none', !message);
+  }
+
+  function paymentAccountMethodLabel(method) {
+    return {
+      KBZ_BANK: 'KBZ Bank',
+      AYA_BANK: 'AYA Bank',
+      CB_BANK: 'CB Bank',
+      KBZPAY: 'KBZPay',
+      WAVEPAY: 'WavePay',
+      CASH: 'Cash',
+      BANK_TRANSFER: 'Bank Transfer'
+    }[method] || statusLabel(method);
+  }
+
+  function renderPaymentAccounts() {
+    const list = document.querySelector('[data-payment-account-list]');
+    if (!list) return;
+    if (!state.paymentAccounts.length) {
+      list.innerHTML = '<div class="col-12 text-center py-4"><i class="bi bi-bank fs-2 text-gold"></i><p class="text-ink-soft mt-2 mb-0">No payment destinations configured yet. Add the first destination when real account details are available.</p></div>';
+      return;
+    }
+    list.innerHTML = state.paymentAccounts.map((account) => {
+      const details = [account.accountName, account.accountNumber, account.instructions].filter(Boolean);
+      return `<div class="col-md-6 col-xl-4"><article class="payment-account-card ${account.available ? '' : 'is-unavailable'}">
+        <div class="d-flex justify-content-between align-items-start gap-2"><div><span class="eyebrow">${escapeHtml(paymentAccountMethodLabel(account.paymentMethod))}</span><h3 class="h5 mt-1 mb-0">${escapeHtml(account.providerName)}</h3></div><span class="status ${account.available ? 'confirmed' : 'cancelled'}">${account.available ? 'Available' : 'Disabled'}</span></div>
+        <div class="payment-account-card__details">${details.length ? details.map(escapeHtml).join('<br>') : 'No additional details'}</div>
+        <div class="d-flex flex-wrap gap-2 mt-auto"><button class="btn btn-outline-forest btn-sm" type="button" data-payment-account-edit="${escapeHtml(account.id)}">Edit</button><button class="btn ${account.available ? 'btn-outline-danger' : 'btn-gold'} btn-sm" type="button" data-payment-account-toggle="${escapeHtml(account.id)}">${account.available ? 'Disable' : 'Enable'}</button></div>
+      </article></div>`;
+    }).join('');
+  }
+
+  async function loadPaymentAccounts() {
+    const list = document.querySelector('[data-payment-account-list]');
+    if (!list) return;
+    try {
+      const accounts = await adminFetch('/api/admin/payment-accounts', { method: 'GET' });
+      state.paymentAccounts = Array.isArray(accounts) ? accounts : [];
+      renderPaymentAccounts();
+    } catch (error) {
+      list.innerHTML = '<div class="col-12 text-danger py-4 text-center">Unable to load payment destinations.</div>';
+      setPaymentMessage(error.message || 'Unable to load payment destinations.');
+    }
+  }
+
+  function openPaymentAccountModal(account = null) {
+    state.currentPaymentAccount = account;
+    setPaymentAccountError('');
+    document.querySelector('[data-payment-account-modal-title]').textContent = account ? 'Edit Payment Destination' : 'Add Payment Destination';
+    document.querySelector('[data-payment-account-key]').value = account?.accountKey || '';
+    document.querySelector('[data-payment-account-method]').value = account?.paymentMethod || '';
+    document.querySelector('[data-payment-account-provider]').value = account?.providerName || '';
+    document.querySelector('[data-payment-account-name]').value = account?.accountName || '';
+    document.querySelector('[data-payment-account-number]').value = account?.accountNumber || '';
+    document.querySelector('[data-payment-account-instructions]').value = account?.instructions || '';
+    document.querySelector('[data-payment-account-order]').value = String(account?.displayOrder ?? 0);
+    document.querySelector('[data-payment-account-available]').checked = account?.available ?? true;
+    window.bootstrap.Modal.getOrCreateInstance(document.getElementById('paymentAccountModal')).show();
+  }
+
+  async function savePaymentAccount(event) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    if (!form.reportValidity()) return;
+    const button = form.querySelector('[data-payment-account-save]');
+    const payload = {
+      accountKey: form.querySelector('[data-payment-account-key]').value.trim(),
+      paymentMethod: form.querySelector('[data-payment-account-method]').value,
+      providerName: form.querySelector('[data-payment-account-provider]').value.trim(),
+      accountName: form.querySelector('[data-payment-account-name]').value.trim() || null,
+      accountNumber: form.querySelector('[data-payment-account-number]').value.trim() || null,
+      instructions: form.querySelector('[data-payment-account-instructions]').value.trim() || null,
+      displayOrder: Number(form.querySelector('[data-payment-account-order]').value),
+      available: form.querySelector('[data-payment-account-available]').checked
+    };
+    button.disabled = true;
+    setPaymentAccountError('');
+    try {
+      const path = state.currentPaymentAccount
+        ? `/api/admin/payment-accounts/${encodeURIComponent(state.currentPaymentAccount.id)}`
+        : '/api/admin/payment-accounts';
+      await adminFetch(path, {
+        method: state.currentPaymentAccount ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      window.bootstrap.Modal.getInstance(document.getElementById('paymentAccountModal'))?.hide();
+      await loadPaymentAccounts();
+      setPaymentMessage('Payment destination saved successfully.', 'success');
+    } catch (error) {
+      setPaymentAccountError(error.message || 'Unable to save this payment destination.');
+    } finally {
+      button.disabled = false;
+    }
+  }
+
+  async function togglePaymentAccount(id) {
+    const account = state.paymentAccounts.find((item) => String(item.id) === String(id));
+    if (!account) return;
+    try {
+      await adminFetch(`/api/admin/payment-accounts/${encodeURIComponent(id)}/${account.available ? 'disable' : 'enable'}`, { method: 'PATCH' });
+      await loadPaymentAccounts();
+      setPaymentMessage(`Payment destination ${account.available ? 'disabled' : 'enabled'} successfully.`, 'success');
+    } catch (error) {
+      setPaymentMessage(error.message || 'Unable to update payment destination availability.');
+    }
+  }
+
   function initPaymentsPage() {
     if (!document.querySelector('[data-admin-payments-page]')) return;
     document.querySelector('[data-admin-payment-search]')?.addEventListener('input', (event) => {
@@ -662,6 +781,18 @@
     });
     document.querySelector('[data-payment-confirm-submit]')?.addEventListener('click', confirmPayment);
     document.querySelector('[data-payment-reject-submit]')?.addEventListener('click', rejectPayment);
+    document.querySelector('[data-payment-account-add]')?.addEventListener('click', () => openPaymentAccountModal());
+    document.querySelector('[data-payment-account-form]')?.addEventListener('submit', savePaymentAccount);
+    document.querySelector('[data-payment-account-list]')?.addEventListener('click', (event) => {
+      const edit = event.target.closest('[data-payment-account-edit]');
+      if (edit) {
+        const account = state.paymentAccounts.find((item) => String(item.id) === edit.dataset.paymentAccountEdit);
+        if (account) openPaymentAccountModal(account);
+      }
+      const toggle = event.target.closest('[data-payment-account-toggle]');
+      if (toggle) void togglePaymentAccount(toggle.dataset.paymentAccountToggle);
+    });
+    loadPaymentAccounts();
     loadPayments();
   }
 
