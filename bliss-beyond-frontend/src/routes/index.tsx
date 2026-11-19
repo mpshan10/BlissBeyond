@@ -29,7 +29,7 @@ function HomePage() {
         />
         <div className="container bb-hero__inner py-5">
           <div className="col-lg-7">
-            <span className="eyebrow">Events & Catering · Est. 2014</span>
+            <span className="eyebrow">Events & Catering · Est. 2026</span>
             <h1 className="mt-3 mb-3">
               Celebrations designed with intention, served with elegance.
             </h1>
