@@ -988,6 +988,24 @@ document.addEventListener("DOMContentLoaded", async function () {
     return "indoor";
   }
 
+  const venuePhotoSources = {
+    12: { page: "https://www.skystarhotel.com/gallery", image: "https://www.skystarhotel.com/sites/default/files/DSC_2452.JPG" },
+    18: { page: "https://yangonthanlwinhotel.com/gallery/" },
+    21: { page: "https://www.linkedin.com/posts/parkroyal-yangon_parkroyal-yangon-held-an-exquisite-love-activity-7110862845478670336-pfOg" },
+    22: { page: "https://www.goldenhilltower.com/accommodation/" },
+    23: { page: "https://www.ymandalayhotel.com/", image: "https://www.ymandalayhotel.com/wp-content/uploads/2023/12/viber_image_2023-12-26_17-25-07-499.jpg" },
+    31: { page: "https://www.findglocal.com/MM/Yangon/157932077874413/Western-Park-Royal-Restaurant" },
+    32: { page: "https://summityangon.com/meetings-events/" },
+    33: { page: "https://www.melia.com/en/hotels/myanmar/yangon/melia-yangon/gallery", image: "https://dam.melia.com/melia/accounts/f8/4000018/projects/127/assets/e7/51241/371c0f2e67f3255075e38062a78f275f-1609410163.jpg" },
+    34: { page: "https://wyndhamgrandyangon.com/gallery/" },
+    37: { page: "https://theroseyangon.com/ei/meetings-events/", label: "Venue reference" },
+    38: { page: "https://www.melia.com/en/hotels/myanmar/yangon/melia-yangon/gallery", image: "https://dam.melia.com/melia/accounts/f8/4000018/projects/127/assets/13/15117/4955c60c05ae5e8c54b51294a988d68f-1600331900.jpg" },
+    40: { page: "https://summityangon.com/meetings-events/", label: "Events gallery" },
+    41: { page: "https://yangonthanlwinhotel.com/thanlwin-ballroom/", image: "https://yangonthanlwinhotel.com/wp-content/uploads/2023/12/3X2A8748_2.jpg" },
+    42: { page: "https://cattleyawedding.com/supplier/venue/hotel-mandalay/", label: "Hotel reference" },
+    43: { page: "https://cattleyawedding.com/supplier/venue/hotel-mandalay/", label: "Hotel reference" },
+  };
+
   function renderBackendVenueCatalog(venues) {
     const grid = document.getElementById("venueGrid");
     if (!grid || !Array.isArray(venues) || !venues.length) return;
@@ -1004,15 +1022,23 @@ document.addEventListener("DOMContentLoaded", async function () {
       const image = venue.image && venue.image.startsWith("/uploads/")
         ? window.bbApiUrl(venue.image)
         : (venue.image || "/prototype/assets/img/venue-1.jpg");
+      const photoSource = venuePhotoSources[venue.id];
+      const usesStockPhoto = /^\/prototype\/assets\/img\/venue-[123]\.jpg$/.test(image);
+      const cardImages = photoSource?.image && usesStockPhoto ? [photoSource.image, image] : [image];
+      const background = cardImages.map(url => `url('${escapeVenueHtml(url)}')`).join(", ");
+      const photoLink = photoSource
+        ? `<a class="btn btn-outline-forest btn-sm align-self-start mb-3" href="${escapeVenueHtml(photoSource.page)}" target="_blank" rel="noopener noreferrer">${photoSource.label || "View photos"}</a>`
+        : "";
       return `<div class="col-md-6 col-lg-4 venue-item" data-tags="${escapeVenueHtml(tag)}" data-venue-id="${escapeVenueHtml(venue.id)}" data-city="${escapeVenueHtml(region)}" data-order="${index}" data-searchable data-venue-price="${Number.isFinite(numericPrice) && numericPrice > 0 ? numericPrice : ""}">
         <article class="bb-card reveal h-100" data-venue-card data-venue-id="${escapeVenueHtml(venue.id)}" data-venue-name="${escapeVenueHtml(venue.name)}" data-venue-type="${escapeVenueHtml(venue.type)}" data-venue-location="${escapeVenueHtml(venue.location)}" data-venue-capacity="${venue.capacity ?? ""}" data-venue-price="${Number.isFinite(numericPrice) && numericPrice > 0 ? numericPrice : ""}">
-          <div class="bb-card__media" style="background-image:url('${escapeVenueHtml(image)}')"></div>
+          <div class="bb-card__media" style="background-image:${background}"></div>
           <div class="bb-card__body d-flex flex-column h-100">
             <div class="d-flex justify-content-between align-items-start gap-2 mb-2"><span class="bb-badge">${escapeVenueHtml(venue.type)}</span><span class="bb-badge gold">${escapeVenueHtml(region === "myanmar" ? "Myanmar" : region.charAt(0).toUpperCase() + region.slice(1))}</span></div>
             <h4 class="mb-1">${escapeVenueHtml(venue.name)}</h4>
             <p class="small text-ink-soft mb-2"><i class="bi bi-geo-alt me-1"></i>${escapeVenueHtml(venue.location)}</p>
             <p class="small text-ink-soft">${escapeVenueHtml(venue.description || "Venue details available on request.")}</p>
             ${capacityMarkup}
+            ${photoLink}
             <div class="d-flex justify-content-between align-items-center mt-auto"><strong class="text-gold">${escapeVenueHtml(price)}</strong></div>
           </div>
         </article>
