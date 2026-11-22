@@ -49,7 +49,9 @@ public class ConsultationService {
     @Transactional
     public synchronized ConsultationResponse create(ConsultationRequest request) {
         User current = currentUserService.requireCurrentUser();
-        if (consultationRepository.existsByCustomerIdAndStatusIn(current.getId(), BLOCKING_STATUSES)) {
+        LocalDateTime now = LocalDateTime.now();
+        if (consultationRepository.hasUpcomingConsultation(current.getId(), BLOCKING_STATUSES,
+            now.toLocalDate(), now.toLocalTime())) {
             throw new DuplicateResourceException("You already have an active consultation. Complete or cancel it before booking another consultation.");
         }
         Consultation consultation = new Consultation();

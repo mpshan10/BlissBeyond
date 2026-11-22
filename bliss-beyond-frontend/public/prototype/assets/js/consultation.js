@@ -94,6 +94,7 @@
     dateInput.min = new Date().toISOString().slice(0, 10);
 
     async function loadSlots() {
+      if (activeConsultation) return;
       selectedStart = '';
       if (!plannerInput.value || !dateInput.value) {
         slotsEl.innerHTML = '<span class="small text-ink-soft">Choose a planner and date to see available times.</span>';
@@ -114,7 +115,7 @@
       submitButton.disabled = active;
       if (active) {
         selectedStart = '';
-        slotsEl.replaceChildren();
+        slotsEl.innerHTML = '<span class="small text-ink-soft">You already have an upcoming consultation.</span>';
       }
     }
 
@@ -131,7 +132,9 @@
       try {
         const data = await bbFetchCustomerJson(`${API_BASE}/api/customer/consultations`);
         const consultations = Array.isArray(data) ? data : [];
-        activeConsultation = consultations.find((item) => ['REQUESTED', 'SCHEDULED'].includes(item.status)) || null;
+        const now = Date.now();
+        activeConsultation = consultations.find((item) => ['REQUESTED', 'SCHEDULED'].includes(item.status)
+          && Date.parse(`${item.consultationDate}T${item.endTime}Z`) > now) || null;
         const linked = consultationId
           ? consultations.find((item) => String(item.id) === String(consultationId))
           : bookingId ? consultations.find((item) => String(item.bookingId) === String(bookingId)) : null;
@@ -203,7 +206,7 @@
             : 'Unable to book your consultation. Please try again.';
         setStatus(statusEl, message, 'danger');
       } finally {
-        submitButton.disabled = false;
+        submitButton.disabled = Boolean(activeConsultation);
       }
     });
 

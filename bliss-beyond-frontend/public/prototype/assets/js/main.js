@@ -493,6 +493,17 @@ function bbInitCustomerSidebar() {
   });
 
   const paymentPath = '/prototype/customer/payment.html';
+  const sidebarIcons = {
+    '/prototype/customer/dashboard.html': 'bi-speedometer2',
+    '/prototype/customer/profile.html': 'bi-person-circle',
+    '/prototype/customer/services.html': 'bi-grid',
+    '/prototype/customer/booking.html': 'bi-calendar-plus',
+    '/prototype/customer/consultation.html': 'bi-chat-dots',
+    '/prototype/customer/booking-history.html': 'bi-clock-history',
+    [paymentPath]: 'bi-credit-card',
+    '/prototype/customer/quotation.html': 'bi-file-earmark-text',
+    '/prototype/login.html': 'bi-box-arrow-right',
+  };
   sidebars.forEach((sidebar) => {
     const bookingHeading = [...sidebar.querySelectorAll('h6')].find((heading) =>
       heading.textContent.trim().toLowerCase() === 'my bookings'
@@ -512,7 +523,7 @@ function bbInitCustomerSidebar() {
     if (!paymentLink) {
       const link = document.createElement('a');
       link.href = paymentPath;
-      link.innerHTML = '<i class="bi bi-credit-card me-2"></i>Payment';
+      link.textContent = 'Payment';
       const historyLink = existingLinks.find((link) => link.getAttribute('href')?.includes('booking-history.html'));
       if (historyLink) historyLink.insertAdjacentElement('afterend', link);
       else if (nextHeading) nextHeading.insertAdjacentElement('beforebegin', link);
@@ -522,6 +533,13 @@ function bbInitCustomerSidebar() {
     const currentPath = window.location.pathname.split('/').pop().toLowerCase();
     sidebar.querySelectorAll('a').forEach((link) => {
       const linkPath = link.getAttribute('href')?.split('?')[0] || '';
+      const iconClass = sidebarIcons[linkPath];
+      if (iconClass && !link.querySelector('.bi')) {
+        const icon = document.createElement('i');
+        icon.className = `bi ${iconClass} me-2`;
+        icon.setAttribute('aria-hidden', 'true');
+        link.prepend(icon);
+      }
       if (!linkPath.startsWith('/prototype/customer/')) return;
       const isActive = linkPath.split('/').pop().toLowerCase() === currentPath;
       link.classList.toggle('active', isActive);

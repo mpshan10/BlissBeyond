@@ -167,7 +167,7 @@ body{overflow-x:hidden;background:#fbfaf7}
 
 
 /* Keep the service photography visible while giving all card content a calm, readable surface. */
-.service-card::before{opacity:1}
+.service-card::before{inset:0;width:auto;height:auto;opacity:1}
 .service-card::after{background:linear-gradient(90deg,rgba(4,31,26,.78),rgba(4,31,26,.70) 48%,rgba(4,31,26,.64));opacity:1}
 .service-card .service-title,.service-card .package-inclusions li{color:rgba(255,255,255,.97);text-shadow:0 1px 2px rgba(4,31,26,.3)}
 .service-card .package-inclusions li i{color:#efc878;text-shadow:none}

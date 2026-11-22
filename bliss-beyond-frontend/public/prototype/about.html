@@ -397,37 +397,6 @@
       pointer-events: none;
     }
 
-    /* Actual About Us image clipped inside the circle */
-    .about-hero-image {
-      position: absolute;
-      z-index: 2;
-
-      width: 88%;
-      height: 88%;
-
-      left: 0;
-      top: 0;
-
-      display: block;
-
-      object-fit: cover;
-      object-position: center;
-
-      border-radius: 50%;
-
-      box-shadow:
-        0 22px 55px rgba(8, 47, 40, .14);
-
-      transition:
-        transform .55s ease,
-        filter .55s ease;
-    }
-
-    .about-hero-image-wrap:hover .about-hero-image {
-      transform: scale(1.018);
-      filter: saturate(1.03);
-    }
-
     /* Platform floating card */
     .about-floating-card {
       position: absolute;
@@ -2106,11 +2075,6 @@
         <div class="about-hero-image-wrap">
 
           <div class="about-image-shape"></div>
-
-          <img
-            src="/prototype/assets/img/UIT.jpg"
-            alt="Bliss and Beyond About Us"
-            class="about-hero-image">
 
           <div class="about-floating-card">
 
