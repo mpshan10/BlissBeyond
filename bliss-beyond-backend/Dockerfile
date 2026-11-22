@@ -12,5 +12,6 @@ WORKDIR /app
 ENV SPRING_PROFILES_ACTIVE=production
 COPY --from=build /app/target/bliss-beyond-backend-0.0.1-SNAPSHOT.jar app.jar
 COPY uploads/venue-images ./uploads/venue-images
+COPY uploads/package-images ./uploads/package-images
 
 ENTRYPOINT ["java", "-jar", "app.jar"]
