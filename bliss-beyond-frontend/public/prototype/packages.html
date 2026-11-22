@@ -1303,8 +1303,13 @@ document.addEventListener('DOMContentLoaded', function () {
     return `/prototype/assets/img/${normalized}`;
   };
   const applyPackageImage = (media, item) => {
-    const fallback = resolvePackageImage(legacyImageBySlug.get(item.slug)) || '/prototype/assets/img/hero.jpg';
-    const candidate = resolvePackageImage(item.image || item.imageUrl || item.imagePath) || fallback;
+    const hasVenueImageField = item.venue && Object.hasOwn(item.venue, 'image');
+    const fallback = hasVenueImageField
+      ? '/prototype/assets/img/venue-1.jpg'
+      : (resolvePackageImage(legacyImageBySlug.get(item.slug)) || '/prototype/assets/img/hero.jpg');
+    const candidate = resolvePackageImage(hasVenueImageField
+      ? item.venue.image
+      : (item.image || item.imageUrl || item.imagePath)) || fallback;
     const setBackground = url => {
       media.style.backgroundImage = `url("${url.replace(/"/g, '%22')}")`;
     };

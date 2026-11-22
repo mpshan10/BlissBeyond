@@ -273,7 +273,7 @@ public class AdminPackageService {
             eventPackage.getId(), eventPackage.getSlug(), eventPackage.getName(), eventPackage.getCategory(),
             eventPackage.getDescription(), eventPackage.getMaxGuests(), eventPackage.getFinalPrice(),
             eventPackage.getImage(), eventPackage.isActive(),
-            new PackageVenueResponse(venue.getId(), venue.getName(), venue.getLocation(), venue.getCapacity(), venue.getWebsiteUrl()),
+            new PackageVenueResponse(venue.getId(), venue.getName(), venue.getLocation(), venue.getCapacity(), venue.getWebsiteUrl(), venue.getImage()),
             services
         );
     }

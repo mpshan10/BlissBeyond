@@ -3526,7 +3526,10 @@ async function bbInitHomePackages() {
     if (featured.length !== 4) throw new Error('Featured package catalog is incomplete.');
 
     root.innerHTML = featured.map((item) => {
-      const image = item.image?.startsWith('/uploads/') ? window.bbApiUrl(item.image) : (item.image || fallbackImages[item.slug]);
+      const imagePath = item.venue && Object.hasOwn(item.venue, 'image')
+        ? (item.venue.image || '/prototype/assets/img/venue-1.jpg')
+        : (item.image || fallbackImages[item.slug]);
+      const image = imagePath?.startsWith('/uploads/') ? window.bbApiUrl(imagePath) : imagePath;
       const category = String(item.category || '').toLowerCase();
       return `<div class="col-md-6 col-xl-3" data-home-package-card>
         <article class="bb-card reveal h-100">

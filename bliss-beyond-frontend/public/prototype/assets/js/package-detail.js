@@ -68,8 +68,11 @@
     } catch (error) {
       storedImage = '';
     }
-    const image = resolveImage(current.image) || resolveImage(storedImage);
-    packageImage.alt = `${current.name || 'Package'} package image`;
+    const hasVenueImageField = current.venue && Object.hasOwn(current.venue, 'image');
+    const image = hasVenueImageField
+      ? resolveImage(current.venue.image)
+      : (resolveImage(current.image) || resolveImage(storedImage));
+    packageImage.alt = hasVenueImageField ? (current.venue.name || 'Venue') : (current.name || 'Package');
     packageImage.classList.remove('is-fallback');
     packageImage.onerror = () => {
       packageImage.onerror = null;
@@ -77,6 +80,7 @@
       packageImage.classList.add('is-fallback');
     };
     packageImage.src = image || fallbackImage;
+    packageImage.hidden = false;
     if (!image) packageImage.classList.add('is-fallback');
   };
   const configureBookingLinks = (current) => {
