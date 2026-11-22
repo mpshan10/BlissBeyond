@@ -29,6 +29,9 @@ spring:
       mode: never
 
 management:
+  health:
+    mail:
+      enabled: false
   endpoint:
     health:
       probes:

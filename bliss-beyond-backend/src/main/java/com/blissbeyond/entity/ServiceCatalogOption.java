@@ -1,6 +1,8 @@
 package com.blissbeyond.entity;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -26,7 +28,8 @@ public class ServiceCatalogOption extends BaseEntity {
     private boolean available = true;
     @Column(name = "display_order", nullable = false)
     private int displayOrder;
-    @Column(name = "metadata_json", columnDefinition = "json")
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "metadata_json")
     private String metadataJson;
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;

@@ -21,15 +21,16 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
     @Query("update Notification n set n.readAt = :readAt where n.recipient.id = :recipientId and n.readAt is null")
     int markAllUnreadAsRead(@Param("recipientId") Long recipientId, @Param("readAt") java.time.LocalDateTime readAt);
 
-    @Modifying
-    @Query(value = """
+    String INSERT_NOTIFICATION = """
         INSERT INTO notifications
             (recipient_user_id, actor_user_id, type, severity, title, message,
              reference_type, reference_id, action_url, read_at, dedupe_key, created_at)
         VALUES (:recipientId, :actorId, :type, 'INFO', :title, :message,
                 :referenceType, :referenceId, :actionUrl, NULL, :dedupeKey, :createdAt)
-        ON DUPLICATE KEY UPDATE id = id
-        """, nativeQuery = true)
+        """;
+
+    @Modifying
+    @Query(value = INSERT_NOTIFICATION + "ON DUPLICATE KEY UPDATE id = id", nativeQuery = true)
     int insertIfAbsent(@Param("recipientId") Long recipientId,
                        @Param("actorId") Long actorId,
                        @Param("type") String type,
@@ -40,4 +41,17 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
                        @Param("actionUrl") String actionUrl,
                        @Param("dedupeKey") String dedupeKey,
                        @Param("createdAt") java.time.LocalDateTime createdAt);
+
+    @Modifying
+    @Query(value = INSERT_NOTIFICATION + "ON CONFLICT (recipient_user_id, dedupe_key) DO NOTHING", nativeQuery = true)
+    int insertIfAbsentPostgres(@Param("recipientId") Long recipientId,
+                               @Param("actorId") Long actorId,
+                               @Param("type") String type,
+                               @Param("title") String title,
+                               @Param("message") String message,
+                               @Param("referenceType") String referenceType,
+                               @Param("referenceId") Long referenceId,
+                               @Param("actionUrl") String actionUrl,
+                               @Param("dedupeKey") String dedupeKey,
+                               @Param("createdAt") java.time.LocalDateTime createdAt);
 }

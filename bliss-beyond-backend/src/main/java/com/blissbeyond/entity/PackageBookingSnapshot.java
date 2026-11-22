@@ -31,8 +31,7 @@ public class PackageBookingSnapshot extends BaseEntity {
     private Integer maxGuests;
     @Column(name = "final_price", nullable = false, precision = 14, scale = 2)
     private BigDecimal finalPrice;
-    @Lob
-    @Column(name = "inclusions_json", nullable = false, columnDefinition = "LONGTEXT")
+    @Column(name = "inclusions_json", nullable = false, columnDefinition = "TEXT")
     private String inclusionsJson;
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();

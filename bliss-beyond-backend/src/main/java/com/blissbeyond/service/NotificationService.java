@@ -7,6 +7,7 @@ import com.blissbeyond.entity.User;
 import com.blissbeyond.exception.ResourceNotFoundException;
 import com.blissbeyond.repository.NotificationRepository;
 import com.blissbeyond.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,9 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
     private final UserRepository userRepository;
     private final CurrentUserService currentUserService;
+
+    @Value("${spring.datasource.url:}")
+    private String databaseUrl = "";
 
     public NotificationService(NotificationRepository notificationRepository,
                                UserRepository userRepository,
@@ -93,9 +97,17 @@ public class NotificationService {
         notification.setActionUrl(normalizeActionUrl(actionUrl));
         notification.setDedupeKey(dedupeKey);
         notification.setReadAt(null);
-        notificationRepository.insertIfAbsent(
-            recipient.getId(), actor == null ? null : actor.getId(), type, title, message,
-            referenceType, referenceId, normalizeActionUrl(actionUrl), dedupeKey, LocalDateTime.now());
+        Long actorId = actor == null ? null : actor.getId();
+        LocalDateTime createdAt = LocalDateTime.now();
+        if (databaseUrl.startsWith("jdbc:postgresql:")) {
+            notificationRepository.insertIfAbsentPostgres(
+                recipient.getId(), actorId, type, title, message, referenceType, referenceId,
+                notification.getActionUrl(), dedupeKey, createdAt);
+        } else {
+            notificationRepository.insertIfAbsent(
+                recipient.getId(), actorId, type, title, message, referenceType, referenceId,
+                notification.getActionUrl(), dedupeKey, createdAt);
+        }
     }
 
     // Compatibility adapter for existing customer notification call sites.
