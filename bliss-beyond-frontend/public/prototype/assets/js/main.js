@@ -3560,7 +3560,7 @@ async function bbInitHomeVenues() {
   const preferredIds = [35, 36, 44];
   const fallbackImages = {
     35: '/prototype/assets/img/venue-1.jpg',
-    36: '/prototype/assets/img/venue-2.jpg',
+    36: '/prototype/assets/img/engagement2.jpg',
     44: '/prototype/assets/img/venue-1.jpg'
   };
 
@@ -3580,14 +3580,17 @@ async function bbInitHomeVenues() {
       const location = cleanVenueText(item.location || 'Myanmar');
       const description = cleanVenueText(item.description || location);
       const venueId = Number(item.id);
-      const image = item.image || fallbackImages[item.id];
+      const fallback = fallbackImages[venueId];
+      const image = item.image?.startsWith('/uploads/') ? window.bbApiUrl(item.image) : item.image;
+      const background = [...new Set([image, fallback].filter(Boolean))]
+        .map((url) => `url('${bbEscapeHtml(url)}')`).join(', ');
       const capacity = Number(item.capacity);
       const capacityLabel = Number.isFinite(capacity) && capacity > 0
         ? `<span class="capacity-pill bb-badge gold">UP TO ${capacity.toLocaleString()} GUESTS</span>`
         : '';
       return `<div class="col-md-6 col-lg-4" data-home-venue-card data-venue-id="${venueId}">
         <article class="bb-card reveal h-100">
-          <div class="bb-card__media" style="background-image:url('${bbEscapeHtml(image || '')}');"></div>
+          <div class="bb-card__media" style="background-image:${background};"></div>
           <div class="bb-card__body d-flex flex-column h-100">
             <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
               <span class="bb-badge">${bbEscapeHtml(type)}</span>
@@ -3596,9 +3599,9 @@ async function bbInitHomeVenues() {
             <h4 class="mb-1">${bbEscapeHtml(name)}</h4>
             <p class="small text-ink-soft mb-2"><i class="bi bi-geo-alt me-1"></i>${bbEscapeHtml(location)}</p>
             <p class="small text-ink-soft mb-3" style="display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;">${bbEscapeHtml(description)}</p>
-            <div class="mt-auto d-flex align-items-end justify-content-between gap-2">
-              <div><div class="stat-label">VENUE PRICE</div><div class="bb-price">${bbEscapeHtml(bbFormatMmkDisplay(item.price))}</div></div>
-              <a class="btn btn-outline-forest btn-sm" href="/prototype/venues.html">View Venue</a>
+            <div class="mt-auto">
+              <div class="stat-label">VENUE PRICE</div>
+              <div class="bb-price">${bbEscapeHtml(bbFormatMmkDisplay(item.price))}</div>
             </div>
           </div>
         </article>
