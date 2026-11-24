@@ -219,8 +219,8 @@
         });
       }
     });
-    const inclusionEmpty = document.querySelector('.inclusion-empty');
-    if (inclusionEmpty) inclusionEmpty.hidden = serviceCards.every((card) => card.hidden);
+    const includedSection = document.querySelector('[aria-labelledby="included-title"]');
+    if (includedSection) includedSection.hidden = serviceCards.every((card) => card.hidden);
 
     const websiteUrl = String(venue.websiteUrl || '').trim();
     const validWebsite = /^https?:\/\/.+/i.test(websiteUrl);

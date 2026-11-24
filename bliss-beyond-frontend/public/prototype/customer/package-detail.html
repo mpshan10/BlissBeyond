@@ -12,7 +12,7 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 <link rel="stylesheet" href="/prototype/assets/css/style.css">
-<link rel="stylesheet" href="/prototype/assets/css/package-detail.css">
+<link rel="stylesheet" href="/prototype/assets/css/package-detail.css?v=service-photos">
 </head>
 <body data-public-header>
 <script>const slug = new URLSearchParams(window.location.search).get('slug'); if (slug) document.body.dataset.packageSlug = slug;</script>
@@ -35,7 +35,7 @@
 <main class="layout">
   <section class="venue-strip" aria-labelledby="venue-title"><div class="venue-content"><img data-package-image class="rounded object-fit-cover flex-shrink-0" width="96" height="72" alt="" hidden><div><div class="kicker">Associated Venue</div><h2 id="venue-title">Venue</h2><p data-venue-summary>Location</p></div></div><a class="btn btn-outline" data-view-venue href="#" hidden>View Venue <i class="bi bi-arrow-up-right" aria-hidden="true"></i></a></section>
   <section class="benefit-strip" aria-label="Package benefits"><div class="benefit"><i class="bi bi-stars" aria-hidden="true"></i><strong data-benefit-services>0</strong><span>Services Included</span></div><div class="benefit"><i class="bi bi-people" aria-hidden="true"></i><strong data-benefit-guests>0</strong><span>Maximum Guests</span></div><div class="benefit"><i class="bi bi-geo-alt" aria-hidden="true"></i><strong data-benefit-location>Location</strong><span>Celebration Location</span></div><div class="benefit"><i class="bi bi-gem" aria-hidden="true"></i><strong>Ready-Made</strong><span>Curated Package</span></div></section>
-  <section aria-labelledby="included-title"><div class="section-heading"><div class="kicker">What's Included</div><h2 id="included-title">Every essential detail is thoughtfully selected for you.</h2></div><div class="service-grid">
+  <section aria-labelledby="included-title" hidden><div class="section-heading"><div class="kicker">What's Included</div><h2 id="included-title">Every essential detail is thoughtfully selected for you.</h2></div><div class="service-grid">
     <article class="service-card service-catering" data-service-key="catering" data-service-image="/prototype/assets/img/catering1.jpg"><div class="service-head"><span class="service-icon"><i class="bi bi-cup-hot" aria-hidden="true"></i></span><h3 class="service-title">Catering</h3></div><ul class="package-inclusions"></ul></article>
     <article class="service-card service-decoration" data-service-key="decoration" data-service-image="/prototype/assets/img/decoration1.jpg"><div class="service-head"><span class="service-icon"><i class="bi bi-stars" aria-hidden="true"></i></span><h3 class="service-title">Decoration &amp; Styling</h3></div><ul class="package-inclusions"></ul></article>
     <article class="service-card service-photography" data-service-key="photography" data-service-image="/prototype/assets/img/photo1.jpg"><div class="service-head"><span class="service-icon"><i class="bi bi-camera" aria-hidden="true"></i></span><h3 class="service-title">Photography &amp; Videography</h3></div><ul class="package-inclusions"></ul></article>
@@ -43,12 +43,12 @@
     <article class="service-card service-av" data-service-key="lighting-av" data-service-image="/prototype/assets/img/lighting1.jpg"><div class="service-head"><span class="service-icon"><i class="bi bi-speaker" aria-hidden="true"></i></span><h3 class="service-title">Lighting &amp; AV</h3></div><ul class="package-inclusions"></ul></article>
     <article class="service-card service-cake" data-service-key="cake" data-service-image="/prototype/assets/img/cake1.jpg"><div class="service-head"><span class="service-icon"><i class="bi bi-cake2" aria-hidden="true"></i></span><h3 class="service-title">Cake &amp; Desserts</h3></div><ul class="package-inclusions"></ul></article>
     <article class="service-card service-floral" data-service-key="florals" data-service-image="/prototype/assets/img/floral1.jpg"><div class="service-head"><span class="service-icon"><i class="bi bi-flower1" aria-hidden="true"></i></span><h3 class="service-title">Floral Design</h3></div><ul class="package-inclusions"></ul></article>
-  </div><div class="inclusion-empty" hidden>Package inclusion details unavailable.</div></section>
+  </div></section>
   <section class="final-cta" aria-labelledby="cta-title"><div><div class="kicker">Ready when you are</div><h2 id="cta-title">Package</h2><p data-cta-summary>Price - Guest limit</p></div><a class="btn btn-gold" href="/prototype/packages.html#package-availability">Book This Package <i class="bi bi-arrow-right" aria-hidden="true"></i></a></section>
 </main>
 <footer>&copy; 2026 <strong>Bliss &amp; Beyond</strong></footer>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="/prototype/assets/js/main.js"></script>
-<script src="/prototype/assets/js/package-detail.js"></script>
+<script src="/prototype/assets/js/package-detail.js?v=service-photos"></script>
 </body>
 </html>
